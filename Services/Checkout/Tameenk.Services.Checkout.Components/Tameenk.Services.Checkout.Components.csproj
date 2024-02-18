@@ -168,14 +168,6 @@
     <Analyzer Include="..\..\..\packages\Microsoft.DependencyValidation.Analyzers.0.9.0\analyzers\dotnet\Microsoft.DependencyValidation.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Integration\Tameenk.Integration.Core\Tameenk.Integration.Core.csproj">
-      <Project>{75031295-c1c2-499d-8dd3-1ac7357fc897}</Project>
-      <Name>Tameenk.Integration.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Integration\Tameenk.Integration.Dto\Tameenk.Integration.Dto.csproj">
-      <Project>{51816323-e9ba-457f-844c-0237993ac117}</Project>
-      <Name>Tameenk.Integration.Dto</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\Tameenk.Common.Utilities\Tameenk.Common.Utilities.csproj">
       <Project>{14F920B0-E1F2-4E7B-BE22-4BDE4FC9541F}</Project>
       <Name>Tameenk.Common.Utilities</Name>

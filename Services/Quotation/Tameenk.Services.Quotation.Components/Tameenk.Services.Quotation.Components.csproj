@@ -163,14 +163,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Integration\Tameenk.Integration.Core\Tameenk.Integration.Core.csproj">
-      <Project>{75031295-C1C2-499D-8DD3-1AC7357FC897}</Project>
-      <Name>Tameenk.Integration.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Integration\Tameenk.Integration.Dto\Tameenk.Integration.Dto.csproj">
-      <Project>{51816323-E9BA-457F-844C-0237993AC117}</Project>
-      <Name>Tameenk.Integration.Dto</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\Tameenk.Common.Utilities\Tameenk.Common.Utilities.csproj">
       <Project>{14F920B0-E1F2-4E7B-BE22-4BDE4FC9541F}</Project>
       <Name>Tameenk.Common.Utilities</Name>
