@@ -211,3 +211,4 @@ FakesAssemblies/
 /Services/Policy/PdfGeneratorService/Tameenk.PdfGeneratorService.Common/Resources/Templates
 /Services/Inquiry/Tameenk.Services.InquiryGateway/Controllers
 /Tameenk.Services.ServicesApi
+/Services/Inquiry/Tameenk.Services.YakeenIntegration.Business/Connected Services/VehicleYakeenBcareService
