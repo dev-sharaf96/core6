@@ -1,8 +1,7 @@
 ﻿using Tameenk.Loggin.DAL.Dtos;
 using Tameenk.Common.Utilities;
-using System.Data;
+
 using System;
-using System.Data.Entity.Validation;
 using System.Collections.Generic;
 
 
@@ -35,15 +34,15 @@ namespace Tameenk.Loggin.DAL
             //    //System.IO.File.WriteAllText(@"C:\inetpub\wwwroot\StagingQuotationApi\logs\log1.txt", ex.ToString());
             //    return false;
             //}
-            catch (DbEntityValidationException ex)
+            catch (Exception ex)
             {
-                foreach (var validationErrors in ex.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-                        System.IO.File.WriteAllText(@"C:\inetpub\wwwroot\StagingQuotationApi\logs\log1.txt", ex.ToString());
-                    }
-                }
+                //foreach (var validationErrors in ex.EntityValidationErrors)
+                //{
+                //    foreach (var validationError in validationErrors.ValidationErrors)
+                //    {
+                //        System.IO.File.WriteAllText(@"C:\inetpub\wwwroot\StagingQuotationApi\logs\log1.txt", ex.ToString());
+                //    }
+                //}
                 return false;
             }
 

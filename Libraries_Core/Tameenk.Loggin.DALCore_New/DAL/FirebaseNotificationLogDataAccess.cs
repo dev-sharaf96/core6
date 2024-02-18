@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity.Validation;
 using Tameenk.Common.Utilities;
 
 namespace Tameenk.Loggin.DAL
@@ -20,15 +19,19 @@ namespace Tameenk.Loggin.DAL
                     return true;
                 }
             }
-            catch (DbEntityValidationException ex)
-            {
-                foreach (var validationErrors in ex.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-                        System.IO.File.WriteAllText(@"C:\inetpub\wwwroot\StagingQuotationApi\logs\log1.txt", ex.ToString());
-                    }
-                }
+            //catch (DbEntityValidationException ex)
+            //{
+            //    foreach (var validationErrors in ex.EntityValidationErrors)
+            //    {
+            //        foreach (var validationError in validationErrors.ValidationErrors)
+            //        {
+            //            System.IO.File.WriteAllText(@"C:\inetpub\wwwroot\StagingQuotationApi\logs\log1.txt", ex.ToString());
+            //        }
+            //    }
+            //    return false;
+            //}
+            catch(Exception exc) 
+            { 
                 return false;
             }
 

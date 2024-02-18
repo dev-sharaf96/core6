@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.Validation;
 using Tameenk.Common.Utilities;
 using Tameenk.Loggin.DAL.Dtos;
 
@@ -22,15 +19,16 @@ namespace Tameenk.Loggin.DAL
                     return true;
                 }
             }
-            catch (DbEntityValidationException dbEx)
+            //catch (DbEntityValidationException dbEx)
+            catch (Exception dbEx)
             {
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
+                //foreach (var validationErrors in dbEx.EntityValidationErrors)
+                //{
+                //    foreach (var validationError in validationErrors.ValidationErrors)
+                //    {
 
-                    }
-                }
+                //    }
+                //}
                 return false;
             }
         }

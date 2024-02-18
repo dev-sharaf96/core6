@@ -1,4 +1,5 @@
-﻿using System.Data.Entity.Validation;
+﻿using Microsoft.EntityFrameworkCore;
+
 
 namespace Tameenk.Loggin.DAL
 {
@@ -16,17 +17,30 @@ namespace Tameenk.Loggin.DAL
                     return true;
                 }
             }
-            catch (DbEntityValidationException dbEx)
-            {
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
+            //catch (DbEntityValidationException dbEx)
+            //{
+            //    foreach (var validationErrors in dbEx.EntityValidationErrors)
+            //    {
+            //        foreach (var validationError in validationErrors.ValidationErrors)
+            //        {
 
-                    }
-                }
+            //        }
+            //    }
+            //    return false;
+            //}
+            catch (DbUpdateException dbEx)
+            {
+                //foreach (var validationErrors in dbEx.EntityValidationErrors)
+                //{
+                //    foreach (var validationError in validationErrors.ValidationErrors)
+                //    {
+
+                //    }
+                //}
                 return false;
             }
+
+
         }
     }
 }

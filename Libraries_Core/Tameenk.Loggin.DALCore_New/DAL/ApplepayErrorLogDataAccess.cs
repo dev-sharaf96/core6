@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity.Validation;
 using Tameenk.Common.Utilities;
 
 namespace Tameenk.Loggin.DAL
@@ -20,18 +19,18 @@ namespace Tameenk.Loggin.DAL
                     return true;
                 }
             }
-            catch (DbEntityValidationException dbEx)
-            {
-                string errors = string.Empty;
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-                        errors += "Property: " + validationError.PropertyName + " Error: " + validationError.ErrorMessage;
-                    }
-                }
-                return false;
-            }
+            //catch (DbEntityValidationException dbEx)
+            //{
+            //    string errors = string.Empty;
+            //    foreach (var validationErrors in dbEx.EntityValidationErrors)
+            //    {
+            //        foreach (var validationError in validationErrors.ValidationErrors)
+            //        {
+            //            errors += "Property: " + validationError.PropertyName + " Error: " + validationError.ErrorMessage;
+            //        }
+            //    }
+            //    return false;
+            //}
             catch (Exception exp)
             {
                 ErrorLogger.LogError(exp.Message, exp, false);

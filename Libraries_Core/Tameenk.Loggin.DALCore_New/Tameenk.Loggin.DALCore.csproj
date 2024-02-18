@@ -13,9 +13,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Tameenk.Common.UtilitiesCore_New\Tameenk.Common.UtilitiesCore.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\..\Tameenk.Reports\Tameenk.Reports.Quotation\bin\Debug\EntityFramework.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>
