@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Tameenk.Integration.Providers.AICC.Core": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:63927;http://localhost:63928"
+    }
+  }
+}

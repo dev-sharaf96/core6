@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Tameenk.Integration.Core.Core\Tameenk.Integration.Core.Core.csproj" />
+    <ProjectReference Include="..\..\Tameenk.Integration.DtoCore\Tameenk.Integration.DtoCore.csproj" />
+  </ItemGroup>
+</Project>

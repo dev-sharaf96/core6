@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Tameenk.Integration.Providers.SalamaCore": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:63957;http://localhost:63958"
+    }
+  }
+}

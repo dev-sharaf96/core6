@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries_Core\Tameenk.Core.Domain\Tameenk.Core.Domain.csproj" />
+    <ProjectReference Include="..\..\Libraries_Core\Tameenk.Core\Tameenk.Core.csproj" />
+    <ProjectReference Include="..\..\Libraries_Core\Tameenk.Loggin.DALCore_New\Tameenk.Loggin.DALCore.csproj" />
+    <ProjectReference Include="..\..\Libraries_Core\Tameenk.ServicesCore_New\Tameenk.ServicesCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+</Project>

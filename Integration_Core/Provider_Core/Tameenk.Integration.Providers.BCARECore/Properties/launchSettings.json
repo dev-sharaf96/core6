@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Tameenk.Integration.Providers.BCARECore": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:63943;http://localhost:63944"
+    }
+  }
+}

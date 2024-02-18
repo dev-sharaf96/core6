@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Integration_Core\Tameenk.Integration.Core.Core\Tameenk.Integration.Core.Core.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Tameenk.Integration.DtoCore\Tameenk.Integration.DtoCore.csproj" />
+    <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.Core.Domain\Tameenk.Core.Domain.csproj" />
+    <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.Core\Tameenk.Core.csproj" />
+    <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.ResourcesCore_New\Tameenk.ResourcesCore.csproj" />
+    <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.ServicesCore_New\Tameenk.ServicesCore.csproj" />
+  </ItemGroup>
+
+</Project>
