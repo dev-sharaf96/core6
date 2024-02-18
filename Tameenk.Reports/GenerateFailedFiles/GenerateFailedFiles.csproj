@@ -84,10 +84,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Integration\Tameenk.Integration.Dto\Tameenk.Integration.Dto.csproj">
-      <Project>{51816323-E9BA-457F-844C-0237993AC117}</Project>
-      <Name>Tameenk.Integration.Dto</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\Tameenk.Loggin.DAL\Tameenk.Loggin.DAL.csproj">
       <Project>{339CF262-0F17-4C60-BB6F-FDC5133B3132}</Project>
       <Name>Tameenk.Loggin.DAL</Name>
