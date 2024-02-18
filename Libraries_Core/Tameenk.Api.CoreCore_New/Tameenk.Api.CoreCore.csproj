@@ -9,8 +9,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tameenk.Common.UtilitiesCore_New\Tameenk.Common.UtilitiesCore.csproj" />
+    <ProjectReference Include="..\Tameenk.Core.Domain\Tameenk.Core.Domain.csproj" />
     <ProjectReference Include="..\Tameenk.Core\Tameenk.Core.csproj" />
-    <ProjectReference Include="..\Tameenk.ServicesCore_New\Tameenk.ServicesCore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">

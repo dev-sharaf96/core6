@@ -14,12 +14,10 @@ using System.Net;
 using Tameenk.Api.Core.ActionResults;
 using Tameenk.Api.Core.Attributes;
 using Tameenk.Api.Core.Models;
-using Tameenk.Services.Extensions;
-using Tameenk.Services.Logging;
 using Tameenk.Core.Configuration;
 //using Tameenk.Core.Infrastructure;
 
-using Tameenk.Services.Core.Http;
+
 using Microsoft.AspNetCore.Http;
 using System.Drawing.Imaging;
 using System.Runtime.Serialization;
@@ -31,7 +29,7 @@ using Tameenk.Core.Infrastructure;
 
 namespace Tameenk.Api.Core
 {
-    [WebApiLanguage]
+    //[WebApiLanguage] by Atheer
     //[AdminSecurityAuthorizeAttribute]
     public abstract class AdminBaseApiController : Controller
 
@@ -40,8 +38,6 @@ namespace Tameenk.Api.Core
         {
             _httpContextAccessor= httpContextAccessor;
         }
-        private ILogger _logger;
-        private IHttpClient _httpClient; 
         private string _accessToken;
         private TameenkConfig _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -88,7 +84,7 @@ namespace Tameenk.Api.Core
         [NonAction]
         public RawJsonActionResult Error(Exception ex)
         {
-            var logKey = $"api_{DateTime.Now.GetTimestamp()}";
+            var logKey = $"api_{DateTime.Now}";
             //Logger.Log($"Api error [Key={logKey}]", ex, LogLevel.Error);
             var error = new ErrorModel
             {
@@ -118,7 +114,7 @@ namespace Tameenk.Api.Core
                 }
                 catch (Exception ex)
                 {
-                    var logId = DateTime.Now.GetTimestamp();
+                    var logId = DateTime.Now;
                     //_logger.Log($"Base api controller -> GetAccessToken [key={logId}]", ex); By Atheer
                     return "";
                 }
@@ -148,24 +144,24 @@ namespace Tameenk.Api.Core
         //}
 
 
-        protected IHttpClient HttpClient
-        {
-            get
-            {
-                _httpClient = _httpClient ?? EngineContext.Current.Resolve<IHttpClient>();
-                return _httpClient;
-            }
-        }
+        //protected IHttpClient HttpClient
+        //{
+        //    get
+        //    {
+        //        _httpClient = _httpClient ?? EngineContext.Current.Resolve<IHttpClient>();
+        //        return _httpClient;
+        //    }
+        //}
 
 
-        protected TameenkConfig Config
-        {
-            get
-            {
-                _config = _config ?? EngineContext.Current.Resolve<TameenkConfig>();
-                return _config;
-            }
-        }
+        //protected TameenkConfig Config
+        //{
+        //    get
+        //    {
+        //        _config = _config ?? EngineContext.Current.Resolve<TameenkConfig>();
+        //        return _config;
+        //    }
+        //} By Atheer
 
         [NonAction]
         private void TransalateModelStatePropertyName(ModelStateDictionary modelState)

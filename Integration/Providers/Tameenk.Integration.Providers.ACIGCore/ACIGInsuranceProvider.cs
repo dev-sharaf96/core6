@@ -53,7 +53,7 @@ namespace Tameenk.Integration.Providers.ACIG
              },  logger, policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
+            //_httpClient = EngineContext.Current.Resolve<IHttpClient>(); by Atheer
             _serviceProvider = serviceProvider;
         }
         public override bool ValidateQuotationBeforeCheckout(QuotationRequest quotationRequest, out List<string> errors)
