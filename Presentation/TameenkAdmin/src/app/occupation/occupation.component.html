@@ -1,0 +1,159 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'navbar.occupation' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="" translate>occupation.code</label>
+              <input type="text" [(ngModel)]="occupationFilter.code" class="form-control" id="makerCode" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+              <label for="" translate>occupation.description</label>
+              <input type="text" [(ngModel)]="occupationFilter.description" class="form-control" id="makerDescription" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-2">
+            <button (click)="filterClick(table)" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.search
+            </button>
+          </div>
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<div class="row">
+  <div class="col-xs-12">
+    <h3>{{'occupation.occupations' | translate}} :</h3>
+    <button (click)="showOccupationPopup('add')" class="btn btn-danger action-btn" style="float: left;margin-top: -40px;margin-left: 20%;">
+      {{'occupation.addNewOccupation' | translate}}
+    </button>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a (click)="exportCsv()" class="pointer" translate>common.export</a>
+        <div class="text-left clearfix">
+          {{'common.results_count' | translate}} : {{occupationsCount}}
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table #table
+                 [value]="occupations"
+                 [lazy]="true"
+                 (onLazyLoad)="requestsLazyLoad($event)"
+                 [lazyLoadOnInit]="false"
+                 [totalRecords]="occupationsCount"
+                 [resetPageOnSort]="true"
+                 [rowsPerPageOptions]="[5, 10, 20]"
+                 [loading]="loading"
+                 [paginator]="true"
+                 [rows]="10"
+                 [responsive]="true"
+                 scrollHeight="200px"
+                 [autoLayout]="true"
+                 [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="reportsTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate> occupation.code </th>
+              <th translate> occupation.descriptionEn </th>
+              <th translate> occupation.descriptionAr </th>
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-occupation>
+            <tr>
+              <td style="word-wrap: break-word;text-align: center"> {{ occupation.code || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ occupation.englishDescription || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ occupation.arabicDescription || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center">
+                <button (click)="showOccupationPopup('edit', occupation.id)" class="btn btn-danger action-btn"> {{'insuranceCompany.edit' | translate}} </button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" [ngStyle]="{'display': openPpUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" translate>occupation.addNewOccupation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeOccupationModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #AddNewModelTemplate="ngForm" (ngSubmit)="AddOrUpdateOccupation()" novalidate>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>occupation.code</label>
+                <input type="text" [(ngModel)]="newOccupation.code" required class="form-control" id="code" name="code" #code="ngModel" />
+                <div *ngIf="codeErrorDiv" class="text-danger"> {{ codeErrorDivMessage }} </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>occupation.descriptionEn</label>
+                <input type="text" [(ngModel)]="newOccupation.englishDescription" required class="form-control" id="englishDescription" name="englishDescription" #englishDescription="ngModel" />
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>occupation.descriptionAr</label>
+                <input type="text" [(ngModel)]="newOccupation.arabicDescription" required class="form-control" id="arabicDescription" name="arabicDescription" #arabicDescription="ngModel" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeOccupationModal()">Close</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!AddNewModelTemplate.valid || clicked" translate>
+            insuranceCompany.save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

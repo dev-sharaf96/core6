@@ -1,0 +1,22 @@
+<section id="portfolio" class="section portfolio sm-mar">
+  <div class="container">
+    <div class="row">
+      <h1 class="txt-lr txt-brand txt-center dis-block" translate>home.index_our_partners</h1>
+      <div class="img-list slider sm-mar partners-slider">
+        <div *ngFor="let slide of slides">
+          <img [src]="slide.img" [alt]="slide.alt" draggable="false">
+        </div>
+      </div>
+      <div id="arrows">
+        <span id="next-comp">
+          <i class="ic-asset-5-1"></i>
+        </span>
+        <span id="prev-comp" style="margin-top: 5px;">
+          <i class="ic-asset-5-1"></i>
+        </span>
+      </div>
+    </div>
+    <!-- row -->
+  </div>
+  <!-- container -->
+</section>

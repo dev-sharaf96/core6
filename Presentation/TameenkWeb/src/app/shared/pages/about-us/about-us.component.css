@@ -1,0 +1,23 @@
+blockquote {
+  margin: 0 0 18px 0;
+  background-color: #f6f6f6;
+  color: #287de7;
+  font-size: 18px;
+  font-size: 1.8rem;
+  padding: 14px 30px;
+  font-family: 'Roboto Slab', serif;
+  line-height: 1.3em;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  position: relative;
+}
+
+blockquote > p {
+  padding-bottom: 0 !important;
+}
+
+.row > * {
+  padding-left: 14px;
+  padding-right: 14px;
+}

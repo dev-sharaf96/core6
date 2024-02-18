@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="col-xs-12">
+      <h4 class="page-header">{{ 'policy.regeneratePolicy' | translate }}</h4>
+    </div>
+  </div>
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>policy.regenerate</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <form ngNativeValidate (ngSubmit)="regeneratePolicy()">
+            <div class="col-sm-3">
+              <div class="form-group">
+                <label for="referenceId">{{ 'common.referenceNumber' | translate }}</label>
+                <input type="text" required [(ngModel)]="referenceId" class="form-control" id="referenceId"
+                  name="referenceId" />
+              </div>
+            </div>
+  
+            <div class="col-xs-12 col-md-2">
+              <button type="submit" class="btn btn-primary" style="margin-top: 20px;" translate>
+                policy.regenerate
+              </button>
+            </div>
+          </form>
+  
+        </div>
+      </div>
+      <br />
+  
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>

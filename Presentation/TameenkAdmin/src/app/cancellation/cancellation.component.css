@@ -1,0 +1,74 @@
+.info-row:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+    padding: 5px 0
+  }
+  
+  .info-row span:first-child {
+    font-weight: bold
+  }
+  .modal-body {
+    padding: 20px 0px 55px 0px!important;
+    align-items: unset !important;
+    text-align: unset !important;
+  }
+
+  .modal-content {
+    top: 200px;
+    padding: 30px;
+}
+.selectBtn {
+  width: 30%!important;
+  height: 39px!important;
+  top: 0!important;
+  line-height: 38px!important;
+}
+.chooseFilebtn {
+  font-size: 13px!important;
+  height: 44px;
+  line-height: 42px;
+  background: #1f74aa!important;
+  color: #fff!important;
+  text-align: center!important;
+  left: unset!important;
+  top: 0;
+}
+.custom-float-right {
+  float: right;
+}
+.btn {
+  color: #fff;
+  background: #2384ae;
+  padding: 5px 10px;
+  font-size: 16px;
+}
+.btn {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: .375rem .75rem;
+  font-size: 1.5rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+ 
+form[_ngcontent-acf-c4] {
+  border-radius: 0 0 6px 6px;
+  border: 1px solid #e1dfdf;
+  padding: 20px;
+  box-shadow: 1px 0 5px 1px #f1f1f1;
+}
+.modal-body[_ngcontent-acf-c4] {
+    padding: 20px 0 55px!important;
+    align-items: unset!important;
+    text-align: unset!important;
+}
+#fileup{
+  margin: 7px;
+}

@@ -1,0 +1,97 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'common.statistics' | translate }}</h4>
+  </div>
+</div>
+<br />
+<div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>
+        common.filter_by
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label for="body_type" translate>insuranceCompany.insuranceCompany</label>
+              <app-shared-insurance-companies [(selectedValue)]="policiesFilter.insuranceCompanyId"></app-shared-insurance-companies>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label for="body_type" translate>reports.products</label>
+              <app-products-dropdown [(selectedValue)]="policiesFilter.productTypeId"></app-products-dropdown>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12">
+            <label for="fdate" translate>invoice.invoice_date</label>
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-6">
+                  <p-calendar
+                    [(ngModel)]="policiesFilter.startDate"
+                    [showIcon]="true"
+                    [placeholder]="'common.from' | translate"
+                    [maxDate]="policiesFilter.endDate || today"
+                    styleClass="w-100"
+                    inputStyleClass="form-control"
+                  ></p-calendar>
+                </div>
+                <div class="col-md-6">
+                  <p-calendar
+                    [(ngModel)]="policiesFilter.endDate"
+                    [showIcon]="true"
+                    [placeholder]="'common.to' | translate"
+                    [minDate]="policiesFilter.startDate"
+                    [maxDate]="today"
+                    styleClass="w-100"
+                    inputStyleClass="form-control"
+                  ></p-calendar>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <button
+              (click)="filterClick()" [disabled]="isSearch"
+              class="btn btn-primary"
+              style="margin-top: 20px"
+              translate
+            >
+              common.search
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- /.panel-body -->
+    </div>
+
+    <div class="panel panel-default" [ngClass]="{ hidden: firstTime }">
+      <div class="panel-heading">{{ "common.results_count" | translate }} : {{ samaReportDataCount }}</div>
+      <div class="panel-body">
+        <!-- <app-loader *ngIf="samaReportLoading"></app-loader> -->
+        <p-chart
+          type="pie"
+          [data]="chartData"
+          *ngIf="!samaReportLoading"
+          [options]="options"
+        ></p-chart>
+        <p
+          *ngIf="!samaReportLoading && samaReportDataCount == 0"
+          style="text-align: center"
+          translate
+        >
+          common.noRecordsFound
+        </p>
+      </div>
+    </div>
+  </div>
+<!-- /.row -->
+
+<!-- <app-loader *ngIf="firstTime"></app-loader> -->

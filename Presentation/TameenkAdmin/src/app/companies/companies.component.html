@@ -1,0 +1,140 @@
+<div class="row">
+  <div class="col-lg-6">
+    <h4 class="page-header">{{'insuranceCompany.insuranceCompany'| translate}}</h4>
+  </div>
+
+</div>
+
+
+<button class="btn btn-default add-company" routerLink="add" routerLinkActive="active"
+  style="border-radius: 20px">
+  {{'insuranceCompany.AddNewCompany'| translate}}
+</button>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <p-table #pendingTable [value]="pendingData" [lazy]="true" (onLazyLoad)="pendingLazyLoad($event)"
+          [totalRecords]="pendingTotalRecords" [rowsPerPageOptions]=[5,10,20] [loading]="pendingLoading"
+          [paginator]="true" [rows]="10" [responsive]="true" scrollHeight="200px" [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate
+              }}" (input)="pendingTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'InsuranceCompanyID'">
+                {{ 'insuranceCompany.SN' | translate }}
+                <p-sortIcon [field]="'InsuranceCompanyID'" ariaLabel="Activate to sort"
+                            ariaLabelDesc="Activate to sort in descending order"
+                            ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'NameEN'">
+                {{ 'insuranceCompany.nameCompany' | translate }}
+                <p-sortIcon [field]="'NameEN'" ariaLabel="Activate to sort"
+                            ariaLabelDesc="Activate to sort in descending order"
+                            ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+
+              <th [pSortableColumn]="'Contact.HomePhone'">
+                {{ 'insuranceCompany.homePhone' | translate }}
+                <p-sortIcon [field]="'Contact.HomePhone'" ariaLabel="Activate to sort"
+                            ariaLabelDesc="Activate to sort in descending order"
+                            ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'Contact.Fax'">
+                {{ 'insuranceCompany.Fax' | translate }}
+                <p-sortIcon [field]="'Contact.Fax'" ariaLabel="Activate to sort"
+                            ariaLabelDesc="Activate to sort in descending order"
+                            ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'Contact.Email'">
+                {{ 'insuranceCompany.email' | translate }}
+                <p-sortIcon [field]="'Contact.Email'" ariaLabel="Activate to sort"
+                            ariaLabelDesc="Activate to sort in descending order"
+                            ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th> {{ 'insuranceCompany.Active' | translate }}</th>
+              <th> {{ 'insuranceCompany.isActiveTPL' | translate }}</th>
+              <th> {{ 'insuranceCompany.isActiveComprehensive' | translate }}</th>
+              <th> {{ 'insuranceCompany.isAddressValidationEnabled' | translate }}</th> 
+              <th> {{ 'insuranceCompany.ActiveTabbyTPL' | translate }}</th>
+              <th> {{ 'insuranceCompany.ActiveTabbyComp' | translate }}</th>
+              <th> {{ 'insuranceCompany.isActiveTabbySanadPlus' | translate }}</th>
+              <th> {{ 'insuranceCompany.isActiveTabbyWafiSmart' | translate }}</th>
+ 
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-insuranceCompany let-i=index >
+            <tr>
+              <td style="word-wrap: break-word">
+                {{insuranceCompany.id ? insuranceCompany.id  : emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{insuranceCompany.nameEN ? insuranceCompany.nameEN: emptyStringValue}}
+              </td>
+
+              <td style="word-wrap: break-word">
+                {{insuranceCompany.contact && insuranceCompany.contact.homePhone ? insuranceCompany.contact.homePhone: emptyStringValue }}
+              </td>
+
+              <td style="word-wrap: break-word">
+                {{insuranceCompany.contact && insuranceCompany.contact.fax ?insuranceCompany.contact.fax: emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{insuranceCompany.contact && insuranceCompany.contact.email ? insuranceCompany.contact.email : emptyStringValue}}
+              </td>
+              <td>
+                <p-inputSwitch [(ngModel)]="insuranceCompany.isActive" id="switch{{insuranceCompany.id}}"
+                               (onChange)='changeState($event, insuranceCompany,false)'></p-inputSwitch>
+                <button pButton type="button" routerLink="edit/{{insuranceCompany.id}}"
+                        routerLinkActive="active" class="ui-button-secondary" style="vertical-align: text-bottom;"
+                        translate>
+                  insuranceCompany.edit
+                </button>
+
+              </td>
+              <td>
+                <p-inputSwitch [(ngModel)]="insuranceCompany.isActiveTPL" id="isActiveTPL"
+                               (onChange)='changeStateByType($event, insuranceCompany,1,false)'></p-inputSwitch>
+              </td>
+              <td>
+                <p-inputSwitch [(ngModel)]="insuranceCompany.isActiveComprehensive" id="isActiveComprehensive"
+                               (onChange)='changeStateByType($event, insuranceCompany,2,false)'></p-inputSwitch>
+              </td>
+              <td>
+                <p-inputSwitch [(ngModel)]="insuranceCompany.isAddressValidationEnabled" id="isAddressValidationEnabled" 
+                               (onChange)='changeAddressValidationState($event, insuranceCompany)'></p-inputSwitch>
+              </td>
+              <td>
+                <p-inputSwitch [(ngModel)]="insuranceCompany.activeTabbyTPL" id="ActiveTabbyTPL"
+                               (onChange)='changeStateTabby($event, insuranceCompany,1,false)'></p-inputSwitch>
+              </td>
+              <td>
+                <p-inputSwitch [(ngModel)]="insuranceCompany.activeTabbyComp" id="ActiveTabbyComprehensive"
+                               (onChange)='changeStateTabby($event, insuranceCompany,2,false)'></p-inputSwitch>
+              </td>
+              <td>
+                <p-inputSwitch [(ngModel)]="insuranceCompany.isActiveSanadPlus" id="isActiveSanadPlus"
+                               (onChange)='changeStateTabby($event, insuranceCompany,3,false)'></p-inputSwitch>
+              </td>
+              <td>
+                <p-inputSwitch [(ngModel)]="insuranceCompany.isActiveWafiSmart" id="isActiveWafiSmart"
+                               (onChange)='changeStateTabby($event, insuranceCompany,4,false)'></p-inputSwitch>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage" *ngIf="!pendingLoading">
+            <tr>
+              <td style="text-align: center">
+                {{'common.noRecordsFound' | translate}}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,114 @@
+<h1 class="txt-lr txt-black md-mar-bot md-mar col-xs-12" translate>
+  profile.Mystatistics
+</h1>
+<div class="row clear-b">
+  <div class="col-xs-12 col-md-4 col-lg-4 md-mar bx-right">
+    <div class="wrapper-bx" style="border: 2px solid #0771b4;color: #0771b4">
+      <i class="fas fa-file-alt"></i>
+      <span>
+        <span class="dis-block xs-mar-bot" translate
+          >profile.policies_count</span
+        >
+        <h2 class="txt-white no-mar">
+          {{ policiesCount }}
+          <app-placholder
+            [width]="90"
+            [height]="20"
+            *ngIf="policiesCount === null || policiesCount === undefined"
+          ></app-placholder>
+          <a [routerLink]="['/profile/products']" class="show bx-left" *ngIf="policiesCount > 0" translate>common.show</a>
+        </h2>
+        <!-- backend -->
+      </span>
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-4 col-lg-4 md-mar bx-right">
+    <div class="wrapper-bx" style="border: 2px solid #0771b4;color: #0771b4">
+      <i class="fas fa-file-contract"></i>
+      <span [title]="'common.coming_soon' | translate">
+        <span class="dis-block xs-mar-bot" translate>profile.policies_count_valid</span>
+        <h2 class="txt-white no-mar">
+          {{ validPoliciesCount }}
+          <app-placholder
+            [width]="90"
+            [height]="20"
+            *ngIf="validPoliciesCount === null || validPoliciesCount === undefined"
+          ></app-placholder>
+        </h2>
+        <!-- backend -->
+      </span>
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-4 col-lg-4 md-mar bx-right">
+    <div class="wrapper-bx" style="border: 2px solid #c0392b;color: #c0392b;box-shadow: 0 5px 20px 0 rgba(192, 57, 43, 0.35);">
+      <i class="fas fa-file"></i>
+      <span [title]="'common.coming_soon' | translate">
+        <span class="dis-block xs-mar-bot" translate
+          >profile.policies_count_expired</span
+        >
+        <h2 class="txt-white no-mar">
+          {{ expirePoliciesCount }}
+          <app-placholder
+            [width]="90"
+            [height]="20"
+            *ngIf="expirePoliciesCount === null || expirePoliciesCount === undefined"
+          ></app-placholder>
+        </h2>
+        <!-- backend -->
+      </span>
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-4 col-lg-4 md-mar bx-right">
+    <div class="wrapper-bx" style="border: 2px solid #0771b4;color: #0771b4">
+      <i class="fas fa-poll-h"></i>
+      <span class="dis-block xs-mar-bot" translate>profile.quotations_count</span>
+      <h2 class="txt-white no-mar">
+        {{ offersCount }}
+        <app-placholder
+          [width]="90"
+          [height]="20"
+          *ngIf="offersCount === null || offersCount === undefined"
+        ></app-placholder>
+        <a [routerLink]="['quotations']" class="show bx-left" *ngIf="offersCount > 0" translate>common.show</a>
+        </h2>
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-4 col-lg-4 md-mar bx-right">
+    <div class="wrapper-bx" style="border: 2px solid #0771b4;color: #0771b4">
+      <i class="fas fa-file-invoice"></i>
+      <span>
+        <span class="dis-block xs-mar-bot" translate
+          >profile.bills_count</span
+        >
+        <h2 class="txt-white no-mar">
+          {{ billsCount }}
+          <app-placholder
+            [width]="90"
+            [height]="20"
+            *ngIf="billsCount === null || billsCount === undefined"
+          ></app-placholder>
+          <a [routerLink]="['/profile/purchases']" class="show bx-left" *ngIf="billsCount > 0" translate>common.show</a>
+        </h2>
+        <!-- backend -->
+      </span>
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-4 col-lg-4 md-mar bx-right">
+    <div class="wrapper-bx" style="border: 2px solid #0771b4;color: #0771b4">
+      <i class="fas fa-pen-square"></i>
+      <span>
+        <span class="dis-block xs-mar-bot" translate>profile.edit_requests_count</span>
+        <h2 class="txt-white no-mar">
+          {{ UpdateRequestsCount }}
+          <app-placholder
+            [width]="90"
+            [height]="20"
+            *ngIf="UpdateRequestsCount === null || UpdateRequestsCount === undefined"
+          ></app-placholder>
+          <a [routerLink]="['/profile/notifications']" class="show bx-left" *ngIf="UpdateRequestsCount > 0" translate>common.show</a>
+        </h2>
+        <!-- backend -->
+      </span>
+    </div>
+  </div>
+</div>

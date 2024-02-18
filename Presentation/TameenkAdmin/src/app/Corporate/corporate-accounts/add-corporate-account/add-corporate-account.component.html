@@ -1,0 +1,52 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header" translate> corporate.addAccount </h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12 col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <form #userTemplate="ngForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(nameEn)">
+              <label for="nameEn" class="control-label required" translate>promotionProgramDomain.EnglishName</label>
+              <input type="text" class="form-control" id="nameEn" required [(ngModel)]="account.nameEn" name="nameEn"
+                #nameEn="ngModel" autocomplete="off">
+              <div *ngIf="submitted && nameEn.errors">
+                <div class="error-msg" *ngIf="nameEn.errors['required']" translate>corporate.required</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(nameAr)">
+              <label for="nameAr" class="control-label required" translate>promotionProgramDomain.NameAr</label>
+              <input type="text" class="form-control" id="nameAr" required [(ngModel)]="account.nameAr" name="nameAr"
+                #nameAr="ngModel" autocomplete="off">
+              <div *ngIf="submitted && nameAr.errors">
+                <div class="error-msg" *ngIf="nameAr.errors['required']" translate>corporate.required</div>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(balance)">
+              <label for="balance" class="control-label required" translate>corporate.balance</label>
+              <input type="text" class="form-control" id="balance" required [(ngModel)]="account.balance" name="balance"
+                #balance="ngModel" autocomplete="off">
+              <div *ngIf="balanceIsError">
+                <div class="error-msg" *ngIf="account.balance === 0" translate>corporate.required</div>
+                <div class="error-msg" *ngIf="account.balance < 0" translate>corporate.balance_invalid</div>
+              </div>
+            </div>
+          </div> -->
+          <div class="col-xs-12">
+            <div class="form-group">
+              <button type="button" routerLink="/admin/corporate" class="btn btn-default mr-r_s" translate>common.back</button>
+              <button type="submit" [disabled]="!userTemplate.valid || clicked" class="btn btn-primary" translate> user.add </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

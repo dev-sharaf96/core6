@@ -1,0 +1,226 @@
+<br />
+<div class="row">
+  <div class="col-xs-12 col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>
+        common.filter_by
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="referenceId" translate>invoice.reference_id</label>
+              <input type="text" [(ngModel)]="filter.referenceId" class="form-control" id="referenceId" name="referenceId" />
+            </div>
+          </div>
+          <div class="col-sm-4">
+              <div class="form-group">
+                <label for="invoiceNo" translate>invoice.invoice_no</label>
+                <input type="text" [(ngModel)]="filter.invoiceNo" class="form-control" id="invoiceNo" name="invoiceNo" />
+              </div>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label for="policyNo" translate>invoice.policy_no</label>
+                <input type="text" [(ngModel)]="filter.policyNo" class="form-control" id="policyNo" name="policyNo" />
+              </div>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-3">
+            <label for="body_type" translate>common.by_date</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <p-calendar [(ngModel)]="filter.startDate" [showIcon]="true" [placeholder]="'common.from' | translate" styleClass="w-100" inputStyleClass="form-control"></p-calendar>
+            </div>
+            <!-- <input class="form-control" type="text" name="tgl_awal" id="tgl_awal" placeholder="From" /> -->
+          </div>
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <p-calendar [(ngModel)]="filter.endDate" [showIcon]="true" [placeholder]="'common.to' | translate" styleClass="w-100" inputStyleClass="form-control"></p-calendar>
+            </div>
+            <!-- <input class="form-control" type="text" name="tgl_akhir" id="tgl_akhir" placeholder="To" /> -->
+          </div>
+          <div class="col-xs-12 col-md-2">
+            <button class="btn btn-primary" (click)="onSubmit()" translate>common.search</button>
+          </div>
+        </div>
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="text-right">
+          <!-- <a href="#" >{{'common.export' | translate}}</a> -->
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body" style="position: relative;">
+        <p-table #invoiceTable [value]="invoiceData" [lazy]="true" (onLazyLoad)="invoiceLazyLoad($event)" [totalRecords]="invoiceTotalRecords"
+          [rowsPerPageOptions]=[5,10,20] [loading]="invoiceLoading" [paginator]="true" [rows]="10"
+          scrollable="true"  scrollHeight="500px" [responsive]="true"
+          [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="pendingTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'invoiceNo'">
+                {{ 'invoice.invoice_no' | translate }}
+                <p-sortIcon [field]="'invoiceNo'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'invoiceDate'">
+                {{ 'invoice.invoice_date' | translate }}
+                <p-sortIcon [field]="'invoiceDate'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'invoiceDueDate'">
+                {{ 'invoice.invoice_due_date' | translate }}
+                <p-sortIcon [field]="'invoiceDueDate'"
+                  ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'createrName'">
+                {{ 'invoice.user_name' | translate }}
+                <p-sortIcon [field]="'createrName'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'referenceId'">
+                {{ 'invoice.reference_id' | translate }}
+                <p-sortIcon [field]="'referenceId'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="isEnglish ? 'productTypeEN' : 'productTypeAR'">
+                {{ 'invoice.insurance_type' | translate }}
+                <p-sortIcon [field]="isEnglish ? 'productTypeEN' : 'productTypeAR'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="isEnglish ? 'insuranceCompanyNameEN' : 'insuranceCompanyNameAR'">
+                {{ 'invoice.insurance_company' | translate }}
+                <p-sortIcon [field]="isEnglish ? 'insuranceCompanyNameEN' : 'insuranceCompanyNameAR'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'PolicyNo'">
+                {{ 'invoice.policy_no' | translate }}
+                <p-sortIcon [field]="'PolicyNo'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'productPrice'">
+                {{ 'invoice.product_price' | translate }}
+                <p-sortIcon [field]="'productPrice'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'fees'">
+                {{ 'invoice.fees' | translate }}
+                <p-sortIcon [field]="'fees'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'vat'">
+                {{ 'invoice.vat' | translate }}
+                <p-sortIcon [field]="'vat'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'subTotalPrice'">
+                {{ 'invoice.sub_total_price' | translate }}
+                <p-sortIcon [field]="'subTotalPrice'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'totalPrice'">
+                {{ 'invoice.total_price' | translate }}
+                <p-sortIcon [field]="'totalPrice'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'extraPremiumPrice'">
+                {{ 'invoice.extra_premium_price' | translate }}
+                <p-sortIcon [field]="'extraPremiumPrice'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'discount'">
+                {{ 'invoice.discount' | translate }}
+                <p-sortIcon [field]="'discount'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-invoice>
+            <tr>
+              <td style="word-wrap: break-word">
+                {{invoice.invoiceNo || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.invoiceDate || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.invoiceDueDate || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.createrName || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.referenceId || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.productType || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.insuranceCompanyName || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.PolicyNo || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.productPrice || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.fees || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.vat || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.subTotalPrice || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.totalPrice || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.extraPremiumPrice || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                {{invoice.discount || emptyStringValue}}
+              </td>
+              <td style="word-wrap: break-word">
+                  <button  (click)="downloadInvoice(invoice.referenceId)"
+                    class="btn btn-info action-btn" translate>common.download</button>
+                </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center" translate>
+                common.noRecordsFound
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->

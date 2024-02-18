@@ -1,0 +1,237 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'AddDriver.addDriverService' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <div class="panel-body">
+        <div class="row">
+
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <label for="referenceNo" translate>AddDriver.policyNo</label>
+              <input type="text" [(ngModel)]="addDriverFilter.policyNo" class="form-control" id="referenceNo" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <label for="policy_number" translate>AddDriver.insurredId</label>
+              <input type="text" [(ngModel)]="addDriverFilter.insurredId" class="form-control" id="policy_number" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <label for="invoiceNo" translate>AddDriver.referenceNo</label>
+              <input type="text" [(ngModel)]="addDriverFilter.referenceNo" class="form-control" id="invoiceNo" />
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-md-2">
+            <button (click)="filterClick(reportsTable)" [disabled]="isSearch" class="btn btn-primary"
+              style="margin-top: 20px;" translate>
+              common.search
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div [hidden]="confermed" class="row" [ngClass]="{'hidden': firstTime}">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+
+      <div class="panel-heading">
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div [hidden]="isTable">
+          <p-table #reportsTable [value]="driverData" [lazy]="true" (onLazyLoad)="SuccessPoliciesLazyLoad($event)"
+            [lazyLoadOnInit]="false" [rowsPerPageOptions]="[5, 10, 20]" [loading]="loading" [paginator]="true"
+            [rows]="10" [responsive]="true" scrollHeight="200px" [autoLayout]="true" [resizableColumns]="true">
+            <ng-template pTemplate="header">
+              <tr>
+                <th translate> AddDriver.policyNo </th>
+                <th translate> AddDriver.insurredId </th>
+                <th translate> AddDriver.referenceNo </th>
+                <th translate> AddDriver.addDriver </th>
+              </tr>
+            </ng-template>
+            <!-- let-request -->
+            <ng-template pTemplate="body" let-request>
+              <tr>
+                <td style="word-wrap: break-word">
+                  {{ request.policyNo || emptyStringValue}}
+                </td>
+                <td style="word-wrap: break-word">
+                  {{ request.insuredNIN || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word">
+                  {{ request.referenceId || emptyStringValue }}
+                </td>
+                <td>
+                  <button *ngIf="request.referenceId" (click)="showDriverDetails(request)"
+                  class="btn btn-primary small action-btn mt-2" translate>AddDriver.addDriver</button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td style="text-align: center">
+                  {{ "common.noRecordsFound" | translate }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+        <form [formGroup]="AddForm" autocomplete="off" novalidate [hidden]="isFristStep"  >
+          <div>
+            <div class="panel panel-default">
+              <div style="font-size: 16px;" class="" translate>AddDriver.addDriverInfo                       
+                 <div>
+                   <div style="display: inline-block;" translate>AddDriver.policyNo</div>
+                  :  {{selectedDriverPolicy.policyNo}}
+                  </div>
+                  <div>
+                    <div style="display: inline-block;" translate>AddDriver.referenceNo</div>
+                   :  {{selectedDriverPolicy.referenceId}}
+                   </div>
+            </div>
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-xs-12 col-md-3">
+                    <div class="form-group">
+                      <label for="invoiceNo" translate>AddDriver.nationalId</label>
+                      <input (change)="changeId()" type="text" formControlName="nationalId" class="form-control" id="invoiceNo"/>
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-md-3">
+                      <label class="col-form-label lebel-for-required" translate>AddDriver.birthMonth</label>
+
+                    <div >
+                      <ng-select
+                        [ngClass]="{'red-border': AddForm.controls['birthDateMonth'].invalid  && submitted && false}"
+                        #birthMonth class="input-element inq-ins-month" [loadingText]="'common.loading' | translate"
+                        [notFoundText]="'common.no_items_found' | translate" [items]="months"
+                        (focus)="birthMonth.open()" [clearable]="false" bindLabel="name" bindValue="id"
+                        formControlName="birthDateMonth">
+                        <ng-template ng-option-tmp let-item="item">
+                          <div [title]="item.name">{{item.name}}</div>
+                        </ng-template>
+                      </ng-select>
+                    </div>
+                  </div> 
+
+
+
+                  <div class="col-xs-12 col-md-3">
+                    <label class="col-form-label lebel-for-required" translate>AddDriver.birthYear</label>
+                    <div class="form-group">
+
+                      <ng-select
+                        [ngClass]="{'red-border': AddForm.controls['birthDateYear'].invalid  && submitted && false}"
+                        #birthYear class="input-element inq-ins-month" [loadingText]="'common.loading' | translate"
+                        [notFoundText]="'common.no_items_found' | translate" [items]="years" (focus)="birthYear.open()"
+                        [clearable]="false" formControlName="birthDateYear">
+                        <ng-template ng-option-tmp let-item="item">
+                          <div [title]="item">{{item}}</div>
+                        </ng-template>
+                      </ng-select>
+                    </div>
+                  </div>
+
+
+                  <div class="col-xs-12 col-md-3">
+                   <label class="col-form-label lebel-for-required" translate>AddDriver.relationship</label> 
+               
+                     <ng-select [ngClass]="{'red-border': AddForm.controls['relationShipId'].invalid  && submitted && false}"
+                      #relashionShip class="input-element customCalendarStyle marfLeft"
+                      [loadingText]="'common.loading' | translate" [notFoundText]="'common.no_items_found' | translate"
+                      [items]="relationShipCodes" (focus)="relashionShip.open()" [clearable]="false" bindLabel="name"
+                      bindValue="id" formControlName="relationShipId" name="relationShipId">
+                      <ng-template ng-option-tmp let-item="item">
+                        <div title="{{item.name}}">{{item.name}}</div> 
+                      </ng-template>
+                    </ng-select>
+                    
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-xs-12 col-md-3">
+                    <div class="form-group">
+                      <label for="fdate">{{'Benfit.additionStratdate'| translate}} {{'common.to'| translate}}</label>
+                      <div class="form-group">
+                        <p-calendar formControlName="newDate" [showIcon]="true" [placeholder]="'common.to' | translate"
+                          [minDate]="today" [maxDate]="" styleClass="w-100" inputStyleClass="form-control"
+                          name="newDate" required></p-calendar>
+                        <span style="color: red;" *ngIf="AddForm.controls['newDate'].invalid">*</span>
+                        <!-- <span *ngIf="newDate.invalid && AddBenfitForm.submitted">
+                      <span class="field-error" *ngIf="newDate.errors['required']">{{'common.required' | translate}}</span>
+                      <span class="field-error" *ngIf="newDate.errors['invalid']">{{'common.invalid' | translate}}</span>
+                    </span>  -->
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-md-3">
+                    <button type="submit" class="btn btn-primary" style="margin-top: 20px;" translate
+                    [disabled]="!AddForm.valid"(click)="SubmitDriver()">
+                      Benfit.Next
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+
+
+        <div [hidden]="isScondStep">
+          <div class="panel panel-default">
+            <!-- <div class="panel-heading" translate>Benfit.additionalBenfit</div> -->
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <h5>{{addtionalDreiverNiN}}</h5>
+                  <h5 style="display: inline-block;">
+                    taxableAmount  :{{result.TotalAmount}}
+                  </h5>  
+                </div>
+                <div class="col-md-12">
+                  
+                  <h5>
+                    vatAmount  :{{result.VATAmount}}
+                  </h5> 
+                </div>
+                <div class="col-md-12">
+                  
+                  <h5>
+                    Total Amount  : {{result.TotalAmount}}
+                  </h5>
+                </div>
+
+                <div class="col-xs-12 col-md-2">
+                  <button (click)="Purchsed()" class="btn btn-success" style="margin-top: 20px;" translate>
+                    Benfit.buyNow
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+  </div>
+  <div class="row">
+
+
+  </div>
+</div>

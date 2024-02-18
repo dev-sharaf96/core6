@@ -1,0 +1,123 @@
+.bold {
+  font-weight: bold
+}
+
+.data-container {
+  overflow-x: auto;
+  max-height: 90vh;
+}
+
+.product {
+  display: flex;
+  flex-wrap: wrap
+}
+
+a {
+  cursor: pointer;
+}
+
+.insurance-logo {
+  height: 119px;
+  width: 158px;
+}
+
+.insurance-type {
+  border: 2px solid #0771b4;
+  display: inline-block;
+  padding: 8px 0;
+  border-radius: 15px;
+  font-size: 19px;
+  font-weight: bold;
+  color: #0771b4;
+  width: 160px;
+  max-width: 100%;
+  text-align: center;
+}
+
+.insurance-type.comprehensive {
+  border-color: #22d022;
+  color: #22d022;
+}
+
+.insurance-type.sanadPlus {
+  border-color: #d99340;
+  color: #d99340;
+}
+
+.show-benefits {
+  display: none;
+}
+
+.product-benefits {
+  flex-grow: 3;
+  border-right: 1px solid #dcdcdc;
+  border-left: 1px solid #dcdcdc;
+  padding: 30px;
+  position: relative;
+}
+
+.product-price {
+  padding: 30px !important
+}
+
+.price-description {
+  font-size: 17px;
+  color: #535f69;
+  max-width: 78%;
+}
+
+.value {
+  font-weight: bold;
+  min-width: 22%;
+  display: inline-block;
+  text-align: left;
+}
+
+@media (max-width: 769px) {
+  .product-heading {
+    order: 1;
+    border-left: 1px solid #dcdcdc
+  }
+
+  .show-benefits {
+    display: block;
+  }
+
+  .product-benefits {
+    display: none;
+    order: 3;
+    border: 0;
+    border-top: 1px solid #dcdcdc;
+    width: 100%;
+
+  }
+
+  .product-price {
+    order: 2;
+  }
+}
+
+@media (max-width: 426px) {
+  .product-heading {
+    padding: 30px 10px!important;
+  }
+
+  .insurance-logo {
+    padding: 0 10px;
+  }
+  .product-price {
+    padding: 30px 10px!important;
+    border-right: 1px solid #efefef;
+  }
+  .product-price h3 {
+    border-bottom: 1px solid #ccc;
+  }
+  .price-description {
+    font-size: 12px;
+    max-width: 100%;
+    padding: 0;
+  }
+  .value {
+    min-width: auto;
+  }
+}

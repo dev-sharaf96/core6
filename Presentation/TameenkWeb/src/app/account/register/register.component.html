@@ -1,0 +1,61 @@
+<div id="register-form" class="tab">
+
+  <h1 class="txt-black txt-lr  md-lh xs-mar-bot txt-right sm-mar-bot col-xs-12" translate>
+    account.register
+  </h1>
+  <form [formGroup]="registerForm" (ngSubmit)="submitRegister()">
+    <div *ngIf="errors && errors.length">
+      <div class="field-error" style="color:red;height: auto;" *ngFor="let error of errors">
+        {{error}}
+      </div>
+    </div>
+    <div class="col-xs-12">
+      <div class="input-container" [ngClass]="{ 'red-border': submitted && registerForm.controls['email'].errors }">
+        <input class="input-element" appFloatedLabel formControlName="email" email id="registerEmail" />
+        <label class="input-label" for="registerEmail" translate>account.email</label>
+        <span *ngIf="submitted && registerForm.controls['email'].errors" class="field-error" style="color:red;position:absolute;">
+          <span *ngIf="registerForm.controls['email'].errors.required">{{'account.email_required' | translate}}</span>
+          <span *ngIf="registerForm.controls['email'].errors.email">{{'account.email_invalid' | translate}}</span>
+        </span>
+      </div>
+    </div>
+    <div class="col-xs-12">
+      <div class="input-container" [ngClass]="{ 'red-border': submitted && registerForm.controls['confirmemail'].errors }">
+        <input class="input-element" appFloatedLabel formControlName="confirmemail" (paste)="preventPaste($event)" email id="confirmEmail" />
+        <label class="input-label" for="confirmEmail" translate>account.email_confirm</label>
+        <span *ngIf="submitted && registerForm.controls['confirmemail'].errors" class="field-error" style="color:red;position:absolute;">
+          <span *ngIf="registerForm.controls['confirmemail'].errors.required">{{'account.email_required' | translate}}</span>
+          <span *ngIf="registerForm.controls['confirmemail'].errors.email">{{'account.email_invalid' | translate}}</span>
+          <span *ngIf="registerForm.controls['confirmemail'].errors.notMatch">{{'account.email_notMatch' | translate}}</span>
+        </span>
+      </div>
+    </div>
+    <div class="col-xs-12">
+      <div class="input-container" [ngClass]="{ 'red-border': submitted && registerForm.controls['mobile'].errors }">
+        <input class="input-element" appFloatedLabel appNumberOnly formControlName="mobile" [pattern]="mobilePattern" type="text" id="mobile" />
+        <label class="input-label" for="mobile" translate>account.phone_number</label>
+        <span *ngIf="submitted && registerForm.controls['mobile'].errors" class="field-error" style="color:red;position:absolute;">
+          <span *ngIf="registerForm.controls['mobile'].errors.required">{{'account.phone_number_required' | translate}}</span>
+          <span *ngIf="registerForm.controls['mobile'].errors.pattern">{{'account.phone_number_invalid' | translate}}</span>
+        </span>
+      </div>
+    </div>
+    <div class="col-xs-12">
+      <div class="input-container" [ngClass]="{ 'red-border': submitted && registerForm.controls['password'].errors }">
+        <input class="input-element" appFloatedLabel formControlName="password" type="password" id="registerPassword" />
+        <label class="input-label" for="registerPassword" translate>account.password</label>
+        <span *ngIf="submitted && registerForm.controls['password'].errors" class="field-error" style="color:red;position:absolute;">
+          <span *ngIf="registerForm.controls['password'].errors.required">{{'account.password_required' | translate}}</span>
+          <span *ngIf="registerForm.controls['password'].errors.minlength">{{'account.password_invalid' | translate}}</span>
+        </span>
+      </div>
+    </div>
+    <div class="col-xs-12 xs-mar">
+      <p style="font-size: 12px;text-align: justify;" [innerHtml]="'account.register_policy' | translate"></p>
+    </div>
+    <button id="btnSubmit" [disabled]="loading" class="bx-left btn sm pointer dis-block no-trans bx-left txt-white continue txt-brand bg-brand-hvr txt-xs bg-gr-main  circ-rdus l-shadow md-mar"
+      translate>
+      account.register_btn</button>
+  </form>
+</div>
+<app-loader *ngIf="loading"></app-loader>

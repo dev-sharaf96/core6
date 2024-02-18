@@ -1,0 +1,385 @@
+<article *ngIf="policy">
+  <div class="wrapper-bx md-mar md-mar-bot dl-section">
+    <div class="row">
+      <header class="col-xs-12 col-lg-8 col-lg-4 over-hidden bx-right">
+        <span class="txt-sm  txt-mgray dis-block ">
+          {{ "profile.policy_no" | translate }}: {{ policy.policyNo }}
+          <app-placholder
+            [width]="120"
+            [height]="20"
+            *ngIf="policy === null || policy === undefined"
+          ></app-placholder>
+        </span>
+        <!-- Backend -->
+        <h2 class="txt-sm  txt-mgray dis-block xs-mar">
+          {{ "profile.policy_insurance_company" | translate }}:
+          {{ policy.companyName }}
+          <app-placholder
+            [width]="150"
+            [height]="20"
+            *ngIf="policy === null || policy === undefined"
+          ></app-placholder>
+        </h2>
+        <!-- Backend -->
+        <h3 class="txt-sm  txt-mgray dis-block xs-mar">
+          {{ "profile.policy_status" | translate }}:
+          {{ policy.policyStatus.name }}
+          <app-placholder
+            [width]="150"
+            [height]="20"
+            *ngIf="policy === null || policy === undefined"
+          ></app-placholder>
+        </h3>
+        <!-- Backend -->
+      </header>
+      <footer class="col-xs-12 col-lg-4 col-lg-4 over-hidden sm-mar bx-right">
+        <h3 class="txt-resp-left txt-sm  txt-mgray dis-block bx-left f_width">
+          {{ "profile.policy_effective_date" | translate }}:
+          {{ policy.policyEffectiveDate | date }}
+          <app-placholder
+            [width]="170"
+            [height]="20"
+            *ngIf="policy === null || policy === undefined"
+          ></app-placholder>
+        </h3>
+        <!-- Backend -->
+        <h3
+          class="txt-resp-left txt-sm  txt-mgray dis-block bx-left f_width  xs-mar"
+        >
+          {{ "profile.policy_expiry_date" | translate }}:
+          {{ policy.policyExpiryDate | date }}
+          <app-placholder
+            [width]="170"
+            [height]="20"
+            *ngIf="policy === null || policy === undefined"
+          ></app-placholder>
+        </h3>
+        <!-- Backend -->
+      </footer>
+      <!--
+        <div class="col-xs-12 col-lg-4 col-lg-4">
+          <div class="belt bx-left">
+            <span class="arabic-character">{{policy.statusCode}}</span>  <! -- Backend - ->
+          </div>
+        </div>
+      -->
+      <div class="col-xs-12 col-lg-4 col-lg-4 bx-right">
+        <app-car-plate
+          [plateColorType]="policy?.vehicle.PlateTypeCode"
+          [carPlateNumber]="policy?.vehicle.carPlateNumber"
+          [carPlateText1]="policy?.vehicle.carPlateText1"
+          [carPlateText2]="policy?.vehicle.carPlateText2"
+          [carPlateText3]="policy?.vehicle.carPlateText3"
+        >
+        </app-car-plate>
+        <app-placholder
+          [width]="90"
+          [height]="50"
+          *ngIf="policy === null || policy === undefined"
+        ></app-placholder>
+      </div>
+    </div>
+    <div class="small-desc over-hidden f_width md-mar bx-right txt-mgray">
+      <span class="dis-block bx-right">
+        {{ "profile.policy_najm_status" | translate }}:
+        <span class="status-txt"
+          >{{ policy.najmStatusObj.name }}
+          <app-placholder
+            [width]="120"
+            [height]="20"
+            *ngIf="policy === null || policy === undefined"
+          ></app-placholder>
+        </span>
+        <!-- Backend -->
+      </span>
+      <h2 class="txt-md txt-black dis-block bx-right" style="padding: 0 20px;">
+        {{ policy.vehicleModelName }}
+        <app-placholder
+          [width]="150"
+          [height]="20"
+          *ngIf="policy === null || policy === undefined"
+        ></app-placholder>
+      </h2>
+      <!-- Backend -->
+    </div>
+  </div>
+</article>
+<div class="form bx-right f_width over-hidden">
+  <h1 class="txt-lr col-md-12 col-lg-12 txt-black no-mar sm-mar" translate>
+    profile.edit_request
+  </h1>
+  <div class="col-xs-12 col-lg-12 col-md-12 sm-mar">
+    <div
+      class="input-container"
+      [ngClass]="editOptions.isOpen || editOptions.hasValue ? 'active' : ''">
+      <label class="input-label" for="editOptions" translate>profile.purpose_edit_request</label>
+      <ng-select
+        #editOptions
+        class="input-element inq-ins-month"
+        z
+        labelForId="editOptions"
+        [items]="optionsList"
+        (focus)="editOptions.open()"
+        [clearable]="false"
+        [loadingText]="'common.loading' | translate"
+        (change)="onChangeOption($event)"
+        [notFoundText]="'common.no_items_found' | translate"
+        bindLabel="name"
+        bindValue="value"
+      >
+        <ng-template ng-option-tmp let-item="item">
+          <div [title]="item.name">{{
+            item.name
+          }}</div>
+        </ng-template>
+      </ng-select>
+    </div>
+    <!--
+      <span class="input" style="margin-top: 3em;z-index: 8" [ngClass]="editOptions.isOpen || editOptions.hasValue ? 'input--filled' : ''">
+        <ng-select #editOptions class="select__input input__field input__field--ichiro" labelForId="editOptions"
+          [items]="optionsList" (focus)="editOptions.open()" (change)="onChangeOption($event)" [clearable]="false"
+          bindLabel="name" bindValue="value"></ng-select>
+        <!- - <select class="input__field input__field--ichiro" id="editOptions" [(ngModel)]="driver.editOptionsId">
+            <option *ngFor="let code of medicalCondations" [value]="code.id">{{code.name}}</option>
+          </select> -- >
+        <label class="input-label input__label--ichiro" for="editOptions">
+          <span class="input-label-content input__label-content--ichiro" translate>الغرض من التعديل</span>
+        </label>
+      </span>
+    -->
+  </div>
+  <div
+    class=" col-xs-12 col-lg-12 col-md-12 md-mar"
+    style="min-height: 200px;"
+    [ngSwitch]="selectedOption"
+  >
+  <div *ngIf="errors && errors.length">
+    <div class="field-error" style="color:red;" *ngFor="let error of errors">
+      {{error}}
+    </div>
+  </div>
+    <p
+      class="sm-text col-xs-12 col-md-12 col-lg-12 txt-brand"
+      *ngIf="selectedOption"
+      translate
+    >
+      profile.attach_files
+    </p>
+    <form
+      #editRequest="ngForm"
+      (ngSubmit)="
+        editRequest.form.valid && submitEditRequest(editRequest.value)
+      "
+    >
+      <div *ngSwitchCase="'fixPolicyError'">
+        <div class="col-xs-12 col-md-4 col-lg-4 sm-mar bx-right">
+          <label class="fileupload input--file">
+            <span class="input__text required-mark" translate>profile.vehicle_license</span>
+            <input
+              type="file"
+              (change)="onFileChanged($event)"
+              name="vehicleLicense"
+              class="input__field"
+              accept="image/*,application/pdf"
+              ngModel
+              required
+            />
+            <span class="input__support sm-mar">
+              <span class="input__helper"></span>
+            </span>
+            <div class="img-preview"></div>
+          </label>
+        </div>
+        <div class="col-xs-12 col-md-4 col-lg-4 sm-mar bx-right">
+          <label class="fileupload input--file">
+            <span class="input__text required-mark" translate
+              >profile.copy_of_national_identity</span
+            >
+            <input
+              type="file"
+              (change)="onFileChanged($event)"
+              name="userId"
+              class="input__field"
+              accept="image/*,application/pdf"
+              ngModel
+              required
+            />
+            <span class="input__support sm-mar">
+              <span class="input__helper"></span>
+            </span>
+          <div class="img-preview"></div></label>
+        </div>
+        <div class="col-xs-12 col-md-4 col-lg-4 sm-mar bx-right">
+          <label class="fileupload input--file">
+            <span class="input__text required-mark" translate
+              >profile.copy_of_policy</span
+            >
+            <input
+              type="file"
+              (change)="onFileChanged($event)"
+              name="policyFile"
+              class="input__field"
+              accept="image/*,application/pdf"
+              ngModel
+              required
+            />
+            <span class="input__support sm-mar">
+              <span class="input__helper"></span>
+            </span>
+          <div class="img-preview"></div></label>
+        </div>
+      </div>
+      <div *ngSwitchCase="'changeLicense'">
+        <div class="col-xs-12 col-md-4 col-lg-4 sm-mar bx-right">
+          <label class="fileupload input--file">
+            <span class="input__text required-mark" translate
+              >profile.license_new_vehicle</span
+            >
+            <input
+              type="file"
+              (change)="onFileChanged($event)"
+              name="vehicleLicense"
+              class="input__field"
+              accept="image/*,application/pdf"
+              ngModel
+              required
+            />
+            <span class="input__support sm-mar">
+              <span class="input__helper"></span>
+            </span>
+          <div class="img-preview"></div></label>
+        </div>
+        <div class="col-xs-12 col-md-4 col-lg-4 sm-mar bx-right">
+          <label class="fileupload input--file">
+            <span class="input__text required-mark" translate
+              >profile.copy_of_policy</span
+            >
+            <input
+              type="file"
+              (change)="onFileChanged($event)"
+              name="policyFile"
+              class="input__field"
+              accept="image/*,application/pdf"
+              ngModel
+              required
+            />
+            <span class="input__support sm-mar">
+              <span class="input__helper"></span>
+            </span>
+          <div class="img-preview"></div></label>
+        </div>
+      </div>
+      <div *ngSwitchCase="'createLicense'">
+        <div class="col-xs-12 col-md-4 col-lg-4 sm-mar bx-right">
+          <label class="fileupload input--file">
+            <span class="input__text required-mark" translate
+              >profile.license_new_vehicle</span
+            >
+            <input
+              type="file"
+              (change)="onFileChanged($event)"
+              name="vehicleLicense"
+              class="input__field"
+              accept="image/*,application/pdf"
+              ngModel
+              required
+            />
+            <span class="input__support sm-mar">
+              <span class="input__helper"></span>
+            </span>
+          <div class="img-preview"></div></label>
+        </div>
+        <div class="col-xs-12 col-md-4 col-lg-4 sm-mar bx-right">
+          <label class="fileupload input--file">
+            <span class="input__text required-mark" translate
+              >profile.copy_of_policy</span
+            >
+            <input
+              type="file"
+              (change)="onFileChanged($event)"
+              name="policyFile"
+              class="input__field"
+              accept="image/*,application/pdf"
+              ngModel
+              required
+            />
+            <span class="input__support sm-mar">
+              <span class="input__helper"></span>
+            </span>
+          <div class="img-preview"></div></label>
+        </div>
+        <div class="col-xs-12 col-md-4 col-lg-4 sm-mar bx-right">
+          <label class="fileupload input--file">
+            <span class="input__text required-mark" translate
+              >profile.copy_of_national_identity</span
+            >
+            <input
+              type="file"
+              (change)="onFileChanged($event)"
+              name="userId"
+              class="input__field"
+              accept="image/*,application/pdf"
+              ngModel
+              required
+            />
+            <span class="input__support sm-mar">
+              <span class="input__helper"></span>
+            </span>
+          <div class="img-preview"></div></label>
+        </div>
+      </div>
+      <div *ngSwitchCase="'addDriver'">
+        <div class="col-xs-12 col-md-4 col-lg-4 sm-mar bx-right">
+          <label class="fileupload input--file">
+            <span class="input__text required-mark" translate
+              >profile.driver_license_additional_driver</span
+            >
+            <input
+              type="file"
+              (change)="onFileChanged($event)"
+              name="driverLicense"
+              class="input__field"
+              accept="image/*,application/pdf"
+              ngModel
+              required
+            />
+            <span class="input__support sm-mar">
+              <span class="input__helper"></span>
+            </span>
+          <div class="img-preview"></div></label>
+        </div>
+        <div class="col-xs-12 col-md-4 col-lg-4 sm-mar bx-right">
+          <label class="fileupload input--file">
+            <span class="input__text required-mark" translate
+              >profile.copy_of_national_identity_additional_driver</span
+            >
+            <input
+              type="file"
+              (change)="onFileChanged($event)"
+              name="driverId"
+              class="input__field"
+              accept="image/*,application/pdf"
+              ngModel
+              required
+            />
+            <span class="input__support sm-mar">
+              <span class="input__helper"></span>
+            </span>
+          <div class="img-preview"></div></label>
+        </div>
+      </div>
+      <div
+        class="col-xs-12 col-md-12 col-lg-12 sm-mar bx-right"
+        *ngIf="selectedOption"
+      >
+        <button
+          target="fixPolicyError"
+          [disabled]="editRequest.invalid"
+          class="submit-edit bx-left btn sm dis-block no-trans bx-right txt-white continue txt-brand bg-brand-hvr txt-xs bg-gr-main  circ-rdus l-shadow"
+          translate>
+          profile.send_edit_request
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

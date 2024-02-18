@@ -1,0 +1,131 @@
+<div class="row">
+  <div class="col-xs-12">
+    <!-- <h4 class="page-header">{{ 'yakeen.vehicleInfoByCustomTwo' | translate }}</h4> -->
+    <h4 class="page-header"> Vehicle Info By Custom Two </h4>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.search</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <form [formGroup]="dataForm" (ngSubmit)="Search()">
+          <div class="row">
+            <!-- customCardNumber -->
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <div class="form-group">
+                <label for="customCardNumber" [ngClass]="{'lebel-for-required' : requiredCustomCardNumber}">
+                  {{ 'vehicle.customNo' | translate }}
+                </label>
+                <input type="number" formControlName="customCardNumber" class="form-control col-10" />
+                <div *ngIf="dataForm.controls['customCardNumber'].errors">
+                  <span class="validateFire"
+                    *ngIf="dataForm.controls['customCardNumber'].touched && dataForm.controls['customCardNumber'].errors.required">
+                    {{ "vehicle.customNo" | translate }} {{ "common.required" | translate }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <!-- customCardNumber -->
+
+            <!-- modelYear -->
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <div class="form-group">
+                <label for="modelYear" translate>vehicle.modelYear</label>
+                <p-dropdown name="modelYear" [options]="years" formControlName="modelYear" optionLabel="value"
+                  filter="false" [style]="{ width: '100%' }">
+                </p-dropdown>
+              </div>
+            </div>
+            <!-- modelYear -->
+
+            <!-- submit -->
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <div class="form-group">
+                <button type="submit" [disabled]="!dataForm.valid || loading" class="btn btn-primary"
+                  style="margin-top: 20px;" translate>
+                  {{ (loading ? 'common.loading' : 'common.search') | translate }}
+                  <!-- <i class="fa fa-spinner fa-spin" *ngIf="clicked"></i> -->
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <!-- <div class="panel-heading">
+        <a (click)="exportCsv()" class="pointer" translate>common.export</a>
+        <div class="text-left clearfix">{{'common.results_count' | translate}} : {{gridData.length}}
+        </div>
+      </div> -->
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table [value]="gridData">
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'createdDate'" translate>
+                  serviceRequests.date
+                <p-sortIcon [field]="'createdDate'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th translate>
+                  serviceRequests.errorDescription
+              </th>
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td style="word-wrap: break-word">
+                {{ item.CreatedDate | date:'medium' }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ item.ErrorDescription || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word;text-align: center">
+                  <button type="button" class="btn btn-secondary action-btn" (click)="showDetails(item)" translate>policy.details</button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+
+<p-dialog [(visible)]="selectedRequest" [modal]="true" [responsive]="true" [minY]="70" [baseZIndex]="10000"
+  [dismissableMask]="true" [rtl]="!isEnglish">
+  <div *ngIf="selectedRequest">
+    <div class="info-row">
+      <h4 class="">{{'serviceRequests.serviceRequest' | translate}}:</h4>
+      <p class="">{{selectedRequest.ServiceRequest || emptyStringValue}}</p>
+    </div>
+    <div class="info-row">
+      <h4 class="">{{'serviceRequests.serviceResponse' | translate}}:</h4>
+      <p class="">{{selectedRequest.ServiceResponse || emptyStringValue}}</p>
+    </div>
+  </div>
+</p-dialog>

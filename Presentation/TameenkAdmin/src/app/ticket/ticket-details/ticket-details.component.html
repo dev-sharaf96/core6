@@ -1,0 +1,272 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'ticket.ticketDetails' | translate }}</h4>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="text-left clearfix">{{'ticket.ticketDetails' | translate}}
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row" *ngIf="ticket">
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="Name" class="col-sm-4 col-form-label">{{'ticket.id' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="id" disabled required [(ngModel)]="ticket.id" name="id" #driverModelName="ngModel">
+            </div>
+          </div>
+
+          <div *ngIf="isEnglish"  class="col-xs-12 col-md-6 form-group row">
+            <label for="nin" class="col-sm-4 col-form-label" translate>{{'ticket.ticketType' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="ticketType" disabled [(ngModel)]="ticket.ticketTypeNameEn" name="ticketTypeNameEn" #driverModelName="ngModel">
+            </div>
+          </div>
+          <div *ngIf="!isEnglish"  class="col-xs-12 col-md-6 form-group row">
+            <label for="nin" class="col-sm-4 col-form-label" translate>{{'ticket.ticketType' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="ticketType" disabled [(ngModel)]="ticket.ticketTypeNameAr" name="ticketTypeNameAr" #driverModelName="ngModel">
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'policy.userEmail' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="userEmail" disabled required [(ngModel)]="ticket.userEmail" name="userEmail" #driverModelName="ngModel">
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'ticket.userPhone' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="userPhone" disabled required [(ngModel)]="ticket.userPhone" name="userPhone" #driverModelName="ngModel">
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'ticket.checkoutEmail' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="checkoutEmail" disabled required [(ngModel)]="ticket.checkoutEmail" name="checkoutEmail" #driverModelName="ngModel">
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'ticket.checkoutphone' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="checkoutPhone" disabled required [(ngModel)]="ticket.checkoutPhone" name="checkoutPhone" #driverModelName="ngModel">
+            </div>
+          </div>
+
+
+          <div *ngIf="isEnglish" class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'ticket.status' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="statusNameEn" disabled required [(ngModel)]="ticket.statusNameEn" name="status" #driverModelName="ngModel">
+            </div>
+          </div>
+          <div *ngIf="!isEnglish" class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'ticket.status' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="statusNameAr" disabled required [(ngModel)]="ticket.statusNameAr" name="status" #driverModelName="ngModel">
+            </div>
+          </div>
+
+          <!-- <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'policy.policyId' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="policyId" disabled required [(ngModel)]="ticket.policyId" name="policyId" #driverModelName="ngModel">
+            </div>
+          </div> -->
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'policy.policy_no' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="policyNo" disabled required [(ngModel)]="ticket.policyNo" name="policyNo" #driverModelName="ngModel">
+            </div>
+          </div>
+          <!-- <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'ticket.invoiceId' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="invoiceId" disabled required [(ngModel)]="ticket.invoiceId" name="invoiceId" #driverModelName="ngModel">
+            </div>
+          </div> -->
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'policy.invoiceNo' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="invoiceNo" disabled required [(ngModel)]="ticket.invoiceNo" name="invoiceNo" #driverModelName="ngModel">
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'policy.sequenceNo' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="sequenceNo" disabled [(ngModel)]="ticket.sequenceNumber" name="sequenceNo" #driverModelName="ngModel">
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'policy.customNo' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="customNo" disabled [(ngModel)]="ticket.customCardNumber" name="customNo" #driverModelName="ngModel">
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'invoice.reference_id' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="referenceId" disabled required [(ngModel)]="ticket.referenceId" name="referenceId" #driverModelName="ngModel">
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'driver.nin' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="nin" disabled required [(ngModel)]="ticket.nin" name="nin" #driverModelName="ngModel">
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'ticket.createdBy' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="createdBy" disabled required [(ngModel)]="ticket.createdBy" name="createdBy" #driverModelName="ngModel">
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-md-12 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'ticket.userNotes' | translate}}</label>
+            <div class="col-sm-12">
+              <textarea type="text" class="form-control" id="userNotes" disabled required [(ngModel)]="ticket.userNotes" name="userNotes" #driverModelName="ngModel"></textarea>
+            </div>
+          </div>
+        </div>
+        <!-- /.table-responsive -->
+            <div class="col-xs-12 col-md-6 form-group row" *ngFor="let item of ticket.userTicketAttachmentsIds; let i = index">
+              <button class="btn btn-primary" type="button" (click)="DownloadAttachment(item)">{{'ticket.attachment' | translate}}{{i+1}}</button>
+              <br/>
+            </div>
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+
+
+<br/>
+<br/>
+
+<div class="row" *ngIf="showAction">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="text-left clearfix">{{'ticket.action' | translate}}
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="panel-body">
+          <form #ticketActionForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+            <!--<h3>{{'driver.driverAddressInfo' | translate}} :</h3>-->
+            <div class="row">
+              <div class="col-xs-12 col-md-6 form-group dispFlex">
+                <input type="checkbox" class="md-mar dis-block" id="isClosed" (change)="onCheckboxChagen($event)"
+                         [checked]="isClosed" [(ngModel)]="isClosed" name="isClosed"/>
+                <label class="">{{'ticket.close' | translate}}</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12 col-md-6">
+                <div class="from-group">
+                  <label for="adminReply" class="col-sm-4 col-form-label lebel-for-required">{{'ticket.adminReply' | translate}}</label>
+                  <textarea rows="5" type="text" class="form-control" required id="adminReply" [(ngModel)]="ticketReplay" name="adminReply" #ticketActionForm="ngModel"></textarea>
+                </div>
+              </div>
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-primary" [disabled]="!ticketActionForm.valid || clicked">{{'common.add' | translate}}</button>
+          </form>
+          <!-- /.table-responsive -->
+        </div>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+
+
+<br/>
+<br/>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="text-left clearfix">{{'common.results_count' | translate}} : {{ticketHistoryCount}}
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table
+          #addressesTable
+          [value]="ticketHistories"
+          [lazy]="true"
+          (onLazyLoad)="HistoriesLoad($event)"
+          [lazyLoadOnInit]="true"
+          [totalRecords]="ticketHistoryCount"
+          [resetPageOnSort]="true"
+          [rowsPerPageOptions]="[5, 10, 20]"
+          [loading]="loading"
+          [paginator]="true"
+          [rows]="10"
+          [responsive]="true"
+          scrollHeight="200px"
+          [autoLayout]="true"
+          [resizableColumns]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate> ticket.status </th>
+              <th translate> ticket.adminReply </th>
+              <th translate> ticket.repliedBy </th>
+              <th translate> ticket.createdDate </th>
+              <th> </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-history>
+            <tr>
+              <td style="word-wrap: break-word" *ngIf="isEnglish"> {{ history.statusNameEn || emptyStringValue }} </td>
+              <td style="word-wrap: break-word" *ngIf="!isEnglish"> {{ history.statusNameAr || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ history.adminReply || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ history.repliedBy || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ history.createdDate || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center">
+                <button type="button" (click)="deleteUserTicketHistory(history.id)" *ngIf="history.statusId == 2"
+                class="btn btn-danger action-btn" translate>common.delete</button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+
+<br/>
+
+<div>
+  <a [routerLink]="['/admin/tickets']" class="btn btn-default mr-r_s">{{'common.back' | translate}}</a>
+</div>

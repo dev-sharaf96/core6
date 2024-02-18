@@ -1,0 +1,37 @@
+<div class="row payments-cards" *ngIf="paymentMethods && paymentMethods.length">
+    <h2 class="bx-right md-mar-bot" translate>checkout.payment_by</h2>
+  <div *ngFor="let method of paymentMethods">
+    <article class="wrapper-bx md-mar-bot no-toggle pointer" *ngIf="method == 1" (click)="submitChekout(method)">
+      <header class="over-hidden f_width bx-right">
+        <h1 class="txt-black txt-md  dis-block f_width bx-right" translate>checkout.checkout_mastercard</h1>
+        <img src="assets/imgs/master-card.png" alt="MasterCard" class="bx-left" />
+      </header>
+    </article>
+    <article class="wrapper-bx md-mar-bot no-toggle pointer" *ngIf="method == 1" (click)="submitChekout(method)">
+      <header class="over-hidden f_width bx-right">
+        <h1 class="txt-black txt-md  dis-block f_width bx-right" translate>checkout.checkout_visa</h1>
+        <img src="assets/imgs/card-visa.png" alt="Visa" class="bx-left" />
+      </header>
+    </article>
+    <article class="wrapper-bx md-mar-bot no-toggle pointer" *ngIf="method == 2" (click)="submitChekout(method)">
+      <header class="over-hidden f_width bx-right">
+        <h1 class="txt-black txt-md  dis-block f_width bx-right" translate>checkout.checkout_sadad</h1>
+        <img src="assets/imgs/card-sadad.png" alt="SADAD" class="bx-left" />
+      </header>
+    </article>
+    <article class="wrapper-bx md-mar-bot no-toggle pointer" *ngIf="method == 3" (click)="submitChekout(method)">
+      <header class="over-hidden f_width bx-right">
+        <h1 class="txt-black txt-md  dis-block f_width bx-right" translate>checkout.payment_RiyadBank</h1>
+        <img src="assets/imgs/master-card.png" alt="MasterCard" class="bx-left" />
+        <img src="assets/imgs/card-visa.png" alt="Visa" class="bx-left" />
+      </header>
+    </article>
+
+  </div>
+</div>
+
+<div *ngIf="KeyValues">
+  <form #PayForm id="PayForm" method='post' action="https://sbcheckout.payfort.com/FortAPI/paymentPage">
+    <input *ngFor="let keyValue of KeyValues" type="hidden" [name]="keyValue.Key" [value]="keyValue.Value" />
+  </form>
+</div>

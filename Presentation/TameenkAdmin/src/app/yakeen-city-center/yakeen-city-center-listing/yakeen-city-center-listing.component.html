@@ -1,0 +1,207 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'yakeenCityCenter.yakeenCityCenter' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="" translate>yakeenCityCenter.cityId</label>
+              <input type="text" [(ngModel)]="citiesFilter.cityId" class="form-control" id="cityId" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+              <label for="" translate>yakeenCityCenter.cityName</label>
+              <input type="text" [(ngModel)]="citiesFilter.cityName" class="form-control" id="cityName" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+              <label for="" translate>yakeenCityCenter.zipCode</label>
+              <input type="text" [(ngModel)]="citiesFilter.zipCode" class="form-control" id="zipCode" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="" translate>yakeenCityCenter.elmCode</label>
+              <input type="text" [(ngModel)]="citiesFilter.elmCode" class="form-control" id="makerCode" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-2">
+            <button (click)="filterClick(ticketTable)" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.search
+            </button>
+          </div>
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<div>
+  <h3>{{'yakeenCityCenter.allCities' | translate}} :</h3>
+  <button type="button" style="float: left;margin-top: -40px;margin-left: 20%;" (click)="showMakerPopup()"
+          class="btn btn-danger action-btn" translate>
+    yakeenCityCenter.addNew
+  </button>
+</div>
+
+<div class="col-lg-12">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <a (click)="exportCsv()" class="pointer" translate>common.export</a>
+      <div class="text-left clearfix">
+        {{'common.results_count' | translate}} : {{citiesCount}}
+      </div>
+    </div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+      <p-table #ticketTable
+               [value]="cities"
+               [lazy]="true"
+               (onLazyLoad)="requestsLazyLoad($event)"
+               [lazyLoadOnInit]="false"
+               [totalRecords]="citiesCount"
+               [resetPageOnSort]="true"
+               [rowsPerPageOptions]="[5, 10, 20]"
+               [loading]="loading"
+               [paginator]="true"
+               [rows]="10"
+               [responsive]="true"
+               scrollHeight="200px"
+               [autoLayout]="true"
+               [resizableColumns]="true">
+        <ng-template pTemplate="caption" class="panel-heading">
+          <div style="text-align: right">
+            <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="reportsTable.filterGlobal($event.target.value, 'contains')"> -->
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th translate> yakeenCityCenter.cityId </th>
+            <th translate> yakeenCityCenter.cityName </th>
+            <th translate> yakeenCityCenter.englishName </th>
+            <th translate> yakeenCityCenter.zipCode </th>
+            <th translate> yakeenCityCenter.regionEnglishcName </th>
+            <th translate> yakeenCityCenter.regionArabicName </th>
+            <th translate> yakeenCityCenter.elmCode </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-city>
+          <tr>
+            <td style="word-wrap: break-word"> {{ city.cityId || emptyStringValue }} </td>
+            <td style="word-wrap: break-word"> {{ city.cityName || emptyStringValue }} </td>
+            <td style="word-wrap: break-word"> {{ city.englishName || emptyStringValue }} </td>
+            <td style="word-wrap: break-word"> {{ city.zipCode || emptyStringValue }} </td>
+            <td style="word-wrap: break-word"> {{ city.regionArabicName || emptyStringValue }} </td>
+            <td style="word-wrap: break-word"> {{ city.regionEnglishName || emptyStringValue }} </td>
+            <td style="word-wrap: break-word"> {{ city.elmCode || emptyStringValue }} </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td style="text-align: center">
+              {{ "common.noRecordsFound" | translate }}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <!-- /.table-responsive -->
+    </div>
+    <!-- /.panel-body -->
+  </div>
+  <!-- /.panel -->
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" [ngStyle]="{'display': openPpUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" translate>yakeenCityCenter.addNew</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeMakerModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #AddNewModelTemplate="ngForm" (ngSubmit)="AddYakeenCityCenterModel()" novalidate>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>yakeenCityCenter.cityId</label>
+                <input type="text" [(ngModel)]="newCity.cityId" class="form-control" id="cityId" name="cityId" required #cityId="ngModel" />
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>yakeenCityCenter.cityName</label>
+                <input type="text" [(ngModel)]="newCity.cityName" class="form-control" id="cityName" name="cityName" required #cityName="ngModel" />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>yakeenCityCenter.englishName</label>
+                <input type="text" [(ngModel)]="newCity.englishName" class="form-control" id="englishName" name="englishName" required #englishName="ngModel" />
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>yakeenCityCenter.zipCode</label>
+                <input type="text" [(ngModel)]="newCity.zipCode" class="form-control" id="zipCode" name="zipCode" required #zipCode="ngModel" />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>yakeenCityCenter.regionId</label>
+                <input type="text" [(ngModel)]="newCity.regionId" class="form-control" id="regionId" name="regionId" required #regionId="ngModel" />
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>yakeenCityCenter.regionEnglishcName</label>
+                <input type="text" [(ngModel)]="newCity.regionEnglishName" class="form-control" id="regionEnglishcName" name="regionEnglishcName" required #regionEnglishcName="ngModel" />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>yakeenCityCenter.regionArabicName</label>
+                <input type="text" [(ngModel)]="newCity.regionArabicName" class="form-control" id="regionArabicName" name="regionArabicName" required #regionArabicName="ngModel" />
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>yakeenCityCenter.elmCode</label>
+                <input type="text" [(ngModel)]="newCity.elmCode" class="form-control" id="zipCode" name="elmCode" required #elmCode="ngModel" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeMakerModal()">Close</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!AddNewModelTemplate.valid || clicked" translate>
+            insuranceCompany.save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

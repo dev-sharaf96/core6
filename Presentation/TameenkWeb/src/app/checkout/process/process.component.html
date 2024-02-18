@@ -1,0 +1,29 @@
+<div class="process">
+  <article class="single-process done bx-right" data-number="1" style="cursor: default;" style="padding-left: 0;">
+    <span class="txt-lr txt-mgray txt-en no-mar bx-right dis-block bx-right">
+      <i class="ic-icons-680"></i>
+    </span>
+    <div class="info">
+      <h3 class="txt-md txt-mgray no-mar bx-right f_width dis-block" style="font-size:15px" translate>checkout.policy_info</h3>
+      <span class="txt-xs txt-mgray no-mar xs-mar bx-right dis-block">&nbsp;</span>
+    </div>
+  </article>
+  <article class="single-process bx-right" routerLink="/checkout/additional-info" [queryParams]="{referenceId: referenceId, RequestId: qtRqstExtrnlId}" [ngClass]="subClass === 'payment-method' ? 'done' : 'current'" data-number="2" style="padding-left: 0;">
+    <span class="txt-lr txt-en no-mar bx-right dis-block bx-right">
+      <i class="ic-icons-352"></i>
+    </span>
+    <div class="info">
+      <h3 class="txt-md no-mar bx-right f_width dis-block" translate>checkout.additional_info</h3>
+      <span class="txt-xs txt-mgray txt-black no-mar xs-mar bx-right dis-block">&nbsp;</span>
+    </div>
+  </article>
+  <article class="single-process bx-right" [ngClass]="subClass === 'payment-method' ? 'current' : ''" data-number="3" style="padding-left: 0;">
+    <span class="txt-lr txt-brand txt-en no-mar bx-right dis-block bx-right">
+      <i class="ic-icons-14"></i>
+    </span>
+    <div class="info">
+      <h3 class="txt-md txt-brand no-mar bx-right f_width dis-block" translate>checkout.payment_method</h3>
+      <span class="txt-xs txt-mgray no-mar xs-mar bx-right dis-block">&nbsp;</span>
+    </div>
+  </article>
+</div>

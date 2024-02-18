@@ -1,0 +1,21 @@
+<div class="upgrade-section txt-green" *ngIf="product">
+  <div class="upgrade-box bx-right" style="max-width: 85%">
+    <span class="dis-inline-block txt-sm bold" translate="">checkout.upgrade_description</span>
+    <div class="price" style="display: flex;align-items: center">
+      <h2 class="txt-xl txt-en txt-green" style="text-align: left">
+        <app-placholder [width]="80" [height]="25" *ngIf="product?.productPrice === null || product?.productPrice === undefined"></app-placholder>
+        {{product?.productPrice}}
+      </h2>
+      <span class="dis-block txt-sm over-hidden" style="text-align: left">{{'common.SAR' | translate}}</span>
+    </div>
+  </div>
+  <a [routerLink]="['/quotation/', qtRqstExtrnlId]" [queryParams]="{TypeOfInsurance: '2', VehicleAgencyRepair: 'false', DeductibleValue: '2000'}"
+    class="txt-white txt-green-hvr bg-green show-comprehensive" translate>checkout.upgrade</a>
+</div>
+
+<div *ngIf="!product && triesCount >= 3">
+  <hr style="border: 0;border-top: 1px solid #798B9B;margin-top: 70px;margin-bottom: 5px;">
+  <div class="upgrade-box" style="display: flex;justify-content: space-between;align-items: center;width: 100%">
+    <span class="txt-xs txt-mgray no-mar dis-block" translate>checkout.no_upgrade</span>
+  </div>
+</div>

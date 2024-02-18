@@ -1,0 +1,18 @@
+.dispFlex{
+  display: flex;
+}
+
+input#isClosed {
+  margin: 4px;
+}
+
+.lebel-for-required:after {
+  content: '*';
+  color: #f00;
+  font-size: 16px;
+  margin: 0 5px
+}
+
+.imageContainer{
+  margin-bottom: 10px;
+}

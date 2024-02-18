@@ -1,0 +1,29 @@
+<h2 class="benefits-heading txt-md txt-black no-mar f_width dis-block" *ngIf="benefits && benefits.length > 0">
+  {{'quotation.Search_Additional_Benefits' | translate}}</h2>
+<h3 class="no-benefit txt-mgray" *ngIf="!benefits || benefits.length === 0">{{'quotation.no_benefits' | translate}}</h3>
+<div class="benefits-container" *ngIf="benefits && benefits.length > 0"
+  [ngClass]="{'over-weight': isOverWeight, 'full': isFull}">
+  <div class="benefit single-feature md-mar col-xs-6 col-md-6 col-lg-3 bx-right"
+    *ngFor="let benefit of benefits;let i = index"
+    [ngClass]="{'active': benefit.isSelected, 'disabled': benefit.isDisabled}" (click)="changeSelected(i)">
+    <div class="benefit-icon bx-right">
+      <img [src]="'assets/imgs/benfitsicons/' + benefitsList[benefit.benefit.code] + '.png'"
+        [alt]="benefit.benefit.benefitDescription" class="benefit-logo fixedcolor" />
+      <i class="benefit-check ic-plus"></i>
+    </div>
+    <h3 class="benefit-detail txt-md txt-black no-mar sm-mar bx-right f_width dis-block">
+      {{benefit.benefit.benefitDescription}}</h3>
+    <h4 class="benefit-price txt-xs txt-mgray no-mar bx-right f_width dis-block"
+      *ngIf="benefit.isReadOnly && benefit.isSelected; else notIncluded">
+      {{'quotation.included' | translate}}
+    </h4>
+    <ng-template #notIncluded>
+      <h4 class="benefit-price txt-xs txt-mgray no-mar bx-right f_width dis-block">
+        {{benefit.benefitPrice |  number:'1.0-2'}} <span class="benefit-currency">{{'quotation.SAR' | translate}}</span>
+      </h4>
+    </ng-template>
+  </div>
+</div>
+<!-- toggle addin features -->
+<a class="show-more pointer openMore" *ngIf="isOverWeight" (click)="isFull = !isFull"
+  translate>{{!isFull? 'quotation.show_more_benefits' : 'quotation.hide_more_benefits'}}</a>

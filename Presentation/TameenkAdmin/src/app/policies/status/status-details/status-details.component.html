@@ -1,0 +1,660 @@
+<div class="container edit-section">
+  <h2><span>#</span>
+    {{policy.PolicyNo}}             
+     <span ng-if="!policy.policyNo">{{failedPolicy.referenceId}}</span>
+  </h2>
+
+  <!-- Detatils -->
+  <div class="row" *ngIf="status ==4;else failedPolicyDetails">
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuredNIN" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.policy_no' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuredNIN" disabled [(ngModel)]="policy.PolicyNo" name="insuredNIN"
+               required #insuredNIN="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuredNIN" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.insured_NIN' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuredNIN" disabled [(ngModel)]="policy.NIN" name="insuredNIN"
+               required #insuredNIN="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuredPhone" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.insured_phone' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuredPhone" disabled [(ngModel)]="policy.Phone" name="insuredPhone"
+               required #insuredPhone="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuredFullNameAr" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.insured_name_Ar' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuredFullNameAr" disabled [(ngModel)]="policy.InsuredNameAr"
+               name="insuredFullNameAr" required #insuredFullNameAr="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuredFullNameEn" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.insured_name_En' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuredFullNameEn" disabled [(ngModel)]="policy.InsuredNameEn"
+               name="insuredFullNameEn" required #insuredFullNameEn="ngModel">
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuranceCompanyAr" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.companyName_Ar' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuranceCompanyAr" disabled [(ngModel)]="policy.CompanyNameAr"
+               name="insuranceCompanyAr" required #insuranceCompanyAr="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuranceCompanyEn" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.companyName_En' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuranceCompanyEn" disabled [(ngModel)]="policy.CompanyNameEn"
+               name="insuranceCompanyEn" required #insuranceCompanyEn="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="createDate" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.createDate' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="createDate" disabled [ngModel]="policy.CreatedDate | date:'medium'"
+               (ngModelChange)="policy.policyIssueDate=$event" name="createDate" required #createDate="ngModel">
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6 form-group row" *ngIf="policy?.PaymentMethod">
+      <label for="policyStatus" class="col-sm-4 col-form-label lebel-for-required">
+        طريقه الدفع
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="PaymentMethod" disabled [(ngModel)]="policy.PaymentMethod"
+               name="PaymentMethod" required #PaymentMethod="ngModel">
+      </div>
+    </div>
+
+
+    <div class="col-xs-12 col-md-6 form-group row" *ngIf="policy?.policyStatus">
+      <label for="policyStatus" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.policy_status' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="policyStatus" disabled [(ngModel)]="policy.policyStatus"
+               name="policyStatus" required #policyStatus="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="userEmail" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.userEmail' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="userEmail" disabled [(ngModel)]="policy.Email" name="userEmail"
+               required #userEmail="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row" *ngIf="policy?.productType">
+      <label for="productType" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.productType' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="productType" disabled [(ngModel)]="policy.productType.desc"
+               name="productType" required #productType="ngModel">
+      </div>
+    </div>
+  </div>
+
+  <ng-template #failedPolicyDetails>
+  <div class="row" >
+    <div class="form-group row">
+      <label for="nameEN" class="col-sm-2 col-form-label lebel-for-required">
+        {{ 'policy.iban' | translate}}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="iban" [(ngModel)]="failedPolicy.iban" [disabled]="!isDetails" name="iban" required pattern="^sa[0-9]{22}" #iban="ngModel">
+      </div>
+      <div *ngIf="iban.dirty && iban.invalid" class="col-sm-4 alert alert-danger" style="padding: 6px 15px;margin:0">
+        <div *ngIf="iban?.errors.required">
+          {{'insuranceCompany.requried' | translate}}
+        </div>
+        <div *ngIf="iban?.errors.pattern">
+          {{'policy.iban_invalid' | translate}}
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuredNIN" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.insured_NIN' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuredNIN" disabled [(ngModel)]="failedPolicy.insuredNIN" name="insuredNIN" required #insuredNIN="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuredPhone" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.insured_phone' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuredPhone" disabled [(ngModel)]="failedPolicy.insuredPhone" name="insuredPhone" required #insuredPhone="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuredFullNameAr" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.insured_name_Ar' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuredFullNameAr" disabled [(ngModel)]="failedPolicy.insuredFullNameAr" name="insuredFullNameAr" required #insuredFullNameAr="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuredFullNameEn" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.insured_name_En' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuredFullNameEn" disabled [(ngModel)]="failedPolicy.insuredFullNameEn" name="insuredFullNameEn" required #insuredFullNameEn="ngModel">
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuranceCompanyAr" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.companyName_Ar' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuranceCompanyAr" disabled [(ngModel)]="failedPolicy.insuranceCompanyAr" name="insuranceCompanyAr" required #insuranceCompanyAr="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="insuranceCompanyEn" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.companyName_En' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="insuranceCompanyEn" disabled [(ngModel)]="failedPolicy.insuranceCompanyEn" name="insuranceCompanyEn" required #insuranceCompanyEn="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="maxTries" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.Max_tries' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="maxTries" disabled [(ngModel)]="failedPolicy.maxTries" name="maxTries" required #maxTries="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="createDate" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.checkoutDate' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="createDate" disabled [ngModel]="failedPolicy.createDate | date:'medium'"
+               (ngModelChange)="failedPolicy.createDate=$event" name="createDate" required #createDate="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row" *ngIf="policy?.policyStatus">
+      <label for="policyStatus" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.policy_status' | translate}}</label>
+      <div class="col-sm-6">
+        <input *ngIf="!isDetails" type="text" class="form-control" id="policyStatus" disabled
+               [(ngModel)]="failedPolicy.policyStatus.name" name="policyStatus" required #policyStatus="ngModel">
+        <p-dropdown *ngIf="isDetails" [options]="status" [(ngModel)]="failedPolicy.policyStatus" optionLabel="name" filter="true" [style]="{'width':'100%'}" name="policyStatus" required #policyStatus="ngModel"></p-dropdown>
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="userEmail" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.userEmail' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="userEmail" disabled [(ngModel)]="failedPolicy.userEmail" name="userEmail" required #userEmail="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row" *ngIf="policy?.productType">
+      <label for="productType" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.productType' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="productType" disabled [(ngModel)]="failedPolicy.productType.desc" name="productType" required #productType="ngModel">
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6 form-group row" *ngIf="policy?.PaymentMethod">
+      <label for="PaymentMethod" class="col-sm-4 col-form-label lebel-for-required">طريقه الدفع</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="PaymentMethod" disabled [(ngModel)]="failedPolicy.PaymentMethod.Name" name="PaymentMethod" required #PaymentMethod="ngModel">
+      </div>
+    </div>
+
+    <div class="col-xs-12 form-group row">
+      <label for="serviceResponse" class="col-sm-2 col-form-label lebel-for-required">{{ 'policy.serviceResponse' | translate}}</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" id="serviceResponse" disabled [(ngModel)]="failedPolicy.serviceResponse" name="serviceResponse" required #serviceResponse="ngModel"></textarea>
+      </div>
+    </div>
+    <div class="col-xs-12 form-group row">
+      <label for="serviceRequest" class="col-sm-2 col-form-label lebel-for-required">{{ 'policy.serviceRequest' | translate}}</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" id="serviceRequest" disabled [(ngModel)]="failedPolicy.serviceRequest" name="serviceRequest" required #serviceRequest="ngModel"></textarea>
+      </div>
+    </div>
+    <div class="col-xs-12 form-group row">
+      <label for="errorDescription" class="col-sm-2 col-form-label lebel-for-required">{{ 'policy.errorDescription' | translate}}</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" id="errorDescription" disabled [(ngModel)]="failedPolicy.errorDescription" name="errorDescription" required #errorDescription="ngModel"></textarea>
+      </div>
+    </div>
+  </div>
+  </ng-template>
+  <!-- End Detatils -->
+
+  <!-- Invoice -->
+  <h3>{{'navbar.invoice' | translate}}:</h3>
+  <div class="row" *ngIf="status ==4; else failedPolicyInvoice">
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="invoiceNo" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.invoiceNo' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="invoiceNo" disabled [(ngModel)]="policy.InvoiceNo" name="invoiceNo"
+               required #invoiceNo="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="invoiceDate" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'invoice.invoice_date' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="invoiceDate" disabled [ngModel]="policy.InvoiceDate | date:'medium'"
+               (ngModelChange)="policy.invoice.invoiceDate=$event" name="invoiceDate" required #invoiceDate="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="referenceId" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'invoice.reference_No' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="referenceId" disabled [(ngModel)]="policy.ReferenceId"
+               name="referenceId" required #referenceId="ngModel">
+      </div>
+    </div>
+    <!-- <div class="col-xs-12 col-md-6 form-group row">
+        <label for="policyId" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.policyId' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="policyId" disabled [(ngModel)]="policy.invoice.policyId" name="policyId" required #policyId="ngModel">
+        </div>
+      </div> -->
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="productPrice" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'invoice.product_price' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="productPrice" disabled [(ngModel)]="policy.ProductPrice"
+               name="productPrice" required #productPrice="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="extraPremiumPrice" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+          'invoice.extra_premium_price' | translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="extraPremiumPrice" disabled [(ngModel)]="policy.ExtraPremiumPrice"
+               name="extraPremiumPrice" required #extraPremiumPrice="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="discount" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.discount' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="discount" disabled [(ngModel)]="policy.Discount" name="discount"
+               required #discount="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="fees" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.fees' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="fees" disabled [(ngModel)]="policy.Fees" name="fees"
+               required #fees="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="vat" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.vat' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="vat" disabled [(ngModel)]="policy.Vat" name="vat"
+               required #vat="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="subTotalPrice" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'invoice.sub_total_price' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="subTotalPrice" disabled [(ngModel)]="policy.SubTotalPrice"
+               name="subTotalPrice" required #subTotalPrice="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="totalPrice" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'invoice.total_price' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="totalPrice" disabled [(ngModel)]="policy.TotalPrice" name="totalPrice"
+               required #totalPrice="ngModel">
+      </div>
+    </div>
+  </div>
+
+  <ng-template #failedPolicyInvoice>
+  <div class="row" *ngIf="failedPolicy?.invoice">
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="invoiceNo" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.invoiceNo' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="invoiceNo" disabled [(ngModel)]="failedPolicy.invoice.invoiceNo" name="invoiceNo" required #invoiceNo="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="invoiceDate" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.invoice_date' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="invoiceDate" disabled [ngModel]="failedPolicy.invoice.invoiceDate | date:'medium'"
+        (ngModelChange)="failedPolicy.invoice.invoiceDate=$event" name="invoiceDate" required #invoiceDate="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="referenceId" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.reference_No' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="referenceId" disabled [(ngModel)]="failedPolicy.invoice.referenceId" name="referenceId" required #referenceId="ngModel">
+      </div>
+    </div>
+    <!-- <div class="col-xs-12 col-md-6 form-group row">
+      <label for="policyId" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.policyId' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="policyId" disabled [(ngModel)]="failedPolicy.invoice.policyId" name="policyId" required #policyId="ngModel">
+      </div>
+    </div> -->
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="productPrice" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.product_price' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="productPrice" disabled [(ngModel)]="failedPolicy.invoice.productPrice" name="productPrice" required #productPrice="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="extraPremiumPrice" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.extra_premium_price' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="extraPremiumPrice" disabled [(ngModel)]="failedPolicy.invoice.extraPremiumPrice" name="extraPremiumPrice" required #extraPremiumPrice="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="discount" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.discount' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="discount" disabled [(ngModel)]="failedPolicy.invoice.discount" name="discount" required #discount="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="fees" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.fees' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="fees" disabled [(ngModel)]="failedPolicy.invoice.fees" name="fees" required #fees="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="vat" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.vat' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="vat" disabled [(ngModel)]="failedPolicy.invoice.vat" name="vat" required #vat="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="subTotalPrice" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.sub_total_price' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="subTotalPrice" disabled [(ngModel)]="failedPolicy.invoice.subTotalPrice" name="subTotalPrice" required #subTotalPrice="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="totalPrice" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.total_price' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="totalPrice" disabled [(ngModel)]="failedPolicy.invoice.totalPrice" name="totalPrice" required #totalPrice="ngModel">
+      </div>
+    </div>
+  </div>
+  </ng-template>
+  <!-- End Invoice -->
+
+  <!-- Vehicle -->
+  <h3>{{'policy.vehicle' | translate}}:</h3>
+  <div class="row" *ngIf="status ==4 ; else failedPolicyVehicle">
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="vehicleModelName" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.vehicle_model_name'
+          | translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="vehicleModelName" disabled [(ngModel)]="policy.VehicleModel"
+               name="vehicleModelName" required #vehicleModelName="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="carPlateNumber" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.vehicle_plate_number'
+          | translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="carPlateNumber" disabled [(ngModel)]="policy.CarPlateNumber"
+               name="carPlateNumber" required #carPlateNumber="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="carPlateTextAr" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.vehicle_plate_text' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="carPlateTextAr" disabled [(ngModel)]="policy.plateText"
+               name="carPlateTextAr" required #carPlateTextAr="ngModel">
+      </div>
+    </div>
+   <div class="col-xs-12 col-md-6 form-group row">
+        <label for="carPlateTextEn" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.OwnerTransfer' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="carPlateTextEn" disabled [(ngModel)]="policy.OwnerTransfer" name="carPlateTextEn" required #carPlateTextEn="ngModel">
+        </div>
+      </div> 
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="sequenceNumber" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.sequenceNo' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="sequenceNumber" disabled [(ngModel)]="policy.SequenceNumber"
+               name="sequenceNumber" #vehicleModelName="ngModel">
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="sequenceNumber" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.VehicleAgencyRepair' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="sequenceNumber" disabled [(ngModel)]="policy.VehicleAgencyRepair"
+               name="sequenceNumber" #vehicleModelName="ngModel">
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="customCardNumber" class="col-sm-4 col-form-label lebel-for-required">
+        {{
+ 'policy.customNo' |
+          translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="customCardNumber" disabled [(ngModel)]="policy.CustomCardNumber"
+               name="customCardNumber" #vehicleModelName="ngModel">
+      </div>
+    </div>
+  </div>
+
+  <ng-template #failedPolicyVehicle>
+  <div class="row" *ngIf="failedPolicy?.vehicle">
+    <div class="col-xs-12 col-md-6 form-group row">
+        <label for="vehicleModelName" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.vehicle_model_name' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="vehicleModelName" disabled [(ngModel)]="failedPolicy.vehicleModelName" name="vehicleModelName" required #vehicleModelName="ngModel">
+        </div>
+      </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="carPlateNumber" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.vehicle_plate_number' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="carPlateNumber" disabled [(ngModel)]="failedPolicy.vehicle.carPlateNumber" name="carPlateNumber" required #carPlateNumber="ngModel">
+      </div>
+    </div>
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="carPlateTextAr" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.vehicle_plate_text' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="carPlateTextAr" disabled [(ngModel)]="failedPolicy.vehicle.carPlateTextAr" name="carPlateTextAr" required #carPlateTextAr="ngModel">
+      </div>
+    </div>
+    <!-- <div class="col-xs-12 col-md-6 form-group row">
+      <label for="carPlateTextEn" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.vehicle_plate_text_En' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="carPlateTextEn" disabled [(ngModel)]="failedPolicy.vehicle.carPlateTextEn" name="carPlateTextEn" required #carPlateTextEn="ngModel">
+      </div>
+    </div> -->
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="sequenceNumber" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.sequenceNo' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="sequenceNumber" disabled [(ngModel)]="failedPolicy.vehicle.sequenceNumber" name="sequenceNumber" #vehicleModelName="ngModel">
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-md-6 form-group row">
+      <label for="customCardNumber" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.customNo' | translate}}</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="customCardNumber" disabled [(ngModel)]="failedPolicy.vehicle.customCardNumber" name="customCardNumber" #vehicleModelName="ngModel">
+      </div>
+    </div>
+  </div>
+  </ng-template>
+  <!-- End Vehicle -->
+
+<div class="row" *ngIf="status ==4">
+  <h3>{{'ِAddtionalDrivers' | translate}}:</h3>
+
+  <div class="col-xs-12 col-md-6 form-group row">
+    <label for="vehicleModelName" class="col-sm-4 col-form-label lebel-for-required">
+      {{
+'Driver One NIN'
+        | translate
+      }}
+    </label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="vehicleModelName" disabled [(ngModel)]="policy.AddtionalDriverOne"
+             name="vehicleModelName" required #vehicleModelName="ngModel">
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-6 form-group row">
+    <label for="vehicleModelName" class="col-sm-4 col-form-label lebel-for-required">
+      {{
+'Driver Two NIN'
+        | translate
+      }}
+    </label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="vehicleModelName" disabled [(ngModel)]="policy.AddtionalDriverTwo"
+             name="vehicleModelName" required #vehicleModelName="ngModel">
+    </div>
+  </div>
+</div>
+
+
+<div class="row" *ngIf="status ==4">
+  <h3>{{'Benfits' | translate}}:</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">      {{
+          'policy.benefitDesc'
+                  | translate
+                }}</th>
+                  <th scope="col">      {{
+                    'policy.benefitDesc'
+                            | translate
+                          }}</th>
+        <th scope="col">{{
+          'policy.Price'
+                  | translate
+                }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let benefit of policy.SuccessPolicyBenefits">
+        <td>{{benefit.ArabicDescription}}</td>
+        <td>{{benefit.EnglishDescription}}</td>
+        <td>{{benefit.Price}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+  <div class="row" style="margin-bottom:10px;" *ngIf="status ==4">
+      <div class="col-xs 12 col-sm-6 col-md-3" *ngIf="policy.ImageBody">
+
+        <img class="imgcls" [src]="'data:image/jpg;base64,' + policy.ImageBody" />
+      </div>
+      <div class="col-xs 12 col-sm-6 col-md-4" *ngIf="policy.ImageFront">
+
+        <img class="imgcls" [src]="'data:image/jpg;base64,' + policy.ImageFront" />
+      </div>
+      <div class="col-xs 12 col-sm-6 col-md-4" *ngIf="policy.ImageBack">
+
+        <img class="imgcls" [src]="'data:image/jpg;base64,' + policy.ImageBack"  />
+      </div>
+      <div class="col-xs 12 col-sm-6 col-md-4" *ngIf="policy.ImageLeft">
+
+        <img class="imgcls" [src]="'data:image/jpg;base64,' + policy.ImageLeft" />
+      </div><hr>
+      <div class="col-xs 12 col-sm-6 col-md-4" *ngIf="policy.ImageRight">
+
+        <img  class="imgcls" [src]="'data:image/jpg;base64,' + policy.ImageRight" />
+      </div>
+  </div>
+    <a [routerLink]="'/admin/policies/status'" class="btn btn-default mr-r_s">{{'common.back' | translate}}</a>
+  </div>
+
+  <br>
+  <br> 
+

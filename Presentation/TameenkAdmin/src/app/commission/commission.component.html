@@ -1,0 +1,228 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'navbar.commission' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="" translate>common.by_insurance_company</label>
+              <app-shared-insurance-companies
+              [(selectedValue)]="commissionFilter.insuranceCompanyId"
+              ></app-shared-insurance-companies>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+                <label for="" translate>RequestsPerCompany.insuranceType</label>
+                <p-dropdown  [options]="insuredType" [(ngModel)]="insuredtypeValue" [style]="{'width':'100%'}"></p-dropdown>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-2">
+            <button (click)="filterClick(table)" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.search
+            </button>
+          </div>
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a (click)="exportCsv()" class="pointer" translate>common.export</a>
+        <div class="text-left clearfix">
+          {{'common.results_count' | translate}} : {{CommissionsCount}}
+        </div>
+      </div>
+      <div class="panel-body">
+        <p-table #table
+                 [value]="Commissions"
+                 [lazy]="true"
+                 (onLazyLoad)="requestsLazyLoad($event)"
+                 [lazyLoadOnInit]="false"
+                 [totalRecords]="CommissionsCount"
+                 [resetPageOnSort]="true"
+                 [rowsPerPageOptions]="[5, 10, 20]"
+                 [loading]="loading"
+                 [paginator]="true"
+                 [rows]="10"
+                 [responsive]="true"
+                 scrollHeight="200px"
+                 [autoLayout]="true"
+                 [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate> commission.CompanyKey           </th>
+              <th translate> commission.InsuranceTypeCode            </th>
+              <th translate> commission.Key                    </th>
+              <th translate> commission.Percentage              </th>
+              <th translate> commission.FixedFees                </th>
+              <th translate> commission.CalculatedFromBasic       </th>
+              <th translate> commission.IsCommission                 </th>
+              <th translate> commission.PaymentMethod                 </th>
+              <th translate> commission.CreatedDate                    </th>
+              <th translate> commission.CreatedBy                  </th>
+              <th translate> commission.ModifiedDate                </th>
+              <th translate> commission.ModifiedBy                   </th>
+              <th translate> commission.IncludeAdditionalDriver          </th>
+              <th translate> commission.IsPercentageNegative           </th>
+              <th translate> commission.IsFixedFeesNegative         </th>
+              <th translate> commission.Action         </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-commission>
+            <tr>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.CompanyKey || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.InsuranceTypeCode || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.Key || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.Percentage || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.FixedFees || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.CalculatedFromBasic || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.IsCommission || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.PaymentMethod || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.CreatedDate || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.CreatedBy || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.ModifiedDate || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.ModifiedBy || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.IncludeAdditionalDriver || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.IsPercentageNegative || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ commission.IsFixedFeesNegative || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center">
+                <button (click)="showCommissionPopup(commission)" class="btn btn-danger action-btn"> {{'commission.edit' | translate}} </button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" [ngStyle]="{'display': openPpUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document" style="margin: 13%;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" translate>commission.edit</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeCommissionModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #AddNewModelTemplate="ngForm" (ngSubmit)="Updatecommission(CommissionEdit)" novalidate>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>commission.CompanyKey</label>
+                <input type="text" [(ngModel)]="CommissionEdit.CompanyKey" required class="form-control" id="CompanyKey" name="CompanyKey" #CompanyKey="ngModel"  />
+              </div>
+            </div>
+            <div class="col-md-4">
+            <div class="form-group">
+              <label for="" class="lebel-for-required" translate>commission.CompanyId</label>
+              <input type="text" [(ngModel)]="CommissionEdit.CompanyId" required class="form-control" id="CompanyId" name="CompanyId" #CompanyId="ngModel" />
+            </div>
+            </div>
+            <div class="col-md-4">
+            <div class="form-group">
+              <label for="" class="lebel-for-required" translate>commission.InsuranceTypeCode</label>
+              <input type="text" [(ngModel)]="CommissionEdit.InsuranceTypeCode" required class="form-control" id="InsuranceTypeCode" name="InsuranceTypeCode" #InsuranceTypeCode="ngModel" />
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="" class="lebel-for-required" translate>commission.Key</label>
+              <input type="text" [(ngModel)]="CommissionEdit.Key" required class="form-control" id="Key" name="Key" #Key="ngModel" />
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="" class="lebel-for-required" translate>commission.Percentage</label>
+              <input type="text" [(ngModel)]="CommissionEdit.Percentage" required class="form-control" id="Percentage" name="Percentage" #Percentage="ngModel" />
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="" class="lebel-for-required" translate>commission.FixedFees</label>
+              <input type="text" [(ngModel)]="CommissionEdit.FixedFees" required class="form-control" id="FixedFees" name="FixedFees" #FixedFees="ngModel" />
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="" class="lebel-for-required" translate>commission.PaymentMethod</label>
+            <p-dropdown [options]="methods" name="method"  [(ngModel)]="method" optionLabel="name" filter="true" [style]="{'width':'100%'}"
+            ></p-dropdown>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="" class="lebel-for-required" translate>commission.IncludeAdditionalDriver</label>
+              <p-checkbox [(ngModel)]="CommissionEdit.IncludeAdditionalDriver" name="IncludeAdditionalDriver" [binary]="true"></p-checkbox>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="" class="lebel-for-required" translate>commission.IsPercentageNegative</label>
+              <p-checkbox [(ngModel)]="CommissionEdit.IsPercentageNegative" name="IsPercentageNegative" [binary]="true"></p-checkbox>
+            </div>
+          </div>
+        
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>commission.IsFixedFeesNegative</label>
+                <p-checkbox [(ngModel)]="CommissionEdit.IsFixedFeesNegative" name="IsFixedFeesNegative" [binary]="true"></p-checkbox>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>commission.CalculatedFromBasic</label>
+                <p-checkbox [(ngModel)]="CommissionEdit.CalculatedFromBasic"  name="CalculatedFromBasic"  [binary]="true"></p-checkbox>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>commission.IsCommission</label>
+                <br>
+                <p-checkbox [(ngModel)]="CommissionEdit.IsCommission" name="IsCommission" [binary]="true"></p-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeCommissionModal()">Close</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!AddNewModelTemplate.valid || clicked" translate>
+            insuranceCompany.save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>  

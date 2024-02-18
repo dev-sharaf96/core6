@@ -1,0 +1,373 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'policy.success_policies' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="" translate>reports.products</label>
+              <app-products-dropdown [(selectedValue)]="policiesFilter.productTypeId"></app-products-dropdown>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+              <label for="" translate>common.by_insurance_company</label>
+              <app-shared-insurance-companies [(selectedValue)]="policiesFilter.insuranceCompanyId">
+              </app-shared-insurance-companies>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="" translate>policy.najm_status</label>
+              <app-najm-status [(selectedValue)]="policiesFilter.najmStatusId"></app-najm-status>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="policy_number" translate>policy.policy_no</label>
+              <input type="text" [(ngModel)]="policiesFilter.policyNo" class="form-control" id="policy_number" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="invoiceNo" translate>policy.invoiceNo</label>
+              <input type="text" [(ngModel)]="policiesFilter.invoiceNo" class="form-control" id="invoiceNo" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="sequenceNo" translate>policy.sequenceNo</label>
+              <input type="text" [(ngModel)]="policiesFilter.sequenceNo" class="form-control" id="sequenceNo" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="customNo" translate>policy.customNo</label>
+              <input type="text" [(ngModel)]="policiesFilter.customNo" class="form-control" id="customNo" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="nationalId" translate>policy.insured_NIN</label>
+              <input type="text" [(ngModel)]="policiesFilter.nationalId" class="form-control" id="nationalId" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="insuredFirstNameAr" translate>policy.insured_first_name</label>
+              <input type="text" [(ngModel)]="policiesFilter.insuredFirstNameAr" class="form-control"
+                id="insuredFirstNameAr" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="insuredLastNameAr" translate>policy.insured_last_Arabic_Name</label>
+              <input type="text" [(ngModel)]="policiesFilter.insuredLastNameAr" class="form-control"
+                id="insuredLastNameAr" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="insuredEmail" translate>policy.userEmail</label>
+              <input type="text" [(ngModel)]="policiesFilter.insuredEmail" class="form-control" id="insuredEmail" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <label for="fdate" translate>invoice.invoice_date</label>
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-6">
+                  <p-calendar [(ngModel)]="policiesFilter.startDate" [showIcon]="true"
+                    [placeholder]="'common.from' | translate" [maxDate]="policiesFilter.endDate || today"
+                    styleClass="w-100" inputStyleClass="form-control"></p-calendar>
+                </div>
+                <div class="col-md-6">
+                  <p-calendar [(ngModel)]="policiesFilter.endDate" [showIcon]="true"
+                    [placeholder]="'common.to' | translate" [minDate]="policiesFilter.startDate" [maxDate]="today"
+                    styleClass="w-100" inputStyleClass="form-control"></p-calendar>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="referenceNo" translate>invoice.reference_id</label>
+              <input type="text" [(ngModel)]="policiesFilter.referenceNo" class="form-control" id="referenceNo" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="channel" translate>requestLogs.channel</label>
+              <app-channels-dropdown [(selectedValue)]="policiesFilter.channel"> </app-channels-dropdown>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="merchantid" translate>invoice.merchantId</label>
+              <input type="text" [(ngModel)]="policiesFilter.merchantId" class="form-control" id="merchantId" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-2">
+            <button (click)="filterClick(reportsTable)" [disabled]="isSearch" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.search
+            </button>
+          </div>
+
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<div class="row" [ngClass]="{'hidden': firstTime}">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a (click)="exportCsv()" class="pointer" translate>common.export</a>
+        <div class="text-left">{{'common.results_count' | translate}} : {{SuccessPoliciesCount}}</div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table #reportsTable [value]="policyListing" [lazy]="true" (onLazyLoad)="SuccessPoliciesLazyLoad($event)"
+          [lazyLoadOnInit]="false" [totalRecords]="SuccessPoliciesCount" [rowsPerPageOptions]="[5, 10, 20]"
+          [loading]="loading" [paginator]="true" [rows]="10" [responsive]="true" scrollHeight="200px"
+          [autoLayout]="true" [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="reportsTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'policyNo'" translate>
+                common.policyNumber
+                <p-sortIcon [field]="'policyNo'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="isEnglish ? 'insuredFullNameEn' : 'insuredFullNameAr'" translate>
+                clients.ownerName
+                <p-sortIcon [field]="isEnglish ? 'insuredFullNameEn' : 'insuredFullNameAr'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'insuredNIN'" translate>
+                clients.ownerID
+                <p-sortIcon [field]="'insuredNIN'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="isEnglish ? 'insuranceCompanyNameEn' : 'insuranceCompanyNameAr'" translate>
+                common.company
+                <p-sortIcon [field]="isEnglish ? 'insuranceCompanyNameEn' : 'insuranceCompanyNameAr'"
+                  ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <!-- <th [pSortableColumn]="'noOfRequests'" translate>No. Of Requests
+                  <p-sortIcon [field]="'noOfRequests'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                </th> -->
+              <th [pSortableColumn]="isEnglish ? 'DescEN' : 'DescAr'" translate>
+                policy.productType
+                <p-sortIcon [field]="isEnglish ? 'DescEN' : 'DescAr'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'policyIssueDate'" translate>
+                policy.policy_issue_date
+                <p-sortIcon [field]="'policyIssueDate'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'productPrice'" translate>
+                policy.quotationPrice
+                <p-sortIcon [field]="'productPrice'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'benfitsPrice'" translate>
+                  policy.benfitsPrice
+                  <p-sortIcon [field]="'benfitsPrice'" ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                </th>
+              <th [pSortableColumn]="'totalPrice'" translate>
+                policy.policyPrice
+                <p-sortIcon [field]="'totalPrice'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'totalPrice'" translate>
+                policy.paidAmount
+                <p-sortIcon [field]="'totalPrice'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'channel'" translate>
+                requestLogs.channel
+                <p-sortIcon [field]="'channel'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-policy>
+            <tr>
+              <td style="word-wrap: break-word">
+                {{ policy.policyNo || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ isEnglish ? policy.insuredFullNameEn : policy.insuredFullNameAr || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.insuredNIN || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ isEnglish ? policy.insuranceCompanyNameEn : policy.insuranceCompanyNameAr || emptyStringValue }}
+              </td>
+              <!-- <td style="word-wrap: break-word">{{policy.policyNo || emptyStringValue}}</td> -->
+              <td style="word-wrap: break-word">
+
+                {{ isEnglish ? policy.productTypeDescEN : policy.productTypeDescAR || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.policyIssueDate || emptyStringValue | date }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.productPrice || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                  {{ policy.benfitsPrice || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.totalPrice || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.totalPrice || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.channel || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word;text-align: center">
+                <button *ngIf="policy.policyFileId"
+                  (click)="downloadPolicy(policy.policyFileId, policy.referenceId, policy.policyNo)"
+                  class="btn btn-info action-btn" translate>common.download</button>
+                <button *ngIf="policy.policyFileId"
+                  (click)="showResendPolicyEmailPopup(policy)"
+                  class="btn btn-info action-btn" translate>policy.resendPolicy</button>
+                <button type="button" routerLink="/admin/policies/success/details/{{policy.referenceId}}"
+                  routerLinkActive="active" class="btn btn-secondary action-btn" translate>policy.details</button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<!-- <app-loader *ngIf="firstTime"></app-loader> -->
+<p-dialog [(visible)]="selectedPolicy" [modal]="true" [responsive]="true" [minY]="70" [baseZIndex]="10000"
+  [dismissableMask]="true" [rtl]="!isEnglish">
+  <div *ngIf="selectedPolicy">
+    <div class="info-row"><span class="bx_left">{{'policy.policyId' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.id}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'invoice.reference_id' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.invoices[0].referenceId}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.policy_status' | translate}}:</span> <span class="bx_right">{{isEnglish
+        ? selectedPolicy.policyStatus.nameEn : selectedPolicy.policyStatus.nameAr}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.najm_status' | translate}}:</span> <span class="bx_right">{{isEnglish
+        ? selectedPolicy.najmStatusObj.nameEn : selectedPolicy.najmStatusObj.nameAr}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.policy_issue_date' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.policyIssueDate
+        | date}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.policy_effective_date' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.policyEffectiveDate
+        | date}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.policy_expiry_date' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.policyExpiryDate
+        | date}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.insured_NIN' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.insuredNIN}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.insured_phone' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.insuredPhone}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.vehicle_model_name' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.vehicleModelName}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.vehicle_plate_number' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.vehiclePlateNumber}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.userEmail' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.userEmail}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.invoiceNo' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.invoices[0].invoiceNo}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.total_price' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.invoices[0].totalPrice}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.customNo' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.vehicle.customCardNumber}}</span></div>
+    <div class="info-row"><span class="bx_left">{{'policy.sequenceNo' | translate}}:</span> <span
+        class="bx_right">{{selectedPolicy.vehicle.sequenceNumber}}</span></div>
+  </div>
+</p-dialog>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" [ngStyle]="{'display': openPpUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" translate>policy.resendPolicy</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeEmailModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #ResendPolicyTemplate="ngForm" (ngSubmit)="reSendPolicyByEmail()" novalidate>
+        <div class="modal-body">
+          <div class="form-group row">
+            <label for="recipient-name" class="col-sm-2 col-form-label" translate>common.email</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="email" name="email" #email="ngModel" [pattern]="emailPattern" [(ngModel)]="currentCheckoutEmail">
+            </div>
+          </div>
+          <div *ngIf="email.invalid" class="alert alert-danger">
+            <div *ngIf="email?.errors.pattern">
+              {{'insuranceCompany.emailError' | translate}}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeEmailModal()">Close</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!ResendPolicyTemplate.valid || clicked" translate>
+            policy.resendPolicy
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

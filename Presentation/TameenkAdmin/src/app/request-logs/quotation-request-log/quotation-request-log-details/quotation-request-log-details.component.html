@@ -1,0 +1,159 @@
+<div class="container edit-section">
+  <form #editquotationRequestLogInfo="ngForm" novalidate>
+    <h3>{{'requestLogs.quotationRequestLogInfo' | translate}} :</h3>
+    <br>
+    <div class="row">
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="referenceId"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.referenceNumber' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="referenceId" disabled required
+            [(ngModel)]="quotationRequestLogModel.referenceId" name="referenceId"
+            #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="createdDate"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.createdAt' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="createdDate" disabled required
+            [(ngModel)]="quotationRequestLogModel.createdDate" name="createdDate"
+            #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="nin" class="col-sm-4 col-form-label lebel-for-required">{{ 'driver.nin' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="nin" disabled required
+            [(ngModel)]="quotationRequestLogModel.nin" name="nin" #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="vehicleId"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'vehicle.vehicleId' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="vehicleId" disabled required
+            [(ngModel)]="quotationRequestLogModel.vehicleId" name="vehicleId" #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="externalId"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.externalId' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="externalId" disabled required
+            [(ngModel)]="quotationRequestLogModel.externalId" name="externalId" #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="insuranceTypeCode"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.insuranceTypeCode' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="insuranceTypeCode" disabled required
+            [(ngModel)]="quotationRequestLogModel.insuranceTypeCode" name="insuranceTypeCode" #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="userId"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.userId' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="userId" disabled required
+            [(ngModel)]="quotationRequestLogModel.userId" name="userId" #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="userName"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.userName' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="userName" disabled required
+            [(ngModel)]="quotationRequestLogModel.userName" name="userName" #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="companyID"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.companyID' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="companyID" disabled required
+            [(ngModel)]="quotationRequestLogModel.companyID" name="companyID" #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="companyName"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'insuranceCompany.insuranceCompany' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="companyName" disabled required
+            [(ngModel)]="quotationRequestLogModel.companyName" name="companyName"
+            #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="userIP"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.userIP' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="userIP" disabled required
+            [(ngModel)]="quotationRequestLogModel.userIP" name="userIP" #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="userAgent"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.userAgent' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="userAgent" disabled required
+            [(ngModel)]="quotationRequestLogModel.userAgent" name="userAgent" #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="serverIP"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.serverIP' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="serverIP" disabled required
+            [(ngModel)]="quotationRequestLogModel.serverIP" name="serverIP" #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="channel"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.channel' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="channel" disabled required
+            [(ngModel)]="quotationRequestLogModel.channel" name="channel" #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="errorCode"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'serviceRequests.errorCode' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="errorCode" disabled required
+            [(ngModel)]="quotationRequestLogModel.errorCode" name="errorCode" #quotationRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="errorDescription"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'serviceRequests.errorDescription' | translate}}</label>
+        <div class="col-sm-6">
+          <textarea rows="4" cols="50" type="text" #quotationRequestLogModelModel="ngModel" class="form-control"
+            id="errorDescription" name="errorDescription" [(ngModel)]="quotationRequestLogModel.errorDescription"
+            disabled></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <a [routerLink]="'/admin/requestLogs/quotationRequestLog'"
+      class="btn btn-default mr-r_s">{{'common.back' | translate}}</a>
+    <br>
+  </form>
+</div>

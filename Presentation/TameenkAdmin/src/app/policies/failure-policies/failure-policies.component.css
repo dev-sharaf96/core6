@@ -1,0 +1,16 @@
+.info-row {
+  overflow: hidden;
+}
+.info-row:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+  padding: 5px 0
+
+}
+
+.info-row span:first-child {
+  font-weight: bold
+}
+.action-btn:not(:last-child) {
+
+  margin-inline-end: 10px;
+}

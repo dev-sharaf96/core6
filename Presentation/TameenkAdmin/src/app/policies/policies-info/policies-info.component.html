@@ -1,0 +1,123 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'policy.policies_info' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <div class="panel-body">
+        <div  class="row">
+          <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+              <label for="" translate>common.by_insurance_company</label>
+              <app-shared-insurance-companies [(selectedValue)]="policyInfoFilter.insuranceCompanyId">
+              </app-shared-insurance-companies>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+              <label for="" translate>policy.najm_status</label>
+              <app-najm-status [(selectedValue)]="policyInfoFilter.najmStatusId"></app-najm-status>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+              <label for="" translate>common.payments_method</label>
+              <app-payment-method-dropdown [(selectedValue)]="policyInfoFilter.paymentMethodId"></app-payment-method-dropdown>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <label for="policy_number" translate>policy.policy_no</label>
+              <input type="text" [(ngModel)]="policyInfoFilter.policyNo" class="form-control" id="policy_number" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <label for="referenceNo" translate>invoice.reference_id</label>
+              <input type="text" [(ngModel)]="policyInfoFilter.referenceNo" class="form-control" id="referenceNo" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <label for="invoiceNo" translate>policy.invoiceNo</label>
+              <input type="text" [(ngModel)]="policyInfoFilter.invoiceNo" class="form-control" id="invoiceNo" />
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-md-2">
+            <button (click)="filterClick(reportsTable)" [disabled]="isSearch" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.search
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" [ngClass]="{'hidden': firstTime}">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a (click)="exportCsv()" class="pointer" translate>common.export</a>
+        <div class="text-left">{{'common.results_count' | translate}} : {{SuccessPoliciesCount}}</div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table #reportsTable
+                 [value]="policyListing"
+                 [lazy]="true"
+                 (onLazyLoad)="SuccessPoliciesLazyLoad($event)"
+                 [lazyLoadOnInit]="false"
+                 [totalRecords]="SuccessPoliciesCount"
+                 [rowsPerPageOptions]="[5, 10, 20]"
+                 [loading]="loading"
+                 [paginator]="true"
+                 [rows]="10"
+                 [responsive]="true"
+                 scrollHeight="200px"
+                 [autoLayout]="true"
+                 [resizableColumns]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate> common.policyNumber </th>
+              <th translate> common.company </th>
+              <th translate> invoice.reference_id </th>
+              <th translate> policy.najm_status </th>
+              <th translate> policy.invoiceNo </th>
+              <th translate> common.payments_method </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-policy>
+            <tr>
+              <td style="word-wrap: break-word"> {{ policy.policyNo || emptyStringValue }} </td>
+              <td style="word-wrap: break-word">
+                {{ isEnglish ? policy.insuranceCompanyNameEn : policy.insuranceCompanyNameAr || emptyStringValue }}
+               </td>
+              <td style="word-wrap: break-word"> {{ policy.referenceNo || emptyStringValue }} </td>
+              <td style="word-wrap: break-word">
+                {{ isEnglish ? policy.najmStatusNameEn : policy.najmStatusNameAr || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word"> {{ policy.invoiceNo || emptyStringValue }} </td>
+              <td style="word-wrap: break-word">
+                {{ isEnglish ? policy.paymentMethodNameEn : policy.paymentMethodNameAr || emptyStringValue }}
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>

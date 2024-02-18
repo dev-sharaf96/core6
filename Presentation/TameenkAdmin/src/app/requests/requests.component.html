@@ -1,0 +1,226 @@
+
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'navbar.requests' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="" translate>common.by_insurance_company</label>
+              <app-shared-insurance-companies
+              [(selectedValue)]="requestsFilter.insuranceCompanyId"
+              ></app-shared-insurance-companies>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="" translate>common.services</label>
+              <app-methods-dropdown [(selectedValue)]="requestsFilter.method"></app-methods-dropdown>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+              <label for="" translate>common.status</label>
+              <app-status-dropdown [(selectedValue)]="requestsFilter.statusCode"></app-status-dropdown>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="sequenceNo" translate>vehicle.vehicleId</label>
+              <input type="text" [(ngModel)]="requestsFilter.vehicleId" class="form-control" id="sequenceNo" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="nationalId" translate>policy.insured_NIN</label>
+              <input type="text" [(ngModel)]="requestsFilter.nationalId" class="form-control" id="nationalId" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="referenceNo" translate>invoice.reference_id</label>
+              <input type="text" [(ngModel)]="requestsFilter.referenceNo" class="form-control" id="referenceNo" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.from'| translate}}</label>
+                    <div class="form-group">
+                    <p-calendar
+                      [(ngModel)]="requestsFilter.startDate"
+                      [showIcon]="true"
+                      [placeholder]="'common.from' | translate"
+                      [maxDate]="requestsFilter.endDate || today"
+                      styleClass="w-100" inputStyleClass="form-control"
+                    ></p-calendar>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                      <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.to'| translate}}</label>
+                      <div class="form-group">
+                    <p-calendar
+                      [(ngModel)]="requestsFilter.endDate"
+                      [showIcon]="true"
+                      [placeholder]="'common.to' | translate"
+                      [minDate]="requestsFilter.startDate"
+                      [maxDate]="today"
+                      styleClass="w-100" inputStyleClass="form-control"
+                      ></p-calendar>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="row">
+                <div class="col-xs-12 col-md-6">
+                    <div class="form-group">
+                      <label for="policyNo" translate>policy.policy_no</label>
+                      <input type="text" [(ngModel)]="requestsFilter.policyNo" class="form-control" id="policyNo" />
+                    </div>
+                 </div>
+                 <div class="col-xs-12 col-md-6">
+                    <button
+                      (click)="filterClick(reportsTable)" [disabled]="isSearch"
+                      class="btn btn-primary"
+                      style="margin-top: 20px;"
+                      translate>
+                      common.search
+                    </button>
+                  </div>
+            </div>
+
+          </div>
+
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row" [ngClass]="{'hidden': firstTime}">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a (click)="exportCsv()" class="pointer" translate>common.export</a>
+        <div class="text-left clearfix">{{'common.results_count' | translate}} : {{requestsCount}}
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table
+          #reportsTable
+            [value]="requests"
+            [lazy]="true"
+            (onLazyLoad)="requestsLazyLoad($event)"
+            [lazyLoadOnInit]="false"
+            [totalRecords]="requestsCount"
+            [resetPageOnSort]="true"
+            [rowsPerPageOptions]="[5, 10, 20]"
+            [loading]="loading"
+            [paginator]="true"
+            [rows]="10"
+            [responsive]="true"
+            scrollHeight="200px"
+            [autoLayout]="true"
+            [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="reportsTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'createdDate'" translate>
+                  serviceRequests.date
+                <p-sortIcon [field]="'createdDate'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th translate>
+                  serviceRequests.errorDescription
+              </th>
+              <!-- <th [pSortableColumn]="'serviceRequest'" translate>
+                  serviceRequests.serviceRequest
+                <p-sortIcon [field]="'serviceRequest'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'serviceResponse'" translate>
+                  serviceRequests.serviceResponse
+                <p-sortIcon [field]="'serviceResponse'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th> -->
+              <th translate>
+                  serviceRequests.method
+              </th>
+              <th translate>
+                  serviceRequests.errorCode
+              </th>
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-request>
+            <tr>
+              <td style="word-wrap: break-word">
+                {{ request.createdDate | date:'medium' }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ request.errorDescription || emptyStringValue }}
+              </td>
+              <!-- <td style="word-wrap: break-word">
+                {{ request.serviceRequest || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ request.serviceResponse || emptyStringValue }}
+              </td> -->
+              <td style="word-wrap: break-word">
+                {{ request.method || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ request.errorCode || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word;text-align: center">
+                  <button type="button" class="btn btn-secondary action-btn" (click)="showDetails(request)" translate>policy.details</button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<!-- <app-loader *ngIf="firstTime"></app-loader> -->
+
+
+<p-dialog [(visible)]="selectedRequest" [modal]="true" [responsive]="true" [minY]="70" [baseZIndex]="10000" [dismissableMask]="true" [rtl]="!isEnglish">
+    <div *ngIf="selectedRequest">
+      <div class="info-row"><h4 class="">{{'serviceRequests.serviceRequest' | translate}}:</h4> <p class="">{{selectedRequest.serviceRequest || emptyStringValue}}</p></div>
+      <div class="info-row"><h4 class="">{{'serviceRequests.serviceResponse' | translate}}:</h4> <p class="">{{selectedRequest.serviceResponse || emptyStringValue}}</p></div>
+     </div>
+  </p-dialog>

@@ -1,0 +1,145 @@
+<div class="container edit-section">
+  <h2 translate>common.generate</h2>
+
+  <form #generatePolicy="ngForm" (submit)="generate(generatePolicy)" novalidate>
+    <div class="row">
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="referenceId" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.reference_id' |
+          translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="referenceId" [(ngModel)]="policy.referenceId" name="referenceId"
+            required #referenceId="ngModel">
+            <span *ngIf="referenceId.invalid && generatePolicy.submitted">
+              <span class="field-error" *ngIf="referenceId.errors['required']">{{'common.required' | translate}}</span>
+              <span class="field-error" *ngIf="referenceId.errors['invalid']">{{'common.invalid' | translate}}</span>
+            </span>
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="policyNo" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.PolicyNo' |
+          translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="policyNo" [(ngModel)]="policy.policyNo" name="policyNo"
+            required #policyNo="ngModel">
+            <span *ngIf="policyNo.invalid && generatePolicy.submitted">
+              <span class="field-error" *ngIf="policyNo.errors['required']">{{'common.required' | translate}}</span>
+              <span class="field-error" *ngIf="policyNo.errors['invalid']">{{'common.invalid' | translate}}</span>
+            </span>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="companyID" class="col-sm-4 col-form-label lebel-for-required">{{ 'requests.companyName' |
+          translate}}</label>
+        <div class="col-sm-6">
+            <p-dropdown [options]="companies" [(ngModel)]="company" name="company" optionLabel="name" filter="true" [style]="{'width':'100%'}"
+            (onChange)="companyChanged()" [placeholder]="'requests.companyName' | translate"></p-dropdown>
+
+          <!-- <app-shared-insurance-companies [(ngModel)]="policy.companyID"></app-shared-insurance-companies> -->
+          <input type="hidden" class="form-control" id="companyID" [(ngModel)]="policy.companyID"
+            name="companyID" required #companyID="ngModel">
+            <span *ngIf="companyID.invalid && generatePolicy.submitted">
+              <span class="field-error" *ngIf="companyID.errors['required']">{{'common.required' | translate}}</span>
+              <span class="field-error" *ngIf="companyID.errors['invalid']">{{'common.invalid' | translate}}</span>
+            </span>
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="policyFile" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.policy_file' | translate}}</label>
+        <div class="col-sm-6">
+            <p-fileUpload
+            #fileupload
+            styleClass="form-control"
+            id="policy"
+            accept="application/pdf"
+            (onSelect)="handleFileInput($event)"
+            mode="basic"
+            customUpload="true"
+            name="policy"
+            (click)="fileupload.clear(); policy.policyFile=null"
+            [chooseLabel]="'updateRequest.browse' | translate"></p-fileUpload>
+          <input type="hidden" class="form-control" id="policyFile" [(ngModel)]="policy.policyFile" name="policyFile"
+            [required]="isRequired ? 'required' : null" #policyFile="ngModel" accept="application/pdf">
+            <span *ngIf="policyFile.invalid && generatePolicy.submitted">
+              <span class="field-error" *ngIf="policyFile.errors['required']">{{'common.required' | translate}}</span>
+              <span class="field-error" *ngIf="policyFile.errors['invalid']">{{'common.invalid' | translate}}</span>
+            </span>
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="policyEffectiveDate" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.policy_effective_date' |
+          translate}}</label>
+        <div class="col-sm-6">
+            <p-calendar
+            [(ngModel)]="policy.policyEffectiveDate"
+            [showIcon]="true"
+            name="policyEffectiveDate"
+            #policyEffectiveDate="ngModel"
+            styleClass="w-100"
+            inputStyleClass="form-control"
+            required></p-calendar>
+            <span *ngIf="policyEffectiveDate.invalid && generatePolicy.submitted">
+              <span class="field-error" *ngIf="policyEffectiveDate.errors['required']">{{'common.required' | translate}}</span>
+              <span class="field-error" *ngIf="policyEffectiveDate.errors['invalid']">{{'common.invalid' | translate}}</span>
+            </span>
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="policyIssuanceDate" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.policy_issue_date' |
+          translate}}</label>
+        <div class="col-sm-6">
+            <p-calendar
+            [(ngModel)]="policy.policyIssuanceDate"
+            [showIcon]="true"
+            name="policyIssuanceDate"
+            #policyIssuanceDate="ngModel"
+            styleClass="w-100"
+            inputStyleClass="form-control"
+            required></p-calendar>
+            <span *ngIf="policyIssuanceDate.invalid && generatePolicy.submitted">
+              <span class="field-error" *ngIf="policyIssuanceDate.errors['required']">{{'common.required' | translate}}</span>
+              <span class="field-error" *ngIf="policyIssuanceDate.errors['invalid']">{{'common.invalid' | translate}}</span>
+            </span>
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="policyExpiryDate" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.policy_expiry_date' |
+          translate}}</label>
+        <div class="col-sm-6">
+            <p-calendar
+            [(ngModel)]="policy.policyExpiryDate"
+            [showIcon]="true"
+            name="policyExpiryDate"
+            #policyExpiryDate="ngModel"
+            styleClass="w-100"
+            inputStyleClass="form-control"
+            required></p-calendar>
+            <span *ngIf="policyExpiryDate.invalid && generatePolicy.submitted">
+              <span class="field-error" *ngIf="policyExpiryDate.errors['required']">{{'common.required' | translate}}</span>
+              <span class="field-error" *ngIf="policyExpiryDate.errors['invalid']">{{'common.invalid' | translate}}</span>
+            </span>
+        </div>
+      </div>
+      <!-- <div class="col-xs-12 col-md-6 form-group row">
+        <label for="statusCode" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.policy_status' |
+          translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="statusCode" [(ngModel)]="policy.statusCode"
+            name="statusCode" required #statusCode="ngModel">
+        </div>
+      </div> -->
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="isPolicyGeneratedByBCare" class="col-sm-8 col-form-label">
+          {{ 'policy.isPolicyGeneratedByBCare' | translate}}
+        </label>
+        <div class="col-sm-2">
+          <input type="checkbox" class="" id="isPolicyGeneratedByBCare" name="isPolicyGeneratedByBCare"
+                 #isPolicyGeneratedByBCare="ngModel" [(ngModel)]="policy.isPolicyGeneratedByBCare"
+                 (change)="IsPolicyGeneratedByBCare($event)">
+        </div>
+      </div>
+    </div>
+    <a [routerLink]="'/admin/policies/success'" class="btn btn-default mr-r_s">{{'common.back' | translate}}</a>
+    <button type="submit" class="btn btn-primary">{{'insuranceCompany.save' | translate}} <i class="fa fa-spinner fa-spin" *ngIf="loading"></i></button>
+  </form>
+</div>

@@ -1,0 +1,81 @@
+<!-- My Purchases begains -->
+<h1 class="txt-lr txt-black md-mar-bot md-mar col-xs-12" translate>
+  profile.MyPurchases
+</h1>
+<article>
+  <!--
+    @foreach (Tameenk.Core.Domain.Entities.Invoice purchaseObj in Model.PurchasesList)
+    {
+  -->
+  <div class="wrapper-bx md-mar vehicle-row dl-section" *ngFor="let invoice of invoices">
+    <div class="row">
+      <header class="col-xs-12 col-lg-8 col-lg-12 over-hidden bx-right">
+        <span class="txt-sm  txt-mgray dis-block ">
+          {{ "profile.invoice_no" | translate }}: {{ invoice.invoiceNo }}
+          <app-placholder
+            [width]="90"
+            [height]="20"
+            *ngIf="invoice === null || invoice  === undefined"
+          ></app-placholder>
+        </span>
+        <!-- Backend -->
+        <h2 class="txt-lr txt-black no-mar">
+          {{ userInfo?.fullName || userInfo?.email }}
+          <app-placholder
+            [width]="170"
+            [height]="20"
+            *ngIf="invoice === null || invoice  === undefined"
+          ></app-placholder>
+        </h2>
+        <!-- Backend -->
+        <h3 class="txt-sm  txt-mgray dis-block xs-mar">
+          {{ invoice.invoiceDate | date: "medium" }}
+          <app-placholder
+            [width]="150"
+            [height]="20"
+            *ngIf="invoice === null || invoice  === undefined"
+          ></app-placholder>
+        </h3>
+        <!-- Backend -->
+      </header>
+      <footer class="col-xs-12 col-lg-4 col-lg-12 over-hidden bx-right">
+        <h2 class="txt-xl txt-black no-mar  bx-left  dis-block resp txt-right">
+          {{ invoice.totalPrice }}
+          <app-placholder
+            [width]="120"
+            [height]="20"
+            *ngIf="invoice === null || invoice  === undefined"
+          ></app-placholder>
+          <!-- Backend -->
+          <span class="dis-inline-block txt-md right-mar-10" translate>{{
+            "common.SAR" | translate
+          }}</span>
+        </h2>
+      </footer>
+    </div>
+    <div class="small-desc over-hidden f_width md-mar bx-right txt-mgray">
+      <span class="dis-block bx-right">
+        {{ "profile.invoice_insurance_company" | translate }}
+        {{ invoice.insuranceCompanyName }}
+        <app-placholder
+          [width]="150"
+          [height]="20"
+          *ngIf="invoice === null || invoice  === undefined"
+        ></app-placholder>
+      </span>
+      <a
+        (click)="downloadInvoice(invoice.id)"
+        class="dis-block txt-right bx-left right-mar-10 txt-black dl-link"
+        style="cursor: pointer"
+        translate
+      >
+        <i class="ic-icons-502 txt-black bx-right general-ico"></i
+        >profile.invoice_download
+      </a>
+    </div>
+  </div>
+  <!-- } -->
+  <app-pager *ngIf="invoices" [totalCount]="totalCount" (paging)="getUserAllInvoices($event)"></app-pager>
+</article>
+<!-- My Purchases ends -->
+<app-loading *ngIf="loading"></app-loading>

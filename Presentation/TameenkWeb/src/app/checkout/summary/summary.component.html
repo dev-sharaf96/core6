@@ -1,0 +1,35 @@
+<aside class="col-xs-12 col-md-4 col-lg-4 bg-ofwhite md-ver-spc bx-left">
+  <span class="img-cutter">
+    <img [src]="'assets/imgs/insurerlogos/insurer-logo-'+ checkoutDetails.insuranceCompanyId +'.png'" [alt]="checkoutDetails.insuranceCompanyId">
+  </span>
+  <h1 class="txt-md txt-black no-mar sm-mar bx-right f_width dis-block txt-center" translate>
+    {{checkoutDetails.typeOfInsurance === 1 ? 'quotation.Search_TPL_long' : 'quotation.Search_Comprehensive'}}
+  </h1>
+  <span class="txt-sm txt-black no-mar xs-mar sm-mar-bot bx-right f_width dis-block txt-center">{{isEnglish ? checkoutDetails.selectedProduct.ProductNameEn :checkoutDetails.selectedProduct.ProductNameAr}}</span>
+  <ul class="block-list over-hidden bx-right f_width no-mar">
+    <li class="txt-mgray no-mar txt-md" *ngFor="let price of checkoutDetails.selectedProduct.PriceDetails">
+      <span class="price-description bx-right">{{isEnglish ? price.PriceNameEn : price.PriceNameAr}}</span>
+      <span class="value bx-left"> {{price.PriceValue |  number:'1.0-2'}}</span>
+    </li>
+  </ul>
+  <section *ngIf="checkoutDetails.selectedProduct.Benefits.length">
+    <h2 class="txt-md txt-black no-mar sm-mar bx-right f_width dis-block txt-center" translate>checkout.selected_benefits</h2>
+    <ul class="block-list over-hidden bx-right f_width no-mar">
+      <li class="txt-mgray no-mar txt-md" *ngFor="let benefit of checkoutDetails.selectedProduct.Benefits">
+        <span class="price-description bx-right">{{isEnglish ? benefit.BenefitNameEn : benefit.BenefitNameAr}}</span>
+        <span class="value bx-left">{{benefit.BenefitPrice |  number:'1.0-2'}}</span>
+      </li>
+    </ul>
+  </section>
+  <hr style="border-top: 1px solid #798B9B;margin-top: 15x;margin-bottom: 5px;clear: both;">
+  <span class="txt-black no-mar bx-right f_width dis-block txt-center bold" style="padding-top: 10px;" translate>common.total</span>
+  <h2 class="txt-lr txt-black xs-mar bx-right f_width dis-block xs-mar-bot bold" style="display: flex;justify-content: center;align-items: center;">{{checkoutDetails.paymentAmount | number:'1.0-2'}} <span class="dis-inline-block txt-md right-mar-10 left-mar-10 bold">{{'common.SAR' | translate}}</span></h2>
+  <!-- <div class="total-box" style="display: flex;justify-content: space-between;align-items: center;width: 100%"> -->
+    <!-- <span class="txt-black no-mar bx-right f_width dis-block txt-center bold" style="padding-top: 10px;">الإجمالي</span>
+    <div class="price" style="display: flex;align-items: center">
+      <h2 class="txt-lr txt-black xs-mar bx-right f_width dis-block xs-mar-bot bold" style="display: flex;justify-content: center;align-items: center;">{{checkoutDetails.paymentAmount}}</h2>
+      <span class="dis-inline-block txt-md right-mar-10 left-mar-10 bold">{{'common.SAR' | translate}}</span>
+    </div> -->
+  <!-- </div> -->
+  <app-upgrade *ngIf="checkoutDetails.typeOfInsurance === 1" [qtRqstExtrnlId]="checkoutDetails.qtRqstExtrnlId"></app-upgrade>
+</aside>

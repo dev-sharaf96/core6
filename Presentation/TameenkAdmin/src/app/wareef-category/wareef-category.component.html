@@ -1,0 +1,391 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ "wareef.AddWareef" | translate }}</h4>
+  </div>
+</div>
+
+<!-- page search section -->
+<!-- <div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+              <div class="form-group">
+                <label for="nin" translate> driver.nin </label>
+                <input type="text" [(ngModel)]="filterModel.nin" class="form-control" id="nin" />
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+              <div class="form-group">
+                <label for="email" translate> common.email </label>
+                <input type="text" [(ngModel)]="filterModel.email" class="form-control" id="email" />
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+              <div class="form-group">
+                <label for="2227729942" translate>common.requestStatus</label>
+                <p-dropdown [options]="status" [(ngModel)]="filterModel.status" optionLabel="name" filter="true" [style]="{'width':'100%'}"
+                            placeholder="Please select">
+                </p-dropdown>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+              <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.from'| translate}}</label>
+              <div class="form-group">
+                <p-calendar [(ngModel)]="filterModel.startDate" [showIcon]="true" [placeholder]="'common.from' | translate" [maxDate]="filterModel.endDate || today"
+                        styleClass="w-100" inputStyleClass="form-control"
+                ></p-calendar>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+              <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.to'| translate}}</label>
+              <div class="form-group">
+                <p-calendar [(ngModel)]="filterModel.endDate" [showIcon]="true" [placeholder]="'common.to' | translate" [minDate]="filterModel.startDate"
+                        [maxDate]="today" styleClass="w-100" inputStyleClass="form-control" >
+                </p-calendar>
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-12 col-md-2">
+              <button [disabled]="isSearch" (click)="filterClick(approvalsTable)" class="btn btn-primary" style="margin-top: 20px;" translate>
+                common.search
+              </button>
+            </div>
+          </div>
+        </div>
+        <br />
+        <div *ngIf="showEmptySearchValidation">
+          <span class="uploadDiscountSheetFileValidation" [innerHtml]="emptyValidationTextToAdd">
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<div class="row" [ngClass]="{ hidden: firstTime }">
+  <div class="col-lg-12">
+    <button
+      (click)="ShowAddItem()"
+      class="btn btn-success action-btn"
+      translate
+    >
+      wareef.AddNewItem
+    </button>
+    <div class="panel panel-default">
+      <div *ngIf="dataCount > 0" class="panel-heading">
+        <!-- <a (click)="exportCsv()" class="pointer" translate>common.export</a> -->
+        <div class="text-left">
+          {{ "common.results_count" | translate }} : {{ dataCount }}
+        </div>
+      </div>
+      <div class="panel-body">
+        <p-table
+          #approvalsTable
+          [value]="AllData"
+          [lazy]="true"
+          [lazyLoadOnInit]="false"
+          [totalRecords]="dataCount"
+          [rowsPerPageOptions]="[5, 10, 20]"
+          [loading]="loading"
+          [paginator]="true"
+          [rows]="10"
+          [responsive]="true"
+          scrollHeight="200px"
+          [autoLayout]="true"
+          [resizableColumns]="true"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate>wareef.nameAr</th>
+              <th translate>wareef.nameEn</th>
+              <!-- <th translate> wareef.icon </th> -->
+              <th translate>wareef.edit</th>
+              <th translate>wareef.remove</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td style="word-wrap: break-word; text-align: center">
+                {{ item.NameAr || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word; text-align: center">
+                {{ item.NameEn || emptyStringValue }}
+              </td>
+              <!-- <td style="word-wrap: break-word;text-align: center"> {{ item.Icon || emptyStringValue }} </td> -->
+              <td style="word-wrap: break-word; text-align: center">
+                <!-- <button *ngIf="item.ImageBytes"(click)="showImg(item.Id)" class="btn btn-primary action-btn" translate>common.details</button> -->
+                <button
+                  (click)="Edit(item.Id)"
+                  class="btn btn-warning action-btn"
+                  translate
+                >
+                  wareef.edit
+                </button>
+              </td>
+              <td style="word-wrap: break-word; text-align: center">
+                <button
+                  (click)="showDeleteDialog(item.Id)"
+                  class="btn btn-danger action-btn col-6"
+                  translate
+                >
+                  common.delete
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <p-dialog [(visible)]="selectedImage" [modal]="true" [style]="{width: '550px', height: '450px'}" [responsive]="true" [minY]="70" [baseZIndex]="10000"
+  [dismissableMask]="true" [rtl]="!isEnglish">
+  <div *ngIf="selectedImage">
+    <img  style="width: 100%; max-height: 100%;" [src]="showenImage" />
+  </div>
+</p-dialog> -->
+
+<!-- Add New Item PopUp -->
+<p-dialog
+  [(visible)]="AddDailog"
+  [modal]="true"
+  [style]="{ width: '600px', height: '450px' }"
+  [responsive]="true"
+  [minY]="70"
+  [baseZIndex]="10000"
+  [dismissableMask]="true"
+  [rtl]="!isEnglish"
+>
+  <div *ngIf="AddDailog">
+    <div class="row">
+      <div class="col-xs-12">
+        <form #wareefCategoryForm="ngForm"  novalidate>
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="form-group">
+              <label for="" class="control-label required" translate
+                >wareef.nameAr</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="userNameAr"
+                required
+                [(ngModel)]="CategoryAdd.nameAr"
+                name="userNameAr"
+                #userNameAr="ngModel"
+              />
+              <div *ngIf="wareefCategoryForm.submitted && userNameAr.errors">
+                <div class="error-msg" *ngIf="userNameAr.errors['required']" translate>promotion.Name_required</div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="form-group">
+              <label for="" class="control-label required" translate
+                >wareef.nameEn</label
+              >
+              <input
+                class="form-control"
+                id="userNameEn"
+                required
+                [(ngModel)]="CategoryAdd.nameEn"
+                name="userNameEn"
+                #userNameEn="ngModel"
+              />
+              <div *ngIf="wareefCategoryForm.submitted && userNameEn.errors">
+                <div class="error-msg" *ngIf="userNameEn.errors['required']" translate>promotion.Name_required</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <!-- <div class="form-group">
+
+              <label
+                for=""
+                (click)="attachMent.click()"
+                class="control-label required"
+                translate
+                >{{attatchName || 'SelectFile' | translate}}</label
+              >
+              <input
+                class="form-control"
+                id="userName"
+                #attachMent
+                (change)="onFileChanged($event)"
+                type="file"
+                #attachMent
+                accept="image/png, image/jpeg"
+                required
+                [(ngModel)]="CategoryAdd.icon"
+                name="userName"
+              />
+            </div> -->
+
+            <div class="form-group">
+              <label for="" translate>common.image</label>
+              <input
+                accept="image/png, image/jpg, image/jpeg"
+                type="file"
+                class="input__field"
+                name="ImageFront"
+                id="ImageFront"
+                target="car-upload-front"
+                aria-required="true"
+                (change)="handleFileInput($event.target.files)"
+                formControlName="imageData"
+               
+              />
+            </div>
+
+
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-12">
+            <button
+              [disabled]="isSearch || wareefCategoryForm.invalid"
+              (click)="SubmitAddItem()"
+              class="btn btn-primary"
+              style="margin-top: 20px"
+              translate
+            >
+              wareef.add
+            </button>
+          </div>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+</p-dialog>
+<p-dialog
+  [(visible)]="EditDailog"
+  [modal]="true"
+  [style]="{ width: '600px', height: '450px' }"
+  [responsive]="true"
+  [minY]="70"
+  [baseZIndex]="10000"
+  [dismissableMask]="true"
+  [rtl]="!isEnglish"
+>
+  <div *ngIf="EditDailog">
+    <div class="row">
+      <div class="col-xs-12">
+        <form #wareefCategoryEditForm="ngForm"  novalidate>
+          <div class="col-xs-12 col-sm-6 col-md-12 col-lg-12">
+            <div class="form-group">
+              <label for="" class="control-label required" translate
+                >wareef.nameAr</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="userNameAr"
+                required
+                [(ngModel)]="SelectedCategory.nameAr"
+                name="userNameAr"
+                #usernameAr="ngModel"
+              />
+            </div>
+          </div>
+  
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="form-group">
+              <label for="" class="control-label required" translate
+                >wareef.nameEn</label
+              >
+              <input
+                class="form-control"
+                id="usernameEn"
+                required
+                [(ngModel)]="SelectedCategory.nameEn"
+                name="usernameEn"
+                #usernameEn="ngModel"
+              />
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <!-- <div class="form-group">
+              <label for="" class="control-label required" translate
+                >wareef.icon</label
+              >
+              <input
+                class="form-control"
+                id="userName"
+                required
+                [(ngModel)]="SelectedCategory.icon"
+                name="userName"
+              />
+            </div> -->
+            <div class="form-group">
+              <label
+                for=""
+                (click)="attachMent.click()"
+                class="control-label required"
+                translate
+                >{{attatchName || 'SelectFile' | translate}}</label
+              >
+              <input
+                class="form-control"
+                id="userName"
+                #attachMent
+                (change)="onFileChanged($event)"
+                type="file"
+                accept="image/png, image/jpeg"
+                [(ngModel)]="CategoryAdd.icon"
+                name="userName"
+              />
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-12">
+            <button
+              [disabled]="isSearch || wareefCategoryEditForm.invalid"
+              (click)="SubmitEdit()"
+              class="btn btn-primary"
+              style="margin-top: 20px"
+              translate
+            >
+              wareef.edit
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="deleteDialog"
+  [modal]="true"
+  [style]="{ width: '400px', height: '200px' }"
+  [responsive]="true"
+  [minY]="70"
+  [baseZIndex]="10000"
+  [dismissableMask]="true"
+  [rtl]="!isEnglish"
+>
+  <div *ngIf="deleteDialog">
+    <ng-container class="form-group mb-3">
+      <h4 class="text-center mb-3">Are You sure Remove item</h4>
+    </ng-container>
+    <div class="form-group mt-2">
+      <button class="btn btn-danger confirm" (click)="delete()">Confirm</button>
+    </div>
+  </div>
+</p-dialog>

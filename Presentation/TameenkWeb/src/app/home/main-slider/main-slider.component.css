@@ -1,0 +1,183 @@
+.scroll-down {
+  position: absolute;
+  text-align: center;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.scroll-down a {
+  color: #fff;
+}
+
+.slidesCover .bg {
+  position: absolute;
+  height: 100%;
+  width: inherit;
+  top: 0px;
+  background-size: cover;
+  background-position: top;
+}
+
+#top-slider a {
+  display: inline-block;
+  background-color: #f79818;
+  padding: 15px 25px;
+  color: #FFF;
+  font-size: 25px;
+  font-weight: bold;
+  -moz-box-shadow: 0 10px 5px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 10px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 5px rgba(0, 0, 0, 0.3);
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+  border-radius: 20px;
+  -webkit-transition: background-color 0.2s ease-in-out;
+  -moz-transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out;
+  margin: 50px 0 10px;
+  outline: 0
+}
+
+#top-slider a:hover {
+  background-color: #ffc107;
+}
+
+button {
+  border: 0;
+  background: none;
+  padding: 0;
+  margin: 0;
+  text-align: inherit;
+}
+
+.section.overview {
+  position: relative;
+  background-size: inherit;
+  min-height: calc(100vh - 50px);
+  padding: 100px 0;
+}
+
+@media screen and (min-width: 64em) {
+  .section.overview {
+    background-size: cover;
+  }
+}
+
+.section.overview:after {
+  height: 80%;
+  position: absolute;
+  background-image: -moz-linear-gradient(-90deg, transparent 60%, #fff 100%);
+  background-image: -webkit-linear-gradient(-90deg, transparent 60%, #fff 100%);
+  width: 100%;
+  content: '';
+  bottom: -1px;
+  z-index: 2;
+}
+
+.slider-imgs {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0px;
+}
+
+.slider-imgs * {
+  height: 100%;
+}
+
+@media (max-width: 992px) {
+  #top-slider a {
+    padding: 15px 90px;
+  }
+}
+
+@media (max-width: 570px) {
+  #top-slider a {
+    width: 90%;
+    text-align: center;
+    font-size: 18px;
+    padding: 15px 0;
+  }
+}
+
+#slider.slides>div {
+  display: none;
+}
+
+.arrows {
+  width: 60px;
+  height: 72px;
+}
+
+.arrows path {
+  stroke: #186AA5;
+  fill: transparent;
+  stroke-width: 1px;
+  animation: arrow 2s infinite;
+  -webkit-animation: arrow 2s infinite;
+}
+
+.arrows path.a1 {
+  animation-delay: -1s;
+  -webkit-animation-delay: -1s;
+}
+
+.arrows path.a2 {
+  animation-delay: -0.5s;
+  -webkit-animation-delay: -0.5s;
+}
+
+.arrows path.a3 {
+  animation-delay: 0s;
+  -webkit-animation-delay: 0s;
+}
+
+/*! CSS Used from: Embedded */
+
+.slidesCover {
+  /*background: #0C101A;*/
+}
+
+.slidesCover .bg {
+  /*opacity: 0.8;*/
+}
+
+/*! CSS Used keyframes */
+
+@keyframes arrow {
+  0% {
+    opacity: 0;
+  }
+
+  40% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes arrow {
+  0% {
+    opacity: 0;
+  }
+
+  40% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}

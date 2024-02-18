@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <UserSecretsId>fbbc1071-e974-49ee-83f0-93e90e21e09d</UserSecretsId>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="wwwroot\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="e2e\src\pages\login.page.ts" />
+    <None Remove="src\app\core\guards\auth.guard.ts" />
+    <None Remove="src\app\core\helpers\index.ts" />
+    <None Remove="src\app\core\helpers\token.interceptor.ts" />
+    <None Remove="src\app\core\models\common.response.model.ts" />
+    <None Remove="src\app\core\models\contact.model.ts" />
+    <None Remove="src\app\core\models\driver.model.ts" />
+    <None Remove="src\app\core\models\error.model.ts" />
+    <None Remove="src\app\core\models\najm-status-history.model.ts" />
+    <None Remove="src\app\core\models\najm-status-response.model.ts" />
+    <None Remove="src\app\core\models\user-token.model.ts" />
+    <None Remove="src\app\core\services\authentication.service.ts" />
+    <None Remove="src\app\core\services\insurance-company.service.ts" />
+    <None Remove="src\app\core\services\localization.service.ts" />
+    <None Remove="src\app\core\services\notification.service.ts" />
+    <None Remove="src\app\core\services\policy.service.ts" />
+    <None Remove="src\app\insuranc-company\edit-company\edit-company.component.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="e2e\src\pages\login.page.ts" />
+    <TypeScriptCompile Include="src\app\core\guards\auth.guard.ts" />
+    <TypeScriptCompile Include="src\app\core\helpers\index.ts" />
+    <TypeScriptCompile Include="src\app\core\helpers\token.interceptor.ts" />
+    <TypeScriptCompile Include="src\app\core\models\common.response.model.ts" />
+    <TypeScriptCompile Include="src\app\core\models\contact.model.ts" />
+    <TypeScriptCompile Include="src\app\core\models\driver.model.ts" />
+    <TypeScriptCompile Include="src\app\core\models\error.model.ts" />
+    <TypeScriptCompile Include="src\app\core\models\najm-status-history.model.ts" />
+    <TypeScriptCompile Include="src\app\core\models\najm-status-response.model.ts" />
+    <TypeScriptCompile Include="src\app\core\models\user-token.model.ts" />
+    <TypeScriptCompile Include="src\app\core\services\insurance-company.service.ts" />
+    <TypeScriptCompile Include="src\app\core\services\localization.service.ts" />
+    <TypeScriptCompile Include="src\app\core\services\authentication.service.ts" />
+    <TypeScriptCompile Include="src\app\core\services\notification.service.ts" />
+    <TypeScriptCompile Include="src\app\core\services\policy.service.ts" />
+    <TypeScriptCompile Include="src\app\insuranc-company\companies-list\companies-list.component.ts" />
+    <TypeScriptCompile Include="src\app\insuranc-company\edit-company\edit-company.component.ts" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,12 @@
+.edit-section {
+  padding-bottom: 50px;
+}
+h2 {
+  margin-bottom: 20px
+}
+.form-control[disabled], fieldset[disabled] .form-control {
+  cursor: default;
+}
+img {
+  width: 100%
+}

@@ -1,0 +1,153 @@
+
+    <div class="row" >
+      <div class="col-xs-12">
+        <h4 class="page-header">{{ 'policy.policyCheckout' | translate }}</h4>
+      </div>
+    </div>
+  <div class="row">
+      <div class="panel panel-default">
+        <div class="panel-heading" translate>common.filter_by</div>
+        <!-- /.panel-heading -->
+        <div class="panel-body">
+          <div class="row">
+            <form ngNativeValidate (ngSubmit)="policyCheckoutLazyLoad(this)">
+            <div class="col-sm-3">
+              <div class="form-group">
+                      <label name="nin" for="nin" >{{ 'driver.nin' | translate }}</label>
+                <input
+                  type="text" required
+                  [(ngModel)]="policyCheckoutFilter.NIN"
+                  class="form-control"
+                  id="nin"
+                  name="nin"
+                />
+              </div>
+            </div>  
+            
+            <div class="col-xs-12 col-md-2">
+              <button 
+              type="submit"
+                class="btn btn-primary"
+                style="margin-top: 20px;"
+                translate>
+                common.search
+              </button>
+          </div>
+        </form>
+        <button (click)="showAddForm()" 
+        class="btn btn-success"
+        style="margin-top: 20px;"
+        translate>
+        user.add
+      </button>
+</div>
+          </div>
+          <br />
+        
+        <!-- /.panel-body -->
+      </div>
+      <!-- /.panel -->
+  
+  <!-- /.row -->
+  <div class="row" [ngClass]="{'hidden': firstTime}" *ngIf="firstTime == false" >
+      <div class="col-lg-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="text-left clearfix">{{'driver.driverInfo' | translate}} 
+            </div>
+          </div>
+          <!-- /.panel-heading -->
+          <div class="panel-body" >
+            <form ngNativeValidate (ngSubmit)="AddOrUpdateCheckedoutPolicy()">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <div class="form-group">
+                              <label name="nin" for="nin" >{{ 'driver.nin' | translate }}</label>
+                        <input *ngIf="policyCheckoutModel.id > 0"
+                          type="text" disabled
+                          [(ngModel)]="policyCheckoutModel.nin"
+                          class="form-control"
+                          id="nin"
+                          name="nin"
+                        />
+                        <input *ngIf="policyCheckoutModel.id <= 0"
+                          type="text" required
+                          [(ngModel)]="policyCheckoutModel.nin"
+                          class="form-control"
+                          id="nin"
+                          name="nin"
+                        />
+                      </div>
+                    </div>      
+                    <div class="col-sm-3">
+                      <div class="form-group">
+                              <label name="mobileNumber" for="mobileNumber" >{{ 'insuranceCompany.mobileNumber' | translate }}</label>
+                        <input
+                          type="text" required
+                          [(ngModel)]="policyCheckoutModel.phone"
+                          class="form-control"
+                          id="mobileNumber"
+                          name="mobileNumber"
+
+                        />
+                      </div>
+                    </div>        
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <div class="form-group">
+                              <label name="email" for="email" >{{ 'common.email' | translate }}</label>
+                        <input
+                          type="email"
+                          [(ngModel)]="policyCheckoutModel.email"
+                          class="form-control"
+                          id="email"
+                          name="email"
+                          [email]="true"
+                          email
+                        />
+                      </div>
+                    </div>      
+                    <div class="col-sm-3">
+                      <div class="form-group">
+                              <label name="iban" for="iban" >{{ 'policy.iban' | translate }}</label>
+                        <input
+                          type="text"
+                          [(ngModel)]="policyCheckoutModel.iban"
+                          class="form-control"
+                          id="iban"
+                          name="iban"
+                        />
+                      </div>
+                    </div>        
+                  </div>
+                  <div class="row" >
+                    
+                    <div class="col-xs-12 col-md-2">
+                      <button type="submit"
+                        class="btn btn-primary"
+                        style="margin-top: 20px;"
+                        translate>
+                        insuranceCompany.save
+                      </button>
+                    </div>
+                    <div class="col-xs-12 col-md-2" *ngIf="policyCheckoutModel.id > 0">
+                      <button (click)="deleteCheckedoutPolicy(policyCheckoutModel.id)"
+                      type="button"
+                        class="btn btn-danger"
+                        style="margin-top: 20px;"
+                        translate>
+                        common.delete
+                      </button>
+                    </div>
+                  </div>              
+                <!-- /.panel-body -->
+              </form>
+              </div>
+        </div>
+        <!-- /.panel -->
+      </div>
+      <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <!-- <app-loader *ngIf="firstTime"></app-loader> -->

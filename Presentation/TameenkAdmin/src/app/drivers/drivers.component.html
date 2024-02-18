@@ -1,0 +1,163 @@
+
+<div *ngIf="!isEdit">
+  <div class="row" >
+    <div class="col-xs-12">
+      <h4 class="page-header">{{ 'driver.drivers' | translate }}</h4>
+    </div>
+  </div>
+<div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+                    <label for="NIN" >{{ 'driver.nin' | translate }}</label>
+              <input
+                type="text"
+                [(ngModel)]="driversFilter.NIN"
+                class="form-control"
+                id="driver"
+              />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-2">
+            <button (click)="GetdriversWithNIN(driversFilter.NIN)" [disabled]="isSearch"
+              class="btn btn-primary"
+              style="margin-top: 20px;"
+              translate>
+              common.search
+            </button>
+          </div>
+
+        </div>
+
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+
+<!-- /.row -->
+<div class="row" [ngClass]="{'hidden': firstTime}" >
+    <div class="col-lg-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="text-left clearfix">{{'common.results_count' | translate}} : {{driversCount}}
+          </div>
+        </div>
+        <!-- /.panel-heading -->
+        <div class="panel-body">
+          <p-table
+            #driversTable
+            [value]="drivers"
+            [lazy]="true"
+            (onLazyLoad)="driversLazyLoad($event)"
+            [lazyLoadOnInit]="false"
+            [totalRecords]="driversCount"
+            [resetPageOnSort]="true"
+            [rowsPerPageOptions]="[5, 10, 20]"
+            [loading]="loading"
+            [paginator]="true"
+            [rows]="10"
+            [responsive]="true"
+            scrollHeight="200px"
+            [autoLayout]="true"
+            [resizableColumns]="true">
+            <ng-template pTemplate="caption" class="panel-heading">
+              <div style="text-align: right">
+                <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="driversTable.filterGlobal($event.target.value, 'contains')"> -->
+              </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+              <tr>
+                <th [pSortableColumn]="'NIN'">
+                    {{ 'driver.nin' | translate }}
+                    <p-sortIcon
+                      [field]="'NIN'"
+                      ariaLabel="Activate to sort"
+                      ariaLabelDesc="Activate to sort in descending order"
+                      ariaLabelAsc="Activate to sort in ascending order"
+                    ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'fullArabicName'">
+                    {{ 'driver.fullArabicName' | translate }}
+                  <p-sortIcon
+                    [field]="'fullArabicName'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <!-- <th [pSortableColumn]="'City'" translate>
+                  City
+                  <p-sortIcon
+                    [field]="'City'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'WorkCity'" translate>
+                  WorkCity
+                  <p-sortIcon
+                    [field]="'WorkCity'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th> -->
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-driver>
+              <tr>
+                <td style="word-wrap: break-word">
+                  {{ driver.nin || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word">
+                  {{driver.fullArabicName || emptyStringValue }}
+                </td>
+                <!-- <td style="word-wrap: break-word">
+                  {{ driver.city || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word">
+                  {{driver.workCity || emptyStringValue }}
+                </td> -->
+                <td style="word-wrap: break-word;text-align: center">
+                  <button class="btn btn-primary action-btn" type="button" routerLink="/admin/drivers/edit/{{driver.driverId}}" routerLinkActive="active" translate>insuranceCompany.edit</button>
+                  |
+                  <button class="btn btn-danger action-btn" type="button" (click)="deleteDriver(driver.nin)" translate>common.delete</button>
+                <!-- <button type="button" (click)="onEdit(driver)" class="btn btn-secondary action-btn" translate>insuranceCompany.edit</button> -->
+                  <!-- <button type="button" (click)="deletedriver(driver.id)" class="btn btn-danger action-btn" translate>Delete</button> -->
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td style="text-align: center">
+                  {{ "common.noRecordsFound" | translate }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+          <!-- /.table-responsive -->
+        </div>
+        <!-- /.panel-body -->
+      </div>
+      <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+  </div>
+  <!-- /.row -->
+  <!-- <app-loader *ngIf="firstTime"></app-loader> -->
+
+</div>
+
+
+  <div *ngIf="isEdit">
+    <app-driver-edit [Data]="driver">
+
+    </app-driver-edit>
+  </div>

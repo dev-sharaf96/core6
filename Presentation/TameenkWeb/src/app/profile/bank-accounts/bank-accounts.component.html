@@ -1,0 +1,111 @@
+<!--
+  <!- - Add Bank begains - ->
+  <div class="content md-ver-spc inactive col-xs-12 col-md-9 col-lg-9" id="addBank">
+    <div class="pd-inside">
+      <h1 class="not-active txt-lr txt-black no-mar md-mar-bot">
+        <!- - @Html.Raw(Tameenk.LangText.Profile_AddBankAccount) - -> إضافة حسابات مصرفية
+      </h1>
+      <div class="row">
+        <div class="col-xs-12 col-lg-4 col-md-4">
+          <span class="input input--ichiro selectinside bankname">
+            <select class="select2">
+              <option>بنك الرياض</option>
+              <option>البنك الوطني</option>
+              <option>البنك الوطني</option>
+            </select>
+            <label class="input-label input__label--ichiro" for="bankname">
+              <span class="input-label-content input__label-content--ichiro">اسم البنك</span>
+            </label>
+          </span>
+        </div>
+        <div class=" col-xs-12 col-lg-4 col-md-4">
+          <span class="input input--ichiro">
+            <input class="input__field input__field--ichiro banknumber" type="text" />
+            <label class="input-label input__label--ichiro" for="banknumber">
+              <span class="input-label-content input__label-content--ichiro">
+                رقم الحساب المصرفي الدولي (IBAN)
+              </span>
+            </label>
+          </span>
+        </div>
+        <div class=" col-xs-12 col-lg-4 col-md-4">
+          <span class="input input--ichiro">
+            <input class="input__field input__field--ichiro bankowner" type="text" />
+            <label class="input-label input__label--ichiro" for="bankowner">
+              <span class="input-label-content input__label-content--ichiro">
+                اسم الحساب المصرفي
+              </span>
+            </label>
+          </span>
+        </div>
+      </div>
+      <button class=" bx-left btn sm dis-block no-trans bx-left txt-white continue txt-brand bg-brand-hvr txt-xs bg-gr-main circ-rdus l-shadow lr-mar">
+        <!- - @Html.Raw(Tameenk.LangText.Profile_AddBankAccount) - -> إضافة حسابات مصرفية
+      </button>
+    </div>
+    <!- - pd inside - ->
+  </div>
+  <!- - Add Bank ends - ->
+  <!- - Edit Bank begains - ->
+  Edit Bank ends
+-->
+<!-- My Banks begains -->
+<h1 class="txt-lr txt-black md-mar-bot md-mar col-xs-12" translate>
+  profile.MyBank_Accounts
+  <!--
+    <a onclick="return false;" id="addBankURL" class="not-active bx-left btn  pointer sm dis-block bx-left txt-white-hvr bg-brand-hvr login  txt-brand borderd-inset txt-xs   circ-rdus l-shadow">
+      @Html.Raw(Tameenk.LangText.Profile_AddBankAccount)
+    </a>
+  -->
+</h1>
+<article>
+  <!--
+    @foreach (BankAccountModel BankAccountModelObj in Model.BankAccounts) {
+  -->
+  <div class="wrapper-bx md-mar" *ngFor="let bank of banksList">
+    <div class="row">
+      <header class="col-xs-12 col-lg-8 col-lg-12 over-hidden bx-right">
+        <span class="txt-sm  txt-mgray dis-block "
+          >{{ bank.description }}
+          <app-placholder
+            [width]="120"
+            [height]="20"
+            *ngIf="bank.description === null || bank.description === undefined"
+          ></app-placholder>
+        </span>
+        <h2 class="txt-lr txt-black no-mar">
+          {{ bank.bankAccountNo }}
+          <app-placholder
+            [width]="170"
+            [height]="20"
+            *ngIf="bank.bankAccountNo === null || bank.bankAccountNo === undefined"
+          ></app-placholder>
+        </h2>
+        <h3 class="txt-sm txt-mgray dis-block xs-mar">
+          {{ userInfo?.fullName || userInfo?.email }}
+          <app-placholder
+            [width]="150"
+            [height]="20"
+            *ngIf="userInfo === null || userInfo === undefined"
+          ></app-placholder>
+        </h3>
+      </header>
+    </div>
+    <!--
+      <div class="small-desc over-hidden f_width sm-mar bx-right txt-mgray">
+          <a href="#" class="txt-black " title="@Html.Raw(Tameenk.LangText.coming_soon)">
+              <i class="ic-icons-175  general-ico"></i>@Html.Raw(Tameenk.LangText.Edit)
+          </a>
+      </div>
+    -->
+  </div>
+  <!-- } -->
+  <app-pager *ngIf="banksList" [totalCount]="totalCount" (paging)="getUserBanks($event)"></app-pager>
+</article>
+<app-loading *ngIf="loading"></app-loading>
+<!--
+  <div class="sm-ver-spc dis-block f_width over-hidden txt-center">
+    <div class="three-quarters-loader bx-center"></div>
+  </div>
+-->
+<!-- My Banks ends -->

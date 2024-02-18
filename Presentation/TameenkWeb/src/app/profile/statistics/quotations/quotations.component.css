@@ -1,0 +1,15 @@
+.expiryDateHolder {
+  padding: 5px 10px;
+  border-radius: 8px;
+  background-color: #186a9e;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: 'helvetica';
+  display: inline-block;
+  text-align: left;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

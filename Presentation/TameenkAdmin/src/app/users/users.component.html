@@ -1,0 +1,262 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'settings.users' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="panel panel-default">
+    <div class="panel-heading" translate>common.filter_by</div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+      <div class="row">
+        <form ngNativeValidate (ngSubmit)="userDetailsLazyLoad(this)">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="email">{{ 'common.email' | translate }}</label>
+              <input type="text" [(ngModel)]="usersFilter.email" class="form-control" id="email" name="email" />
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <div class="form-group">
+              <label for="userId">{{ 'requestLogs.userId' | translate }}</label>
+              <input type="text" [(ngModel)]="usersFilter.userId" class="form-control" id="userId" name="userId" />
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <div class="form-group">
+              <label for="userId">{{ 'requestLogs.mobile' | translate }}</label>
+              <input type="text" [(ngModel)]="usersFilter.mobile" class="form-control" id="mobile" name="mobile" />
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <div class="form-group">
+              <label for="userId">{{ 'edaat.invoice_no' | translate }}</label>
+              <input type="text" [(ngModel)]="usersFilter.sadadNo" class="form-control" id="sadadNo" name="sadadNo" />
+            </div>
+          </div>
+          <div class="col-xs-1 col-md-1">
+            <button type="submit" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.search
+            </button>
+          </div>
+          <div class="col-xs-1 col-md-1">
+            <button type="button" (click)="DeleteUser()" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.delete
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <br />
+    <!-- /.panel-body -->
+  </div>
+  <!-- /.panel -->
+</div>
+<!-- /.row -->
+<div class="row" [ngClass]="{'hidden': firstTime}" *ngIf="firstTime == false">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="text-left clearfix">
+          {{'user.userInfo' | translate}}
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <!-- <form ngNativeValidate (ngSubmit)="AddOrUpdateCheckedoutPolicy()"> -->
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="email">{{ 'common.email' | translate }}</label>
+              <input type="text" disabled [(ngModel)]="userModel.email" class="form-control" id="email" name="email" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="languageName">{{ 'user.languageName' | translate }}</label>
+              <input type="text" disabled [(ngModel)]="isEnglish ? userModel.languageNameEn:userModel.languageNameAr" class="form-control" id="languageName" name="languageName" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="userName">{{ 'user.userName' | translate }}</label>
+              <input type="text" disabled [(ngModel)]="userModel.userName" class="form-control" id="userName" name="userName" />
+            </div>
+          </div>
+          
+         
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="emailConfirmed">{{ 'user.emailConfirmed' | translate }}</label>
+              <label name="emailConfirmed" disabled class="form-control" translate>{{ userModel.emailConfirmed==true?'common.yes' : 'common.no'  || emptyStringValue }}</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="phoneNumber">{{ 'user.phoneNumber' | translate }}</label>
+              <input type="text" disabled [(ngModel)]="userModel.phoneNumber" class="form-control" id="phoneNumber" name="userName" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="phoneNumberConfirmed">{{ 'user.phoneNumberConfirmed' | translate }}</label>
+              <label name="phoneNumberConfirmed" disabled class="form-control" translate>{{ userModel.phoneNumberConfirmed==true?'common.yes' : 'common.no'  || emptyStringValue }}</label>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="createdDate">{{ 'user.createdDate' | translate }}</label>
+              <input type="text" disabled [(ngModel)]="userModel.createdDate" date class="form-control" id="createdDate" name="createdDate" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="accessFailedCount">{{ 'user.accessFailedCount' | translate }}</label>
+              <input type="text" disabled [(ngModel)]="userModel.accessFailedCount" date class="form-control" id="accessFailedCount" name="accessFailedCount" />
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="id">{{ 'requestLogs.userId' | translate }}</label>
+              <input type="text" disabled [(ngModel)]="userModel.id" class="form-control" id="id" name="id" />
+            </div>
+          </div>
+          <div class="col-sm-6" *ngIf="userModel.isLocked">
+            <div class="form-group">
+              <label for="LockedBy">{{ 'user.lockedby' | translate }}</label>
+              <input type="text" disabled [(ngModel)]="userModel.LockedBy" class="form-control" id="LockedBy" name="LockedBy" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+        <div class="col-sm-3" *ngIf="userModel.isLocked">
+          <div class="form-group">
+            <label for="LockedReason">{{ 'user.lockedreason' | translate }}</label>
+            <textarea  disabled [(ngModel)]="userModel.LockedReason" class="form-control" id="LockedReason" name="LockedReason" style="width: 579px; margin: 0px -307.45px 0px 0px; height: 100px;">
+          </textarea>
+          </div>
+        </div>
+      </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-2" *ngIf="userModel.isLocked == false">
+            <button (click)="OpenPopup(userModel.id,true)" type="button" class="btn btn-primary" style="margin-top: 20px;" translate>
+              user.lockUser
+            </button>
+          </div>
+          <div class="col-xs-12 col-md-2" *ngIf="userModel.isLocked == true">
+            <button (click)="manageUserLock(userModel.id,false)" type="button" class="btn btn-primary" style="margin-top: 20px;" translate>
+              user.unlockUser
+            </button>
+          </div>
+
+          <div class="col-xs-12 col-md-2" *ngIf="userModel.isPhoneVerifiedByYakeen == true">
+            <button (click)="manageUserMobileVerification()" type="button" class="btn btn-primary" style="margin-top: 20px;" translate>
+              user.unVerifyMobile
+            </button>
+          </div>
+
+          <div class="col-xs-12 col-md-2">
+            <button (click)="showMakerPopup()" type="button" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.edit
+            </button>
+          </div>
+        </div>
+        <!-- /.panel-body -->
+        <!-- </form> -->
+      </div>
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<!-- <app-loader *ngIf="firstTime"></app-loader> -->
+
+
+<!-- popup reason of locked -->
+ 
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" [ngStyle]="{'display': openPpUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" translate>user.editUser</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeMakerModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #UpdateTemplate="ngForm" (ngSubmit)="UpdateEmail()" novalidate>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>common.email</label>
+                <input type="text" class="form-control" id="email" name="email" 
+                       #email="ngModel" [pattern]="emailPattern" [(ngModel)]="userEmail">
+                <div *ngIf="emailErrorDiv" class="text-danger"> {{ emailErrorDivMessage }} </div>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>user.phoneNumber</label>
+                <input type="text" class="form-control" id="phoneNumber" name="phone"
+                       #phoneNumber="ngModel" [(ngModel)]="userPhone">
+                <div *ngIf="emailErrorDiv" class="text-danger"> {{ emailErrorDivMessage }} </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeMakerModal()">Close</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!UpdateTemplate.valid || clicked" translate>
+            insuranceCompany.save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="Lockuser" tabindex="-1" role="dialog" [ngStyle]="{'display': openPopUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{'Locked reason' | translate}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closePopup()">
+          <span aria-hidden="true" class="closeicon">&times;</span>
+        </button>
+      </div>
+      <!-- [formGroup]="CancellationFormdata" -->
+      <form  #UpdateTemplat="ngForm" (ngSubmit)="manageUserLock(userModel.id,true,lockedreason)" novalidate>
+        <div class="modal-body">
+            <div class="row">
+              <div class="dis-flex col-lg-6  col-md-6 col-xs-12">
+                <label for="reasonoflock">{{ 'user.lockedreason' | translate }}</label>
+                <textarea [(ngModel)]='lockedreason' [value]='lockedreason' class="form-control" id="lockedreason" name="lockedreason" style="width: 579px; margin: 0px -307.45px 0px 0px; height: 100px;">
+                </textarea>
+              </div>
+    
+            
+              </div> 
+            </div>
+             
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary" style="margin: 17px;" class="btn custom-float-right" data-dismiss="modal" [disabled]="!UpdateTemplat.valid || clicked" translate>
+                {{'confirm'|translate}}
+              </button>
+              <!-- <button type="button" style="margin: 17px;" class="btn custom-float-right" data-dismiss="modal"
+                    (click)="manageUserLock(userModel.id,true,lockedreason)" [disabled]="!UpdateTemplate.valid || clicked">{{'confirm'|translate}}</button> -->
+            </div>
+           
+       
+        <!-- <div class="modal-footer">
+         
+        </div> -->
+      </form>
+    </div>
+  </div>

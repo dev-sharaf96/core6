@@ -1,0 +1,139 @@
+<div class="row ">
+  <div class="col-xs-12 pageHeader">
+    <h4 class="page-header"> {{ 'RenewalPolicy.renewalMessages' | translate }} </h4>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <input type="text" [(ngModel)]="filterModel.nin" class="form-control" id="nin"
+               [placeholder]="'AddDriver.nationalId' | translate" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <input type="text" [(ngModel)]="filterModel.vehicleId" class="form-control" id="vehicleId"
+
+               [placeholder]="'vehicle.vehicleId' | translate" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-3">
+            <button [disabled]="isSearch" (click)="filterClick(ticketTable)" class="btn btn-primary" translate>
+              common.search
+              <i class="fa fa-spinner fa-spin" *ngIf="loading"></i>
+            </button>
+          </div>
+        </div>
+        <br />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="text-left clearfix"> {{'common.results_count' | translate}} : {{dataListCount}} </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table #ticketTable [value]="dataList" [lazy]="true" (onLazyLoad)="requestsLazyLoad($event)"
+          [lazyLoadOnInit]="false" [totalRecords]="dataListCount" [resetPageOnSort]="true"
+          [rowsPerPageOptions]="[5, 10, 20]" [loading]="loading" [paginator]="true" [rows]="10" [responsive]="true"
+          scrollHeight="200px" [autoLayout]="true" [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate> RenewalPolicy.FullName </th>
+              <th translate> RenewalPolicy.PolicyNO </th>
+              <th translate> RenewalPolicy.Phone </th>
+              <th translate> RenewalPolicy.policyEffectiveDate </th>
+              <th translate> RenewalPolicy.policyExpiryDate </th>
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td style="word-wrap: break-word;text-align: center"> {{ item.fullName || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ item.policyNo  || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ item.phone  || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center">
+                {{ item.policyEffectiveDate | date:'dd - MMM - yyy' || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center">
+                {{ item.policyExpiryDate | date:'dd- MMM -yyy' || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center">
+                <a class="btn btn-success" style="margin-right: 1px; margin-left: 1px;" title="Send Message"
+                  (click)="showPopup(item)"> {{ 'RenewalPolicy.send' | translate }} </a>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+  [ngStyle]="{'display': openPpUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <!-- <div class="modal-header">
+        <h5 class="modal-title" translate>RenewalPolicy.addNew</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> -->
+      <form #SendMessage="ngForm" (ngSubmit)="SendRenewalMessage()" novalidate>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-12">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>RenewalPolicy.code</label>
+                <select (change)="changeDiscountType($event)" class="form-control" id="code" name="code" required>
+                  <option *ngFor="let item of discountTypes" [value]="item |json"> {{ item.Code}} </option>
+                </select>
+              </div>
+            </div>
+            <!-- <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group" *ngIf="message.discountType === 1">
+                <label for="" class="lebel-for-required" translate>RenewalPolicy.discountValue</label>
+                <input type="text" [(ngModel)]="message.value" (keypress)="restrictNumeric($event)" onPaste="return false"
+                       required class="form-control" id="value" name="value" #value="ngModel" autocomplete="off"/>
+              </div>
+              <div class="form-group" *ngIf="message.discountType === 2">
+                <label for="" class="lebel-for-required" translate>RenewalPolicy.percentage</label>
+                <input type="text" [(ngModel)]="message.percentage" (keypress)="restrictNumeric($event)" onPaste="return false"
+                       required class="form-control" id="percentage" name="percentage" #percentage="ngModel" autocomplete="off"/>
+              </div>
+            </div> -->
+          </div>
+
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeModal()">Close</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!SendMessage.valid ||clicked|| !change " translate>
+            RenewalPolicy.send
+            <i class="fa fa-spinner fa-spin" *ngIf="loading2"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

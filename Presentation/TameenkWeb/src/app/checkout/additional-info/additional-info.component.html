@@ -1,0 +1,42 @@
+<form (ngSubmit)="OnSubmit(checkoutForm)" #checkoutForm="ngForm" novalidate>
+  <div class="col-xs-12 col-lg-6 col-md-6 bx-right">
+    <div class="input-container">
+      <input [(ngModel)]="checkoutModel.email" required #email="ngModel" name="email" class="input-element text-left" type="email" appFloatedLabel email id="email" />
+      <label class="input-label" for="email" translate>checkout.checkout_email</label>
+      <span class="field-error" style="color:red;position:absolute;" id="emailError"></span>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-lg-6 col-md-6 bx-right">
+    <div class="input-container">
+      <input [pattern]="mobilePattern" [(ngModel)]="checkoutModel.phone" required #mobile="ngModel" name="mobile"
+        class="input-element text-left" type="tel" id="mobileno" appNumberOnly appFloatedLabel  />
+      <label class="input-label" for="mobileno" translate>checkout.checkout_phone</label>
+      <span class="field-error" style="color:red;position:absolute;" id="mobilenoError"></span>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-lg-8 col-md-8 bx-right">
+    <div class="input-container">
+      <input [(ngModel)]="checkoutModel.IBAN" required #iban="ngModel" name="iban" appFloatedLabel class="input-element text-left" type="text" id="iban"
+         (keyup)="ibanValidate($event.target.value)" />
+      <label class="input-label" for="iban">{{'checkout.checkout_iban' | translate}} / {{'checkout.sama_iban' | translate}}</label>
+      <span class="field-error" style="color:red;position:absolute;" id="ibanError"></span>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-lg-4 col-md-4 bx-right">
+    <div class="input-container">
+      <input appFloatedLabel class="input-element" type="text" id="bankCode" readonly [value]="bankName" />
+      <label class="input-label" for="bankCode" translate>checkout.checkout_bank</label>
+      <span class="field-error" style="color:red;position:absolute;" id="bankCodeError"></span>
+    </div>
+</div>
+  <app-tbl-info *ngIf="checkoutModel.typeOfInsurance === 1" (marked)="validateAgreement($event)"></app-tbl-info>
+  <app-comprehensive-info *ngIf="checkoutModel.typeOfInsurance === 2" [checkoutModel]="checkoutModel" (marked)="validateAgreement($event)"></app-comprehensive-info>
+
+  <div id="nextBtnDiv" class="col-xs-12 md-mar content-process process-number-2" style="bottom: 5px !important">
+    <input type="submit" id="nextSubmit" [disabled]="!checkoutForm.valid || !hasAgree || !ibanIsValid" class="bx-left btn sm dis-block bx-left txt-white login txt-brand borderd-hvr txt-sm bg-green txt-green-hvr circ-rdus l-shadow"
+      [value]="'checkout.checkout_next' | translate" style="margin-bottom: 15px;" />
+  </div>
+</form>

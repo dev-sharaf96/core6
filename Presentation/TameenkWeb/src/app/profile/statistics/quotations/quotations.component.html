@@ -1,0 +1,108 @@
+<!-- My Stats begains -->
+<article *ngFor="let quotation of quotations">
+  <!--
+    assets/imgs/CarLogos/'"+({quotation.vehicle.vehicleMakerCode).ToString("0000")+"'.jpg
+  -->
+  <div
+    class="wrapper-bx md-mar vehicle-row  search-info bg-ofwhite section  active search-car"
+    [ngStyle]="{
+      'background-image': 'url(assets/imgs/CarLogos/' + quotation.logo + '.jpg)'
+    }"
+  >
+    <div class="row">
+      <header class="col-xs-12 col-md-6 col-lg-6 over-hidden bx-right">
+        <h2 class="txt-sm  txt-mgray dis-block xs-mar">
+          <span class="txt-md  txt-black"
+            >{{ "profile.vehicle_name" | translate }}:
+          </span>
+          <!-- {{request.VehicleMaker}} -->
+          {{ quotation.vehicle.vehicleMaker || " " }}
+          <!-- {{request.VehicleModel}}
+          -->{{ quotation.vehicle.model || " " }}
+          <!-- {{request.VehicleModelYear}} -->
+          {{ quotation.vehicle.vehicleModelYear || " " }}
+          <app-placholder
+            [width]="200"
+            [height]="20"
+            *ngIf="quotation === null || quotation === undefined"
+          ></app-placholder>
+        </h2>
+        <h2 class="txt-sm  txt-mgray dis-block xs-mar">
+          <span class="txt-md  txt-black" translate
+            >{{ "profile.driver_name" | translate }}:
+          </span>
+          <!-- {{request.DriverFirstName}} -->
+          {{ quotation.driver.firstName }}
+          <app-placholder
+            [width]="200"
+            [height]="20"
+            *ngIf="quotation === null || quotation === undefined"
+          ></app-placholder>
+        </h2>
+        <h2 class="txt-sm  txt-mgray dis-block xs-mar">
+          <span class="txt-md  txt-black" translate
+            >{{ "profile.city_name" | translate }}:
+          </span>
+          <!-- {{request.CityArabicDescription}} -->
+          {{ quotation.city.description }}
+          <app-placholder
+            [width]="200"
+            [height]="20"
+            *ngIf="quotation === null || quotation === undefined"
+          ></app-placholder>
+        </h2>
+        <h2 class="txt-sm  txt-mgray dis-block xs-mar">
+          <!-- {{request.CreatedDateTime}} -->
+          {{ quotation.createdDateTime | date: "medium" }}
+          <app-placholder
+            [width]="200"
+            [height]="20"
+            *ngIf="quotation === null || quotation === undefined"
+          ></app-placholder>
+        </h2>
+      </header>
+      <div class="col-xs-12 col-md-6 col-lg-6 bx-right">
+        <!-- request.VehiclePlate -->
+        <div class="col-xs-6 col-lg-4 col-md-4 bx-right md-mar">
+          <app-car-plate
+            [plateColorType]="quotation.vehicle.PlateTypeCode"
+            [carPlateNumber]="quotation.vehicle.carPlateNumber"
+            [carPlateText1]="quotation.vehicle.carPlateText1"
+            [carPlateText2]="quotation.vehicle.carPlateText2"
+            [carPlateText3]="quotation.vehicle.carPlateText3"
+          ></app-car-plate>
+          <app-placholder
+            [width]="90"
+            [height]="50"
+            *ngIf="quotation === null || quotation === undefined"
+          ></app-placholder>
+        </div>
+        <div
+          class="col-xs-6 col-md-8 bx-right md-mar"
+          style="text-align: center"
+        >
+          <span class="expiryDateHolder" dir="ltr" *ngIf="quotation.expiryTime">
+            {{ quotation.expiryTime | translate }}
+            <app-placholder
+              [width]="90"
+              [height]="20"
+              *ngIf="quotation === null || quotation === undefined"
+            ></app-placholder>
+          </span>
+        </div>
+      </div>
+      <div class="small-desc over-hidden f_width sm-mar bx-right txt-mgray">
+        <a
+          [routerLink]="['/quotation', quotation.externalId ]"
+          class="dis-block txt-right bx-left right-mar-10 left-mar-10 txt-black show-extra-features"
+          translate>
+          <i class="ic-icons-86 txt-black bx-right general-ico"></i
+          >profile.view_search_results
+        </a>
+      </div>
+    </div>
+  </div>
+</article>
+<app-pager *ngIf="quotations" [totalCount]="totalCount" (paging)="getUserOffers($event)"></app-pager>
+<!-- My Stats ends -->
+<app-loading *ngIf="loading"></app-loading>

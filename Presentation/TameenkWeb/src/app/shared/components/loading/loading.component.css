@@ -1,0 +1,58 @@
+.loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, .5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 100px);
+}
+
+
+.loading .logo {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: inline-block;
+  overflow: hidden;
+  border-radius: 100%;
+  z-index: 10;
+}
+
+.loading .logo img {
+  position: relative;
+  z-index: 5;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  top: -5px;
+  left: 5px;
+}
+
+.loading .wave {
+  opacity: .4;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #0077be;
+  width: 150px;
+  height: 150px;
+  -webkit-transform-origin: 50% 48%;
+  transform-origin: 50% 48%;
+  border-radius: 43%;
+  animation: drift 3s infinite linear, fill 20s 1 forwards ease-out;
+  z-index: 2;
+}
+
+@keyframes drift {
+  from { transform: rotate(0deg); }
+  from { transform: rotate(360deg); }
+  from { top: 100%; }
+  to { top: 0; }
+}
+@keyframes fill {
+  from { top: 100%; }
+  to { top: 0; }
+}

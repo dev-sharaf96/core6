@@ -1,0 +1,6 @@
+<p-dialog header="Confirm"  [draggable]="false" [resizable]="false" [maximizable]="false" [(visible)]="visible" 
+[modal]="true" [responsive]="true" [width]="350" [baseZIndex]="10000"> 
+<div translate>common.confirm</div>
+<button class="btn btn-success mr-r_s" (click)="refund()" translate>updateRequest.yes</button>
+<button class="btn btn-danger" (click)="closePopup()" translate>updateRequest.no</button>
+</p-dialog>

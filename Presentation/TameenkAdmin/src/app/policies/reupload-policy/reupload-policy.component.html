@@ -1,0 +1,216 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'policy.reUploadPolicyFile' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <!--<div class="col-sm-3">
+            <div class="form-group">
+              <label for="policy_number" translate>policy.policy_no</label>
+              <input type="text" [(ngModel)]="policiesFilter.policyNo" class="form-control" id="policy_number" />
+            </div>
+          </div>-->
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="referenceNo" translate>invoice.reference_id</label>
+              <input type="text" [(ngModel)]="policiesFilter.referenceNo" class="form-control" id="referenceNo" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <button (click)="filterClick()" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.search
+            </button>
+          </div>
+        </div>
+        <br />
+
+        <div *ngIf="showSearchValidation" class="SearchValidation">
+          <span class="ReUploadPolicyFileValidation" [innerHtml]="searchValidationTextToAdd">
+          </span>
+        </div>
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+
+<!--<div class="loader" *ngIf="loading">
+  <svg class="circular" viewBox="25 25 50 50">
+    <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+  </svg>
+</div>-->
+
+<div *ngIf="showReUploadForm">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="panel panel-default">
+        <div class="panel-heading" translate>policy.details</div>
+        <!-- /.panel-heading -->
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-xs-12 col-md-6 form-group row">
+              <label for="referenceId" class="col-sm-4 col-form-label lebel-for-required"> {{ 'invoice.reference_No' | translate }} </label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="referenceId" [(ngModel)]="policy.referenceId"
+                       name="referenceId" disabled #referenceId="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row">
+              <label for="insuredNIN" class="col-sm-4 col-form-label lebel-for-required"> {{ 'policy.policy_no' | translate }} </label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="insuredNIN" [(ngModel)]="policy.policyNo" name="insuredNIN"
+                       disabled #insuredNIN="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row">
+              <label for="insuredNIN" class="col-sm-4 col-form-label lebel-for-required"> {{ 'policy.insured_NIN' | translate }} </label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="insuredNIN" [(ngModel)]="policy.insuredNIN" name="insuredNIN"
+                       disabled #insuredNIN="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row">
+              <label for="insuredPhone" class="col-sm-4 col-form-label lebel-for-required"> {{ 'policy.insured_phone' | translate }} </label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="insuredPhone" [(ngModel)]="policy.insuredPhone"
+                       name="insuredPhone" disabled #insuredPhone="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row">
+              <label for="insuredFullNameAr" class="col-sm-4 col-form-label lebel-for-required"> {{ 'policy.insured_name_Ar' | translate }} </label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="insuredFullNameAr" [(ngModel)]="policy.insuredFullNameAr"
+                       name="insuredFullNameAr" disabled #insuredFullNameAr="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row">
+              <label for="insuredFullNameEn" class="col-sm-4 col-form-label lebel-for-required"> {{ 'policy.insured_name_En' | translate }} </label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="insuredFullNameEn" [(ngModel)]="policy.insuredFullNameEn"
+                       name="insuredFullNameEn" disabled #insuredFullNameEn="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row">
+              <label for="insuranceCompanyAr" class="col-sm-4 col-form-label lebel-for-required"> {{ 'policy.companyName_Ar' | translate }} </label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="insuranceCompanyAr" [(ngModel)]="policy.insuranceCompanyNameAr"
+                       name="insuranceCompanyAr" disabled #insuranceCompanyAr="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row">
+              <label for="insuranceCompanyEn" class="col-sm-4 col-form-label lebel-for-required"> {{ 'policy.companyName_En' | translate }} </label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="insuranceCompanyEn" [(ngModel)]="policy.insuranceCompanyNameEn"
+                       name="insuranceCompanyEn" disabled #insuranceCompanyEn="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row">
+              <label for="createDate" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.createDate' | translate}}</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="createDate" [ngModel]="policy.policyIssueDate | date:'medium'"
+                       (ngModelChange)="policy.policyIssueDate=$event" name="createDate" disabled #createDate="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row">
+              <label for="userEmail" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.userEmail' | translate}}</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="userEmail" [(ngModel)]="policy.userEmail" name="userEmail"
+                       disabled #userEmail="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row" *ngIf="policy?.policyStatus && isEn">
+              <label for="policyStatus" class="col-sm-4 col-form-label lebel-for-required"> {{ 'policy.policy_status' | translate }} </label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="policyStatus" [(ngModel)]="policy.policyStatus.nameEn"
+                       name="policyStatus" disabled #policyStatus="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row" *ngIf="policy?.policyStatus && !isEn">
+              <label for="policyStatus" class="col-sm-4 col-form-label lebel-for-required"> {{ 'policy.policy_status' | translate }} </label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="policyStatus" [(ngModel)]="policy.policyStatus.nameAr"
+                       name="policyStatus" disabled #policyStatus="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row" *ngIf="policy?.productType && isEn">
+              <label for="productType" class="col-sm-4 col-form-label lebel-for-required"> {{ 'policy.productType' | translate }} </label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="productType" [(ngModel)]="policy.productType.descEN"
+                       name="productType" disabled #productType="ngModel">
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6 form-group row" *ngIf="policy?.productType && !isEn">
+              <label for="productType" class="col-sm-4 col-form-label lebel-for-required"> {{ 'policy.productType' | translate }} </label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="productType" [(ngModel)]="policy.productType.descAR"
+                       name="productType" disabled #productType="ngModel">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.panel-body -->
+      </div>
+      <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="panel panel-default">
+        <div class="panel-heading" translate>updateRequest.uploadPolicy</div>
+        <!-- /.panel-heading -->
+        <div class="panel-body">
+          <div class="row">
+            <form (ngSubmit)="OnSubmit()" #reUploadPolicyFileForm="ngForm" class="reUploadPolicyFileForm" novalidate>
+              <div class="reUploadPolicyFileDiv">
+                <!--<label for="fileupload" class="col-sm-2 col-form-label lebel-for-required">{{'updateRequest.uploadPolicy'| translate}}</label>-->
+                <!--<p-fileUpload #fileupload class="col-sm-2" id="fileupload" accept=".pdf" name="fileupload" mode="basic" customUpload="true"
+                              required (onSelect)="handleReUploadFileInput($event, fileupload.files)" chooseLabel="Browse">
+                </p-fileUpload>-->
+                <input type="file" id="fileupload" accept=".pdf" class="reUploadPolicyFileInput" name="fileupload" mode="basic"
+                       (change)="handleReUploadFileInput($event, $event.target.files)" />
+                <button type="submit" class="btn btn-default" style="margin-right: 5px;" [disabled]="clicked">
+                  {{'insuranceCompany.save' | translate }}
+                </button>
+              </div>
+              <div *ngIf="showReUploadPolicyFileValidation" style="margin-left: 15px;">
+                <span class="ReUploadPolicyFileValidation" [innerHtml]="reUploadPolicyFileValidationTextToAdd">
+                </span>
+              </div>
+              <!--<div style="margin-top: 20px;">
+                <button type="submit" class="btn btn-default" style="margin-right: 5px;" [disabled]="clicked">
+                  {{'insuranceCompany.save' | translate }}
+                </button>
+              </div>-->
+            </form>
+          </div>
+        </div>
+        <!-- /.panel-body -->
+      </div>
+      <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+  </div>
+</div>

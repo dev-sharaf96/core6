@@ -1,0 +1,180 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'ticket.createticket' | translate }}</h4>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>ticket.ticketData</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row" *ngIf="ticketId">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="ticketId" translate>ticket.id</label>
+              <input type="text" disabled [value]="ticketId" name="ticketId" class="form-control" id="ticketId" />
+            </div>
+          </div>
+          <hr />
+        </div>
+
+        <form [formGroup]="newTicketForm" (ngSubmit)="Createticket()">
+        <!-- select  -->
+        <div class="row">
+          <div class="col-lg-4 col-md-6 col-sm-6">
+            <div class="form-group">
+              <label for="ticketType" translate>ticket.ticketType</label>
+              <p-dropdown
+                name="ticketType"
+                [options]="types"
+                formControlName="ticketType"
+                optionLabel="name"
+                filter="false"
+                [style]="{ width: '100%' }"
+                (onChange)="TicketTypeChanged($event)"
+              >
+              </p-dropdown>
+            </div>
+          </div>
+        </div>
+
+        <!-- user phone -->
+        <div class="row" *ngIf="newTicketForm.get('userPhone')">
+          <div class="col-lg-4 col-md-6 col-sm-6">
+            <div class="form-group">
+              <label for="userPhone" [ngClass]="{'lebel-for-required' : null}">
+                {{ 'ticket.userPhone' | translate }}
+              </label>
+              <input type="number" formControlName="userPhone" class="form-control col-10"/>
+              <div *ngIf="newTicketForm.controls['userPhone'].errors">
+                <span class="validateFire"
+                  *ngIf="newTicketForm.controls['userPhone'].touched && newTicketForm.controls['userPhone'].errors.required">
+                  {{ "ticket.userPhone" | translate }}
+                </span>
+                <span class="validateFire"
+                  *ngIf="newTicketForm.controls['userPhone'].touched && newTicketForm.controls['userPhone'].errors.pattern">
+                  {{ "ticket.invalidUserPhone" | translate }}
+                </span>
+              </div>
+            </div>            
+          </div>
+        </div>
+        <!-- user phone -->
+        
+        <!-- sequenceCustomerNo -->
+        <div class="row" *ngIf="newTicketForm.get('sequenceCustomerNo')">
+          <div class="col-lg-4 col-md-6 col-sm-6">
+            <div class="form-group">
+              <label for="sequenceOrCustomCardNumber" [ngClass]="{'lebel-for-required' : requiredSequenceOrCustomCardNumber}">
+                {{ 'ticket.sequenceOrCustomCardNumber' | translate }}
+              </label>
+              <input type="number" formControlName="sequenceCustomerNo" class="form-control col-10"/>
+              <div *ngIf="newTicketForm.controls['sequenceCustomerNo'].errors">
+                <span class="validateFire"
+                  *ngIf="newTicketForm.controls['sequenceCustomerNo'].touched && newTicketForm.controls['sequenceCustomerNo'].errors.required">
+                  {{ "ticket.SequenceCustomerNumberRequired" | translate }}
+                </span>
+              </div>
+            </div>            
+          </div>
+        </div>
+        <!-- sequenceCustomerNo -->
+
+        <!-- nationalId -->
+        <div class="row" *ngIf="newTicketForm.get('nationalId')">
+          <div class="col-lg-4 col-md-6 col-sm-6">
+            <div class="form-group">
+              <label class="label-Screen">{{ "id" | translate }}</label>
+              <input type="number" formControlName="nationalId" class="form-control col-10"/>
+              <div *ngIf="newTicketForm.controls['nationalId'].errors">
+                <span *ngIf="newTicketForm.controls['nationalId'].touched && newTicketForm.controls['nationalId'].errors.required"
+                  class="validateFire">
+                  {{ "ticket.nationalIdRequired" | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- nationalId -->
+
+        <!-- notes -->
+        <div class="row" *ngIf="newTicketForm.get('notes')">
+          <div class="col-lg-4 col-md-6 col-sm-6">
+            <div class="form-group">
+              <label class="label-Screen">{{ "notes" | translate }}</label>
+              <textarea type="text" formControlName="notes" class="form-control col-10"></textarea>
+              <div *ngIf="newTicketForm.controls['notes'].errors">
+                <span *ngIf="newTicketForm.controls['notes'].touched && newTicketForm.controls['notes'].errors.required" class="validateFire">
+                  {{ "ticket.notesRequired" | translate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- notes -->
+
+        <!-- attachments -->
+        <div class="row" *ngIf="newTicketForm.get('attachments')">
+          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <label class="label-Screen">{{ "ticket.attachment" | translate }}</label>
+            <div class="form-group">
+              <button type="button" *ngIf="!maxFilesTypeIds.includes(newTicketForm.get('ticketType').value)"
+                class="btn btn-primary" (click)="addNewAttachment(newTicketForm.get('ticketType').value)"
+                [disabled]="newTicketForm.get('attachments')['controls'].length >= 5">
+                {{ "ticket.addAttachment" | translate }}
+              </button>
+        
+              <div style="margin-top: 1rem" formArrayName="attachments"
+                *ngFor="let item of newTicketForm.get('attachments')['controls']; let i = index">
+                <div class="attchContainer">
+                  <div>
+                    <input #fileInput style="display: none" (change)="onFileChanged(i, $event)" [formControlName]="i"
+                      type="file" accept="image/*,application/pdf" multiple="false" />
+                    <button (click)="fileInput.click()" type="button"
+                      *ngIf=" newTicketForm.get('ticketType').value != 11 && newTicketForm.get('ticketType').value != 12">
+                      {{ newTicketForm.get("ticketType").value == 10 ? ("ticket.VehicleRegistration" | translate) :
+                      ("selectFile" | translate) }}
+                    </button>
+                    <button (click)="fileInput.click()" type="button" *ngIf="newTicketForm.get('ticketType').value == 11">
+                      {{ "ticket.phoneIbanEmail" + i | translate }}
+                    </button>
+                    <button (click)="fileInput.click()" type="button" *ngIf="newTicketForm.get('ticketType').value == 12">
+                      {{ "ticket.OwnershipTransferProof" | translate }}
+                    </button>
+        
+                    <span style="margin-left: 5px; margin-right: 5px;">{{ fileInput.value.substring(11) }}</span>
+        
+                    <a *ngIf="!(newTicketForm.get('ticketType').value == 2 && i == 0) && newTicketForm.get('ticketType').value != 10 &&
+                                  newTicketForm.get('ticketType').value != 11 &&
+                                  newTicketForm.get('ticketType').value != 12" (click)="onRemoveAttachment(i)"
+                      class="new-delete-icon"> &#10008;
+                    </a>
+                  </div>
+        
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- attachments -->
+
+        <!-- submit -->
+        <div class="row">
+          <div class="col-lg-4 col-md-6 col-sm-6">
+            <button type="submit" [disabled]="!newTicketForm.valid || clicked" class="btn btn-primary" style="margin-top: 20px;">
+              {{ (clicked ? 'ticket.uploading' : 'ticket.create') | translate }}
+              <i class="fa fa-spinner fa-spin" *ngIf="clicked"></i>
+            </button>
+          </div>
+        </div>
+        <!-- submit -->
+      </form>
+      
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->

@@ -1,0 +1,116 @@
+<!-- Add Address begains -->
+<!-- <div class="md-ver-spc content col-xs-12  col-md-9 col-lg-9 active" id="addAddress">
+  <div class="pd-inside">
+    <h1 class="txt-lr txt-black no-mar md-mar-bot">Profile_AddNewAddress</h1>
+    <div class="row"> -->
+      <!-- <div class="col-xs-12 col-lg-4 col-md-4">
+        <span class="input input--ichiro selectinside" id="country">
+          <select class="select2">
+            <option value="1">السعودية</option>
+            <option value="2">البحرين</option>
+            <option value="2">الإمارات</option>
+          </select>
+          <label class="input-label input__label--ichiro" for="country" name="AddressCounttry">
+            <span class="input-label-content input__label-content--ichiro">الدولة</span>
+          </label>
+        </span>
+      </div> -->
+      <!-- @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "AddNewFormAddress" }))
+      {@Html.AntiForgeryToken()
+      <div class="col-xs-12 col-lg-4 col-md-4">
+        <select id="AddressCountry" name="AddressCountry">
+          <option value="" selected>البلد</option>
+          <option value="1">السعودية</option>
+          <option value="2">البحرين</option>
+          <option value="3">الإمارات</option>
+        </select>
+        <span id="AddressCountryError" style="color:red"></span>
+      </div>
+      <div class="col-xs-12 col-lg-4 col-md-4">
+        <select id="AddressCity" name="AddressCity">
+          <option value="" selected>المدينة</option>
+          <option value="1">الرياض</option>
+          <option value="2">جدة</option>
+          <option value="3">الدمام</option>
+        </select>
+        <span id="AddressCityError" style="color:red"></span>
+      </div>
+      <div class="col-xs-12 col-lg-4 col-md-4">
+        @*<span class="input input--ichiro error selectinside" id="location">
+          <select class="select2">
+            <option>إشبيليا</option>
+            <option>الحمرا</option>
+            <option>غرناطة</option>
+          </select>
+          <label class="input-label input__label--ichiro" for="location">
+            <span class="input-label-content input__label-content--ichiro">المنطقه</span>
+          </label>
+        </span>*@
+        <select id="Addresslocation" name="Addresslocation">
+          <option value="" selected>المنطقه</option>
+          <option value="1">إشبيليا</option>
+          <option value="2">الحمرا</option>
+          <option value="3">غرناطة</option>
+        </select>
+        <span id="AddresslocationError" style="color:red"></span>
+      </div>
+      <div class=" col-xs-12 col-lg-12 col-md-12   bx-right ">
+        <span class="input input--ichiro true">
+          <input class="input__field input__field--ichiro" type="text" id="locationdetailseadd" name="locationdetailseadd" />
+          <label class="input-label input__label--ichiro" for="locationdetailseadd">
+            <span class="input-label-content input__label-content--ichiro">
+              العنوان التفصيلى
+            </span>
+          </label>
+        </span>
+        <span id="locationdetailseaddError" style="color:red"></span>
+      </div> -->
+      <!-- single - ->
+
+      }
+    </div>
+
+
+    <button onclick="AddNewAddress()" class="bx-left btn sm dis-block no-trans bx-left txt-white continue txt-brand bg-brand-hvr txt-xs bg-gr-main  circ-rdus l-shadow lr-mar">@Html.Raw(Tameenk.LangText.Profile_AddNewAddress)</button>
+  </div>
+  <! -- pd inside - ->
+</div>
+<! -- Add Address ends -->
+<!-- My Address begains -->
+<h1 class="txt-lr txt-black md-mar-bot md-mar col-xs-12" translate>profile.MyAddresses
+    <!-- <a id="addAddressURL" class="not-active bx-left btn  pointer sm dis-block bx-left txt-white-hvr bg-brand-hvr login  txt-brand borderd-inset txt-xs   circ-rdus l-shadow">@Html.Raw(Tameenk.LangText.Profile_AddNewAddress)</a> -->
+  </h1>
+  <article *ngFor="let address of addresses">
+    <!-- @foreach (AddressModel AddressModelObj in Model.AddressesList)
+    { -->
+    <div class="wrapper-bx md-mar">
+      <div class="row">
+        <header class="col-xs-12 col-lg-8 col-lg-12 over-hidden bx-right">
+          <span class="txt-sm  txt-mgray dis-block ">
+            {{address.regionName}}
+            <app-placholder [width]="120" [height]="20" *ngIf="address === null || address === undefined"></app-placholder>
+            <span *ngIf="address.regionName && address.city">|</span> {{address.city}}
+            <app-placholder [width]="120" [height]="20" *ngIf="address === null || address === undefined"></app-placholder>
+          </span> <!-- Backend -->
+          <h2 class="txt-lr txt-black no-mar">{{address.street}}
+              <app-placholder [width]="170" [height]="20" *ngIf="address === null || address === undefined"></app-placholder>
+          </h2> <!-- Backend -->
+          <h3 class="txt-sm  txt-mgray dis-block xs-mar">{{address.district}}
+              <app-placholder [width]="150" [height]="20" *ngIf="address === null || address === undefined"></app-placholder>
+          </h3> <!-- Backend -->
+        </header>
+      </div>
+      <!-- <div class="small-desc over-hidden f_width sm-mar bx-right txt-mgray">
+        <a href="#" class="txt-black" title="@Html.Raw(Tameenk.LangText.coming_soon)">
+          <i class="ic-icons-175  general-ico"></i> @Html.Raw(Tameenk.LangText.Edit)
+        </a>
+      </div> -->
+    </div>
+    <!-- } -->
+  </article>
+  <app-pager *ngIf="addresses" [totalCount]="totalCount" (paging)="getUserAddresses($event)"></app-pager>
+  <!-- <div class="sm-ver-spc dis-block f_width over-hidden txt-center">
+    <div class="three-quarters-loader bx-center"></div>
+  </div> -->
+<!-- My Address ends -->
+<app-loading *ngIf="loading"></app-loading>

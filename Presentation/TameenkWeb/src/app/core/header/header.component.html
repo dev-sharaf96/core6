@@ -1,0 +1,125 @@
+<!-- <div id="page-loading">
+  <div class="home-loading" style="height: 80%;flex-direction: column;">
+    <span class="loading-outer">
+      <span class="static-logo">
+        <img src="assets/imgs/logo-short.png" draggable="false" alt="bcare logo short">
+      </span>
+      <span class="moving-logo">
+        <img class="logo-bcare" draggable="false" src="assets/imgs/bcaretab.png" alt="bcare logo">
+      </span>
+    </span>
+    <span class="text-loading" [innerHTML]="'header.loading' | translate"></span>
+  </div>
+
+  <app-footer></app-footer>
+</div>
+
+<header class="main-header">
+  <div class="container">
+    <!- - logo - ->
+    <a routerLink="/" class="logo"></a>
+    <a class="menuToggle" style="margin-right: 15px;">
+      <span></span>
+      <span></span>
+      <span></span>
+    </a>
+    <!- - @if (Request.IsAuthenticated)
+      {
+          <a href="@Url.Action("ShoppingCart", "Home")" title="My Cart" class="cutter hidden-lg hidden-md bx-left" style="border-radius: 50%; box-shadow: 0 0 0px 2px #f79818; background: #f79818;">
+              <img src="assets/imgs/cart.png" alt="shopping-cart" style="height: 40px; width: 40px;" />
+          </a>
+      } - ->
+    <img src="assets/imgs/2030.jpg" alt="رؤية 2030" class="bx-left hidden-lg hidden-md" style="height: 50px; width: 90px; margin-left: 15px;" />
+    <div class="mobile-nav">
+      <!- - top links - ->
+      <ul class="inline-list bx-right no-mar">
+        <li class="hidden-xs hidden-sm hidden-md">
+          <button class="toggle-lang" (click)="toggleLang()" translate>header.language</button>
+        </li>
+        <li class="menu">
+          <ul class="dropdown">
+            <li class="hidden-lg">
+              <button class="toggle-lang" (click)="toggleLang()" translate>header.language</button>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <div class="user-profile bx-left">
+        <!- - @if (Request.IsAuthenticated)
+              {
+                  <a href="@Url.Action("ShoppingCart", "Home")" title="My Cart" class="cutter hidden-xs hidden-sm hidden" style="float: left; box-shadow: 0 0 0px 2px #f79818; background: #f79818;">
+                      <img src="assets/imgs/cart.png" alt="عربة التسوق" style="height: 50px; width: 50px;" />
+                  </a>
+              } - ->
+        <div style="order:2">
+          <div class="info" style="width: auto;order: 3;" *ngIf="isAuthenticated">
+            <app-authenticated [userInfo]="userInfo"></app-authenticated>
+          </div>
+          <!- - user area - ->
+          <div *ngIf="!isAuthenticated">
+            <a routerLink="/account/register" class="bx-left btn sm dis-block bx-left pull-right-xs txt-white login txt-brand borderd-hvr txt-xs bg-gr-main circ-rdus l-shadow"
+              style="order:3" translate>header.register</a>
+            <a routerLink="/account/login" class="bx-left btn sm dis-block bx-left pull-right-xs txt-black register txt-brand-hvr txt-xs bg-transparent  circ-rdus"
+              style="padding-right: 20px;padding-left: 20px;order:2" translate><i class="ic-user-ico"></i>header.login</a>
+          </div>
+        </div>
+        <img src="assets/imgs/2030.jpg" alt="صورة المستخدم" class="_2030 hidden-xs hidden-sm bx-left" style="height: 50px; width: 90px;" />
+        <div class="call-us bx-left btn sm dis-block pull-right-xs txt-white txt-brand txt-xs bg-gr-main circ-rdus l-shadow"
+          style="order:1">
+          <!- - <h3 style="width:auto; text-align: justify;">@Html.Raw(LangText.header_phone)</h3> - ->
+          <i class="ic-phone-icon"></i>
+          920010050
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="header-height"></div> -->
+
+<div id="page-loading">
+  <div class="home-loading" style="height: 80%;flex-direction: column;">
+    <span class="loading-outer">
+      <span class="static-logo">
+        <img src="assets/imgs/logo-short.png" draggable="false" alt="bcare logo short">
+      </span>
+      <span class="moving-logo">
+        <img class="logo-bcare" draggable="false" src="assets/imgs/bcaretab.png" alt="bcare logo">
+      </span>
+    </span>
+    <span class="text-loading" [innerHTML]="'header.loading' | translate"></span>
+  </div>
+
+  <app-footer></app-footer>
+</div>
+
+<header class="header header--fixed">
+    <div class="container">
+      <div class="inner__header" [ngClass]="navIsActive ? 'active' : ''">
+          <div class="header__logo">
+              <a routerLink="/">
+                <img src="assets/imgs/logo.png" alt="BCare Logo" />
+              </a>
+          </div>
+          <nav class="header__navbar">
+            <button class="navbar__language_toggle" (click)="toggleLang()" translate>header.language</button>
+            <div class="nav__items">
+              <div class="nav__customer_service_number">
+                  <i class="ic-phone-icon"></i>
+                  920010050
+              </div>
+              <app-authenticated *ngIf="isAuthenticated" [userInfo]="userInfo"></app-authenticated>
+              <app-not-authenticated *ngIf="!isAuthenticated"></app-not-authenticated>
+            </div>
+          </nav>
+          <div class="vision_container">
+              <img src="assets/imgs/2030.jpg" alt="رؤية 2030" class="header__vision_img bx-right" />
+              <div class="navbar__toggle bx-left" (click)="navIsActive = !navIsActive">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </div>
+          </div>
+      </div>
+    </div>
+  </header>
+  <div class="header__height"></div>

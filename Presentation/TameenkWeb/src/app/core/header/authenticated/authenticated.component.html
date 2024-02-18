@@ -1,0 +1,21 @@
+<div class="info" style="width: auto;order: 3;">
+  <div class="bx-right" attr.data-title="{{userInfo?.fullName || userInfo?.email}}">
+    <h3 class="username txt-md txt-black no-mar bx-right dis-block">
+      <app-placholder [width]="150" [height]="20" *ngIf="!userInfo?.fullName && !userInfo?.email"></app-placholder>
+      {{userInfo?.fullName || userInfo?.email}}
+    </h3>
+  </div>
+  <div>
+    <div class="bx-right">
+      <a routerLink="/profile" class="txt-xs txt-mgray pointer no-mar xs-mar f_width dis-block" translate>
+        <i class="fas fa-user"></i>
+        header.profile
+      </a>
+    </div>
+    <div class="bx-left">
+      <a (click)="logout()" class="txt-xs txt-mgray pointer no-mar xs-mar f_width dis-block" translate>header.logout
+        <i class="ic-icons-507" style="position: relative;top: 2px"></i>
+      </a>
+    </div>
+  </div>
+</div>

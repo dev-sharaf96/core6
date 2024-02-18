@@ -1,0 +1,67 @@
+<!-- My Information begains -->
+<h1 class="txt-lr txt-black md-mar-bot md-mar col-xs-12" translate>
+  profile.MyInfo
+  <!--
+      <a id="profileEditURL" title="@Html.Raw(Tameenk.LangText.coming_soon)" class=" bx-left btn  sm dis-block bx-left -hvr bg-brand-hvr login sm-mar txt-brand borderd-inset txt-xs   circ-rdus l-shadow">تعديل البيانات</a>
+    -->
+</h1>
+<div class="row clear-b">
+  <div class="col-xs-12 col-md-6 col-lg-6 md-mar bx-right">
+    <div class="wrapper-bx">
+      <span class="txt-sm dis-block xs-mar-bot" translate>profile.user_name</span>
+      <h2 class="txt-lr no-mar">
+        {{ userInfo?.fullName || userInfo?.email }}
+        <app-placholder [width]="140" [height]="20" *ngIf="userInfo === null || userInfo === undefined"></app-placholder>
+      </h2>
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-6 col-lg-6 md-mar bx-right">
+    <div class="wrapper-bx">
+      <span class="txt-sm dis-block xs-mar-bot" translate>profile.email</span>
+      <h2 class="txt-lr no-mar">
+        {{ userInfo?.email }}
+        <app-placholder [width]="170" [height]="20" *ngIf="userInfo === null || userInfo === undefined"></app-placholder>
+      </h2>
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-6 col-lg-6 md-mar bx-right">
+    <div class="wrapper-bx">
+      <span class="txt-sm  dis-block xs-mar-bot" translate>profile.phone_number</span>
+      <h2 class="txt-lr no-mar">
+        {{ userInfo?.phoneNumber }}
+        <app-placholder [width]="130" [height]="20" *ngIf="userInfo === null || userInfo === undefined"></app-placholder>
+      </h2>
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-6 col-lg-6 md-mar bx-right">
+    <div class="wrapper-bx" *ngIf="!isPromotionProgram">
+      <span class="txt-sm  dis-block xs-mar-bot" translate>profile.promotion_program</span>
+      <h2 class="txt-lr no-mar">
+        {{ userInfo?.promotion ? userInfo.promotion : "" }}
+        <a (click)="toggleProgram()" class="pointer " *ngIf="!userInfo?.promotion" translate>{{
+          userInfo?.promotion
+          ? "profile.promotion_cancel"
+          : "profile.join_promotion_program"
+          }}</a>
+      </h2>
+    </div>
+    <div class="wrapper-bx" *ngIf="isPromotionProgram">
+      <div class="promotion-section ">
+        <div class="col-xs-12 col-md-8 bx-right">
+          <div class="input-container" style="margin-top: 1em;">
+            <input class="input-element" appFloatedLabel type="email" id="promotion-email" />
+            <label class="input-label" style="color: #0771b4" for="promotion-email" translate>profile.email</label>
+            <span class="field-error" style="color:red;position:absolute;" id="emailError-promotion"></span>
+          </div>
+        </div>
+        <div class="col-xs-2 bx-right" style="margin-top: 1em;">
+          <button class="no-trans btn sm dis-block submit-continue txt-white bg-brand-hvr txt-xs bg-gr-main circ-rdus l-shadow"
+            translate>
+            profile.join
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- My Information ends -->

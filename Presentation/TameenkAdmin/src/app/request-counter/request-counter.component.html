@@ -1,0 +1,307 @@
+<!-- <div class="row">
+  <div class="panel-heading">
+    <div class="col-lg-2">
+      <h4 translate>requests.filterByInsurer</h4>
+    </div>
+    <div class="col-lg-3">
+      <div class="form-group">
+        <select class="form-control">
+          <option>Insurer 1</option>
+          <option>Insurer 2</option>
+          <option>Insurer 3</option>
+          <option>Insurer 4</option>
+          <option>Insurer 5</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="panel-heading">
+    <div class="col-sm-2">
+      <div class="form-group">
+        <label for="req_number" translate>requests.requestNumber</label>
+        <input type="text" class="form-control" id="req_number">
+      </div>
+    </div>
+    <div class="col-sm-2">
+      <div class="form-group">
+        <label for="req_type" translate>requests.requestType</label>
+        <select class="form-control">
+          <option value="type1">Type 1</option>
+          <option value="type2">Type 2</option>
+          <option value="type3">Type 3</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-sm-2">
+      <div class="form-group">
+        <label for="fstatus" translate>common.status</label>
+        <input type="text" class="form-control" id="fstatus">
+      </div>
+    </div>
+    <div class="col-sm-2">
+      <div class="form-group">
+        <label for="fpolicy" translate>requests.policyNumber</label>
+        <input type="text" class="form-control" id="fpolicy">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="panel-heading">
+    <div class="col-md-4">
+      <label for="fdate" translate>requests.date</label>
+    </div>
+    <div class="col-md-2 col-md-offset-1">
+      <label for="fidclient" translate>requests.clientId</label>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="panel-heading">
+    <div class="col-md-5">
+      <div class="form-inline">
+        <input class="form-control" type="text" name="tgl_awal" id="tgl_awal" placeholder="From" />
+        <input class="form-control" type="text" name="tgl_akhir" id="tgl_akhir" placeholder="To" />
+      </div>
+    </div>
+    <div class="col-md-3">
+      <input type="text" class="form-control" id="fidclient">
+    </div>
+  </div>
+</div> -->
+<br />
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>
+        requests.pendingRequests
+        <div class="text-right">
+          <a href="#" translate>common.export</a>
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table #pendingTable [lazy]="true" (onLazyLoad)="lazyFailurePolicis($event)" [value]="failurePolicis" [totalRecords]="failurePolicisRecords"
+          [rowsPerPageOptions]=[5,10,20] [loading]="failurePolicisLoading" [paginator]="true" [rows]="10" scrollHeight="200px"
+          [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}"  (input)="pendingTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'checkOutDetailsId'" translate>requests.requestNo
+                <p-sortIcon [field]="'checkOutDetailsId'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'policyNo'" translate>common.policyNumber
+                <p-sortIcon [field]="'policyNo'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'userName'" translate>common.clientName
+                <p-sortIcon [field]="'userName'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'userEmail'" translate>common.clientEmail
+                <p-sortIcon [field]="'userEmail'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'policyEffectiveDate'" translate>requests.requestDate
+                <p-sortIcon [field]="'policyEffectiveDate'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'companyName'" translate>requests.companyName
+                <p-sortIcon [field]="'companyName'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'statusCode'" translate>common.status
+                <p-sortIcon [field]="'statusCode'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-policy>
+            <tr>
+              <td style="word-wrap: break-word">{{policy.checkOutDetailsId || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.policyNo || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.userName || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.userEmail || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.policyEffectiveDate || 'ـــــــــــــــــ' | date}}</td>
+              <td style="word-wrap: break-word">{{policy.companyName || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.statusCode || 'ـــــــــــــــــ'}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center" translate>
+                common.noRecordsFound
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Policis with Max tries
+        <div class="text-right">
+          <a href="#" translate>common.export</a>
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table #pendingTable [lazy]="true" (onLazyLoad)="lazyMaxTriesPolicies($event)" [value]="maxTriesPolicies" [totalRecords]="maxTriesPoliciesRecords"
+          [rowsPerPageOptions]=[5,10,20] [loading]="maxTriesPoliciesLoading" [paginator]="true" [rows]="10" scrollHeight="200px"
+          [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}"  (input)="pendingTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'checkOutDetailsId'" translate>requests.requestNo
+                <p-sortIcon [field]="'checkOutDetailsId'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'policyNo'" translate>common.policyNumber
+                <p-sortIcon [field]="'policyNo'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'userName'" translate>common.clientName
+                <p-sortIcon [field]="'userName'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'userEmail'" translate>common.clientEmail
+                <p-sortIcon [field]="'userEmail'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'policyEffectiveDate'" translate>requests.requestDate
+                <p-sortIcon [field]="'policyEffectiveDate'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'companyName'" translate>requests.companyName
+                <p-sortIcon [field]="'companyName'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'statusCode'" translate>common.status
+                <p-sortIcon [field]="'statusCode'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'statusCode'" translate>common.action
+                <p-sortIcon [field]="'statusCode'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-policy>
+            <tr>
+              <td style="word-wrap: break-word">{{policy.checkOutDetailsId || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.policyNo || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.userName || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.userEmail || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.policyEffectiveDate || 'ـــــــــــــــــ' | date}}</td>
+              <td style="word-wrap: break-word">{{policy.companyName || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.statusCode || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">ـــــــــــــــــ</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center" translate>
+                common.noRecordsFound
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>
+        requests.closed
+        <div class="text-right">
+          <a href="#" translate>common.export</a>
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <app-refund-confirm [showConfirm]="confirmSubject" (refundConfirmed) ="refundPolicy($event)" ></app-refund-confirm>
+        <p-table #closedTable [value]="closedRequests" [lazy]="true" (onLazyLoad)="lazyClosedRequests($event)" [totalRecords]="closedtotalRecords"
+          [rowsPerPageOptions]=[5,10,20] [loading]="closedLoading" [paginator]="true" [rows]="10" [responsive]="true" scrollHeight="200px"
+          [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}"  (input)="closedTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'checkOutDetailsId'" translate>requests.requestNo
+                <p-sortIcon [field]="'checkOutDetailsId'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'policyNo'" translate>common.policyNumber
+                <p-sortIcon [field]="'policyNo'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'userName'" translate>common.clientName
+                <p-sortIcon [field]="'userName'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'userEmail'" translate>common.clientEmail
+                <p-sortIcon [field]="'userEmail'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'policyEffectiveDate'" translate>requests.requestDate
+                <p-sortIcon [field]="'policyEffectiveDate'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'companyName'" translate>requests.companyName
+                <p-sortIcon [field]="'companyName'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'statusCode'" translate>common.status
+                <p-sortIcon [field]="'statusCode'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'isRefunded'" translate>requests.refunded
+                <p-sortIcon [field]="'isRefunded'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-policy>
+            <tr>
+              <td style="word-wrap: break-word">{{policy.checkOutDetailsId || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.policyNo || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.userName || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.userEmail || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.policyEffectiveDate || 'ـــــــــــــــــ' | date}}</td>
+              <td style="word-wrap: break-word">{{policy.companyName || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{policy.statusCode || 'ـــــــــــــــــ'}}</td>
+              <td>
+                <button *ngIf="policy.isRefunded == false" (click)="policyRefundClick(policy.checkOutDetailsId)" class="btn btn-danger" translate>requests.doRefund</button>
+                <span *ngIf="policy.isRefunded" translate>requests.refunded</span>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center" translate>
+                common.noRecordsFound
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->

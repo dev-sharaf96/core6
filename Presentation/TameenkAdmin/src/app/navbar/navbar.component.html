@@ -1,0 +1,27 @@
+<div class="navbar-default sidebar" role="navigation">
+  <div class="sidebar-nav navbar-collapse">
+    <ul class="nav" id="side-menu">
+        <li>
+            <a [routerLink]="['/admin/']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+              <i class="fa fa-dashboard fa-fw"></i> {{'navbar.mainMenu' | translate}}</a>
+          </li>
+      <ng-container *ngFor="let item of pages">
+        <li *ngIf="!item.Page.ParentId">
+          <a [routerLink]="[item.Page.RouteName]" routerLinkActive="active">
+            <i class="fa fa-fw" [ngClass]="item.Page.IconName"></i> {{item.Page['bind.pageTitle' | translate]}}</a>
+          <ul>
+            <ng-container *ngFor="let subItem of pages">
+              <li *ngIf="subItem.Page.ParentId === item.Page.Id" class="nav-item_child">
+                <a [routerLink]="[subItem.Page.RouteName]" routerLinkActive="active">
+                  <i class="fa fa-fw" [ngClass]="subItem.Page.IconName"></i>
+                  {{subItem.Page['bind.pageTitle' | translate]}}
+                </a></li>
+            </ng-container>
+          </ul>
+        </li>
+      </ng-container>
+
+      <li></li>
+    </ul>
+  </div>
+</div>

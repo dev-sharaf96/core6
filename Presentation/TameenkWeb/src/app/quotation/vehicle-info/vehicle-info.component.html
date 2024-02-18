@@ -1,0 +1,45 @@
+  <section class="md-ver-spc search-info bg-ofwhite section search-result-info active search-car" [ngStyle]="{'background-image': 'url(assets/imgs/CarLogos/' + vehicleInfo.vehicle?.vehicleMakerCode.toLocaleString('en', {minimumIntegerDigits: 4, useGrouping: false}) + '.jpg)'}" *ngIf="vehicleInfo">
+    <div class="container">
+      <div class="row">
+        <!-- block -->
+        <div class="over-hidden col-xs-12 col-lg-3 col-md-3 bx-right md-mar">
+          <!-- <span class="txt-sm  txt-mgray dis-block xs-mar-bot">حالة نجم</span>
+                <h2 class="txt-lr txt-black no-mar">ساريه</h2> -->
+        </div>
+        <!-- block -->
+        <div class="over-hidden col-xs-12 col-lg-3 col-md-3 bx-right md-mar">
+          <span class="txt-sm  txt-mgray dis-block xs-mar-bot" translate>quotation.search_Vehicle_Description</span>
+          <h2 class="txt-lr txt-black no-mar txt-en">
+            {{vehicleInfo.vehicle?.vehicleMaker || ' '}}
+            {{vehicleInfo.vehicle?.modelYear || ' '}}
+            {{vehicleInfo.vehicle?.model || ' '}}
+          </h2>
+          <app-placholder [width]="220" [height]="20" *ngIf="vehicleInfo === null || vehicleInfo === undefined"></app-placholder>
+        </div>
+        <!-- block -->
+        <div class="over-hidden col-xs-12 col-lg-2 col-md-2 bx-right md-mar">
+          <span class="txt-sm  txt-mgray dis-block xs-mar-bot" translate>quotation.search_Discount_Eligibility</span>
+          <h2 class="txt-lr txt-black no-mar">
+            {{vehicleInfo.najmNcdFreeYears}}
+          </h2>
+          <app-placholder [width]="150" [height]="20" *ngIf="vehicleInfo === null || vehicleInfo === undefined"></app-placholder>
+        </div>
+        <!-- block -->
+        <div class="col-xs-6 col-lg-2 col-md-2 bx-right md-mar">
+            <app-car-plate
+            [plateColorType]="vehicleInfo.vehicle?.PlateTypeCode"
+            [carPlateNumber]="vehicleInfo.vehicle?.carPlateNumber"
+            [carPlateText1]="vehicleInfo.vehicle?.carPlateText1"
+            [carPlateText2]="vehicleInfo.vehicle?.carPlateText2"
+            [carPlateText3]="vehicleInfo.vehicle?.carPlateText3"
+          ></app-car-plate>
+          <app-placholder [width]="90" [height]="50" *ngIf="vehicleInfo === null || vehicleInfo === undefined"></app-placholder>
+        </div>
+        <!-- block -->
+        <div class="over-hidden col-xs-6 col-lg-2 col-md-2 md-mar">
+          <a routerLink="/" class="bx-right btn  sm dis-block txt-white login sm-mar txt-brand borderd-hvr txt-xs bg-gr-main  circ-rdus l-shadow" translate>quotation.Search_edit_info</a>
+        </div>
+        <!-- block -->
+      </div>
+    </div>
+  </section>

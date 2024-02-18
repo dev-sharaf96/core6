@@ -1,0 +1,121 @@
+<!-- <div class="row">
+  <div class="col-lg-1">
+    <h4>Product:</h4>
+  </div>
+  <div class="col-lg-3">
+    <div class="form-group">
+      <select class="form-control">
+        <option>TPL</option>
+        <option>COM</option>
+        <option>TRAVEL</option>
+        <option>MEDICAL</option>
+        <option>HOME</option>
+        <option>MALPRACTICE</option>
+      </select>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-3">
+    <div class="form-group">
+      <label for="fid_number">ID number</label>
+      <input type="text" class="form-control" id="fid_number">
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="form-group">
+      <label for="fveh_seq">Vehicle Sequence Number</label>
+      <input type="text" class="form-control" id="fveh_seq">
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="form-group">
+      <label for="fveh_cus">Vehicle Custom Number</label>
+      <input type="text" class="form-control" id="fveh_cus">
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-3">
+    <div class="form-group">
+      <label for="fplate">Plate Number</label>
+      <input type="text" class="form-control" id="fplat">
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="form-group">
+      <label for="fmobile">Mobile Number</label>
+      <input type="text" class="form-control" id="fmobile">
+    </div>
+  </div>
+</div> -->
+<br />
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="text-right">
+          <a href="#" translate>common.export</a>
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table #clientsTable [value]="clientsData" [lazy]="true" (onLazyLoad)="clientsLazyLoad($event)" [totalRecords]="clientsTotalRecords"
+          [rowsPerPageOptions]=[5,10,20] [loading]="clientsLoading" [paginator]="true" [rows]="10" [responsive]="true" scrollHeight="200px"
+          [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="clientsTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'checkOutDetailsId'" translate>common.sN
+                <p-sortIcon [field]="'checkOutDetailsId'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'userName'" translate>clients.ownerName
+                <p-sortIcon [field]="'userName'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'userEmail'" translate>clients.ownerID
+                <p-sortIcon [field]="'userEmail'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'vehPlateNumber'" translate>clients.vehPlateNumber
+                <p-sortIcon [field]="'vehPlateNumber'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'policyNo'" translate>common.policyNumber
+                <p-sortIcon [field]="'policyNo'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'companyName'" translate>clients.noOfRequests
+                <p-sortIcon [field]="'companyName'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-client>
+            <tr>
+              <td style="word-wrap: break-word">{{client.checkOutDetailsId || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{client.userName || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{client.userEmail || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{client.vehPlateNumber || 'ـــــــــــــــــ'}}</td>
+              <td style="word-wrap: break-word">{{client.policyNo || 'ـــــــــــــــــ' | date}}</td>
+              <td style="word-wrap: break-word">{{client.companyName || 'ـــــــــــــــــ'}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center" translate>
+                common.noRecordsFound
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->

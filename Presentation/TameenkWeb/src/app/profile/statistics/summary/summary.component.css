@@ -1,0 +1,16 @@
+h2, a {
+        color: inherit;
+            line-height: 1;
+}
+
+.wrapper-bx {
+    padding: 30px;
+    border-radius: 5px;
+        box-shadow: 0 5px 20px 0 rgba(7, 113, 180, 0.35);
+            border: 2px solid #186a9e;
+    color: #186a9e;
+    font-size: 1.8rem;
+}
+.show {
+    font-size: 18px
+}

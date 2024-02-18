@@ -1,0 +1,20 @@
+.ReUploadPolicyFileValidation {
+  color: #f00;
+  font-size: 16px;
+  margin: 0 5px
+}
+
+.SearchValidation {
+  margin-top: -25px;
+  float: left;
+}
+.reUploadPolicyFileInput {
+  display: initial;
+  margin-right: 20px;
+  margin-left: 20px;
+}
+
+.reUploadPolicyFileDiv {
+  margin-left: 0px;
+  margin-right: 0px;
+}

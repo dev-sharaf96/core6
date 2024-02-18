@@ -1,0 +1,66 @@
+<!-- Company Modal -->
+<app-popup [title]="isEnglish ? companyInfo.nameEN : companyInfo.nameAR || '---------'" [ref]="product.providerId"
+  *ngIf="companyInfo">
+  <div class="model-img">
+    <img [src]="'assets/imgs/insurerlogos/' + companyInfo.key + '.png'" [alt]="companyInfo.nameEN">
+  </div>
+  <!-- Here -->
+  <div class="modal-body">
+    <p>{{isEnglish ? companyInfo?.descEN : companyInfo?.descAR || '---------'}}</p>
+    <div *ngIf="companyInfo?.address?.addressLoction">
+      <i class="ic-icons-78 txt-black bx-right general-ico"></i>
+      <a href="${result.AddressLoction}" target="_blank">
+        {{companyInfo?.address?.addressLoction || '---------'}}
+      </a>
+    </div>
+  </div>
+  <div class="modal-footer txt-right" *ngIf="companyInfo.contact">
+    {{'quotation.company_email' | translate}}:
+    <a href="mailto:${result.Email}" *ngIf="companyInfo?.contact?.email">{{companyInfo?.contact?.email || '---------'}}</a>
+    <br /> {{'quotation.company_phone' | translate}}: {{companyInfo?.contact?.homePhone || '---------'}}
+    <br /> {{'quotation.company_mobile' | translate}}: {{companyInfo?.contact?.mobileNumber || '---------'}}
+    <br /> {{'quotation.company_fax' | translate}}: {{companyInfo?.contact?.fax || '---------'}}
+  </div>
+</app-popup>
+<section class="product">
+  <div class="product-heading col-xs-6 col-md-3 col-lg-2">
+    <div class="insurance-logo">
+      <img [src]="'assets/imgs/insurerlogos/' + product.companyKey + '.png'" [alt]="product.companyKey" />
+    </div>
+    <p class="insurance-type txt-md no-mar sm-mar" translate *ngIf="product.insuranceTypeCode === 1">
+      quotation.Search_TPL_long
+  </p>
+  <p class="insurance-type comprehensive txt-md no-mar sm-mar" translate *ngIf="product.insuranceTypeCode === 2">
+      quotation.Search_Comprehensive
+  </p>
+  <div class="more-detail txt-md txt-black no-mar sm-mar">
+    <i class="ic-icons-352 general-ico"></i>
+    <a (click)="showPopup(product.providerId)" class="txt-black txt-brand-hvr" translate>quotation.Search_More_Detail</a>
+</div>
+<div class="add-to-compare txt-md txt-black no-mar sm-mar">
+  <i *ngIf="!isAddedToCompare" class="ic-plus general-ico"></i>
+  <a *ngIf="!isAddedToCompare" class="txt-black txt-brand-hvr" (click)="addToCompare()" translate>quotation.Search_Add_Comparison</a>
+  <i *ngIf="isAddedToCompare" class="ic-minus general-ico"></i>
+  <a *ngIf="isAddedToCompare" class="txt-black txt-brand-hvr" (click)="removeFromCompare()" translate>quotation.Search_Remove_Comparison</a>
+</div>
+<div class="show-benefits txt-md txt-black no-mar sm-mar" *ngIf="product.productBenefits && product.productBenefits.length > 0">
+  <i class="ic-icons-86 general-ico"></i>
+  <a (click)="showBenefits()" class="txt-black txt-brand-hvr" translate>quotation.Search_Additional_Benefits</a>
+</div>
+  </div>
+  <div class="product-benefits col-xs-12 col-md-6 col-lg-7">
+    <app-benefits [benefits]="product.productBenefits" (benefitChange)="benefitChange($event)"></app-benefits>
+  </div>
+  <div class="product-price col-xs-6 col-md-3 col-lg-3">
+      <div *ngIf="product.priceDetails && product.priceDetails.length > 0">
+          <h3 *ngFor="let price of product.priceDetails" class="txt-mgray no-mar clear-b f_width bx-right" style="margin-bottom:5px;">
+            <span class="price-description bx-right">{{price.priceType != null ? price.priceType.priceDescription : ''}}</span>
+            <span class="value bx-left">{{price.priceValue |  number:'1.0-2'}}</span>
+          </h3>
+      </div>
+      <span class="txt-black no-mar bx-right f_width dis-block txt-center bold" style="padding-top: 10px;">{{'common.total' | translate}}</span>
+      <h2 class="txt-lr txt-black xs-mar bx-right f_width dis-block xs-mar-bot bold" style="display: flex;justify-content: center;align-items: center;">{{productPrice | number:'1.0-2'}} <span class="dis-inline-block txt-md right-mar-10 left-mar-10 bold">{{'common.SAR' | translate}}</span></h2>
+      <input type="hidden" name="ReferenceId" [value]="product.referenceId">
+      <input type="button" (click)="buyProduct()" [value]="'quotation.Search_buy_now' | translate" class="buy-now borderd-hvr btn sm dis-inline-block sm-mar txt-white  txt-green txt-green-hvr bg-green  circ-rdus l-shadow" style="display: block;margin: 0 auto;">
+    </div>
+</section>

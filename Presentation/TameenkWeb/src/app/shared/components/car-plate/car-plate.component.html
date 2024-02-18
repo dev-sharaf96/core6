@@ -1,0 +1,16 @@
+<div style="text-align: center">
+  <div class="belt" [ngClass]="plateColorsMap[plateColorType]">
+    <span class="arabic-character">
+      {{carPlateText3}}
+      {{carPlateText2}}
+      {{carPlateText1}}
+    </span>
+    <span class="arabic-number">{{carPlateNumberAr}}</span>
+    <span class="english-number">{{carPlateNumber}}</span>
+    <span class="english-character">
+      {{plateTextMap[carPlateText1]}}
+      {{plateTextMap[carPlateText2]}}
+      {{plateTextMap[carPlateText3]}}
+    </span>
+  </div>
+</div>

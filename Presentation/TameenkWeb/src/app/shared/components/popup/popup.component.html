@@ -1,0 +1,12 @@
+<div class="popup popup-open" [attr.data-popup]="ref">
+  <div class="popup-inner">
+    <div class="data-container">
+      <div class="modal-header">
+        <h2>{{title}}</h2>
+      </div>
+      <ng-content></ng-content>
+    </div>
+    <a class="popup-close" [attr.data-popup-close]="ref" href="#">x</a>
+  </div>
+</div>
+<!-- Popup End -->

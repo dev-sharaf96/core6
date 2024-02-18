@@ -1,0 +1,85 @@
+<section class="md-ver-spc search-inputs  section min-height-vh normal-page">
+  <div class="container">
+    <div class="wrapper-bx md-mar-bot">
+      <div class="row contact-us">
+        <div class="col-xs-12 col-lg-8 bx-center">
+          <h1 class="txt-black txt-lr md-lh txt-center" style="color:#f7811c; padding-bottom: 0px;" translate>contact.contact_us</h1>
+          <form id="contact-form" method="post" action="">
+
+            <div class="col-xs-12 col-lg-6 col-md-6 bx-right no-mar-lg">
+              <div class="input-container">
+                <input class="input-element" type="text" appFloatedLabel id="fullName"  />
+                <label class="input-label" for="fullName" translate>contact.full_name</label>
+                <!-- <span *ngFor="let error of vehicle.validationErrors['fullName']" class="field-error" style="color:red;position:absolute;">{{error | translate}}</span> -->
+              </div>
+            </div>
+            <div class="col-xs-12 col-lg-6 col-md-6 bx-right no-mar-lg">
+              <div class="input-container">
+                <input class="input-element" type="email" appFloatedLabel id="email"  />
+                <label class="input-label" for="email" translate>contact.email</label>
+                <!-- <span *ngFor="let error of vehicle.validationErrors['email']" class="field-error" style="color:red;position:absolute;">{{error | translate}}</span> -->
+              </div>
+            </div>
+            <div class="col-xs-12 col-lg-6 col-md-6 bx-right no-mar-lg">
+              <div class="input-container">
+                <input class="input-element" type="tel" appFloatedLabel id="mobile"  />
+                <label class="input-label" for="mobile" translate>contact.phone</label>
+                <!-- <span *ngFor="let error of vehicle.validationErrors['mobile']" class="field-error" style="color:red;position:absolute;">{{error | translate}}</span> -->
+              </div>
+            </div>
+            <div class="col-xs-12 col-lg-6 col-md-6 bx-right no-mar-lg">
+              <div class="input-container">
+                <input class="input-element" type="text" appFloatedLabel id="address"  />
+                <label class="input-label" for="address" translate>contact.address</label>
+                <!-- <span *ngFor="let error of vehicle.validationErrors['mobile']" class="field-error" style="color:red;position:absolute;">{{error | translate}}</span> -->
+              </div>
+            </div>
+            <div class="col-xs-12 bx-right">
+                <div class="input-container" style="height: 150px; padding: 10px;">
+                  <textarea class="input-element" id="message" appFloatedLabel></textarea>
+                  <label class="input-label" style="display: inline-block;top: 10px;height: 40px;" for="message" translate>contact.message</label>
+                  <span class="field-error" style="color:red;position:absolute;"></span>
+                </div>
+              </div>
+
+            <div class="row">
+              <div class="hidden-xs hidden-sm col-md-4 bx-right md-mar"></div>
+              <div class="col-xs-12 col-md-6 bx-right">
+                <!-- <app-captcha [(captcha)]="captcha" (success)="checkCaptcha($event)"></app-captcha> -->
+              </div>
+              <div class="col-xs-12 col-sm-4 col-md-2">
+                <button type="submit" id="sendMsg" class="bx-left btn sm dis-block no-trans bx-left txt-white continue txt-brand bg-brand-hvr txt-xs bg-gr-main  circ-rdus l-shadow md-mar" translate>contact.send</button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<app-popup [ref]="'waitingSendMsg'">
+  <div class="popup-inner" style="border: 4px solid #186a9e;">
+    <div class="modal-body" style="padding: 0">
+      <p class="txt-loading">sending<span>.</span><span>.</span><span>.</span></p>
+    </div>
+    <a class="popup-close hide" id="closeWaiting" data-popup-close="waitingSendMsg" href="#"></a>
+  </div>
+</app-popup>
+
+<!--Message Received popup-->
+<div class="popup" data-popup="MessageReceived">
+  <div class="popup-inner">
+    <div class="modal-header">
+      <h1>@Html.Raw(Tameenk.LangText.ContactUsMessageReceivedHeader)</h1>
+    </div>
+    <!-- Here -->
+    <div class="modal-body">
+      <h2>@Html.Raw(Tameenk.LangText.ContactUsMessageReceivedBody)</h2>
+    </div>
+    <a class="popup-close" id="MessageReceivedClose" data-popup-close="MessageReceived" href="#">x</a>
+  </div>
+</div>
+<a data-popup-open="MessageReceived" id="MessageReceivedOpen"></a>
+<a data-popup-open="waitingSendMsg" id="openWaiting"></a>
+<!--End Message Received popup-->

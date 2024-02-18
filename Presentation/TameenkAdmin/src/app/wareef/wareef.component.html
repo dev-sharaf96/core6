@@ -1,0 +1,324 @@
+<div class="row">
+  <div class="col-lg-12">
+    <button
+      (click)="ShowAddItem()"
+      class="btn btn-success action-btn"
+      translate
+    >
+      wareef.add
+    </button>
+    <div class="panel panel-default">
+      <div *ngIf="dataCount > 0" class="panel-heading">
+        <div class="text-left">
+          {{ "common.results_count" | translate }} : {{ dataCount }}
+        </div>
+      </div>
+      <div class="panel-body">
+        <p-table
+          #approvalsTable
+          [value]="AllData"
+          [lazy]="true"
+          [lazyLoadOnInit]="false"
+          [totalRecords]="dataCount"
+          [rowsPerPageOptions]="[5, 10, 20]"
+          [loading]="loading"
+          [paginator]="true"
+          [rows]="10"
+          [responsive]="true"
+          scrollHeight="200px"
+          [autoLayout]="true"
+          [resizableColumns]="true"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate>wareef.name</th>
+              <th translate>wareef.category</th>
+              <th translate>wareef.image</th>
+              <th translate>wareef.edit</th>
+              <th translate>wareef.remove</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td style="word-wrap: break-word; text-align: center">
+                {{ item.NameEn || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word; text-align: center">
+                {{ item.WareefCategoryId || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word; text-align: center">
+                <button
+                  *ngIf="item.ImageBytes"
+                  (click)="showImg(item.Id)"
+                  class="btn btn-primary action-btn"
+                  translate
+                >
+                  wareef.DisplayImage
+                </button>
+              </td>
+              <td style="word-wrap: break-word; text-align: center">
+                <button
+                  (click)="ShowEdit(item.Id)"
+                  class="btn btn-warning action-btn col-6"
+                  translate
+                >
+                  wareef.edit
+                </button>
+              </td>
+              <td style="word-wrap: break-word; text-align: center">
+                <button
+                  (click)="showDeleteDialog(item.Id)"
+                  class="btn btn-danger action-btn col-6"
+                  translate
+                >
+                  common.delete
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="selectedImage"
+  [modal]="true"
+  [style]="{ width: '550px', height: '450px' }"
+  [responsive]="true"
+  [minY]="70"
+  [baseZIndex]="10000"
+  [dismissableMask]="true"
+  [rtl]="!isEnglish"
+>
+  <div *ngIf="selectedImage">
+    <img style="width: 100%; max-height: 100%" [src]="showenImage" />
+  </div>
+</p-dialog>
+<p-dialog
+  [(visible)]="deleteDialog"
+  [modal]="true"
+  [style]="{ width: '400px', height: '200px' }"
+  [responsive]="true"
+  [minY]="70"
+  [baseZIndex]="10000"
+  [dismissableMask]="true"
+  [rtl]="!isEnglish"
+>
+  <div *ngIf="deleteDialog">
+    <ng-container class="form-group mb-3">
+      <h4 class="text-center mb-3">Are You sure Remove item</h4>
+    </ng-container>
+    <div class="form-group mt-2">
+      <button class="btn btn-danger confirm" (click)="delete()">Confirm</button>
+    </div>
+  </div>
+</p-dialog>
+<p-dialog
+  [(visible)]="AddDailog"
+  [modal]="true"
+  [style]="{ width: '1000px', height: '900' }"
+  [responsive]="true"
+  [minY]="70"
+  [baseZIndex]="10000"
+  [dismissableMask]="true"
+  [rtl]="!isEnglish"
+>
+  <div *ngIf="AddDailog">
+    <!-- <form [formGroup]="AddForm" (ngSubmit)="SubmitAddItem()">-->
+    <form [formGroup]="AddForm" #wareefForm>
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="form-group">
+              <label for="" class="control-label" translate
+                >wareef.nameAr</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                formControlName="nameAr"
+              />
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="form-group">
+              <label for="" class="control-label" translate
+                >wareef.nameEn</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                formControlName="nameEn"
+              />
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            <div class="form-group">
+              <label for="" translate>wareef.category</label>
+              <p-dropdown
+                name="category"
+                [options]="categoryList"
+                formControlName="category"
+                placeholder="select category"
+                optionLabel="name"
+                filter="true"
+                [style]="{ width: '100%' }"
+                (onChange)="changeCategory($event)"
+              >
+              </p-dropdown>
+            </div>
+          </div>
+
+          <div
+            formGroupName="imageData"
+            class="col-xs-12 col-sm-4 col-md-4 col-lg-4"
+          >
+            <!-- <span class="car-title">{{ "wareef.image" | translate }}</span> -->
+            <div class="form-group">
+              <label for="" translate>common.image</label>
+              <input
+                accept="image/png, image/jpg, image/jpeg"
+                type="file"
+                class="input__field"
+                name="ImageFront"
+                id="ImageFront"
+                target="car-upload-front"
+                aria-required="true"
+                (change)="handleFileInput($event.target.files)"
+                formControlName="imageData"
+              />
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-12">
+            <button
+              [disabled]="isSearch || AddForm.invalid"
+              (click)="SubmitAddItem()"
+              class="btn btn-primary"
+              style="margin-top: 20px"
+              translate
+            >
+              wareef.add
+            </button>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </form>
+  </div>
+</p-dialog>
+<p-dialog
+  [(visible)]="showeditDailog"
+  [modal]="true"
+  [style]="{ width: '1000px', height: '900' }"
+  [responsive]="true"
+  [minY]="70"
+  [baseZIndex]="10000"
+  [dismissableMask]="true"
+  [rtl]="!isEnglish"
+>
+  <div *ngIf="showeditDailog">
+    <div class="row">
+      <div class="col-xs-12">
+        <form #editForm="ngForm" novalidate>
+          <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div class="form-group">
+              <label for="" class="control-label required" translate
+                >wareef.nameAr</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="selectedEditedItem.NameAr"
+                name="nameAr"
+                id="nameAr"
+                required
+                #nameAr="ngModel"
+              />
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div class="form-group">
+              <label for="" class="control-label required" translate
+                >wareef.nameEn</label
+              >
+              <input
+              type="text"
+                class="form-control"
+                [(ngModel)]="selectedEditedItem.NameEn"
+                name="nameEn"
+                id="nameEn"
+                #nameEn="ngModel"
+                required
+              />
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+            <div class="form-group">
+              <label for="" class="required" translate>wareef.category</label>
+              <p-dropdown
+                name="category"
+                id="category"
+                #category="ngModel"
+                [options]="categoryList"
+                [(ngModel)]="selectedEditedItem.Category"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="select category"
+                optionLabel="name"
+                filter="true"
+                required
+                [style]="{ width: '100%' }"
+                (onChange)="changeCategory($event)"
+              >
+              </p-dropdown>
+            </div>
+          </div>
+          <div
+            class="col-xs-12 col-sm-4 col-md-4 col-lg-4"
+          >
+            <!-- <span class="car-title">{{ "wareef.image" | translate }}</span> -->
+            <div class="form-group">
+              <label for="" translate class="control-label required"
+              (click)="ImageFront.click()">{{attatchName || 'selectFile' | translate}}</label>
+              <input
+                accept="image/png, image/jpg, image/jpeg"
+                type="file"
+                class="input__field form form-control"
+                name="ImageFront"
+                id="ImageFront"
+                #ImageFront
+                target="car-upload-front"
+                required
+                (change)="handleFileInput($event.target.files)"
+                [(ngModel)]="selectedEditedItem.ImageData.newImageData"
+              />
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <button
+              [disabled]="isSearch || editForm.invalid"
+              (click)="Edit()"
+              class="btn btn-primary"
+              style="margin-top: 20px"
+              translate
+            >
+              wareef.edit
+            </button>
+          </div>
+          <div
+            scrollable
+            class="col-xs-12 col-sm-12 col-md-12 col-lg-12 scrl"
+          ></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</p-dialog>

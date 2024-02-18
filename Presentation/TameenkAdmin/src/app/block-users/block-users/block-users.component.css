@@ -1,0 +1,67 @@
+
+.addBtn
+{
+  border-radius: 5px;
+  padding-left:20px;
+  padding-right:20px;
+  margin-bottom: 10px;
+}
+
+
+.info-row {
+  overflow: hidden;
+}
+
+.info-row:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+  padding: 5px 0
+
+}
+
+.info-row span:first-child {
+  font-weight: bold
+}
+
+.action-btn:not(:last-child) {
+  margin-left: 10px;
+}
+
+
+/*toggle button*/
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Rounded sliders */
+.slider.round {
+border-radius: 34px;
+}
+
+.slider.round:before {
+border-radius: 50%;
+}
+.modal {
+background: rgba(90, 90, 90, 0.61);
+}
+
+.modal-dialog {
+margin-top: 200px;
+}
+
+.lebel-for-required:after {
+content: '*';
+color: #f00;
+font-size: 16px;
+margin: 0 5px
+}
+
+

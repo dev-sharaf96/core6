@@ -1,0 +1,185 @@
+<div class="container edit-section" *ngIf="payment">
+  <h2><span>#</span>{{payment.ReferenceId}}</h2>
+  <form #editFailure="ngForm" (submit)="onSubmit()" ngNativeValidate>
+    <h3>{{'common.paymentInfo' | translate}}:</h3>
+    <div class="row">
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="insuredNIN" class="col-sm-4 col-form-label lebel-for-required">
+          {{
+ 'invoice.invoice_no' |
+          translate
+          }}
+        </label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="insuredNIN" disabled [(ngModel)]="payment.InvoiceNo" name="insuredNIN" #insuredNIN="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="insuredPhone" class="col-sm-4 col-form-label lebel-for-required">
+          {{
+ 'invoice.invoice_date' |
+          translate
+          }}
+        </label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="insuredPhone" disabled [(ngModel)]="payment.InvoiceDate" name="insuredPhone" #insuredPhone="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="insuredFullNameAr" class="col-sm-4 col-form-label lebel-for-required">
+          {{
+ 'invoice.insurance_company' |
+          translate
+          }}
+        </label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="insuredFullNameAr" disabled [(ngModel)]="payment.InsuranceCompany" name="insuredFullNameAr" #insuredFullNameAr="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="insuredFullNameEn" class="col-sm-4 col-form-label lebel-for-required">
+          {{
+ 'common.payments_method' |
+          translate
+          }}
+        </label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="insuredFullNameEn" disabled [(ngModel)]="payment.PaymentMethod" name="insuredFullNameEn" #insuredFullNameEn="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="insuranceCompanyAr" class="col-sm-4 col-form-label lebel-for-required">
+          {{
+ 'invoice.insurance_type' |
+          translate
+          }}
+        </label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="insuranceCompanyAr" disabled [(ngModel)]="payment.InsuranceType" name="insuranceCompanyAr" #insuranceCompanyAr="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="ExtraPremiumPrice" class="col-sm-4 col-form-label lebel-for-required">
+          {{
+ 'invoice.extra_premium_price' |
+          translate
+          }}
+        </label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="ExtraPremiumPrice" disabled [(ngModel)]="payment.ExtraPremiumPrice" name="ExtraPremiumPrice" #ExtraPremiumPrice="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="Vat" class="col-sm-4 col-form-label lebel-for-required">{{ 'invoice.vat' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="Vat" disabled [(ngModel)]="payment.Vat" name="Vat" #Vat="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="FullName" class="col-sm-4 col-form-label lebel-for-required">{{ 'common.clientName' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="FullName" disabled [(ngModel)]="payment.FullName" name="FullName" #FullName="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="Phone" class="col-sm-4 col-form-label lebel-for-required">{{ 'common.clientPhone' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="Phone" disabled [(ngModel)]="payment.Phone" name="Phone" #Phone="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="Email" class="col-sm-4 col-form-label lebel-for-required">{{ 'common.clientEmail' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="Email" disabled [(ngModel)]="payment.Email" name="Email" #Email="ngModel">
+        </div>
+      </div>
+    </div>
+    <h3>{{'hyperPayResponse.hyperPayResponseInfo' | translate}}:</h3>
+    <div class="row">
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="responseCode" class="col-sm-4 col-form-label lebel-for-required">
+          {{
+ 'hyperPayResponse.responseCode' |
+          translate
+          }}
+        </label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="responseCode" [(ngModel)]="hyperPayResponse.responseCode" name="responseCode" required #responseCode="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="hyperpayResponseId" class="col-sm-4 col-form-label lebel-for-required">
+          {{
+ 'hyperPayResponse.hyperpayResponseId' |
+          translate
+          }}
+        </label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="hyperpayResponseId" [(ngModel)]="hyperPayResponse.hyperpayResponseId" name="hyperpayResponseId" required #hyperpayResponseId="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="paymentBrand" class="col-sm-4 col-form-label lebel-for-required">
+          {{
+ 'hyperPayResponse.paymentBrand' |
+          translate
+          }}
+        </label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="paymentBrand" [(ngModel)]="hyperPayResponse.paymentBrand" name="paymentBrand" required #paymentBrand="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="descriptor" class="col-sm-4 col-form-label lebel-for-required">
+          {{
+ 'hyperPayResponse.descriptor' |
+          translate
+          }}
+        </label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="descriptor" [(ngModel)]="hyperPayResponse.descriptor" required name="descriptor" #descriptor="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="amount" class="col-sm-4 col-form-label lebel-for-required">
+          {{
+ 'hyperPayResponse.amount' |
+          translate
+          }}
+        </label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="amount" [(ngModel)]="hyperPayResponse.amount" required name="amount" #amount="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="timestamp" class="col-sm-4 col-form-label lebel-for-required">{{ 'hyperPayResponse.timestamp' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="timestamp" [(ngModel)]="hyperPayResponse.timestamp" name="timestamp" required #timestamp="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="cardBin" class="col-sm-4 col-form-label lebel-for-required">{{ 'hyperPayResponse.cardBin' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="Phone" [(ngModel)]="hyperPayResponse.cardBin" name="cardBin" required #cardBin="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="last4Digits" class="col-sm-4 col-form-label lebel-for-required">{{ 'hyperPayResponse.last4Digits' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="last4Digits" [(ngModel)]="hyperPayResponse.last4Digits" name="last4Digits" required #last4Digits="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="holder" class="col-sm-4 col-form-label lebel-for-required">{{ 'hyperPayResponse.holder' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="holder" [(ngModel)]="hyperPayResponse.holder" name="holder" required #holder="ngModel">
+        </div>
+      </div>
+
+    </div>
+    <a [routerLink]="'/admin/payments'" class="btn btn-default mr-r_s">{{'common.back' | translate}}</a>
+    <button type="submit" class="btn btn-primary action-btn" translate>common.reproccess</button>
+  </form>
+  <br>
+  <br>
+</div>

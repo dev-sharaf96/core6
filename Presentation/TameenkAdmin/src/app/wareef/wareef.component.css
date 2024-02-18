@@ -1,0 +1,14 @@
+.scrl{
+max-height: 200px;   
+overflow-y : scroll;
+}
+
+.action-btn{
+    margin: left 2px !important;
+    margin: right 2px !important;
+
+}
+.confirm{
+    margin-top: 4rem !important;
+    float:bottom !important;
+}

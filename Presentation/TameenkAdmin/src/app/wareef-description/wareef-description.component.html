@@ -1,0 +1,122 @@
+
+
+
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'navbar.WareeDiscription' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+
+
+
+
+  <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+    <div class="form-group">
+      <label for="" translate>wareef.category</label>
+      <p-dropdown
+        [options]="categoryList"
+        placeholder="select category"
+        optionLabel="name"
+        filter="true"
+        [style]="{ width: '100%' }"
+        (onChange)="changeCategory($event)"
+      >
+      </p-dropdown>
+    </div>
+  </div>
+
+
+   <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+    <div class="form-group">
+      <label for="" translate>wareef.partner</label>
+      <p-dropdown
+        [options]="PartenerList"
+        placeholder="select wareef item"
+        optionLabel="name"
+        filter="true"
+        [style]="{ width: '100%' }"
+        (onChange)="changeWareefItem($event)"
+      >
+      </p-dropdown>
+    </div>
+  </div>
+
+
+  <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+    <div class="form-group">
+      <label for="" translate>wareef.discount</label>
+      <p-dropdown
+        [options]="DiscountList"
+        placeholder="select wareef item"
+        optionLabel="name"
+        filter="true"
+        [style]="{ width: '100%' }"
+        (onChange)="changeWareefDiscountId($event)"
+      >
+      </p-dropdown>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+      <button
+        [disabled]="this.selectedDiscountId==0"
+        (click)="getDiscountDetails(selectedDiscountId)"
+        class="btn btn-primary"
+        style="margin-top: 20px"
+        translate
+      >
+        wareef.serch
+      </button>
+    </div>
+  
+   
+  </div> 
+
+  <p-dialog
+  [(visible)]="updateDialoge"
+  [modal]="true"
+  [style]="{ width: '1000px', height: '900' }"
+  [responsive]="true"
+  [minY]="70"
+  [baseZIndex]="10000"
+  [dismi5ssableMask]="true"
+  [rtl]="!isEnglish"
+>
+  <div *ngIf="updateDialoge">
+    <form (ngSubmit)="OnSubmit()">
+      <div class="row">
+        <div class="col-xs-12" *ngFor="let item of DescriptionList;let index = index;">
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="form-group">
+              <label for="" class="control-label" translate
+                >wareef.BenefitDescAr</label
+              >
+              <input  class="form-control" name=a{{index}} [(ngModel)]="DescriptionList[index].BenefitDescriptionAr" placeholder="item">
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="form-group">
+              <label for="" class="control-label" translate
+                >wareef.BenefitDescEn</label
+              >
+      <input  class="form-control" name=b{{index}} [(ngModel)]="DescriptionList[index].BenefitDescriptionEn" placeholder="item">
+            
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12">
+          <button
+            [disabled]=""
+            class="btn btn-warning"
+            style="margin-top: 20px"
+            translate
+          >
+            wareef.update
+          </button>
+        </div>
+      </div>
+    </form>
+   
+  </div>
+</p-dialog>

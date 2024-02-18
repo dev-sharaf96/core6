@@ -1,0 +1,43 @@
+<aside class="col-xs-12 col-md-3 col-lg-2 bg-ofwhite bx-right" id="menu" (click)="slidout()">
+  <!--
+    <div class="user-profile bx-left f_width bx-right">
+        <div class="info">
+            <h3 class="txt-md txt-black no-mar  bx-right  dis-block">@Model.UserObj.UserName</h3>
+            <a href="javascript:document.getElementById('logoutForm').submit()" class="txt-xs txt-mgray pointer no-mar xs-mar bx-right f_width dis-block">@Html.Raw(Tameenk.LangText.Logout_Button) </a>
+        </div>
+    </div>
+  -->
+  <h2 class="sidebar-heading txt-md md-mar txt-white txt-center">
+    <i class="fas fa-user"></i> {{'header.profile' | translate}}
+  </h2>
+  <ul class="profile-sidebar block-list bx-right">
+    <li routerLink="/profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <a translate> <i class="fas fa-info-circle"></i>profile.MyInfo </a>
+    </li>
+    <li routerLink="/profile/products" routerLinkActive="active">
+      <a translate><i class="fas fa-shopping-cart"></i>profile.MyProducts</a>
+    </li>
+    <li routerLink="/profile/statistics" routerLinkActive="active">
+      <a translate><i class="fas fa-chart-bar"></i>profile.Mystatistics</a>
+    </li>
+    <li routerLink="/profile/purchases" routerLinkActive="active">
+      <a translate><i class="fas fa-list-alt"></i>profile.MyPurchases</a>
+    </li>
+    <li routerLink="/profile/vehicles" routerLinkActive="active">
+      <a translate><i class="fas fa-car"></i>profile.MyVehicles</a>
+    </li>
+    <li routerLink="/profile/bankAccounts" routerLinkActive="active">
+      <a translate><i class="fas fa-credit-card"></i>profile.MyBank_Accounts</a>
+    </li>
+    <li routerLink="/profile/notifications" routerLinkActive="active">
+      <a translate><i class="fas fa-bell"></i>profile.MyNotifications</a>
+    </li>
+    <li routerLink="/profile/addresses" routerLinkActive="active">
+      <a translate><i class="fas fa-address-book"></i>profile.MyAddresses</a>
+    </li>
+    <li [title]="'common.coming_soon' | translate">
+      <a class="not-active prevent-click" translate><i class="fas fa-exchange-alt"></i>profile.MyRequests</a>
+    </li>
+  </ul>
+</aside>
+<!-- <div id="panel"></div> -->

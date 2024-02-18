@@ -1,0 +1,92 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'settings.users' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="panel panel-default">
+    <div class="panel-heading" translate>common.filter_by</div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label>{{ 'common.email' | translate }}</label>
+            <input type="text" [(ngModel)]="usersFilter.email" class="form-control" id="email" [ngModelOptions]="{standalone: true}" />
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <div class="form-group">
+            <label for="userId">{{ 'requestLogs.mobile' | translate }}</label>
+            <input type="text" [(ngModel)]="usersFilter.mobile" class="form-control" id="mobile" />
+          </div>
+        </div>
+        <div class="col-xs-1 col-md-1">
+          <button (click)="filterClick(reportsTable)" type="submit" class="btn btn-primary" style="margin-top: 20px;" [disabled]="clicked" translate>
+            common.search
+          </button>
+        </div>
+      </div>
+    </div>
+    <br />
+  </div>
+</div>
+
+<div class="row" [ngClass]="{'hidden': firstTime}" >
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <!-- <a (click)="exportCsv()" class="pointer" translate>common.export</a> -->
+        <div class="text-left clearfix"> {{'common.results_count' | translate}} : {{ usersCount }} </div>
+      </div>
+      <div class="panel-body">
+        <p-table #reportsTable
+                 [value]="users"
+                 [lazy]="true"
+                 (onLazyLoad)="requestsLazyLoad($event)"
+                 [lazyLoadOnInit]="false"
+                 [totalRecords]="usersCount"
+                 [resetPageOnSort]="true"
+                 [rowsPerPageOptions]="[5, 10, 20]"
+                 [loading]="loading"
+                 [paginator]="true"
+                 [rows]="10"
+                 [responsive]="true"
+                 scrollHeight="200px"
+                 [autoLayout]="true"
+                 [resizableColumns]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="text-align: center;" translate> user.name </th>
+              <th style="text-align: center;" translate> autolease.bank </th>
+              <th style="text-align: center;" translate> login.email </th>
+              <th style="text-align: center;" translate> requestLogs.PhoneNumber </th>
+              <th style="text-align: center;" translate> common.action </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-user>
+            <tr>
+              <td style="text-align: center;word-wrap: break-word"> {{ user.fullName || emptyStringValue }} </td>
+              <td style="text-align: center;word-wrap: break-word"> {{ user.bankName || emptyStringValue }} </td>
+              <td style="text-align: center;word-wrap: break-word"> {{ user.email || emptyStringValue }} </td>
+              <td style="text-align: center;word-wrap: break-word"> {{ user.phoneNumber || emptyStringValue }} </td>
+              <td style="text-align: center;word-wrap: break-word">
+                <button type="button" routerLink="/admin/usersAutolease/user/{{user.id}}" class="btn btn-primary" style="vertical-align: text-bottom;margin-right: 10px;" translate>user.editUser</button>
+                <button [disabled]="clicked" *ngIf="!user.isLock" type="button" class="btn btn-danger" style="vertical-align: text-bottom;" (click)="manageUserLock(user.id, true)" translate>user.lockUser</button>
+                <button [disabled]="clicked" *ngIf="user.isLock" type="button" class="btn btn-default" style="vertical-align: text-bottom;" (click)="manageUserLock(user.id, false)" translate>user.unlockUser</button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+

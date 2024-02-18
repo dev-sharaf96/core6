@@ -1,0 +1,175 @@
+<div class="container edit-section">
+  <form #editInquiryRequestLog="ngForm" novalidate>
+    <h3>{{'requestLogs.inquiryRequestLogInfo' | translate}} :</h3>
+    <br>
+    <div class="row">
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="requestId"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.requestId' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="requestId" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.requestId" name="requestId"
+                 #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="createdDate"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'common.createdAt' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="createdDate" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.createdDate" name="createdDate"
+                 #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="nin" class="col-sm-4 col-form-label lebel-for-required">{{ 'driver.nin' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="nin" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.nin" name="nin" #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="vehicleId"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'vehicle.vehicleId' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="vehicleId" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.vehicleId" name="vehicleId" #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="userId"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.userId' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="userId" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.userId" name="userId" #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="userName"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.userName' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="userName" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.userName" name="userName" #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="cityCode"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.cityCode' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="cityCode" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.cityCode" name="cityCode"
+                 #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="externalId"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.externalId' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="externalId" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.externalId" name="externalId" #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="policyEffectiveDate"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.policy_effective_date' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="policyEffectiveDate" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.policyEffectiveDate" name="policyEffectiveDate" #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="najmNcdRefrence"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'najm.NCDReference' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="najmNcdRefrence" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.najmNcdRefrence" name="najmNcdRefrence"
+                 #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="najmNcdFreeYears"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'najm.NCDFreeYears' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="najmNcdFreeYears" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.najmNcdFreeYears" name="najmNcdFreeYears"
+                 #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="userIP"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.userIP' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="userIP" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.userIP" name="userIP" #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="userAgent"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.userAgent' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="userAgent" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.userAgent" name="userAgent" #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="serverIP"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.serverIP' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="serverIP" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.serverIP" name="serverIP" #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="channel"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.channel' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="channel" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.channel" name="channel" #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="methodName"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.methodName' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="methodName" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.methodName" name="methodName" #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="errorCode"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'serviceRequests.errorCode' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="errorCode" disabled required
+                 [(ngModel)]="inquiryRequestLogModel.errorCode" name="errorCode" #inquiryRequestLogModelModel="ngModel">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-md-12 form-group row">
+        <label for="errorDescription"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'serviceRequests.errorDescription' | translate}}</label>
+        <div class="col-sm-12">
+          <textarea rows="12" cols="50" type="text" #inquiryRequestLogModelModel="ngModel" class="form-control"
+                    id="errorDescription" name="errorDescription" [(ngModel)]="inquiryRequestLogModel.errorDescription"
+                    disabled></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-md-12 form-group row">
+        <label for="serviceRequest"
+               class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.serviceRequest' | translate}}</label>
+        <div class="col-sm-12">
+          <textarea rows="12" cols="50" type="text" #inquiryRequestLogModelModel="ngModel" class="form-control"
+                    id="serviceRequest" name="serviceRequest" [(ngModel)]="inquiryRequestLogModel.serviceRequest"
+                    disabled></textarea>
+        </div>
+      </div>
+    </div>
+    <br>
+    <a [routerLink]="'/admin/requestLogs/inquiryRequestLog'"
+       class="btn btn-default mr-r_s">{{'common.back' | translate}}</a>
+    <br>
+  </form>
+</div>

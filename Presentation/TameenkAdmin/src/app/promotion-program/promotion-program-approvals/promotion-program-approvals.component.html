@@ -1,0 +1,136 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'PromotionaApprovals.approvals' | translate }}</h4>
+  </div>
+</div>
+
+<!-- page search section -->
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+              <div class="form-group">
+                <label for="nin" translate> driver.nin </label>
+                <input type="text" [(ngModel)]="filterModel.nin" class="form-control" id="nin" />
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+              <div class="form-group">
+                <label for="email" translate> common.email </label>
+                <input type="text" [(ngModel)]="filterModel.email" class="form-control" id="email" />
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+              <div class="form-group">
+                <label for="2227729942" translate>common.requestStatus</label>
+                <p-dropdown [options]="status" [(ngModel)]="filterModel.status" optionLabel="name" filter="true" [style]="{'width':'100%'}"
+                            placeholder="Please select">
+                </p-dropdown>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+              <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.from'| translate}}</label>
+              <div class="form-group">
+                <p-calendar [(ngModel)]="filterModel.startDate" [showIcon]="true" [placeholder]="'common.from' | translate" [maxDate]="filterModel.endDate || today"
+                        styleClass="w-100" inputStyleClass="form-control"
+                ></p-calendar>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+              <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.to'| translate}}</label>
+              <div class="form-group">
+                <p-calendar [(ngModel)]="filterModel.endDate" [showIcon]="true" [placeholder]="'common.to' | translate" [minDate]="filterModel.startDate"
+                        [maxDate]="today" styleClass="w-100" inputStyleClass="form-control" >
+                </p-calendar>
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-12 col-md-2">
+              <button [disabled]="isSearch" (click)="filterClick(approvalsTable)" class="btn btn-primary" style="margin-top: 20px;" translate>
+                common.search
+              </button>
+            </div>
+          </div>
+        </div>
+        <br />
+        <div *ngIf="showEmptySearchValidation">
+          <span class="uploadDiscountSheetFileValidation" [innerHtml]="emptyValidationTextToAdd">
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" [ngClass]="{'hidden': firstTime}">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div *ngIf="dataCount > 0" class="panel-heading">
+        <!-- <a (click)="exportCsv()" class="pointer" translate>common.export</a> -->
+        <div class="text-left">{{'common.results_count' | translate}} : {{dataCount}}</div>
+      </div>
+      <div class="panel-body">
+        <p-table #approvalsTable
+                [value]="data"
+                [lazy]="true"
+                (onLazyLoad)="initializeDataLazyLoad($event)"
+                [lazyLoadOnInit]="false"
+                [totalRecords]="dataCount"
+                [rowsPerPageOptions]="[5, 10, 20]"
+                [loading]="loading"
+                [paginator]="true"
+                [rows]="10"
+                [responsive]="true"
+                scrollHeight="200px"
+                [autoLayout]="true"
+                [resizableColumns]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate> driver.nin </th>
+              <th translate> common.email </th>
+              <th translate> PromotionaApprovals.type </th>
+              <th translate> common.details </th>
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td style="word-wrap: break-word;text-align: center"> {{ item.nin || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ item.email || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ item.type || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center">
+                <button *ngIf="item.file" (click)="showImg(item.id)" class="btn btn-primary action-btn" translate>common.details</button>
+              </td>
+              <td style="word-wrap: break-word;text-align: center">
+                <button *ngIf="!item.approved" (click)="approve(item.id, item.enrolledType)" class="btn btn-success action-btn" translate>updateRequest.approve</button>
+                <button *ngIf="item.approved" (click)="delete(item.id)" class="btn btn-danger action-btn" translate>common.delete</button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog [(visible)]="selectedImage" [modal]="true" [style]="{width: '550px', height: '450px'}" [responsive]="true" [minY]="70" [baseZIndex]="10000"
+  [dismissableMask]="true" [rtl]="!isEnglish">
+  <div *ngIf="selectedImage">
+    <img  style="width: 100%; max-height: 100%;" [src]="selectedImage" />
+  </div>
+</p-dialog>

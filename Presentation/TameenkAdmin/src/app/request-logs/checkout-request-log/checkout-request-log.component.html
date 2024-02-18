@@ -1,0 +1,234 @@
+
+    <div class="row" >
+      <div class="col-xs-12">
+        <h4 class="page-header">{{ 'requestLogs.checkoutRequestLog' | translate }}</h4>
+      </div>
+    </div>
+  <div class="row">
+      <div class="panel panel-default">
+        <div class="panel-heading" translate>common.filter_by</div>
+        <!-- /.panel-heading -->
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-sm-3">
+              <div class="form-group">
+                      <label for="NIN" >{{ 'driver.nin' | translate }}</label>
+                <input
+                  type="text"
+                  [(ngModel)]="requestLogsFilter.NIN"
+                  class="form-control"
+                  id="NIN"
+                />
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="form-group">
+                      <label for="vehicleId" >{{ 'vehicle.vehicleId' | translate }}</label>
+                <input
+                  type="text"
+                  [(ngModel)]="requestLogsFilter.vehicleId"
+                  class="form-control"
+                  id="vehicleId"
+                />
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="form-group">
+                      <label for="referenceId" >{{ 'common.referenceNumber' | translate }}</label>
+                <input
+                  type="text"
+                  [(ngModel)]="requestLogsFilter.referenceId"
+                  class="form-control"
+                  id="referenceId"
+                />
+              </div>
+
+
+            </div>
+
+            <div class="col-sm-3">
+              <div class="form-group">
+                <label for="method" translate>{{ 'requestLogs.methodName' | translate }}</label>
+                <app-methods-dropdown [(selectedValue)]="requestLogsFilter.methodName" [serviceType]="'checkoutRequestLogMethods'"></app-methods-dropdown>
+              </div>
+            </div>
+
+          </div>
+          <div class="row">
+              <div class="col-sm-12">
+                <label for="fdate" translate>requestLogs.logDate</label>
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <p-calendar
+                        [(ngModel)]="requestLogsFilter.startDate"
+                        [showIcon]="true"
+                        [placeholder]="'common.from' | translate"
+                        [maxDate]="requestLogsFilter.endDate || today"
+                        styleClass="w-100"
+                        inputStyleClass="form-control"
+                      ></p-calendar>
+                    </div>
+                    <div class="col-md-6">
+                      <p-calendar
+                        [(ngModel)]="requestLogsFilter.endDate"
+                        [showIcon]="true"
+                        [placeholder]="'common.to' | translate"
+                        [minDate]="requestLogsFilter.startDate"
+                        [maxDate]="today"
+                        styleClass="w-100"
+                        inputStyleClass="form-control"
+                      ></p-calendar>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <div class="row">
+            <div class="col-xs-12 col-md-2">
+              <button (click)="filterClick(checkoutRequestLogTable)" [disabled]="isSearch"
+                class="btn btn-primary"
+                style="margin-top: 20px;"
+                translate>
+                common.search
+              </button>
+            </div>
+
+          </div>
+          </div>
+          <br />
+        </div>
+        <!-- /.panel-body -->
+      </div>
+      <!-- /.panel -->
+
+  <!-- /.row -->
+  <div class="row" [ngClass]="{'hidden': firstTime}" >
+      <div class="col-lg-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a (click)="exportCsv()" [disabled]="isSearch" class="pointer" translate>common.export</a>
+            <div class="text-left clearfix">{{'common.results_count' | translate}} : {{checkoutRequestLogsCount}}
+            </div>
+          </div>
+          <!-- /.panel-heading -->
+          <div class="panel-body">
+            <p-table
+              #checkoutRequestLogTable
+              [value]="checkoutRequestLogs"
+              [lazy]="true"
+              (onLazyLoad)="checkoutRequestLogLazyLoad($event)"
+              [lazyLoadOnInit]="false"
+              [totalRecords]="checkoutRequestLogsCount"
+              [resetPageOnSort]="true"
+              [rowsPerPageOptions]="[5, 10, 20]"
+              [loading]="loading"
+              [paginator]="true"
+              [rows]="10"
+              [responsive]="true"
+              scrollHeight="200px"
+              [autoLayout]="true"
+              [resizableColumns]="true">
+              <ng-template pTemplate="caption" class="panel-heading">
+                <div style="text-align: right">
+                </div>
+              </ng-template>
+              <ng-template pTemplate="header">
+                <tr>
+                  <th [pSortableColumn]="'ReferenceId'">
+                    {{ 'common.referenceNumber' | translate }}
+                    <p-sortIcon [field]="'ReferenceId'"
+                                ariaLabel="Activate to sort"
+                                ariaLabelDesc="Activate to sort in descending order"
+                                ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'VehicleId'">
+                    {{ 'vehicle.vehicleId' | translate }}
+                    <p-sortIcon [field]="'VehicleId'"
+                                ariaLabel="Activate to sort"
+                                ariaLabelDesc="Activate to sort in descending order"
+                                ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'NIN'">
+                    {{ 'driver.nin' | translate }}
+                    <p-sortIcon [field]="'NIN'"
+                                ariaLabel="Activate to sort"
+                                ariaLabelDesc="Activate to sort in descending order"
+                                ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'CreatedDate'">
+                    {{ 'common.createdAt' | translate }}
+                    <p-sortIcon [field]="'CreatedDate'"
+                                ariaLabel="Activate to sort"
+                                ariaLabelDesc="Activate to sort in descending order"
+                                ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'MethodName'">
+                    {{ 'requestLogs.methodName' | translate }}
+                    <p-sortIcon [field]="'MethodName'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'PaymentMethod'">
+                    {{ 'common.payments_method' | translate }}
+                    <p-sortIcon [field]="'PaymentMethod'"
+                                ariaLabel="Activate to sort"
+                                ariaLabelDesc="Activate to sort in descending order"
+                                ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'Amount'">
+                    {{ 'updateRequest.amount' | translate }}
+                    <p-sortIcon [field]="'Amount'"
+                                ariaLabel="Activate to sort"
+                                ariaLabelDesc="Activate to sort in descending order"
+                                ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                  </th>
+                  <th>
+                    {{ 'common.action' | translate }}
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-checkoutRequestLog>
+                <tr>
+                  <td style="word-wrap: break-word">
+                    {{checkoutRequestLog.referenceId || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-word">
+                    {{checkoutRequestLog.vehicleId || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{checkoutRequestLog.driverNin || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{checkoutRequestLog.createdDate || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{checkoutRequestLog.methodName || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{checkoutRequestLog.paymentMethod || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{checkoutRequestLog.amount || emptyStringValue }}
+                  </td>
+                  <td>
+                    <button type="button" routerLink="/admin/requestLogs/checkoutRequestLog/details/{{checkoutRequestLog.Id}}" routerLinkActive="active" class="btn btn-secondary action-btn" translate>common.details</button>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td style="text-align: center">
+                    {{ "common.noRecordsFound" | translate }}
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+            <!-- /.table-responsive -->
+          </div>
+          <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+      </div>
+      <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <!-- <app-loader *ngIf="firstTime"></app-loader> -->

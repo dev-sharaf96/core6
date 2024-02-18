@@ -1,0 +1,33 @@
+.car-upload-images {
+    position: relative;
+    height: 150px;
+}
+
+.car-upload-images img {
+    width: 350px;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    position: absolute;
+}
+.agreement-container {
+    display: flex;
+    align-items: center;
+    width: 99%;
+    margin: 0 auto;
+}
+.preview-upload {
+  width: 99%;
+  margin: 0 auto;
+}
+@media (min-width: 992px) {
+  .no-column-padding > div {
+    padding: 0;
+  }
+}
+@media (max-width: 467px) {
+  .car-upload-images img {
+    width: 100%
+}
+}

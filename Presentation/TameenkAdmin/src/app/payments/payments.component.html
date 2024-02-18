@@ -1,0 +1,166 @@
+
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'navbar.payments' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="panel panel-default">
+    <div class="panel-heading" translate>common.filter_by</div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="invoiceNo" translate>invoice.invoice_no</label>
+            <input type="text" [(ngModel)]="paymentsFilter.invoiceNo" class="form-control" id="invoiceNo" />
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="referenceNo" translate>invoice.reference_id</label>
+            <input type="text" [(ngModel)]="paymentsFilter.referenceId" class="form-control" id="referenceNo" />
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="" translate>common.payments_method</label>
+            <app-payment-method-dropdown [(selectedValue)]="paymentsFilter.paymentMethodId"></app-payment-method-dropdown>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="merchantId" translate>invoice.merchantId</label>
+            <input type="text" [(ngModel)]="paymentsFilter.merchantId" class="form-control" id="merchantId" />
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-2">
+          <button (click)="filterClick(paymentsTable)" class="btn btn-primary" style="margin-top: 20px;" translate>
+            common.search
+          </button>
+        </div>
+      </div>
+      <br />
+    </div>
+    <!-- /.panel-body -->
+  </div>
+  <!-- /.panel -->
+</div>
+<!-- /.row -->
+<div class="row" [ngClass]="{'hidden': firstTime}">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="text-left clearfix">{{'common.results_count' | translate}} : {{paymentsCount}}
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table #paymentsTable [value]="payments" [lazy]="true" (onLazyLoad)="paymentsLazyLoad($event)" [lazyLoadOnInit]="false" [totalRecords]="paymentsCount"
+          [resetPageOnSort]="true" [rowsPerPageOptions]="[5, 10, 20]" [loading]="loading" [paginator]="true" [rows]="10"
+          [responsive]="true" scrollHeight="200px" [autoLayout]="true" [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="paymentsTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'InvoiceNo'" translate>
+                invoice.invoice_no
+                <p-sortIcon [field]="'InvoiceNo'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'ReferenceId'" translate>
+                invoice.reference_id
+                <p-sortIcon [field]="'ReferenceId'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'PaymentMethod'" translate>
+                common.payments_method
+                <p-sortIcon [field]="'PaymentMethod'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'InvoiceDate'" translate>
+                invoice.invoice_date
+                <p-sortIcon [field]="'InvoiceDate'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'InsuranceCompany'" translate>
+                common.company
+                <p-sortIcon [field]="'InsuranceCompany'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'Email'" translate>
+                common.clientEmail
+                <p-sortIcon [field]="'Email'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th>
+                <span class="bx_left mr-l_m" translate>
+                  common.action
+                </span>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-payment>
+            <tr>
+              <td style="word-wrap: break-word">
+                {{ payment.InvoiceNo || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ payment.ReferenceId || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{payment.PaymentMethod || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ payment.InvoiceDate || emptyStringValue | date }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ payment.InsuranceCompany || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ payment.Email || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word;text-align: center">
+                <button type="button" routerLink="edit/{{payment.ReferenceId}}" routerLinkActive="active"
+                  class="btn btn-secondary action-btn" translate>policy.details</button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<!-- <app-loader *ngIf="firstTime"></app-loader> -->
+<p-dialog [(visible)]="confirmReproccess" [modal]="true" [responsive]="true" [dismissableMask]="true" [rtl]="!isEnglish" [header]="'common.reproccess_confirm' | translate"  [draggable]="false" [resizable]="false" [maximizable]="false" [width]="350" [baseZIndex]="10000">
+<div translate>common.confirm</div>
+<button class="btn btn-success mr-r_s" (click)="reproccess(selectedPayment.ReferenceId)" translate>updateRequest.yes</button>
+<button class="btn btn-danger" (click)="confirmReproccess = false" translate>updateRequest.no</button>
+</p-dialog>
+<!-- <p-dialog >
+  <div *ngIf="selectedRequest">
+    <div class="info-row"><h4 class="">{{'serviceRequests.serviceRequest' | translate}}:</h4> <p class="">{{selectedRequest.serviceRequest}}</p></div>
+    <div class="info-row"><h4 class="">{{'serviceRequests.serviceResponse' | translate}}:</h4> <p class="">{{selectedRequest.serviceResponse}}</p></div>
+   </div>
+</p-dialog> -->
+<!-- <p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle">
+  <p-footer>
+      <button type="button" pButton icon="pi pi-times" label="No" (click)="cd.reject()"></button>
+      <button type="button" pButton icon="pi pi-check" label="Yes" (click)="cd.accept()"></button>
+  </p-footer>
+</p-confirmDialog> -->

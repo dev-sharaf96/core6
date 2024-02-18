@@ -1,0 +1,63 @@
+<!-- My Cars begains -->
+<h1 class="txt-lr txt-black md-mar-bot md-mar col-xs-12" translate>profile.MyVehicles
+  </h1>
+  <article>
+    <!-- @foreach (TameenkDAL.Models.VehicleModel VehicleObj in Model.VehiclesList)
+    { -->
+    <div class="wrapper-bx md-mar vehicle-row  search-info bg-ofwhite section  active search-car" [ngStyle]="{'background-image': 'url(assets/imgs/CarLogos/' + vehicle.vehicleMakerCode.toLocaleString('en', {minimumIntegerDigits: 4, useGrouping: false}) + '.jpg)'}" *ngFor="let vehicle of vehicles">
+      <div class="row">
+        <div class="col-xs-12 col-lg-4 col-lg-2 bx-right">
+        </div>
+        <header class="col-xs-12 col-lg-5 col-lg-6 over-hidden bx-right md-mar">
+          <span class="txt-sm  txt-mgray dis-block" translate>profile.vehicle_description</span>
+          <h2 class="txt-lr txt-black no-mar">
+            <!-- @VehicleObj.VehicleMaker -->{{vehicle.vehicleMaker}}
+            <!-- @VehicleObj.ModelYear -->{{vehicle.modelYear}}
+            <!-- @VehicleObj.Vehicle_Model -->{{vehicle.model}}
+            <app-placholder [width]="200" [height]="20" *ngIf="vehicle === null || vehicle === undefined"></app-placholder>
+          </h2>
+          <h3 class="txt-sm  txt-mgray dis-block xs-mar">
+            <!-- @VehicleObj.RegisterationPlace -->{{vehicle.registerationPlace}}
+            <app-placholder [width]="150" [height]="20" *ngIf="vehicle === null || vehicle === undefined"></app-placholder>
+          </h3>
+        </header>
+        <div class="col-xs-6 col-lg-2 col-md-2 bx-right md-mar">
+          <app-car-plate
+          [plateColorType]="vehicle.PlateTypeCode"
+          [carPlateNumber]="vehicle.carPlateNumber"
+          [carPlateText1]="vehicle.carPlateText1"
+          [carPlateText2]="vehicle.carPlateText2"
+          [carPlateText3]="vehicle.carPlateText3"
+        ></app-car-plate>
+        <app-placholder [width]="90" [height]="50" *ngIf="vehicle === null || vehicle === undefined"></app-placholder>
+        </div>
+      </div>
+      <div class="small-desc over-hidden f_width sm-mar bx-right txt-mgray">
+        <!-- <a href="#" class="txt-right bx-right txt-brand">
+          <i class="ic-icons-793  general-ico"></i> بحث جديد
+        </a> -->
+        <a [attr.data-popup-open]="vehicle.id" href="#" class="txt-right bx-left txt-black" translate>
+          <i class="ic-icons-316 txt-black bx-right general-ico"></i>profile.vehicle_delete
+        </a>
+      </div>
+      <!-- Popup Start -->
+<app-popup [title]="'common.delete' | translate" [ref]="vehicle.id">
+  <div class="modal-body">
+    <p translate>profile.vehicle_delete_confirm</p>
+  </div>
+  <div class="model-footer">
+    <button class="notAgree btn sm dis-block txt-white txt-brand txt-xs bg-green circ-rdus l-shadow bx-right left-mar-10 right-mar-10" type="button" (click)="closePopup()" translate>common.no</button>
+    <button class="iAgree btn sm dis-block txt-white txt-brand txt-xs bg-red circ-rdus l-shadow bx-right left-mar-10 right-mar-10" type="button" (click)="confirmDelete(vehicle.id)" translate>common.yes</button>
+  </div>
+</app-popup>
+<!-- Popup End -->
+
+    </div>
+    <!-- } -->
+    <app-pager *ngIf="vehicles" [totalCount]="totalCount" (paging)="getVehicles($event)"></app-pager>
+  </article>
+  <!-- <div class="sm-ver-spc dis-block f_width over-hidden txt-center">
+    <div class="three-quarters-loader bx-center"></div>
+  </div> -->
+<!-- My Cars Ends -->
+<app-loading *ngIf="loading"></app-loading>

@@ -1,0 +1,8 @@
+.show-password {
+  position: absolute;
+  top: 13px;
+  left: 10px;
+  transform: scale(1.5);
+  transform-origin: left center;
+  z-index: 999;
+}

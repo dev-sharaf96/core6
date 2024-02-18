@@ -1,0 +1,159 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header" translate>QuotationBlock.BlockedUsers</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="" translate>QuotationBlock.nationalId</label>
+              <input type="text" [(ngModel)]="blockedUsersFilter.nationalId" class="form-control" id="nationalId" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-2">
+            <button (click)="filterClick(usersTable)"  class="btn btn-primary" style="margin-top: 20px;" translate>common.search
+              <i class="fa fa-spinner fa-spin" *ngIf="Isloading"></i>
+            </button>
+          </div>
+          </div>
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+
+  <div class="row">
+  <div class="col-lg-5">
+  <button class="btn btn-success action-btn addBtn" (click)="showAddPopup()" routerLinkActive="active" translate>QuotationBlock.Add
+</button>
+</div>
+</div>
+
+<div class="col-lg-12">
+  <div class="panel panel-default">
+    <div class="panel-heading" style="height:36px;">
+       <span style="float:left;margin-top: -9px;"><a (click)="exportCsv()" class="pointer" translate>common.export</a> </span>
+      <span style="float:right;margin-top: -9px;">{{"common.results_count"|translate}} : {{ usersCount }}</span>
+   
+    </div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+      <p-table #usersTable
+               [value]="blockedUsers"
+               [lazy]="true"
+               (onLazyLoad)="requestsLazyLoad($event)"
+               [lazyLoadOnInit]="false"
+               [totalRecords]="usersCount"
+               [resetPageOnSort]="true"
+               [rowsPerPageOptions]="[5, 10, 20]"
+               [loading]="loading"
+               [paginator]="true"
+               [rows]="10"
+               [responsive]="true"
+               scrollHeight="200px"
+               [autoLayout]="true"
+               [resizableColumns]="true">
+        <ng-template pTemplate="caption" class="panel-heading">
+
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th translate>QuotationBlock.nationalId </th>
+            <th translate>QuotationBlock.creationDate </th>
+            <th translate>QuotationBlock.BlockReason </th>
+            <th translate> QuotationBlock.createdBy </th>
+            <th translate>common.action</th>
+
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-block>
+          <tr>
+            <td style="word-wrap: break-word"> {{ block.NationalId || emptyStringValue }} </td>
+            <td style="word-wrap: break-word"> {{ block.CreatedDate || emptyStringValue }} </td>
+            <td style="word-wrap: break-word"> {{ block.BlockReason || emptyStringValue }} </td>
+            <td style="word-wrap: break-word"> {{ block.CreatedBy || emptyStringValue }} </td>
+            <td style="word-wrap: break-word">
+              <a class="btn btn-danger" title="Delete" (click)="DeleteUser(block.Id)"><i class="fa fa-trash"></i></a>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td style="text-align: center" translate>
+              common.noRecordsFound
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <!-- /.table-responsive -->
+    </div>
+    <!-- /.panel-body -->
+  </div>
+  <!-- /.panel -->
+</div>
+
+<div *ngIf="openPopUp" class="modal fade" id="myModal" tabindex="-1" role="dialog" [ngStyle]="{'display': openPopUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" translate>QuotationBlock.AddBlockedUser</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeAddPopup()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="addBlockForm" (ngSubmit)="AddBlockUserModel()">
+        <div class="modal-body">
+          <div class="row">
+<div class="col-lg-12">
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+
+    <div class="form-group d-flex d-flex-nowrap">
+      <label for="" class="lebel-for-required" translate>QuotationBlock.nationalId</label>
+      <input type="text" formControlName="nationalId" class="form-control" name="nationalId" />
+      <div *ngIf="ninError" class="text-danger"> {{ ninErrorMessage }} </div>
+    </div>
+  </div>
+</div>
+     
+
+
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="col-lg-12">
+                <div class="form-group d-flex d-flex-nowrap">
+                  <label for="" class="lebel-for-required" translate>QuotationBlock.blockReason
+                  </label>
+                  <textarea type="text" formControlName="blockReason" class="form-control" name="blockReason"
+                    placeholder="write here your reasons ..." rows="4" style="overflow-y: scroll"></textarea>
+                  <div *ngIf="reasonError" class="text-danger">
+                    {{ reasonErrorMessage }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeAddPopup()"
+            translate>QuotationBlock.Close</button>
+          <button type="submit" class="btn btn-primary" [disabled]="addBlockForm.invalid || clicked" translate>
+            QuotationBlock.Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

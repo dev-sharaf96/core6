@@ -1,0 +1,187 @@
+<!-- My Notifications begains -->
+<h1 class="txt-lr txt-black md-mar-bot md-mar col-xs-12" translate>
+  profile.MyNotifications
+</h1>
+<div *ngFor="let notification of notifications" [ngSwitch]="notification.typeName">
+  <article *ngSwitchCase="'NewPolicyUpdateRequest'">
+    <div class="wrapper-bx md-mar">
+      <div class="row">
+        <div class="col-xs-12 col-lg-1 col-lg-1 bx-right">
+          <i class="ic-icons-345 txt-green txt-lr"></i>
+        </div>
+        <header class="col-xs-12 col-lg-11 col-lg-11 over-hidden">
+          <span class="txt-sm txt-green dis-block" translate
+            >profile.notification_request_sent</span
+          >
+          <h2 class="txt-lr txt-black no-mar">
+            #{{ notification.policyUpdateRequestGuid }}
+            <app-placholder
+              [width]="250"
+              [height]="20"
+              *ngIf="notification === null || notification === undefined"
+            ></app-placholder>
+          </h2>
+          <h3 class="txt-sm txt-mgray dis-block xs-mar">
+            {{ "profile.notification_request_vehicle" | translate }} #{{
+              notification.policyId
+            }}
+            <app-placholder
+              [width]="120"
+              [height]="20"
+              *ngIf="notification === null || notification === undefined"
+            ></app-placholder>
+          </h3>
+        </header>
+      </div>
+    </div>
+  </article>
+  <article *ngSwitchCase="'PolicyUpdateRequestApproved'">
+    <div class="wrapper-bx md-mar">
+      <div class="row">
+        <div class="col-xs-12 col-lg-1 col-lg-1 bx-right">
+          <i class="ic-icons-345 txt-green txt-lr"></i>
+        </div>
+        <header class="col-xs-12 col-lg-11 col-lg-11 over-hidden">
+          <span class="txt-sm txt-green dis-block" translate
+            >profile.approved_policy_updReq_notification</span
+          >
+          <h2 class="txt-lr txt-black no-mar">
+            #{{ notification.policyUpdateRequestGuid }}
+            <app-placholder
+              [width]="150"
+              [height]="20"
+              *ngIf="notification === null || notification === undefined"
+            ></app-placholder>
+            <!-- #@Model.PolicyUpdateRequestGuid -->
+          </h2>
+          <h3 class="txt-sm txt-mgray dis-block xs-mar">
+            {{ "profile.notification_request_vehicle" | translate }}
+            <!-- #@Model.PolicyId -->
+            #{{ notification.policyId }}
+            <app-placholder
+              [width]="120"
+              [height]="20"
+              *ngIf="notification === null || notification === undefined"
+            ></app-placholder>
+          </h3>
+        </header>
+      </div>
+      <div class="small-desc over-hidden f_width md-mar bx-right txt-mgray">
+        <a
+          (click)="downloadPolicy(notification.policyFileId)"
+          class="dis-block txt-right bx-left right-mar-10 txt-black dl-link"
+          style="cursor: pointer"
+          translate
+        >
+          <i class="ic-icons-502 txt-black bx-right general-ico"></i>
+          profile.policy_download
+        </a>
+      </div>
+    </div>
+  </article>
+  <article *ngSwitchCase="'PolicyUpdateRequestRejected'">
+    <div class="wrapper-bx md-mar">
+      <div class="row">
+        <div class="col-xs-12 col-lg-1 col-lg-1 bx-right">
+          <i class="ic-icons-344 txt-red txt-lr"></i>
+        </div>
+        <header class="col-xs-12 col-lg-11 col-lg-11 over-hidden">
+          <span class="txt-sm txt-red dis-block" translate
+            >profile.reject_policy_updReq_notification</span
+          >
+          <h2 class="txt-lr txt-black no-mar">
+            <!-- #@Model.PolicyUpdateRequestGuid
+            -->#{{ notification.policyUpdateRequestGuid }}
+            <app-placholder
+              [width]="150"
+              [height]="20"
+              *ngIf="notification === null || notification === undefined"
+            ></app-placholder>
+          </h2>
+          <h3 class="txt-sm txt-mgray dis-block xs-mar">
+            {{ "profile.notification_request_vehicle" | translate }}
+            <!-- #@Model.PolicyId
+            -->#{{ notification.policyId }}
+            <app-placholder
+              [width]="120"
+              [height]="20"
+              *ngIf="notification === null || notification === undefined"
+            ></app-placholder>
+          </h3>
+        </header>
+      </div>
+    </div>
+  </article>
+  <article *ngSwitchCase="'PolicyUpdateRequestAwaitingPayment'">
+    <div class="wrapper-bx md-mar">
+      <div class="row">
+        <div class="col-xs-12 col-lg-1 col-lg-1 bx-right">
+          <i class="ic-icons-345 txt-green txt-lr"></i>
+        </div>
+        <header class="col-xs-12 col-lg-11 col-lg-11 over-hidden">
+          <span class="txt-sm txt-green dis-block" translate>
+            profile.awaiting_payment_policy_updReq_notification
+            <!--
+              @Html.Raw(Tameenk.LangText.AwaitingPaymentPolicyUpdReqNotification)
+            -->
+          </span>
+          <h2 class="txt-lr txt-black no-mar">
+            #{{ notification.policyUpdateRequestGuid }}
+            <!-- #@Model.PolicyUpdateRequestGuid -->
+            <app-placholder
+              [width]="150"
+              [height]="20"
+              *ngIf="notification === null || notification === undefined"
+            ></app-placholder>
+          </h2>
+          <h3 class="txt-sm txt-mgray dis-block xs-mar">
+            {{ "profile.notification_request_vehicle" | translate }}
+            <!-- @Html.Raw(Tameenk.LangText.Notification_request_vehicle) -->
+            <!-- #@Model.PolicyId -->
+            #{{ notification.policyId }}
+            <app-placholder
+              [width]="120"
+              [height]="20"
+              *ngIf="notification === null || notification === undefined"
+            ></app-placholder>
+          </h3>
+        </header>
+      </div>
+      <form
+        ngNoForm
+        method="POST"
+        action="/Profile/PayPolicyUpdRequestUsingPayfort"
+      >
+        <input
+          type="hidden"
+          value="policyUpdateRequestGuid"
+          id="policyUpdReqReferenceId"
+          name="policyUpdReqReferenceId"
+        />
+        <div class="small-desc over-hidden f_width md-mar bx-right txt-mgray">
+          <button
+            typetype="submit"
+            [disabled]="'!EnablePaymentButton'"
+            class="bx-left btn sm dis-block no-trans bx-left txt-white continue txt-brand bg-brand-hvr txt-xs bg-gr-main  circ-rdus l-shadow"
+            translate
+          >
+            profile.Pay_using_debit
+          </button>
+        </div>
+      </form>
+    </div>
+  </article>
+</div>
+<app-pager *ngIf="notifications" [totalCount]="totalCount" (paging)="getNotifications($event)"></app-pager>
+
+<article *ngIf="notifications?.length === 0">
+  <div class="wrapper-bx md-mar">
+    <div class="row">
+      <h2 class="txt-lr txt-black no-mar" translate>
+        profile.notifications_empty
+      </h2>
+    </div>
+  </div>
+</article>
+<app-loading *ngIf="loading"></app-loading>
+<!-- My Notifications ends -->

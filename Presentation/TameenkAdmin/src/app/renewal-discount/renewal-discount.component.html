@@ -1,0 +1,203 @@
+<div class="row ">
+  <div class="col-xs-12 pageHeader">
+    <h4 class="page-header"> {{ 'RenewalPolicy.renewalDiscount' | translate }} </h4>
+    <button (click)="showPopup()" class="btn btn-success"> {{'vahicleMaker.addNewModel' | translate}} </button>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <input type="text" [(ngModel)]="discountFilterModel.code" class="form-control" id="code"
+                [placeholder]="'RenewalPolicy.code' | translate" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <p-calendar [(ngModel)]="discountFilterModel.startDate" [showIcon]="true"
+                [placeholder]="'common.from' | translate" [maxDate]="discountFilterModel.endDate" styleClass="w-100"
+                inputStyleClass="form-control" [readonlyInput]="true">
+              </p-calendar>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <p-calendar [(ngModel)]="discountFilterModel.endDate" [showIcon]="true"
+                [placeholder]="'common.to' | translate" [minDate]="discountFilterModel.startDate" styleClass="w-100"
+                inputStyleClass="form-control" [readonlyInput]="true">
+              </p-calendar>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-3">
+            <button [disabled]="isSearch" (click)="filterClick(ticketTable)" class="btn btn-primary" translate>
+              common.search
+            </button>
+          </div>
+        </div>
+        <br />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="text-left clearfix"> {{'common.results_count' | translate}} : {{discountListCount}} </div>
+      </div>
+      <div class="panel-body">
+        <p-table #ticketTable [value]="discountList" [lazy]="true" (onLazyLoad)="requestsLazyLoad($event)"
+          [lazyLoadOnInit]="false" [totalRecords]="discountListCount" [resetPageOnSort]="true"
+          [rowsPerPageOptions]="[5, 10, 20]" [loading]="loading" [paginator]="true" [rows]="10" [responsive]="true"
+          scrollHeight="200px" [autoLayout]="true" [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate> RenewalPolicy.code </th>
+              <th translate> RenewalPolicy.discountValue </th>
+              <th translate> RenewalPolicy.percentage </th>
+              <th translate> RenewalPolicy.codeType </th>
+
+              <!-- <th translate> common.from </th>
+              <th translate> common.to </th> -->
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-discount>
+            <tr>
+              <td style="word-wrap: break-word;text-align: center"> {{ discount.code || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ discount.value  || emptyStringValue }} <span
+                  *ngIf="discount.value"> SAR </span> </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ discount.percentage  || emptyStringValue }} <span
+                  *ngIf="discount.percentage"> % </span> </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ discount.codeType  || emptyStringValue }} <span
+                  *ngIf="discount.codeType"> </span> </td>
+              <!-- <td style="word-wrap: break-word;text-align: center">
+                {{ discount.startDate | date:'dd - MMM - yyy' || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center">
+                {{ discount.endDate | date:'dd- MMM -yyy' || emptyStringValue }} </td> -->
+              <td style="word-wrap: break-word;text-align: center">
+                <a *ngIf="discount.isActive" class="btn btn-danger" style="margin-right: 1px; margin-left: 1px;"
+                  title="Lock"><span class="fa fa-lock" (click)="ManageActivation(discount.id, false)"></span></a>
+                <a *ngIf="!discount.isActive" class="btn btn-success" style="margin-right: 1px; margin-left: 1px;"
+                  title="Unlock"><span class="fa fa-unlock" (click)="ManageActivation(discount.id, true)"></span></a>
+                <a class="btn btn-danger" style="margin-right: 1px; margin-left: 1px;" title="Delete"
+                  (click)="delete(discount.id)"><i class="fa fa-trash"></i></a>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+  [ngStyle]="{'display': openPpUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" translate>RenewalPolicy.addNew</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #AddNewModelTemplate="ngForm" (ngSubmit)="AddNew()" novalidate>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>RenewalPolicy.discountType</label>
+                <select class="form-control" id="discountType" required [(ngModel)]="discount.discountType"
+                  name="discountType" #discountType="ngModel" (change)="changeDiscountType($event)">
+                  <option *ngFor="let item of discountTypes" [value]="item.key"> {{ item.value}} </option>
+                </select>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group" *ngIf="discount.discountType === 1">
+                <label for="" class="lebel-for-required" translate>RenewalPolicy.discountValue</label>
+                <input type="text" [(ngModel)]="discount.value" (keypress)="restrictNumeric($event)"
+                  onPaste="return false" required class="form-control" id="value" name="value" #value="ngModel"
+                  autocomplete="off" />
+              </div>
+              <div class="form-group" *ngIf="discount.discountType === 2">
+                <label for="" class="lebel-for-required" translate>RenewalPolicy.percentage</label>
+                <input type="text" [(ngModel)]="discount.percentage" (keypress)="restrictNumeric($event)"
+                  onPaste="return false" required class="form-control" id="percentage" name="percentage"
+                  #percentage="ngModel" autocomplete="off" />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>RenewalPolicy.code</label>
+                <input type="text" [(ngModel)]="discount.code" required class="form-control" id="code" name="code"
+                  #code="ngModel" autocomplete="off" />
+                <div *ngIf="codeErrorDiv" class="text-danger"> {{ codeErrorDivMessage }} </div>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>RenewalPolicy.messageType</label>
+                <select class="form-control" id="messageType" required [(ngModel)]="discount.messageType"
+                  name="messageType" #messageType="ngModel">
+                  <option *ngFor="let item of messageTypes" [value]="item.key"> {{ item.value}} </option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <p-calendar for="" required [(ngModel)]="discount.startDate" [showIcon]="true"
+                  [placeholder]="'common.from' | translate" [maxDate]="discountFilterModel.endDate"
+                  styleClass="w-100" inputStyleClass="form-control" id="startDate" name="startDate" #startDate="ngModel"
+                  [readonlyInput]="true">
+                </p-calendar>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <p-calendar for="" required [(ngModel)]="discount.endDate" [showIcon]="true"
+                  [placeholder]="'common.from' | translate" styleClass="w-100"
+                  inputStyleClass="form-control" id="endDate" name="endDate" #endDate="ngModel" [readonlyInput]="true">
+                </p-calendar>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <input type="radio" name="Indivdual" [value]="1" [(ngModel)]="discount.codeType">
+                  <label for="Indivdual" translate>RenewalPolicy.individual</label>
+                  <input type="radio" name="corprate" [value]="2" [(ngModel)]="discount.codeType">
+                  <label for="corprate" translate>RenewalPolicy.bulk</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeModal()">Close</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!AddNewModelTemplate.valid || clicked" translate>
+            insuranceCompany.save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

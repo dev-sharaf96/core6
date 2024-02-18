@@ -1,0 +1,171 @@
+<div class="container edit-section">
+  <form #editcheckouts="ngForm" novalidate>
+    <h3>{{'requestLogs.checkoutRequestLogInfo' | translate}} :</h3>
+    <br>
+    <div class="row">
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="referenceId"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.referenceNumber' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="referenceId" disabled required
+            [(ngModel)]="checkoutRequestLogModel.referenceId" name="referenceId"
+            #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="createdDate"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.createdAt' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="createdDate" disabled required
+            [(ngModel)]="checkoutRequestLogModel.createdDate" name="createdDate"
+            #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="driverNin" class="col-sm-4 col-form-label lebel-for-required">{{ 'driver.nin' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="driverNin" disabled required
+            [(ngModel)]="checkoutRequestLogModel.driverNin" name="driverNin" #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="vehicleId"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'vehicle.vehicleId' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="vehicleId" disabled required
+            [(ngModel)]="checkoutRequestLogModel.vehicleId" name="vehicleId" #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+          <label for="userId"
+            class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.userId' | translate}}</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="userId" disabled required
+              [(ngModel)]="checkoutRequestLogModel.userId" name="userId" #CheckoutRequestLogModelModel="ngModel">
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-md-6 form-group row">
+            <label for="userName"
+              class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.userName' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="userName" disabled required
+                [(ngModel)]="checkoutRequestLogModel.userName" name="userName" #CheckoutRequestLogModelModel="ngModel">
+            </div>
+          </div>
+
+
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="paymentMethod"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.payments_method' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="paymentMethod" disabled required
+            [(ngModel)]="checkoutRequestLogModel.paymentMethod" name="paymentMethod"
+            #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="amount"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'updateRequest.amount' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="amount" disabled required
+            [(ngModel)]="checkoutRequestLogModel.amount" name="amount" #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="companyID"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.companyID' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="companyID" disabled required
+            [(ngModel)]="checkoutRequestLogModel.companyID" name="companyID" #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="companyName"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'insuranceCompany.insuranceCompany' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="companyName" disabled required
+            [(ngModel)]="checkoutRequestLogModel.companyName" name="companyName"
+            #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="userIP"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.userIP' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="userIP" disabled required
+            [(ngModel)]="checkoutRequestLogModel.userIP" name="userIP" #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="userAgent"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.userAgent' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="userAgent" disabled required
+            [(ngModel)]="checkoutRequestLogModel.userAgent" name="userAgent" #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="serverIP"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.serverIP' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="serverIP" disabled required
+            [(ngModel)]="checkoutRequestLogModel.serverIP" name="serverIP" #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="channel"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.channel' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="channel" disabled required
+            [(ngModel)]="checkoutRequestLogModel.channel" name="channel" #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="methodName"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'requestLogs.methodName' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="methodName" disabled required
+            [(ngModel)]="checkoutRequestLogModel.methodName" name="methodName" #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="errorCode"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'serviceRequests.errorCode' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="errorCode" disabled required
+            [(ngModel)]="checkoutRequestLogModel.errorCode" name="errorCode" #CheckoutRequestLogModelModel="ngModel">
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="errorDescription"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'serviceRequests.errorDescription' | translate}}</label>
+        <div class="col-sm-6">
+          <textarea rows="4" cols="50" type="text" #CheckoutRequestLogModelModel="ngModel" class="form-control"
+            id="errorDescription" name="errorDescription" [(ngModel)]="checkoutRequestLogModel.errorDescription"
+            disabled></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <a [routerLink]="'/admin/requestLogs/checkoutRequestLog'"
+      class="btn btn-default mr-r_s">{{'common.back' | translate}}</a>
+    <br>
+  </form>
+</div>

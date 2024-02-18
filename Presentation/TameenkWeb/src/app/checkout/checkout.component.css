@@ -1,0 +1,33 @@
+section.checkout {
+    position: relative;
+    min-height: calc(100vh - 234px);
+}
+
+@media screen and (min-width: 64em) {
+section.checkout .space-overly {
+    position: absolute;
+    background: #f5f9fd;
+    right: 0px;
+    top: 0px;
+    width: calc(33.333% + 20px);
+    height: 100%;
+    }
+
+    section.checkout .space-overly.left-pos {
+    left: 0;
+    right: auto;
+    }
+
+    section.checkout .space-overly.left-side {
+    right: 0px;
+    right: auto;
+    background: #eef4f9;
+    width: 77%;
+    height: 105px;
+    }
+
+    section.checkout .content-display {
+    padding: 30px;
+    }
+
+}

@@ -1,0 +1,244 @@
+
+<div class="row">
+    <div class="col-xs-12">
+      <h4 class="page-header">{{ 'vehicle.vehicles' | translate }}</h4>
+    </div>
+  </div>
+<div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <!--<div class="col-sm-3">
+            <div class="form-group">
+              <label for="invoiceNo" translate>vehicle.chassisNumber</label>
+              <input
+                type="text"
+                [(ngModel)]="vehiclesFilter.chassisNumber"
+                class="form-control"
+                id="invoiceNo"
+              />
+            </div>
+          </div>-->
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="sequenceNo" translate>vehicle.sequenceNo</label>
+              <input
+                type="text"
+                [(ngModel)]="vehiclesFilter.sequenceNumber"
+                class="form-control"
+                id="sequenceNo" />
+            </div>
+          </div>
+          <!--<div class="col-sm-3">
+              <div class="form-group">
+                <label for="customNo" translate>vehicle.customNo</label>
+                <input
+                  type="text"
+                  [(ngModel)]="vehiclesFilter.customCardNumber"
+                  class="form-control"
+                  id="customNo" />
+              </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                  <label for="insuredEmail" translate>vehicle.plateNo</label>
+                  <input
+                    type="text"
+                    [(ngModel)]="vehiclesFilter.carPlateNumber"
+                    class="form-control"
+                    id="insuredEmail" />
+                </div>
+              </div>-->
+        </div>
+        <div class="row">
+          <!--<div class="col-sm-3">
+            <div class="form-group">
+              <label for="" translate>vehicle.modelMaker</label>
+              <app-vehicle-makers-dropdown [(selectedValue)]="vehiclesFilter.vehicleMakerCode"></app-vehicle-makers-dropdown>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group" *ngIf="vehiclesFilter.vehicleMakerCode">
+              <label for="" translate>vehicle.modelName</label>
+              <app-vehicle-models-dropdown [(selectedValue)]="vehiclesFilter.vehicleModelCode" [makerId]="vehiclesFilter.vehicleMakerCode"></app-vehicle-models-dropdown>
+            </div>
+          </div>-->
+          <div class="col-xs-12 col-md-2">
+            <button (click)="filterClick(vehiclesTable)" [disabled]="isSearch"
+              class="btn btn-primary"
+              style="margin-top: 20px;"
+              translate>
+              common.search
+            </button>
+          </div>
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+</div>
+<!-- /.row -->
+<div class="row" [ngClass]="{'hidden': firstTime}">
+    <div class="col-lg-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="text-left clearfix">{{'common.results_count' | translate}} : {{vehiclesCount}}
+          </div>
+        </div>
+        <!-- /.panel-heading -->
+        <div class="panel-body">
+          <p-table
+            #vehiclesTable
+            [value]="vehicles"
+            [lazy]="true"
+            (onLazyLoad)="vehiclesLazyLoad($event)"
+            [lazyLoadOnInit]="false"
+            [totalRecords]="vehiclesCount"
+            [resetPageOnSort]="true"
+            [rowsPerPageOptions]="[5, 10, 20]"
+            [loading]="loading"
+            [paginator]="true"
+            [rows]="10"
+            [responsive]="true"
+            scrollHeight="200px"
+            [autoLayout]="true"
+            [resizableColumns]="true">
+            <ng-template pTemplate="caption" class="panel-heading">
+              <div style="text-align: right">
+                <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="vehiclesTable.filterGlobal($event.target.value, 'contains')"> -->
+              </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+              <tr>
+                <th [pSortableColumn]="'sequenceNumber'" translate>
+                  vehicle.sequenceNo
+                    <p-sortIcon
+                      [field]="'sequenceNumber'"
+                      ariaLabel="Activate to sort"
+                      ariaLabelDesc="Activate to sort in descending order"
+                      ariaLabelAsc="Activate to sort in ascending order"
+                    ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'customCardNumber'" translate>
+                  vehicle.customNo
+                  <p-sortIcon
+                    [field]="'customCardNumber'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'licenseExpiryDate'" translate>
+                  vehicle.licenseExpiryDate
+                  <p-sortIcon
+                    [field]="'licenseExpiryDate'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'carPlateNumber'" translate>
+                  vehicle.plateNo
+                  <p-sortIcon
+                    [field]="'carPlateNumber'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'carPlateText1'" translate>
+                  vehicle.plateText
+                  <p-sortIcon
+                    [field]="'carPlateText1'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'vehicleMaker'" translate>
+                  vehicle.modelMaker
+                  <p-sortIcon
+                    [field]="'vehicleMaker'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'VehicleModel'" translate>
+                  vehicle.modelName
+                  <p-sortIcon
+                    [field]="'VehicleModel'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'modelYear'" translate>
+                  vehicle.modelYear
+                  <p-sortIcon
+                    [field]="'modelYear'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th >
+                  <span class="bx_left mr-l_m" translate>
+                    common.action
+                  </span>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-vehicle>
+              <tr>
+                <td style="word-wrap: break-word">
+                  {{ vehicle.sequenceNumber || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word">
+                  {{vehicle.customCardNumber || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word">
+                  {{ vehicle.licenseExpiryDate || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word">
+                  {{ vehicle.carPlateNumber || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word">
+                  {{ vehicle.carPlateTextAr || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word">
+                  {{ vehicle.vehicleMaker || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word">
+                  {{ vehicle.model || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word">
+                  {{ vehicle.modelYear || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word;text-align: center">
+                  <button type="button" routerLink="/admin/vehicles/edit/{{vehicle.id}}" routerLinkActive="active" class="btn btn-secondary action-btn" translate>insuranceCompany.edit</button>
+                  <button type="button" (click)="deleteVehicle(vehicle.id)" class="btn btn-danger action-btn" translate>vehicle.delete</button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td style="text-align: center">
+                  {{ "common.noRecordsFound" | translate }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+          <!-- /.table-responsive -->
+        </div>
+        <!-- /.panel-body -->
+      </div>
+      <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+  </div>
+  <!-- /.row -->
+  <!-- <app-loader *ngIf="firstTime"></app-loader> -->

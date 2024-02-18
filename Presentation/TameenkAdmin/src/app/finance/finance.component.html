@@ -1,0 +1,462 @@
+<br />
+<div class="row">
+  <div class="col-xs-12 col-md-6 col-lg-5">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>
+        common.filter_by
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label for="body_type" translate
+                >common.by_insurance_company</label
+              >
+              <app-shared-insurance-companies
+                [(selectedValue)]="samaFilter.insuranceCompanyId"
+              ></app-shared-insurance-companies>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label for="referenceNo" translate>invoice.reference_No</label>
+              <input
+                type="text"
+                [(ngModel)]="samaFilter.referenceNo"
+                class="form-control"
+                id="referenceNo"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label for="mobile" translate
+                >insuranceCompany.mobileNumber</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="samaFilter.mobile"
+                class="form-control"
+                id="mobile"
+              />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label for="email" translate>insuranceCompany.email</label>
+              <input
+                type="text"
+                [(ngModel)]="samaFilter.email"
+                class="form-control"
+                id="email"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-12 col-lg-12" >
+            <div class="form-group">
+              <label for="email" translate>insuranceCompany.merchantId</label>
+              <input
+                type="text"
+                [(ngModel)]="samaFilter.merchantId"
+                class="form-control"
+                id="merchantId"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12 col-md-12 col-lg-12" >
+            <div class="form-group">
+              <label for="email" translate>insuranceCompany.userType</label>
+              <p-dropdown  [options]="userType" [(ngModel)]="samaFilter.isCorporate" [style]="{'width':'100%'}"></p-dropdown>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label for="policyHolderName" translate
+                >policy.policyHolder</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="samaFilter.policyHolderName"
+                class="form-control"
+                id="policyHolderName"
+              />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label for="policyNo" translate>invoice.policy_no</label>
+              <input
+                type="text"
+                [(ngModel)]="samaFilter.policyNo"
+                class="form-control"
+                id="policyNo"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label for="body_type" translate>reports.products</label>
+              <app-products-dropdown
+                [(selectedValue)]="samaFilter.productTypeCode"
+              ></app-products-dropdown>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+              <label for="channel" translate>requestLogs.channel</label>
+              <app-channels-dropdown [(selectedValue)]="samaFilter.channel"> </app-channels-dropdown>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <label for="fdate" translate>invoice.invoice_date</label>
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-6">
+                  <p-calendar
+                    [(ngModel)]="samaFilter.invoiceDateFrom"
+                    [showIcon]="true"
+                    [placeholder]="'common.from' | translate"
+                    [maxDate]="samaFilter.invoiceDateTo || today"
+                    styleClass="w-100"
+                    inputStyleClass="form-control"
+                  ></p-calendar>
+                </div>
+                <div class="col-md-6">
+                  <p-calendar
+                    [(ngModel)]="samaFilter.invoiceDateTo"
+                    [showIcon]="true"
+                    [placeholder]="'common.to' | translate"
+                    [minDate]="samaFilter.invoiceDateFrom"
+                    [maxDate]="today"
+                    styleClass="w-100"
+                    inputStyleClass="form-control"
+                  ></p-calendar>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <label for="fdate" translate>driver.birthDate</label>
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-6">
+                  <p-calendar
+                    [(ngModel)]="samaFilter.driverBirthDateFrom"
+                    [showIcon]="true"
+                    [placeholder]="'common.from' | translate"
+                    [maxDate]="samaFilter.driverBirthDateTo || today"
+                    styleClass="w-100"
+                    inputStyleClass="form-control"
+                    [yearNavigator]="true"
+                    [yearRange]="yearRange"
+                  ></p-calendar>
+                </div>
+                <div class="col-md-6">
+                  <p-calendar
+                    [(ngModel)]="samaFilter.driverBirthDateTo"
+                    [showIcon]="true"
+                    [placeholder]="'common.to' | translate"
+                    [minDate]="samaFilter.driverBirthDateFrom"
+                    [maxDate]="today"
+                    styleClass="w-100"
+                    inputStyleClass="form-control"
+                    [yearNavigator]="true"
+                    [yearRange]="yearRange"
+                  ></p-calendar>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12">
+            <button
+              (click)="filterClick(financeTable)" [disabled]="isSearch"
+              class="btn btn-primary"
+              style="margin-top: 20px"
+              translate
+            >
+              common.search
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <div class="col-xs-12 col-md-6 col-lg-7">
+    <div class="panel panel-default" [ngClass]="{ hidden: firstTime }">
+      <div class="panel-heading">{{ "common.statistics" | translate }} :</div>
+      <div class="panel-body">
+        <!-- <app-loader *ngIf="samaReportLoading"></app-loader> -->
+        <p-chart
+          type="pie"
+          [data]="chartData"
+          *ngIf="!samaReportLoading && samaReportData"
+          [options]="options"
+        ></p-chart>
+        <p
+          *ngIf="!samaReportLoading && !samaReportData"
+          style="text-align: center"
+          translate
+        >
+          common.noRecordsFound
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" [ngClass]="{ hidden: firstTime }">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a (click)="exportCsv()" class="pointer" translate>common.export</a>
+        <div class="text-left">
+          {{ "common.results_count" | translate }} : {{ samaReportDataCount }}
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table
+          #financeTable
+          [value]="samaReportData"
+          [lazy]="true"
+          (onLazyLoad)="samaReportLazyLoad($event)"
+          [lazyLoadOnInit]="false"
+          [totalRecords]="samaReportDataCount"
+          [rowsPerPageOptions]="[5, 10, 20]"
+          [loading]="samaReportLoading"
+          [paginator]="true"
+          [rows]="10"
+          [responsive]="true"
+          scrollHeight="200px"
+          [resizableColumns]="true"
+        >
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="pendingTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr #trElm>
+              <th [pSortableColumn]="'referenceNo'">
+                {{ "invoice.reference_No" | translate }}
+                <p-sortIcon
+                  [field]="'referenceNo'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'invoiceDate'">
+                {{ "invoice.invoice_date" | translate }}
+                <p-sortIcon
+                  [field]="'invoiceDate'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'bcareInvoiceNumber'">
+                {{ "invoice.invoice_no" | translate }}
+                <p-sortIcon
+                  [field]="'bcareInvoiceNumber'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'scheme'">
+                {{ "common.scheme" | translate }}
+                <p-sortIcon
+                  [field]="'scheme'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'policyHolder'">
+                {{ "policy.policyHolder" | translate }}
+                <p-sortIcon
+                  [field]="'policyHolder'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'mob'">
+                {{ "insuranceCompany.mobileNumber" | translate }}
+                <p-sortIcon
+                  [field]="'mob'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'email'">
+                {{ "login.email" | translate }}
+                <p-sortIcon
+                  [field]="'email'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'insurer'">
+                {{ "policy.insured_name" | translate }}
+                <p-sortIcon
+                  [field]="'insurer'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'policyNo'">
+                {{ "policy.policyNo" | translate }}
+                <p-sortIcon
+                  [field]="'policyNo'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'paymentMethod'">
+                {{ "common.payments_method" | translate }}
+                <p-sortIcon
+                  [field]="'paymentMethod'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'cardNumber'">
+                {{ "policy.cardNumber" | translate }}
+                <p-sortIcon
+                  [field]="'cardNumber'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'insuranceProduct'">
+                {{ "common.by_product" | translate }}
+                <p-sortIcon
+                  [field]="'insuranceProduct'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'extraPremiumPrice'">
+                {{ "invoice.extra_premium_price" | translate }}
+                <p-sortIcon
+                  [field]="'extraPremiumPrice'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'vat'">
+                {{ "invoice.vat" | translate }}
+                <p-sortIcon
+                  [field]="'vat'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'channel'">
+                {{ "requestLogs.channel" | translate }}
+                <p-sortIcon
+                  [field]="'channel'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-sama>
+            <tr>
+              <td style="word-wrap: break-word">
+                {{ sama.referenceNo || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.invoiceDate || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.bcareInvoiceNumber || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.scheme || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.policyHolder || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.mob || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.email || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.insurer || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.policyNo || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.paymentMethod || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.cardNumber || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.insuranceProduct || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.extraPremiumPrice || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.vat || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ sama.channel || emptyStringValue }}
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center" colspan="14" translate>
+                common.noRecordsFound
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<!-- <app-loader *ngIf="firstTime"></app-loader> -->

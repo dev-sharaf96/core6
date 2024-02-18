@@ -1,0 +1,19 @@
+<div class="search-container">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-md-6 bx-right">
+        <div class="search-box" *ngIf="!showLoading">
+          <h2 class="search-heading" translate>home.vehicle_insurance<span translate>home.vehicle_products</span></h2>
+            <app-notification></app-notification>
+            <app-main *ngIf="currentStep == 'main'" (nextStep)="getNextStep()" (removeStep)="removeStep($event)"></app-main>
+            <app-insured *ngIf="currentStep == 'insured'" (nextStep)="getNextStep()" (prevStep)="getPrevStep()" [isLastStep]="lastStep == 'insured'"></app-insured>
+            <app-vehicle *ngIf="currentStep == 'vehicle'" (nextStep)="getNextStep()" (prevStep)="getPrevStep()"></app-vehicle>
+            <div *ngIf="showYakeenMissingFields" class="row" id="missing-fields-section">
+              <app-missing-fields [missingFields] ="yakeenMissingFields" [quotationRequestExternalId]="quotationRequestExternalId"></app-missing-fields>
+          </div>
+        </div>
+        <app-loader *ngIf="showLoading"></app-loader>
+      </div>
+    </div>
+  </div>
+</div>

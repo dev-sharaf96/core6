@@ -1,0 +1,57 @@
+<div class="row">
+        <div class="col-lg-12">
+          <h1 class="page-header">{{'promotion.add' | translate}}</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <form #promotionDomainForm="ngForm" (ngSubmit)="submit(promotionDomainForm)"  novalidate>
+                <div class="col-lg-12 col-lg-12">
+                  <div class="form-group">
+                    <label for="promotionProgramDomain" class="control-label required" translate>promotionProgramDomain.DomainCode</label>
+                    <!-- <input type="text"  class="form-control" id="code" required [(ngModel)]="promotionProgramDomain.Domian" name="code"
+                      #code="ngModel"> -->
+                      <textarea class="form-control" id="code" required [(ngModel)]="promotionProgramDomain.Domian" name="code"
+                      #code="ngModel">
+                      </textarea>
+
+                    <div *ngIf="promotionDomainForm.submitted && code.errors">
+                      <div class="error-msg" *ngIf="code.errors['required']" translate>promotionProgramDomain.DomainCode</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="col-xs-12 col-sm-6">
+                  <div class="form-group">
+                    <label for="userName" class="control-label required" translate>promotionProgramDomain.NameAr</label>
+                    <input type="text" class="form-control" id="domainNameAr" required [(ngModel)]="promotionProgramDomain.DomainNameAr" name="domainNameAr"
+                      #domainNameAr="ngModel">
+                    <div *ngIf="promotionDomainForm.submitted && domainNameAr.errors">
+                      <div class="error-msg" *ngIf="domainNameAr.errors['required']" translate>promotion.Description_required</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                          <label for="userName" class="control-label required" translate>promotionProgramDomain.EnglishName</label>
+                          <input type="text" class="form-control" id="domainNameEn" required [(ngModel)]="promotionProgramDomain.DomainNameEn" name="domainNameEn"
+                            #domainNameEn="ngModel">
+                          <div *ngIf="promotionDomainForm.submitted && domainNameEn.errors">
+                            <div class="error-msg" *ngIf="domainNameAr.errors['required']" translate>promotion.Description_required</div>
+                          </div>
+                        </div>
+                      </div> -->
+                
+    
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <button type="submit" [disabled]="promotionDomainForm.invalid" class="btn btn-primary" translate>user.add</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    

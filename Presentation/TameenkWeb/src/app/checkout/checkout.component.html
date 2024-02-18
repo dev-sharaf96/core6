@@ -1,0 +1,32 @@
+<section class="section checkout page" id="checkout-steps">
+  <span class="bg-ofwhite space-overly left-pos"></span>
+  <span class="bg-ofwhite space-overly left-side"></span>
+  <div class="container">
+    <div class="row">
+      <app-summary [checkoutDetails]="checkoutDetails"></app-summary>
+      <div class="col-xs-12 col-md-8 col-lg-8">
+        <app-process [referenceId]="checkoutDetails.referenceId" [qtRqstExtrnlId]="checkoutDetails.qtRqstExtrnlId"></app-process>
+        <!-- process -->
+        <div class="content-display over-hidden">
+          <div class="msgbox success-color icon hidden">
+            <i class="ic-icons-267"></i>
+            <p>تم بنجاح</p>
+          </div>
+          <div class="msgbox alert-color icon hidden">
+            <i class="ic-icons-274"></i>
+            <p>حدث خطا ما</p>
+          </div>
+          <div class="row content-process process-number-1 hidden">
+            <!-- empty content -->
+          </div>
+          <router-outlet></router-outlet>
+          <br />
+          <div class="row">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- row -->
+  </div>
+  <!-- container -->
+</section>

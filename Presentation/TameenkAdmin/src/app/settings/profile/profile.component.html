@@ -1,0 +1,87 @@
+<app-header></app-header>
+<section class="profile">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <h1 class="page-header" translate>settings.profile</h1>
+      </div>
+    </div>
+    <div class="row">
+        <form (ngSubmit)="changeName(editName)" #editName="ngForm" [appMustMatch]="['password', 'confirmPassword']"
+        novalidate>
+      <div class="col-xs-12 col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-body">
+              <fieldset>
+                <legend translate>user.editName</legend>
+                <div class="col-xs-12">
+                  <div class="form-group" [ngClass]="{'has-error': editName.submitted && Name.errors}">
+                    <label for="Name" class="control-label required" translate>user.name</label>
+                    <input type="text" class="form-control" id="Name" required [(ngModel)]="name"
+                      name="Name" #Name="ngModel">
+                    <div *ngIf="editName.submitted && Name.errors">
+                      <div class="error-msg" *ngIf="Name.errors['required']" translate>user.name_required</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-primary" translate>insuranceCompany.save <i class="fa fa-spinner fa-spin" *ngIf="nameLoading"></i></button>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+      </form>
+      <form (ngSubmit)="changePassword(editPassword)" #editPassword="ngForm" [appMustMatch]="['password', 'confirmPassword']"
+        novalidate>
+      <div class="col-xs-12 col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-body">
+              <fieldset>
+                <legend>تعديل كلمة المرور</legend>
+                <div class="col-xs-12">
+                  <div class="form-group" [ngClass]="{'has-error': editPassword.submitted && oldPassword.errors}">
+                    <label for="oldPassword" class="control-label required" translate>settings.oldPassword</label>
+                    <input type="password" class="form-control" id="oldPassword" required [(ngModel)]="pass.OldPassword"
+                      name="oldPassword" #oldPassword="ngModel">
+                    <div *ngIf="editPassword.submitted && oldPassword.errors">
+                      <div class="error-msg" *ngIf="oldPassword.errors['required']" translate>login.password_required</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                  <div class="form-group" [ngClass]="{'has-error': editPassword.submitted && password.errors}">
+                    <label for="password" class="control-label required" translate>login.password</label>
+                    <input type="password" class="form-control" id="password" required [(ngModel)]="pass.NewPassword"
+                      name="password" #password="ngModel">
+                    <div *ngIf="editPassword.submitted && password.errors">
+                      <div class="error-msg" *ngIf="password.errors['required']" translate>login.password_required</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                  <div class="form-group" [ngClass]="{'has-error': editPassword.submitted && confirmPassword.errors}">
+                    <label for="confirmPassword" class="control-label required" translate>login.confirmPassword</label>
+                    <input type="password" class="form-control" id="confirmPassword" required [(ngModel)]="pass.ConfirmPassword"
+                      name="confirmPassword" #confirmPassword="ngModel">
+                    <div *ngIf="editPassword.submitted && confirmPassword.errors">
+                      <div class="error-msg" *ngIf="confirmPassword.errors['required']" translate>login.password_required</div>
+                      <div class="error-msg" *ngIf="confirmPassword.errors['mustMatch']" translate>login.password_invalid</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-primary" translate>insuranceCompany.save <i class="fa fa-spinner fa-spin" *ngIf="passLoading"></i></button>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

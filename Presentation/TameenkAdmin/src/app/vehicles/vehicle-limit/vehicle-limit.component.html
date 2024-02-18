@@ -1,0 +1,38 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'vehicle.releaseVehicleRequestsLimit' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="panel panel-default">
+    <div class="panel-heading" translate>common.filter_by</div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+      <div class="row">
+        <form ngNativeValidate (ngSubmit)="deleteVehicleRequests()">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="sequenceNumber">{{ 'vehicle.sequenceNo' | translate }}</label>
+              <input type="text" required [(ngModel)]="vehiclesFilter.sequenceNumber" class="form-control" id="sequenceNumber"
+                name="sequenceNumber" />
+            </div>
+          </div>
+
+
+          <div class="col-xs-12 col-md-2">
+            <button type="submit" class="btn btn-danger" style="margin-top: 20px;" translate>
+              common.delete
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+    <br />
+
+    <!-- /.panel-body -->
+  </div>
+  <!-- /.panel -->
+</div>
+
+<!-- <app-loader *ngIf="firstTime"></app-loader> -->

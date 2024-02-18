@@ -1,0 +1,56 @@
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="page-header">
+        <h1 class="bx_left" style="margin: 0">{{ 'settings.users' | translate }}</h1>
+      <div class="bx_right">
+        <button [routerLink]="'user'" class="btn btn-default text-right" translate>user.addUser</button>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</div>
+<div class="row" [ngClass]="{'hidden': firstTime}">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+      </div>
+      <div class="panel-body">
+        <p-table #usersTable [value]="users" [responsive]="true" scrollHeight="200px" [autoLayout]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate>logs.username</th>
+              <th translate>login.email</th>
+              <th translate>requests.companyName</th>
+              <th translate>insuranceCompany.edit</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-user>
+            <tr>
+              <td style="word-wrap: break-word">
+                {{ user.Name || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ user.Email || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word" appCompanyName [companyId]="user.CompanyId"></td>
+              <td>
+                  <p-inputSwitch styleClass="mr-r_s" [(ngModel)]="user.IsActivated" (onChange)="changeState(user)"></p-inputSwitch>
+                  <button type="button" [routerLink]="['user/', user.Id]" class="btn btn-secondary mr-r_s" style="vertical-align: text-bottom;" translate>insuranceCompany.edit</button>
+                  <button type="button" [disabled]="!user.IsActivated" class="btn btn-default" style="vertical-align: text-bottom;" (click)="resetPass(user.Id)" translate>user.resetPass</button>
+                </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center" colspan="4">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+<app-loader *ngIf="firstTime"></app-loader>

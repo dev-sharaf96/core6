@@ -1,0 +1,34 @@
+
+<br/>
+<a class="btn btn-success" [routerLink]="['/admin/promotion/PromotionProgramDomain/addPromotionDomai',id]"  ><span class="fa fa-add-plus" translate>user.add</span></a>
+&nbsp;
+<a class="btn btn-danger" [routerLink]="['/admin/promotion']" title="عوده"><span class=""  translate>عوده</span></a><hr/>
+
+<p-table [value]="promotionProgramDomains" >
+    <ng-template pTemplate="header">
+        <tr>
+            <th translate>promotionProgramDomain.DomainCode </th>
+            <th translate>promotionProgramDomain.NameAr</th>
+            <th translate>promotionProgramDomain.EnglishName</th>
+            <th></th>
+
+
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-promotionProgramDomain>
+        <tr>
+            <td>{{promotionProgramDomain.Domian  }}</td>
+            <td>{{promotionProgramDomain.DomainNameAr}}</td>
+            <td>{{promotionProgramDomain.DomainNameEn}}</td>
+            <td>
+
+          <a class="btn btn-success" [routerLink]="['/admin/promotion/editDomain', promotionProgramDomain.Id]" title="edit" ><span class="fa fa-edit" translate></span></a> &nbsp;
+
+            <p-inputSwitch [(ngModel)]="promotionProgramDomain.IsActive" (onChange)="handleChange($event,promotionProgramDomain.Id)"></p-inputSwitch>
+
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<app-loader *ngIf="load"></app-loader>

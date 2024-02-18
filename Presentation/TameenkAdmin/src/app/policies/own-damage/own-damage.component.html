@@ -1,0 +1,139 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'ownDamage.ownDamageTitle' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-6">
+                  <!-- (onSelect)="Hande()" -->
+                  <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.from'| translate}}</label>
+                  <p-calendar [(ngModel)]="policiesFilter.startDate" [showIcon]="true"
+                    [placeholder]="'common.from' | translate" [maxDate]="policiesFilter.endDate || today"
+                    styleClass="w-100" inputStyleClass="form-control"></p-calendar>
+                </div>
+                <div class="col-md-6">
+                  <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.to'| translate}}</label>
+                  <p-calendar [(ngModel)]="policiesFilter.endDate" [showIcon]="true"
+                    [placeholder]="'common.to' | translate" [minDate]="policiesFilter.startDate" styleClass="w-100"
+                    inputStyleClass="form-control"></p-calendar>
+                </div>
+
+              </div>
+            </div>
+          </div>
+            <div class="col-md-5">
+              <label for="modelYear">{{'ownDamage.manufactureYear'| translate}}</label>
+              <ng-select #manfactYear
+              class="border-radius  input-width transparentBg showPlaceholder"
+              [items]="manufacturingYears" (keypress)="restrictNumeric($event)"
+              [notFoundText]="'common.no_items_found' | translate" labelForId="manfactYear" required
+              [items]="manufacturingYears" (focus)="manfactYear.open()" [clearable]="false"
+              #manufactureYear="ngModel" name="manufactureYear" [(ngModel)]="policiesFilter.modelYear"
+              bindLabel="year" bindValue="id" placeholder="{{'ownDamage.manufactureYear' | translate}}" required>
+              <ng-template ng-option-tmp let-item="item">
+                <div title="{{item}}">{{item}}</div>
+              </ng-template>
+            </ng-select>
+            </div>
+
+
+
+
+        </div>
+
+
+        <br />
+        <div class="col-xs-12 col-md-6">
+          <button (click)="filterClick(repo)" [disabled]="isSearch" class="btn btn-primary" style="margin-top: 20px;"
+            translate>
+            common.search
+            <!-- <i class="fa fa-spinner fa-spin" *ngIf="loading"></i> -->
+          </button>
+        </div>
+      </div>
+
+      <!-- /.panel-body -->
+    </div>
+
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <!-- /.panel-heading -->
+      <div class="panel-heading">
+        <div class="text-left clearfix col-md-10 col-xs-12">{{'common.results_count' | translate}} : {{SuccessPoliciesCount}}</div>
+        <button type="submit" class="btn btn-primary ml-2" [disabled]="disableSendBtn"
+                  (click)="sendSMS()">{{'RenewalPolicy.send' | translate}}
+                <i class="fa fa-spinner fa-spin" *ngIf="!disableSendBtn && loading2"></i>
+        </button>
+      </div>
+      <div class="panel-body">
+        <p-table #repo [value]="policyListing" [lazy]="true" (onLazyLoad)=" OwnDamageLazyLoad($event)"
+          [lazyLoadOnInit]="false" [totalRecords]="SuccessPoliciesCount" [rowsPerPageOptions]="[10, 20, 30]"
+          [loading]="loading" [paginator]="true" [rows]="10" [responsive]="true" scrollHeight="200px"
+          [autoLayout]="true" [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate>
+                {{'policy.policy_no' | translate}}
+              </th>
+              <th translate>
+                {{'policy.policy_issue_date' | translate}}
+              </th>
+              <th translate>
+                {{'policy.policy_expiry_date' | translate}}
+              </th>
+              <th translate>
+                {{'common.company' | translate}}
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-policy>
+            <tr>
+              <td style="word-wrap: break-word">
+
+                {{  policy.policyNo || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.policyIssueDate || emptyStringValue | date }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.policyExpiryDate || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.insuranceCompanyName || emptyStringValue }}
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->

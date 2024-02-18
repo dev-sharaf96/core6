@@ -1,0 +1,10 @@
+.wrapper-bx {
+  border-radius: 5px;
+  border: 2px solid #0771b4;
+  box-shadow: 0 5px 20px 0 rgba(93, 148, 183, 0.36);
+  color: #0771b4;
+}
+
+h2 {
+  color: #0771b4;
+}

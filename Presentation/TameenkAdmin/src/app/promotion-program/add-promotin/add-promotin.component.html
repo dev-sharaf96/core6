@@ -1,0 +1,70 @@
+<div class="row">
+    <div class="col-lg-12">
+      <h1 class="page-header">{{'promotion.add' | translate}}</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <form #promotionForm="ngForm" (ngSubmit)="submit(promotionForm)"  novalidate>
+            <div class="col-xs-12 col-sm-6">
+              <div class="form-group">
+                <label for="" class="control-label required" translate>promotion.Name</label>
+                <input type="text" class="form-control" id="userName" required [(ngModel)]="promotion.Name" name="userName"
+                  #userName="ngModel">
+                <div *ngIf="promotionForm.submitted && userName.errors">
+                  <div class="error-msg" *ngIf="userName.errors['required']" translate>promotion.Name_required</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+              <div class="form-group">
+                <label for="" class="control-label required" translate>promotion.Description</label>
+                <input type="text" class="form-control" id="description" required [(ngModel)]="promotion.Description" name="description"
+                  #description="ngModel">
+                <div *ngIf="promotionForm.submitted && userName.errors">
+                  <div class="error-msg" *ngIf="userName.errors['required']" translate>promotion.Description_required</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+              <div class="form-group">
+                <label for="" class="control-label required" translate>promotion.EffectiveDate</label>
+                <p-calendar  [maxDate]="today"  (onSelect)="changeDeffectiveDate()" #effictiveDate="ngModel" name="effictiveDate"  [(ngModel)]="promotion.EffectiveDate" [showIcon]="true" [placeholder]="'common.from' | translate"
+                 styleClass="w-100" inputStyleClass="form-control"></p-calendar>
+
+                <div *ngIf="effictiveDate.errors">
+                  <div class="error-msg" *ngIf="effictiveDate.errors['required']" translate>promotion.EffictiveDate_required</div>
+                  <div class="error-msg" *ngIf="effictiveDate.errors['email']" translate>login.email_invalid</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+              <div class="form-group">
+                <label for="" class="control-label required" translate>promotion.DefectiveDate</label>
+                <p-calendar  [minDate]="promotion.EffectiveDate" [disabled]="promotion.EffectiveDate == null"  #defectiveDate="ngModel" name="defectiveDate" [(ngModel)]="promotion.DeactivatedDate" [showIcon]="true" [placeholder]="'common.to' | translate"
+                 styleClass="w-100" inputStyleClass="form-control"></p-calendar>
+
+                <div *ngIf="effictiveDate.errors">
+                  <div class="error-msg" *ngIf="effictiveDate.errors['required']" translate>promotion.DefectiveDate_required</div>
+                  <div class="error-msg" *ngIf="effictiveDate.errors['email']" translate>login.email_invalid</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xs-12">
+              <div class="form-group">
+
+                <button type="submit" [disabled]="promotionForm.invalid" class="btn btn-primary" translate><span *ngIf="!isEdit" translate>user.add</span>
+                  <span *ngIf="isEdit">تعديل</span>
+                </button>
+             &nbsp; <a class="btn btn-danger" [routerLink]="['/admin/promotion']" title="عوده"><span class=""  translate>common.back</span></a><hr/>
+
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>

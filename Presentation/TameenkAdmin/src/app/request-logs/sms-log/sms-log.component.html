@@ -1,0 +1,263 @@
+
+<div class="row" >
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'smsLogs.smsLog' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="panel panel-default">
+    <div class="panel-heading" translate>common.filter_by</div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-12 col-md-4">
+          <div class="form-group">
+            <label for="mobileNumber" >{{ 'smsLogs.mobileNumber' | translate }}</label>
+            <input type="text" [(ngModel)]="smsLogFilter.mobileNumber" class="form-control" id="mobileNumber" />
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-4">
+          <div class="form-group">
+            <label for="" translate>common.status</label>
+            <app-status-dropdown [(selectedValue)]="smsLogFilter.statusCode"></app-status-dropdown>
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-4">
+          <div class="form-group">
+            <label for="" translate>serviceRequests.method</label>
+            <app-methods-dropdown [(selectedValue)]="smsLogFilter.method" [serviceType]="'sms'"></app-methods-dropdown>
+          </div>
+        </div>
+        
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-md-4">
+          <div class="form-group">
+            <label for="" translate>requestLogs.channel</label>
+            <app-channels-dropdown [(selectedValue)]="smsLogFilter.channel"> </app-channels-dropdown>
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-4">
+          <div class="form-group">
+            <label for="" translate>requestLogs.smsprovider</label>
+            <p-dropdown [options]="status" [(ngModel)]="stat" optionLabel="name" filter="true" [style]="{'width':'100%'}"
+(onChange)="dropchanged()" [(selectedValue)]="smsLogFilter.smsprovider"></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+          <div class="row">
+              <div class="col-md-6">
+                  <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.from'| translate}}</label>
+                  <div class="form-group">
+                  <p-calendar
+                    [(ngModel)]="smsLogFilter.startDate"
+                    [showIcon]="true"
+                    [placeholder]="'common.from' | translate"
+                    [maxDate]="smsLogFilter.endDate || today"
+                    styleClass="w-100" inputStyleClass="form-control"
+                  ></p-calendar>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.to'| translate}}</label>
+                    <div class="form-group">
+                  <p-calendar
+                    [(ngModel)]="smsLogFilter.endDate"
+                    [showIcon]="true"
+                    [placeholder]="'common.to' | translate"
+                    [minDate]="smsLogFilter.startDate"
+                    [maxDate]="today"
+                    styleClass="w-100" inputStyleClass="form-control"
+                    ></p-calendar>
+                </div>
+              </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-6">
+          <div class="row">
+            <div class="col-xs-12 col-md-6">
+              <button (click)="filterClick(smsLogTable)" [disabled]="isSearch"
+                      class="btn btn-primary" style="margin-top: 25px;" translate>
+                  common.search
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+    </div>
+  </div>
+
+  <div class="row" [ngClass]="{'hidden': firstTime}" >
+      <div class="col-lg-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a (click)="exportCsv()" [disabled]="isSearch" class="pointer" translate>common.export</a>
+            <div class="text-left clearfix">{{'common.results_count' | translate}} : {{smsLogsCount}}
+            </div>
+          </div>
+          <!-- /.panel-heading -->
+          <div class="panel-body">
+            <p-table
+              #smsLogTable
+              [value]="smsLogs"
+              [lazy]="true"
+              (onLazyLoad)="smsLogLazyLoad($event)"
+              [lazyLoadOnInit]="false"
+              [totalRecords]="smsLogsCount"
+              [resetPageOnSort]="true"
+              [rowsPerPageOptions]="[5, 10, 20]"
+              [loading]="loading"
+              [paginator]="true"
+              [rows]="10"
+              [responsive]="true"
+              scrollHeight="200px"
+              [autoLayout]="true"
+              [resizableColumns]="true">
+              <ng-template pTemplate="caption" class="panel-heading">
+                <div style="text-align: right">
+                </div>
+              </ng-template>
+              <ng-template pTemplate="header">
+                <tr>
+                    <th [pSortableColumn]="'mobileNumber'">
+                        {{ 'smsLogs.mobileNumber' | translate }}
+                        <p-sortIcon
+                          [field]="'mobileNumber'"
+                          ariaLabel="Activate to sort"
+                          ariaLabelDesc="Activate to sort in descending order"
+                          ariaLabelAsc="Activate to sort in ascending order"
+                        ></p-sortIcon>
+                    </th>
+                  <th [pSortableColumn]="'smsMessage'">
+                      {{ 'smsLogs.smsMessage' | translate }}
+                      <p-sortIcon
+                        [field]="'smsMessage'"
+                        ariaLabel="Activate to sort"
+                        ariaLabelDesc="Activate to sort in descending order"
+                        ariaLabelAsc="Activate to sort in ascending order"
+                      ></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'method'">
+                    {{ 'serviceRequests.method' | translate }}
+                    <p-sortIcon
+                      [field]="'method'"
+                      ariaLabel="Activate to sort"
+                      ariaLabelDesc="Activate to sort in descending order"
+                      ariaLabelAsc="Activate to sort in ascending order"
+                    ></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'errorCode'">
+                    {{ 'serviceRequests.errorCode' | translate }}
+                  <p-sortIcon
+                    [field]="'errorCode'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'errorDescription'">
+                    {{ 'serviceRequests.errorDescription' | translate }}
+                  <p-sortIcon
+                    [field]="'errorDescription'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'CreatedDate'">
+                    {{ 'common.createdAt' | translate }}
+                  <p-sortIcon
+                    [field]="'CreatedDate'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'channel'">
+                    {{ 'requestLogs.channel' | translate }}
+                  <p-sortIcon
+                    [field]="'channel'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'SMSProvider'">
+                    {{ 'requestLogs.smsprovider' | translate }}
+                  <p-sortIcon
+                    [field]="'channel'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'Module'">
+                    {{ 'requestLogs.Module' | translate }}
+                  <p-sortIcon
+                    [field]="'channel'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                  </th>
+                  <!-- <th>
+                    {{ 'common.action' | translate }}
+                  </th> -->
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-smsLog>
+                <tr>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{smsLog.mobileNumber || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-;text-align: center">
+                    {{smsLog.smsMessage || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-;text-align: center">
+                    {{smsLog.method || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                      {{smsLog.errorCode || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                      {{smsLog.errorDescription || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{smsLog.createdDate || emptyStringValue | date}}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{smsLog.Channel || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{smsLog.SMSProvider || emptyStringValue }}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{smsLog.Module || emptyStringValue }}
+                  </td>
+                  <!-- <td>
+                    <button type="button" routerLink="/admin/requestLogs/smsLog/details/{{smsLog.Id}}" routerLinkActive="active" class="btn btn-secondary action-btn" translate>common.details</button>
+                  </td> -->
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td style="text-align: center">
+                    {{ "common.noRecordsFound" | translate }}
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+            <!-- /.table-responsive -->
+          </div>
+          <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+      </div>
+      <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <!-- <app-loader *ngIf="firstTime"></app-loader> -->

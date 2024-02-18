@@ -1,0 +1,32 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header" translate>notifications.notifications</h1>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>
+        <i class="fa fa-bell fa-fw"></i> notifications.notificationsPanel
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="list-group">
+          <a routerLink="/admin/update_request" class="list-group-item" *ngFor="let summary of notificationSummary">
+            <i class="fa fa-comment fa-fw"></i> ({{summary.count}}) {{summary.type}}
+            <span class="pull-right text-muted small">
+              <em>{{summary.date | timeAgo}}</em>
+            </span>
+          </a>
+        </div>
+        <!-- /.list-group -->
+        <button class="btn btn-default btn-block" translate>notifications.viewAllAlerts</button>
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+</div>
+<!-- /.row -->

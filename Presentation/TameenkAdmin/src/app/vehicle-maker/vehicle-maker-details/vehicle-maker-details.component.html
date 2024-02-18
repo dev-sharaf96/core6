@@ -1,0 +1,191 @@
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="text-left clearfix">
+          {{'common.details' | translate}}
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row" *ngIf="maker">
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="Name" class="col-sm-4 col-form-label">{{'vahicleMaker.makerCode' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="code" disabled [(ngModel)]="maker.code" name="code" #driverModelName="ngModel">
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="nin" class="col-sm-4 col-form-label" translate>{{'vahicleMaker.descriptionEn' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="englishDescription" disabled [(ngModel)]="maker.englishDescription" name="englishDescription" #driverModelName="ngModel">
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-6 form-group row">
+            <label for="EndlishName" class="col-sm-4 col-form-label">{{'vahicleMaker.descriptionAr' | translate}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="arabicDescription" disabled [(ngModel)]="maker.arabicDescription" name="arabicDescription" #driverModelName="ngModel">
+            </div>
+          </div>
+        </div>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<br>
+<br>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="" translate>vahicleMaker.makerCode</label>
+              <input type="text" [(ngModel)]="modelFilter.makerCode" class="form-control" id="makerCode" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+              <label for="" translate>logs.description</label>
+              <input type="text" [(ngModel)]="modelFilter.makerDescription" class="form-control" id="makerDescription" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-2">
+            <button (click)="modelfilterClick()" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.search
+            </button>
+          </div>
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+
+<div>
+  <h3>{{'vahicleMaker.makerModels' | translate}} :</h3>
+  <!-- style="float: left;margin-top: -40px;margin-left: 20%;" -->
+  <button (click)="showMakerModelPopup('add')" class="btn btn-danger action-btn" style="float: left;margin-top: -40px;margin-left: 20%;">
+    {{'vahicleMaker.addNewModel' | translate}}
+  </button>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a (click)="exportCsv()" class="pointer" translate>common.export</a>
+        <div class="text-left clearfix"> {{'common.results_count' | translate}} : {{makerModelsCount}} </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table #addressesTable
+                 [value]="makerModels"
+                 [lazy]="true"
+                 (onLazyLoad)="MakerModelsLoad($event)"
+                 [lazyLoadOnInit]="true"
+                 [totalRecords]="makerModelsCount"
+                 [resetPageOnSort]="true"
+                 [rowsPerPageOptions]="[5, 10, 20]"
+                 [loading]="loading"
+                 [paginator]="true"
+                 [rows]="10"
+                 [responsive]="true"
+                 scrollHeight="200px"
+                 [autoLayout]="true"
+                 [resizableColumns]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate> vahicleMaker.makerCode </th>
+              <th translate> vahicleMaker.descriptionEn </th>
+              <th translate> vahicleMaker.descriptionAr </th>
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-model>
+            <tr>
+              <td style="word-wrap: break-word"> {{ model.code || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ model.englishDescription || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ model.arabicDescription || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center">
+                <button (click)="showMakerModelPopup('edit', model.code)" class="btn btn-danger action-btn"> {{'insuranceCompany.edit' | translate}} </button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" [ngStyle]="{'display': openPpUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" translate>vahicleMaker.addNewModel</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeMakerModelModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #AddNewModelTemplate="ngForm" (ngSubmit)="AddOrUpdateMakerModel()" novalidate>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>vahicleMaker.code</label>
+                <input type="text" [(ngModel)]="makerModel.code" required [disabled]="isEdit" class="form-control" id="code" name="code" #code="ngModel" />
+                <div *ngIf="codeErrorDiv" class="text-danger"> {{ codeErrorDivMessage }} </div>
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>vahicleMaker.makerCode</label>
+                <input type="text" [(ngModel)]="makerModel.makerCode" required disabled class="form-control" id="makerCode" name="makerCode" #makerCode="ngModel" />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>vahicleMaker.descriptionEn</label>
+                <input type="text" [(ngModel)]="makerModel.englishDescription" required class="form-control" id="englishDescription" name="englishDescription" #englishDescription="ngModel" />
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>vahicleMaker.descriptionAr</label>
+                <input type="text" [(ngModel)]="makerModel.arabicDescription" required class="form-control" id="arabicDescription" name="arabicDescription" #arabicDescription="ngModel" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeMakerModelModal()">Close</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!AddNewModelTemplate.valid || clicked" translate>
+            insuranceCompany.save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

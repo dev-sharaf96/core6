@@ -1,0 +1,45 @@
+.edit-section {
+    padding-bottom: 50px;
+  }
+  h2 {
+    margin-bottom: 20px
+  }
+  
+  .remove{
+    margin-top: 20px;
+  }
+  
+  .mat-tab-body-wrapper{
+    height: 250px !important;
+  }
+  .mat-tab-label{
+    background: #DEF6FF !important;
+    width: 100% !important;
+    color: #454545 !important;
+  }
+  .mat-tab-label-active {
+    /* background: white !important; */
+    color: black;
+    opacity: 1 !important;
+  }
+  
+  .mat-tab-body-content{
+    overflow: hidden !important;
+  }
+  .mat-tab-header{
+    display: none !important;
+  }
+  
+  .table td{
+    border: none !important;
+  }
+  
+  .mat-cell{ 
+    display: inline-block;
+      width: 316px;
+      margin-top: 12px;
+  }
+  .pricedetails{
+    display: grid;
+    padding-left: 28px;
+  }

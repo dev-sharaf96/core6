@@ -1,0 +1,24 @@
+
+<br/>
+<a routerLink="addCode" class="btn btn-primary" translate>user.add</a>
+<br/>
+<p-table [value]="promotionProgramCodes" >
+    <ng-template pTemplate="header">
+      <tr>
+        <th translate>promotion.promotionPro</th>
+        <th translate>promotion.company</th>
+        <th translate>promotion.code</th>
+        
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-promotionProgramCode>
+        <tr>
+          
+                <td>{{promotionProgramCode.PromotionProgram.Name}}</td>
+            <td>{{promotionProgramCode.InsuranceCompany.nameAR}}</td>
+        
+            <td>{{promotionProgramCode.Code}}</td>
+           
+        </tr>
+    </ng-template>
+</p-table>

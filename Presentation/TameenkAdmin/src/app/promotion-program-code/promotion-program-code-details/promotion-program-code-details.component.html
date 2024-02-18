@@ -1,0 +1,25 @@
+
+<br/>
+<a class="btn btn-danger" [routerLink]="['/admin/promotion']" title="عوده"><span class="fa fa-arrow-right" translate>promotion.back</span></a><hr/>
+<p-table [value]="promotionProgramCodes" >
+    <ng-template pTemplate="header">
+      <tr>
+
+        <th translate>promotion.company</th>
+        <th translate>promotion.back</th>
+        <th translate>promotion.Insurance_Type</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-promotionProgramCode>
+      <tr>
+
+        <td>{{promotionProgramCode.InsuranceCompany.nameAR}}</td>
+
+        <td>{{promotionProgramCode.Code}}</td>
+        <td>{{promotionProgramCode.InsuranceTypeCode}}</td>
+
+      </tr>
+    </ng-template>
+</p-table>
+
+<app-loader *ngIf="load"></app-loader>

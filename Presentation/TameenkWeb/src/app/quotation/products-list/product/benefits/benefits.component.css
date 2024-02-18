@@ -1,0 +1,91 @@
+.benefits-heading {
+  margin: 0;
+}
+.no-benefit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.benefits-container.over-weight {
+  max-height: 190px;
+  overflow: hidden;
+  margin-bottom: 60px;
+  transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+}
+.benefits-container.over-weight.full {
+  max-height: 1500px;
+  transition: max-height 1s ease-in-out;
+}
+.benefit {
+  cursor: pointer;
+  vertical-align: top;
+  min-height: 160px;
+}
+.benefit-price {
+  font-weight: bold;
+  font-size: 13px;
+}
+.benefit-price span {
+  font-weight: bold;
+  font-size: 13px;
+}
+.benefit-icon {
+  position: relative;
+}
+.benefit .benefit-logo {
+  height: 40px;
+  float: right;
+  margin-top: -10px;
+  display: block;
+  margin-bottom: -5px;
+  width: auto;
+  filter: grayscale(1) invert(63%) sepia(2%) saturate(3487%) hue-rotate(167deg)
+    brightness(104%) contrast(71%);
+}
+.benefit .benefit-check {
+  position: absolute;
+  top: 0;
+  height: 20px;
+  width: 20px;
+  background: #fff;
+  border: solid 2px #8c9fb0;
+  border-radius: 10%;
+  overflow: hidden;
+}
+.benefit .benefit-check:before {
+  font-size: 10px;
+  position: absolute;
+  top: 8px;
+  left: 5px;
+  color: #fff;
+}
+.benefit.active .benefit-check {
+  background: #22d022;
+  border: 0;
+}
+.benefit.active .benefit-check:before {
+  content: "\e2dd";
+  font-size: 10px;
+  position: absolute;
+  top: 8px;
+  left: 5px;
+  color: #fff;
+}
+.benefit.active .benefit-logo {
+  filter: none;
+}
+.benefit.disabled {
+  cursor: default;
+}
+
+.benefit .benefit-detail {
+  opacity: 0.8;
+  line-height: 1.6;
+  min-height: 77px;
+}

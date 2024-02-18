@@ -1,0 +1,402 @@
+<form (ngSubmit)="OnSubmit()" #insuranceComapnyForm="ngForm" novalidate>
+  <div class="form-group row">
+    <label for="nameEN" class="col-sm-2 col-form-label lebel-for-required">
+      {{
+      'insuranceCompany.nameCompanyInEnglish' |
+      translate
+      }}
+    </label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="nameEN" [pattern]="nameENPattern"
+             [(ngModel)]="insuranceCompany.nameEN" name="nameEN" required #nameEN="ngModel">
+    </div>
+  </div>
+  <div *ngIf="nameEN.dirty && nameEN.invalid" class="alert alert-danger">
+    <div *ngIf="nameEN?.errors.required">
+      {{'insuranceCompany.requried' | translate}}
+    </div>
+    <div *ngIf="nameEN?.errors.pattern">
+      {{'insuranceCompany.NameEnglishError' | translate}}
+    </div>
+  </div>
+  <div>
+    <div class="form-group row">
+      <label for="nameAr" class="col-sm-2 col-form-label lebel-for-required">
+        {{
+        'insuranceCompany.nameCompanyInArabic' |
+        translate
+        }}
+      </label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="nameAR" [pattern]="nameArPattern"
+               [(ngModel)]="insuranceCompany.nameAR" name="nameAR" required #nameAR="ngModel">
+      </div>
+    </div>
+  </div>
+  <div *ngIf="nameAR.dirty && nameAR.invalid" class="alert alert-danger">
+    <div *ngIf="nameAR?.errors.required">
+      {{'insuranceCompany.requried' | translate}}
+    </div>
+    <div *ngIf="nameAR?.errors.pattern">
+      {{'insuranceCompany.NameArabicError' | translate}}
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="namespaceTypeName" class="col-sm-2 col-form-label lebel-for-required">
+      {{
+      'insuranceCompany.namespaceTypeName'
+      | translate
+      }}
+    </label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="namespaceTypeName" [(ngModel)]="insuranceCompany.namespaceTypeName"
+             name="namespaceTypeName" required #namespaceTypeName="ngModel">
+    </div>
+  </div>
+  <div *ngIf="namespaceTypeName.dirty && namespaceTypeName.invalid" class="alert alert-danger">
+    <div *ngIf="namespaceTypeName?.errors.required">
+      {{'insuranceCompany.requried' | translate}}
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="classTypeName" class="col-sm-2 col-form-label lebel-for-required">
+      {{
+      'insuranceCompany.classTypeName' |
+      translate
+      }}
+    </label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="classTypeName" [(ngModel)]="insuranceCompany.classTypeName"
+             name="classTypeName" required #classTypeName="ngModel">
+    </div>
+  </div>
+  <div *ngIf="classTypeName.dirty && classTypeName.invalid" class="alert alert-danger">
+    <div *ngIf="classTypeName?.errors.required">
+      {{'insuranceCompany.requried' | translate}}
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="reportTemplateName" class="col-sm-2 col-form-label">
+      {{
+'insuranceCompany.reportTemplateName' |
+      translate
+      }}
+    </label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="reportTemplateName" [(ngModel)]="insuranceCompany.reportTemplateName"
+             name="reportTemplateName">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="descAR" class="col-sm-2 col-form-label">{{'insuranceCompany.descAR' | translate}}</label>
+    <div class="col-sm-6">
+      <textarea rows="4" cols="50" type="text" #descAR="ngModel" class="form-control" id="descAR" name="descAR"
+                [(ngModel)]="insuranceCompany.descAR"></textarea>
+    </div>
+  </div>
+  <!-- <div *ngIf="descAR.invalid" class="alert alert-danger">
+    <div *ngIf="descAR?.errors.pattern">
+      {{'insuranceCompany.NameArabicError' | translate}}
+    </div>
+  </div> -->
+  <div class="form-group row">
+    <label for="descEN" class="col-sm-2 col-form-label">{{'insuranceCompany.descEN' | translate}}</label>
+    <div class="col-sm-6">
+      <textarea rows="4" cols="50" type="text" #descEN="ngModel" class="form-control" id="descEN" name="descEN"
+                [(ngModel)]="insuranceCompany.descEN"></textarea>
+    </div>
+  </div>
+  <!-- <div *ngIf="descEN.invalid" class="alert alert-danger">
+    <div *ngIf="descEN?.errors.pattern">
+      {{'insuranceCompany.NameEnglishError' | translate}}
+    </div>
+  </div> -->
+  <div class="form-group row">
+    <label for="mobileNumber" class="col-sm-2 col-form-label">{{'insuranceCompany.mobileNumber' | translate}}</label>
+    <div class="col-sm-6">
+      <input class="form-control" id="mobileNumber" type="text" minlength="10" [pattern]="mobileNumberPattern"
+             #mobileNumber="ngModel" name="mobileNumber" [(ngModel)]="insuranceCompany.contact.mobileNumber">
+    </div>
+  </div>
+  <div *ngIf="mobileNumber.invalid" class="alert alert-danger">
+    <div *ngIf="mobileNumber?.errors.pattern">
+      {{'insuranceCompany.mobileNumberError' | translate}}
+    </div>
+    <div *ngIf="mobileNumber?.errors.minlength">
+      {{'insuranceCompany.mobileNumberMinLengthError' | translate}}
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="homePhone" class="col-sm-2 col-form-label">{{'insuranceCompany.homePhone' | translate}}</label>
+    <div class="col-sm-6">
+      <input class="form-control" id="homePhone" type="text" name="homePhone"
+             [(ngModel)]="insuranceCompany.contact.homePhone" [pattern]="numberPattern" #homePhone="ngModel">
+    </div>
+  </div>
+  <div *ngIf="homePhone.invalid" class="alert alert-danger">
+    <div *ngIf="homePhone?.errors.pattern">
+      {{'insuranceCompany.NumberError' | translate}}
+    </div>
+    <div *ngIf="homePhone?.errors.minlength">
+      {{'insuranceCompany.mobileNumberMinLengthError' | translate}}
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="fax" class="col-sm-2 col-form-label">{{'insuranceCompany.Fax' | translate}}</label>
+    <div class="col-sm-6">
+      <input class="form-control" id="fax" type="text" name="fax" [(ngModel)]="insuranceCompany.contact.fax"
+             [pattern]="numberPattern" #fax="ngModel">
+    </div>
+  </div>
+  <div *ngIf="fax.invalid" class="alert alert-danger">
+    <div *ngIf="fax?.errors.pattern">
+      {{'insuranceCompany.NumberError' | translate}}
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="email" class="col-sm-2 col-form-label">{{'insuranceCompany.email' | translate}}</label>
+    <div class="col-sm-6">
+      <input class="form-control" id="email" [pattern]="emailPattern" #email="ngModel" type="text" name="email"
+             [(ngModel)]="insuranceCompany.contact.email">
+    </div>
+  </div>
+  <div *ngIf="email.invalid" class="alert alert-danger">
+    <div *ngIf="email?.errors.pattern">
+      {{'insuranceCompany.emailError' | translate}}
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="address1" class="col-sm-2 col-form-label">{{'insuranceCompany.Address1' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="address1" name="address1"
+             [(ngModel)]="insuranceCompany.address.address1">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="address2" class="col-sm-2 col-form-label">{{'insuranceCompany.Address2' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="address2" name="address2"
+             [(ngModel)]="insuranceCompany.address.address2">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="buildingNumber"
+           class="col-sm-2 col-form-label">{{'insuranceCompany.buildingNumber' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="buildingNumber" #buildingNumber="ngModel" [pattern]="numberPattern"
+             name="buildingNumber" [(ngModel)]="insuranceCompany.address.buildingNumber">
+    </div>
+  </div>
+
+  <div *ngIf="buildingNumber.invalid" class="alert alert-danger">
+    <div *ngIf="buildingNumber?.errors.pattern">
+      {{'insuranceCompany.NumberError' | translate}}
+    </div>
+    <div *ngIf="buildingNumber?.errors.minlength">
+      {{'insuranceCompany.mobileNumberMinLengthError' | translate}}
+    </div>
+  </div>
+
+
+  <div class="form-group row">
+    <label for="street" class="col-sm-2 col-form-label">{{'insuranceCompany.street' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="street" name="street" [(ngModel)]="insuranceCompany.address.street">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="district" class="col-sm-2 col-form-label">{{'insuranceCompany.district' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="district" name="district"
+             [(ngModel)]="insuranceCompany.address.district">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="city" class="col-sm-2 col-form-label">{{'insuranceCompany.city' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="city" name="city" [(ngModel)]="insuranceCompany.address.city">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="postCode" class="col-sm-2 col-form-label">{{'insuranceCompany.postCode' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="postCode" #postCode="ngModel" [pattern]="numberPattern"
+             name="postCode" [(ngModel)]="insuranceCompany.address.postCode">
+    </div>
+  </div>
+
+  <div *ngIf="postCode.invalid" class="alert alert-danger">
+    <div *ngIf="postCode?.errors.pattern">
+      {{'insuranceCompany.NumberError' | translate}}
+    </div>
+    <div *ngIf="postCode?.errors.minlength">
+      {{'insuranceCompany.mobileNumberMinLengthError' | translate}}
+    </div>
+  </div>
+
+
+  <div class="form-group row">
+    <label for="additionalNumber"
+           class="col-sm-2 col-form-label">{{'insuranceCompany.additionalNumber' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="additionalNumber" #additionalNumber="ngModel"
+             [pattern]="numberPattern" name="additionalNumber" [(ngModel)]="insuranceCompany.address.additionalNumber">
+    </div>
+  </div>
+
+  <div *ngIf="additionalNumber.invalid" class="alert alert-danger">
+    <div *ngIf="additionalNumber?.errors.pattern">
+      {{'insuranceCompany.NumberError' | translate}}
+    </div>
+    <div *ngIf="additionalNumber?.errors.minlength">
+      {{'insuranceCompany.mobileNumberMinLengthError' | translate}}
+    </div>
+  </div>
+
+
+  <div class="form-group row">
+    <label for="regionName" class="col-sm-2 col-form-label">{{'insuranceCompany.regionName' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="regionName" name="regionName"
+             [(ngModel)]="insuranceCompany.address.regionName">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="isActive" class="col-sm-2 col-form-label">{{'insuranceCompany.Active' | translate}}</label>
+    <div class="col-sm-6">
+      <p-inputSwitch [(ngModel)]="insuranceCompany.isActive" ngDefaultControl id="isActive" name="isActive">
+      </p-inputSwitch>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="hasDiscount" class="col-sm-2 col-form-label">{{'insuranceCompany.hasDiscount' | translate}}</label>
+    <div class="col-sm-6">
+      <p-inputSwitch [(ngModel)]="insuranceCompany.hasDiscount" ngDefaultControl id="hasDiscount" name="hasDiscount">
+      </p-inputSwitch>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="discountText" class="col-sm-2 col-form-label">{{'insuranceCompany.discountText' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="discountText" name="discountText"
+             [(ngModel)]="insuranceCompany.discountText">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="discountStartDate" class="col-sm-2 col-form-label">{{'insuranceCompany.discountStartDate' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="discountStartDate" name="discountStartDate"
+             [(ngModel)]="insuranceCompany.discountStartDate">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="discountEndDate" class="col-sm-2 col-form-label">{{'insuranceCompany.discountEndDate' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="discountEndDate" name="discountEndDate"
+             [(ngModel)]="insuranceCompany.discountEndDate">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="usePhoneCamera" class="col-sm-2 col-form-label">{{'insuranceCompany.usePhoneCamera' | translate}}</label>
+    <div class="col-sm-6">
+      <p-inputSwitch [(ngModel)]="insuranceCompany.usePhoneCamera" ngDefaultControl id="usePhoneCamera" name="usePhoneCamera">
+      </p-inputSwitch>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="policyFailureRecipient" class="col-sm-2 col-form-label">{{'insuranceCompany.policyFailureRecipient' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="policyFailureRecipient" name="policyFailureRecipient"
+             [(ngModel)]="insuranceCompany.policyFailureRecipient">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="isUseNumberOfAccident" class="col-sm-2 col-form-label">{{'insuranceCompany.isUseNumberOfAccident' | translate}}</label>
+    <div class="col-sm-6">
+      <p-inputSwitch [(ngModel)]="insuranceCompany.isUseNumberOfAccident" ngDefaultControl id="isUseNumberOfAccident" name="isUseNumberOfAccident">
+      </p-inputSwitch>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="najmNcdFreeYearsToUseNumberOfAccident" class="col-sm-2 col-form-label">{{'insuranceCompany.najmNcdFreeYearsToUseNumberOfAccident' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="najmNcdFreeYearsToUseNumberOfAccident" name="najmNcdFreeYearsToUseNumberOfAccident"
+             [(ngModel)]="insuranceCompany.najmNcdFreeYearsToUseNumberOfAccident">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="allowAnonymousRequest" class="col-sm-2 col-form-label">{{'insuranceCompany.allowAnonymousRequest' | translate}}</label>
+    <div class="col-sm-6">
+      <p-inputSwitch [(ngModel)]="insuranceCompany.allowAnonymousRequest" ngDefaultControl id="allowAnonymousRequest" name="allowAnonymousRequest">
+      </p-inputSwitch>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="showQuotationToUser" class="col-sm-2 col-form-label">{{'insuranceCompany.showQuotationToUser' | translate}}</label>
+    <div class="col-sm-6">
+      <p-inputSwitch [(ngModel)]="insuranceCompany.showQuotationToUser" ngDefaultControl id="showQuotationToUser" name="showQuotationToUser">
+      </p-inputSwitch>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="vAT" class="col-sm-2 col-form-label">{{'invoice.vat' | translate}}</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="vAT" name="vAT" [(ngModel)]="insuranceCompany.vAT">
+    </div>
+  </div>
+  <!-- <div class="row">
+    <div class="form-group row termsAndConditionsFileInputDiv">
+      <label for="up" class="col-sm-2 col-form-label">{{'insuranceCompany.termsAndConditionsFilePath'| translate}}</label>
+      <input type="file" id="termsAndConditionsFilePath" accept=".pdf" class="termsAndConditionsFileInput"
+             name="termsAndConditionsFilePath" mode="basic"
+             (change)="handletermsAndConditionsFilePathFileInput($event, $event.target.files)" />
+    </div>
+    <div *ngIf="showTermsFileValidation" style="margin-left: 15px;">
+      <span class="termsFileValidation" [innerHtml]="termsFileValidationTextToAdd">
+      </span>
+    </div>
+  </div> -->
+  <div class="form-group row">
+    <label for="validateSaudiPostAddressInQuotation" class="col-sm-2 col-form-label">{{'insuranceCompany.validateSaudiPostAddressInQuotation' | translate}}</label>
+    <div class="col-sm-6">
+      <p-inputSwitch [(ngModel)]="insuranceCompany.validateSaudiPostAddressInQuotation" ngDefaultControl id="validateSaudiPostAddressInQuotation" name="validateSaudiPostAddressInQuotation">
+      </p-inputSwitch>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="order" class="col-sm-2 col-form-label">{{'insuranceCompany.order' | translate}}</label>
+    <div class="col-sm-6">
+      <p-inputSwitch [(ngModel)]="insuranceCompany.order" ngDefaultControl id="order" name="validateSaudiPostAddressInQuotation">
+      </p-inputSwitch>
+      <select name="ddlDeductableValue" id="ddlDeductableValue" [(ngModel)]="insuranceCompany.order"
+              (change)="changeCompanyOrder($event)">
+        <option *ngFor="let item of ordersList" [value]="item">{{item}}</option>
+    </select>
+    </div>
+  </div>
+  <!--<div *ngIf="error" class="alert alert-danger">
+    {{errorMessage | translate}}
+  </div>-->
+  <!-- <div class="form-group row" *ngIf="!InEdit">
+    <label for="up" class="col-sm-2 col-form-label">{{'insuranceCompany.uploadFile'| translate}}</label>
+    <p-fileUpload #fileupload class="col-sm-2" id="up" accept=".dll"
+                  (onSelect)="handleFileInput($event, fileupload.files)" mode="basic" name="fileupload" customUpload="true"
+                  chooseLabel="Browse"></p-fileUpload>
+    <footer>
+      <button type="button" class="btn btn-danger col-sm-2" (click)="fileupload.clear()">
+        {{
+ 'updateRequest.clear' |
+        translate
+        }}
+      </button>
+    </footer>
+  </div> -->
+  <button type="submit" class="btn btn-default" [disabled]="!insuranceComapnyForm.valid">
+    {{
+'insuranceCompany.save' |
+    translate
+    }}
+  </button>
+</form>

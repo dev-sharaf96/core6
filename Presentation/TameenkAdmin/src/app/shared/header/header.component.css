@@ -1,0 +1,13 @@
+.toggle-lang {
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: #337ab7;
+  display: block;
+  padding: 15px;
+  min-height: 50px;
+}
+.toggle-lang:focus, .toggle-lang:hover {
+  text-decoration: none;
+  background-color: #eee;
+}

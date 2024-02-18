@@ -1,0 +1,63 @@
+<form #AddNewModelTemplate="ngForm" (ngSubmit)="AddYakeenCityCenterModel()" novalidate>
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <div class="form-group">
+        <label for="" class="lebel-for-required" translate>yakeenCityCenter.cityId</label>
+        <input type="text" [(ngModel)]="newCityCenter.cityId" class="form-control" id="cityId" name="cityId" required #cityId="ngModel" />
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <div class="form-group">
+        <label for="" class="lebel-for-required" translate>yakeenCityCenter.cityName</label>
+        <input type="text" [(ngModel)]="newCityCenter.cityName" class="form-control" id="cityName" name="cityName" required #cityName="ngModel" />
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <div class="form-group">
+        <label for="" class="lebel-for-required" translate>yakeenCityCenter.englishName</label>
+        <input type="text" [(ngModel)]="newCityCenter.englishName" class="form-control" id="englishName" name="englishName" required #englishName="ngModel" />
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <div class="form-group">
+        <label for="" class="lebel-for-required" translate>yakeenCityCenter.zipCode</label>
+        <input type="text" [(ngModel)]="newCityCenter.zipCode" class="form-control" id="zipCode" name="zipCode" required #zipCode="ngModel" />
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <div class="form-group">
+        <label for="" class="lebel-for-required" translate>yakeenCityCenter.regionId</label>
+        <input type="text" [(ngModel)]="newCityCenter.regionId" class="form-control" id="regionId" name="regionId" required #regionId="ngModel" />
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <div class="form-group">
+        <label for="" class="lebel-for-required" translate>yakeenCityCenter.regionEnglishcName</label>
+        <input type="text" [(ngModel)]="newCityCenter.regionEnglishName" class="form-control" id="regionEnglishcName" name="regionEnglishcName" required #regionEnglishcName="ngModel" />
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <div class="form-group">
+        <label for="" class="lebel-for-required" translate>yakeenCityCenter.regionArabicName</label>
+        <input type="text" [(ngModel)]="newCityCenter.regionArabicName" class="form-control" id="regionArabicName" name="regionArabicName" required #regionArabicName="ngModel" />
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <div class="form-group">
+        <label for="" class="lebel-for-required" translate>yakeenCityCenter.elmCode</label>
+        <input type="text" [(ngModel)]="newCityCenter.elmCode" class="form-control" id="zipCode" name="elmCode" required #elmCode="ngModel" />
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <button type="submit" class="btn btn-primary" [disabled]="!AddNewModelTemplate.valid || clicked" translate>
+      insuranceCompany.save
+    </button>
+  </div>
+</form>

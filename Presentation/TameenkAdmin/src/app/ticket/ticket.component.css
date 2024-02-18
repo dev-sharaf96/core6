@@ -1,0 +1,45 @@
+.pageHeader {
+  /* margin-top: 40px;
+  margin-bottom: 15px; */
+  padding: 10px;
+}
+
+h4{
+  display: inline;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.modal {
+  background: rgba(90, 90, 90, 0.61);
+}
+
+.modal-dialog {
+  margin-top: 200px;
+}
+
+.lebel-for-required:after {
+  content: '*';
+  color: #f00;
+  font-size: 16px;
+  margin: 0 5px
+}
+
+.p-calendar-for-required:after {
+  content: '*';
+  color: #f00;
+  font-size: 16px;
+  margin: 0 5px
+}
+
+.checkpoxClosed {
+  color: #fff !important;
+  background-color: #337ab7 !important;
+  border-color: #2e6da4 !important;
+}
+
+.checkpoxAvailable {
+  color: #070606 !important;
+  background-color: #fff !important;
+  border-color: #2e6da4 !important;
+}

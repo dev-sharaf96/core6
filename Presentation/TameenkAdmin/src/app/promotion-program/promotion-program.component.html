@@ -1,0 +1,32 @@
+<a routerLink="addPromotion" class="btn btn-primary" translate>user.add</a>
+<hr/>
+<p-table [value]="promotions" [loading]="load">
+    <ng-template pTemplate="header">
+        <tr>
+            <th translate>promotion.Name </th>
+            <th translate>promotion.Description</th>
+            <th translate>promotion.EffectiveDate</th>
+            <th translate>promotion.DefectiveDate</th>
+            <th></th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-promotion>
+        <tr>
+            <td>{{promotion.Name  }}</td>
+            <td>{{promotion.Description}}</td>
+            <td>{{promotion.EffectiveDate | date:'fullDate'}}</td>
+            <td>{{promotion.DeactivatedDate | date:'fullDate'}}</td>
+            <td>
+              <a class="btn btn-success" style="margin-right: 1px; margin-left: 1px;" [routerLink]="['addPromotion', promotion.Id]" title="Edit"><span class="fa fa-edit"></span></a>
+              <a class="btn btn-info" style="margin-right: 1px; margin-left: 1px;" [routerLink]="['/admin/promotion/PromotionProgramDomain', promotion.Id]" title="Program Domains"><span class="fa fa-list"></span></a>
+              <a class="btn btn-primary" style="margin-right: 1px; margin-left: 1px;" [routerLink]="['/admin/promotion/PromotionProgramCodeDetails', promotion.Id]" title="Program Code"><span class="fa fa-list"></span></a>
+              <a class="btn btn-info" style="margin-right: 1px; margin-left: 1px;" [routerLink]="['/admin/promotion/addPromotionProgramNins', promotion.Id]" title="Program National Ids"><span class="fa fa-list"></span></a>
+              <a *ngIf="promotion.IsActive" class="btn btn-danger" style="margin-right: 1px; margin-left: 1px;" title="Delete"><span class="fa fa-lock" (click)="onCancel(false,promotion.Id)"></span></a>
+              <a *ngIf="!promotion.IsActive" class="btn btn-success" style="margin-right: 1px; margin-left: 1px;" title="Unlock"><span class="fa fa-unlock" (click)="onCancel(true,promotion.Id)"></span></a>
+              <!--<p-inputSwitch [(ngModel)]="promotion.IsActive" (onChange)="handleChange($event,promotion.Id)"></p-inputSwitch>-->
+              <!--<span (click)="onCancel($event,promotion.Id)"> Test Cancel</span>-->
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+<app-loader *ngIf="load"></app-loader>

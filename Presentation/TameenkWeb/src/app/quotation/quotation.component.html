@@ -1,0 +1,8 @@
+<app-vehicle-info [quotationRequestId]="quotationRequestId"></app-vehicle-info>
+
+<section class="md-ver-spc search-result  section">
+  <div class="container">
+    <app-options [insuranceTypeCode]="insuranceTypeId" [vehicleAgencyRepair]="vehicleAgencyRepair" [deductibleValue]="deductibleValue" (changeInsuranceType)="changeInsuranceType($event)" (changeRepairType)="changeRepairType($event)" (changeDeductibleValue)="changeDeductibleValue($event)" (changeProductsSorting)="productsSorting($event)"></app-options>
+    <app-products-list  [products]="filteredProducts" [quotationRequestId]="quotationRequestId" [companyInfo]="companyInfo" [isDone]="isDone" [recalled]="recalled" (getCompany)="getCompanyInfo($event)"></app-products-list>
+  </div>
+</section>

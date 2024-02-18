@@ -1,0 +1,325 @@
+@import "~@ng-select/ng-select/themes/default.theme.css"; 
+
+
+/* You can add global styles to this file, and also import other style files */
+html[dir="rtl"] #page-wrapper {
+  min-height: 735px !important;
+}
+
+@media (min-width: 768px) {
+  html[dir="rtl"] #page-wrapper {
+    margin: 0 250px 0 0 !important;
+  }
+}
+
+html[dir="rtl"] .nav {
+  padding-right: 0;
+}
+
+html[dir="rtl"] .navbar-top-links .dropdown-user {
+  left: 0;
+  right: auto;
+}
+
+html[dir="rtl"] .navbar-top-links li:last-child {
+  margin-left: 15px;
+  margin-right: 0;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+html[dir="rtl"] [class^="col-"],
+html[dir="rtl"] [class*=" col-"] {
+  float: right;
+}
+
+html[dir="rtl"] .pull-right {
+  float: left !important;
+}
+
+html[dir="rtl"] .pull-left {
+  float: right !important;
+}
+
+html[dir="rtl"] .text-right {
+  text-align: left !important;
+}
+
+html[dir="rtl"] .text-left {
+  text-align: right !important;
+}
+
+html[dir="rtl"] .checkbox-inline,
+html[dir="rtl"] .radio-inline {
+  padding-left: 0;
+  padding-right: 20px;
+}
+
+html[dir="rtl"] .checkbox input[type=checkbox],
+html[dir="rtl"] .checkbox-inline input[type=checkbox],
+html[dir="rtl"] .radio input[type=radio],
+html[dir="rtl"] .radio-inline input[type=radio] {
+  margin-left: 0;
+  margin-right: -20px;
+}
+
+html[dir="rtl"] .ui-dropdown-panel .ui-dropdown-item {
+  text-align: right;
+}
+
+.ui-chkbox-label {
+  margin: 0 10px;
+}
+
+.mr-r_s {
+  margin-right: 5px
+}
+
+html[dir="rtl"] .mr-r_s {
+  margin-left: 5px;
+  margin-right: 0
+}
+
+.mr-l_m {
+  margin-left: 25px
+}
+
+html[dir="rtl"] .mr-l_m {
+  margin-left: 0;
+  margin-right: 25px
+}
+
+html[dir="rtl"] .ui-paginator .ui-paginator-icon {
+  transform: rotate(180deg)
+}
+
+.mr-r_m {
+  margin-right: 25px
+}
+
+html[dir="rtl"] .mr-r_m {
+  margin-left: 25px;
+  margin-right: 0
+}
+
+.bx_left {
+  float: left;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+html[dir="rtl"] .bx_left {
+  float: right;
+}
+
+.bx_right {
+  float: right;
+}
+
+html[dir="rtl"] .bx_right {
+  float: left;
+}
+
+html[dir="rtl"] .ui-calendar.ui-calendar-w-btn input {
+  float: left;
+}
+
+.ui-calendar.ui-calendar-w-btn input {
+  width: 92%;
+  display: inline-block;
+}
+
+html[dir="rtl"] .field-error {
+  right: 20px;
+  left: auto;
+}
+
+.my-panel {
+  background: #000000
+}
+
+.ui-dialog {
+  background-color: #fff;
+  max-width: 90%;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+  color: #000;
+  background: #fff;
+  border-bottom: #eee solid 1px;
+}
+
+.ui-dialog .ui-dialog-content {
+  padding-bottom: 35px;
+}
+
+.ui-dialog .ui-dialog-footer {
+  background: #fff;
+  border-top: #eee solid 1px;
+}
+
+.ui-dialog .ui-dialog-titlebar-icon {
+  position: relative;
+  right: -25px;
+  top: -25px;
+  background: #000;
+  border-radius: 50%;
+  padding: 5px;
+}
+
+.confirmReproccess.ui-dialog .ui-dialog-content {
+  padding-bottom: 0 !important;
+}
+
+.ui-button-icon-only .ui-button-text,
+.ui-button-text-empty .ui-button-text {
+  height: 0;
+  padding: 0
+}
+
+
+.ui-datatable-reflow .ui-datatable-data>tr>td {
+  width: 100% !important;
+}
+
+.ui-dropdown-panel .ui-dropdown-item {
+  text-align: left
+}
+
+.ui-datepicker .ui-datepicker-title {
+  display: flex;
+  justify-content: space-around
+}
+
+.ui-datepicker .ui-datepicker-title select {
+  color: #333;
+  margin-left: 10px
+}
+
+.ui-calendar .ui-calendar-button {
+  position: absolute;
+}
+
+html[dir="rtl"] .ui-datepicker .ui-datepicker-title select {
+  direction: ltr;
+  float: right;
+}
+
+@media (max-width: 35em) {
+  .ui-datatable-reflow .ui-datatable-data>tr>td {
+    text-align: left;
+    display: block;
+    border: 0 none;
+    width: 100% !important;
+    /*-- HERE --*/
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    float: left;
+    clear: left;
+  }
+}
+
+.sidebar {
+  margin-top: 0;
+}
+
+.PendingPayment {
+  background-color: #82589F !important;
+  color: #fff !important
+}
+
+.PaymentSuccess {
+  background-color: #4cd137 !important;
+  color: #fff !important
+}
+
+.PaymentFailure {
+  background-color: #e84118 !important;
+  color: #fff !important
+}
+
+.Pending {
+  background-color: #fbc531 !important;
+  color: #fff !important
+}
+
+.PolicyFileDownloadFailure {
+  background-color: #487eb0 !important;
+  color: #fff !important
+}
+
+.PolicyFileGeneraionFailure {
+  background-color: #353b48 !important;
+  color: #fff !important
+}
+
+.PolicyYearlyMaximumPurchase {
+  background-color: #0f55ed !important;
+  color: #fff !important
+}
+
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+input[type=number]::-webkit-inner-spin-button {
+  display: none;
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.block {
+  display: block !important;
+}
+
+.red-border {
+  border: 1px solid #f00
+}
+
+.field-error {
+  position: absolute;
+  bottom: -15px;
+  left: 20px;
+  right: auto;
+  font-size: 1.2rem;
+  color: red;
+}
+
+
+tr th {
+  text-align: center
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.error-msg {
+  position: absolute;
+  color: #a94442;
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option .ng-option-label {
+  color: #146394 !important;
+  font-weight: bold !important;
+}
+
+
+
+app-request-per-company .ui-dropdown {
+  width: 100% !important;
+}

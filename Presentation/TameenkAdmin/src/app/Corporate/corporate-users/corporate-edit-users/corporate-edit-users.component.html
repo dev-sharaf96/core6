@@ -1,0 +1,55 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header" translate> user.editUser </h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12 col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <form #userTemplate="ngForm" (ngSubmit)="onSubmit()" novalidate autocomplete="off">
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(email)">
+              <label for="email" class="control-label required" translate>login.email</label>
+              <input type="email" class="form-control" id="email" email required [(ngModel)]="user.email" name="email"
+                #email="ngModel">
+              <div *ngIf="submitted && email.errors">
+                <div class="error-msg" *ngIf="email.errors['required']" translate>login.email_required</div>
+                <div class="error-msg" *ngIf="email.errors['email']" translate>login.email_invalid</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(account)">
+              <label for="account" class="control-label required" translate>corporate.account</label>
+              <select class="form-control" id="account" required [(ngModel)]="user.accountId" name="account"
+                #account="ngModel">
+                <option *ngFor="let account of accounts" [value]="account.id">{{account.name}}</option>
+              </select>
+              <div *ngIf="submitted && account.errors">
+                <div class="error-msg" *ngIf="account.errors['required']" translate>corporate.account_required</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(PhoneNumber)">
+              <label for="PhoneNumber" class="control-label required" translate>user.mobile</label>
+              <input type="PhoneNumber" class="form-control" id="PhoneNumber" required [(ngModel)]="user.phoneNumber" name="PhoneNumber"
+                #PhoneNumber="ngModel">
+              <div *ngIf="submitted && PhoneNumber.errors">
+                <div class="error-msg" *ngIf="PhoneNumber.errors['required']" translate>login.PhoneNumber_required</div>
+                <div class="error-msg" *ngIf="PhoneNumber.errors['PhoneNumber']" translate>login.PhoneNumber_invalid</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12">
+            <div class="form-group">
+              <button type="button" routerLink="/corporateUsers" class="btn btn-default mr-r_s" translate>common.back</button>
+              <button type="submit" [disabled]="!userTemplate.valid || clicked" class="btn btn-primary" translate> user.edit </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

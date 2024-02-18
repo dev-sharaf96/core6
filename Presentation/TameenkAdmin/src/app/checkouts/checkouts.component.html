@@ -1,0 +1,218 @@
+<div *ngIf="!isEdit"> 
+  <div class="row" >
+    <div class="col-xs-12">
+      <h4 class="page-header">{{ 'checkouts.checkouts' | translate }}</h4>
+    </div>
+  </div>
+<div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+                    <label for="NIN" >{{ 'driver.nin' | translate }}</label>
+              <input
+                type="text"
+                [(ngModel)]="checkoutsFilter.NIN"
+                class="form-control"
+                id="NIN"
+              />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+                    <label for="NIN" >{{ 'common.sequenceNumber' | translate }}</label>
+              <input
+                type="text"
+                [(ngModel)]="checkoutsFilter.sequenceNumber"
+                class="form-control"
+                id="NIN"
+              />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+                    <label for="NIN" >{{ 'common.referenceNumber' | translate }}</label>
+              <input
+                type="text"
+                [(ngModel)]="checkoutsFilter.referenceId"
+                class="form-control"
+                id="NIN"
+              />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="merchantId" translate>invoice.merchantId</label>
+              <input type="text" [(ngModel)]="checkoutsFilter.merchantId" class="form-control" id="merchantId" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-2">
+            <button (click)="filterClick(checkoutsTable)" [disabled]="isSearch"
+              class="btn btn-primary"
+              style="margin-top: 20px;"
+              translate >
+              common.search
+            </button>
+          </div>
+
+        </div>
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+
+<!-- /.row -->
+<div class="row" [ngClass]="{'hidden': firstTime}" >
+    <div class="col-lg-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="text-left clearfix">{{'common.results_count' | translate}} : {{checkoutsListCount}}
+          </div>
+        </div>
+        <!-- /.panel-heading -->
+        <div class="panel-body">
+          <p-table
+            #checkoutsTable
+            [value]="checkoutsList"
+            [lazy]="true"
+            (onLazyLoad)="checkoutsLazyLoad($event)"
+            [lazyLoadOnInit]="false"
+            [totalRecords]="checkoutsListCount"
+            [resetPageOnSort]="true"
+            [rowsPerPageOptions]="[5, 10, 20]"
+            [loading]="loading"
+            [paginator]="true"
+            [rows]="10"
+            [responsive]="true"
+            scrollHeight="200px"
+            [autoLayout]="true"
+            [resizableColumns]="true">
+            <ng-template pTemplate="caption" class="panel-heading">
+              <div style="text-align: right">
+              </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+              <tr>
+                <th [pSortableColumn]="'ReferenceId'">
+                    {{ 'common.referenceNumber' | translate }}
+                    <p-sortIcon
+                      [field]="'ReferenceId'"
+                      ariaLabel="Activate to sort"
+                      ariaLabelDesc="Activate to sort in descending order"
+                      ariaLabelAsc="Activate to sort in ascending order"
+                    ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'Email'">
+                    {{ 'common.clientEmail' | translate }}
+                  <p-sortIcon
+                    [field]="'Email'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'IBAN'">
+                  {{ 'policy.iban' | translate }}
+                <p-sortIcon
+                  [field]="'IBAN'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'SequenceNumber'">
+                  {{ 'common.sequenceNumber' | translate }}
+                <p-sortIcon
+                  [field]="'SequenceNumber'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'NIN'">
+                  {{ 'driver.nin' | translate }}
+                <p-sortIcon
+                  [field]="'NIN'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'PolicyStatus'">
+                  {{ 'policy.policy_status' | translate }}
+                <p-sortIcon
+                  [field]="'PolicyStatus'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'PaymentMethod'">
+                  {{ 'common.payments_method' | translate }}
+                <p-sortIcon
+                  [field]="'PaymentMethod'"
+                  ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"
+                ></p-sortIcon>
+                </th>
+                <th>
+                  {{ 'common.action' | translate }}
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-checkout>
+              <tr>
+                <td style="word-wrap: break-word">
+                  {{ checkout.referenceId || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word">
+                  {{checkout.email || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word;text-align: center">
+                    {{checkout.iban || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word;text-align: center">
+                    {{checkout.vehicle.sequenceNumber || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word;text-align: center">
+                    {{checkout.driver.nin || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word;text-align: center">
+                    {{checkout.policyStatus.key || emptyStringValue }}
+                </td>
+                <td style="word-wrap: break-word;text-align: center">
+                    {{checkout.paymentMethodName || emptyStringValue }}
+                </td>
+                <td>
+                  <button type="button" routerLink="/admin/checkouts/edit/{{checkout.referenceId}}" routerLinkActive="active" class="btn btn-secondary action-btn" translate>common.details</button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td style="text-align: center">
+                  {{ "common.noRecordsFound" | translate }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+          <!-- /.table-responsive -->
+        </div>
+        <!-- /.panel-body -->
+      </div>
+      <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+  </div>
+  <!-- /.row -->
+  <!-- <app-loader *ngIf="firstTime"></app-loader> -->
+
+</div>

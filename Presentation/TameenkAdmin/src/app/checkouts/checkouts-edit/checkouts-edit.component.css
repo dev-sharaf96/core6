@@ -1,0 +1,11 @@
+img {
+  width: 100%
+}
+
+.uploadBtn{
+  width: 90%  ;padding-left: 0px;padding-right: 0px;margin-top: 10px;
+}
+
+.closeBtn{
+  margin-top: 10px;color: red; cursor: pointer;
+}

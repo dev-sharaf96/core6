@@ -1,0 +1,28 @@
+  <!-- pager -->
+  <!-- <ul *ngIf="totalCount && pageSize" class="pagination inline-list over-hidden bx-right f_width txt-center">
+    <li [ngClass]="{disabled:index === 1}">
+        <a (click)="setPage(1)">First</a>
+    </li>
+    <li [ngClass]="{disabled:index === 1}">
+        <a (click)="setPage(index - 1)">Previous</a>
+    </li>
+    <li *ngFor="let page of pages" [ngClass]="{active:index === page + 1}">
+        <a (click)="setPage(page + 1)">{{page + 1}}</a>
+    </li>
+    <li [ngClass]="{disabled:index === totalPages}">
+        <a (click)="setPage(index + 1)">Next</a>
+    </li>
+    <li [ngClass]="{disabled:index === totalPages}">
+        <a (click)="setPage(totalPages)">Last</a>
+    </li>
+</ul> -->
+
+<div class="pagination bx-right f_width">
+  <ul>
+    <li class="inactive" [ngClass]="{disabled:index === 1}"><a (click)="setPage(1)">«</a></li>
+    <li class="inactive" [ngClass]="{disabled:index === 1}"><a (click)="setPage(index - 1)">‹</a></li>
+    <li *ngFor="let page of pages" class="inactive" [ngClass]="{active:index === page + 1}"><a (click)="setPage(page + 1)">{{page + 1}}</a></li>
+    <li class="inactive" [ngClass]="{disabled:index === totalPages}"><a (click)="setPage(index + 1)">›</a></li>
+    <li class="inactive" [ngClass]="{disabled:index === totalPages}"><a (click)="setPage(totalPages)">»</a></li>
+  </ul>
+  </div>

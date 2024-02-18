@@ -1,0 +1,60 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header" translate>promotion.add_code</h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <form #promotionCodeForm="ngForm" (ngSubmit)="submit(promotionCodeForm)" novalidate>
+
+
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="" translate>promotion.promotionPro</label>
+              <app-promotion-program-ddl required [(selectedValue)]="promotionProgramCode.PromotionProgramId"></app-promotion-program-ddl>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="" translate> promotion.company</label>
+              <app-companies required [(selectedValue)]="promotionProgramCode.InsuranceCompanyId"></app-companies>
+            </div>
+          </div>
+
+
+
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="userName" class="control-label required" translate>promotion.code</label>
+              <input type="text" class="form-control" id="code" required [(ngModel)]="promotionProgramCode.Code" name="code"
+                     #code="ngModel">
+
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <div class="checkbox checkbox-primary">
+                <input type="checkbox" id="IsComperhensive" [(ngModel)]="promotionProgramCode.IsComperhensive" name="IsComperhensive">
+                <label for="IsComperhensive" translate>promotion.is_comperhensive </label>
+              </div>
+              
+            </div>
+          </div>
+
+          <div class="col-xs-12">
+            <div class="form-group">
+              <button type="submit" [disabled]="promotionCodeForm.invalid || (promotionProgramCode.PromotionProgramId == null || promotionProgramCode.InsuranceCompanyId == null)" class="btn btn-primary" translate>user.add</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+

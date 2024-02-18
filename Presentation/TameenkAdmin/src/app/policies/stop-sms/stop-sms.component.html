@@ -1,0 +1,113 @@
+<div class="row ">
+  <div class="col-xs-12 pageHeader">
+    <h4 class="page-header"> {{ 'Stopsms.Stoprenwalsms' | translate }} </h4>
+    <button (click)="showPopup()" class="btn btn-success"> {{'Stopsms.addNewModel' | translate}} </button>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-12 col-md-3">
+            <div class="form-group">
+              <input type="text" [(ngModel)]="phonesFilterModel.phoneNo" class="form-control" id="phoneNo" [placeholder]="'Stopsms.phoneNo' | translate" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-3">
+            <button [disabled]="isSearch" (click)="filterClick(ticketTable)" class="btn btn-primary" translate>  <!-- style="margin-top: 20px;" -->
+              common.search
+            </button>
+          </div>
+        </div>
+        <br />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <!-- <a (click)="exportCsv()" class="pointer" translate>common.export</a> -->
+        <div class="text-left clearfix"> {{'common.results_count' | translate}} : {{phonesListCount}} </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table #ticketTable
+                 [value]="phonesList"
+                 [lazy]="true"
+                 (onLazyLoad)="requestsLazyLoad($event)"
+                 [lazyLoadOnInit]="false"
+                 [totalRecords]="phonesListCount"
+                 [resetPageOnSort]="true"
+                 [rowsPerPageOptions]="[5, 10, 20]"
+                 [loading]="false"
+                 [paginator]="true"
+                 [rows]="10"
+                 [responsive]="true"
+                 scrollHeight="200px"
+                 [autoLayout]="true"
+                 [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate> Stopsms.phoneNo </th>
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-phones>
+            <tr>
+              <td style="word-wrap: break-word;text-align: center"> {{ phones.phoneNo || emptyStringValue }} </td>
+              <td style="text-align: center;">
+                <a class="btn btn-danger" style="width: 162px ; margin-right: 1px; margin-left: 1px;" title="Delete" (click)="delete(phones.phoneNo)"><i class="fa fa-trash"></i></a>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" [ngStyle]="{'display': openPpUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" translate>Stopsms.addNewModel</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #AddNewModelTemplate="ngForm" (ngSubmit)="AddNew()" novalidate>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>Stopsms.phoneNo</label>
+                <input type="text" [(ngModel)]="mobilePhone" required class="form-control" id="mobilePhone" name="mobilePhone" #code="ngModel" autocomplete="off" />
+                <div *ngIf="codeErrorDiv" class="text-danger"> {{ codeErrorDivMessage }} </div>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeModal()">Close</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!AddNewModelTemplate.valid || clicked" translate>
+            insuranceCompany.save
+          </button>
+        </div>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>

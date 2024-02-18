@@ -1,0 +1,23 @@
+<!-- <a routerLink="addPromotion" class="btn btn-primary" translate>user.add</a>
+<hr/> -->
+<p-table [value]="promotionProgramNationalIds" >
+    <ng-template pTemplate="header">
+        <tr>
+            <th translate> promotion.nationalId </th>
+            <!-- <th translate> requestLogs.userId </th>
+            <th translate> common.email </th> -->
+            <th translate> common.action </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-promotion>
+        <tr>
+            <td>{{ promotion.nationalId }}</td>
+            <!-- <td>{{ promotion.userId }}</td>
+            <td>{{ promotion.email | date:'fullDate' }}</td> -->
+            <td>
+              <a class="btn btn-danger" style="margin-right: 5px; margin-left: 5px;" title="Delete"><span class="fa fa-close" (click)="Delete($event,promotion.Id)"></span></a>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+<app-loader *ngIf="load"></app-loader>

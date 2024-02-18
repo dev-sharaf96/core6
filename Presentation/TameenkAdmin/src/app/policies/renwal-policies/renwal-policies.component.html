@@ -1,0 +1,148 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'RenewalPolicy.renewalDetails' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-5 col-xs-12">
+            <div class="form-group">
+              <label for="" translate>reports.products</label>
+              <app-products-dropdown [(selectedValue)]="renewalFilter.insuranceTypeCode"></app-products-dropdown>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-5">
+            <div class="form-group">
+              <label for="" translate>common.by_insurance_company</label>
+              <app-shared-insurance-companies [(selectedValue)]="renewalFilter.insuranceCompanyId">
+              </app-shared-insurance-companies>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-12">
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-5">
+                  <label for="fdate" translate>RenewalPolicy.dateFrom</label>
+                  <p-calendar [(ngModel)]="renewalFilter.expirationDateFrom" [showIcon]="true"
+                    [placeholder]="'common.from' | translate"
+                    styleClass="w-100" inputStyleClass="form-control"></p-calendar>
+                </div>
+
+                <div class="col-md-5">
+                  <label for="fdate" translate>RenewalPolicy.dateTo</label>
+                  <p-calendar [(ngModel)]="renewalFilter.expirationDateTo" [showIcon]="true"
+                    [placeholder]="'common.to' | translate"
+                    styleClass="w-100" inputStyleClass="form-control"></p-calendar>
+                </div>
+                <div class="col-xs-12 col-md-2">
+                  <button (click)="filterClick(reportsTable)" [disabled]="isSearch" class="btn btn-primary" style=" margin-top: 22px;"  translate>
+                    common.search
+                    <i class="fa fa-spinner fa-spin" *ngIf="loading"></i>
+                  </button>
+                </div>
+                <div >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br />
+      </div>
+    </div>
+    <div class="panel-body">
+
+      <div class="row" *ngIf="!firstTime">
+        <div class="row">
+          <p-chart type="pie" [data]="chartData" [options]="options"> </p-chart>
+        </div>
+
+        <div class="col-md-6">
+          <label class="col-xs-12" *ngIf="totalCount"> {{'RenewalPolicy.total' | translate}} : {{ totalCount }} </label>
+          <label class="col-xs-12" *ngIf="renewedCount"> {{'RenewalPolicy.renewed' | translate}} : {{ renewdPercentage }} % = {{ renewedCount }} </label>
+          <label class="col-xs-12" *ngIf="expiredCount"> {{'RenewalPolicy.expired' | translate}} : {{ expiredPercentage }} % = {{ expiredCount }} </label>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <div class="panel-heading">
+          <a (click)="exportExcel()" disabled="" class="pointer" translate>common.export</a>
+          <div class="text-left clearfix">{{'common.results_count' | translate}} : {{totalcount}}
+          </div>
+        </div>
+        <p-table #reportsTable
+                [value]="renewalReportGridData"
+                [lazy]="true"
+                (onLazyLoad)="RenewalPoliciesLazyLoad($event)"
+                [lazyLoadOnInit]="false"
+                [totalRecords]="totalcount"
+                [rowsPerPageOptions]="[5, 10, 20]"
+                [loading]="loading"
+                [paginator]="true"
+                [rows]="10"
+                [responsive]="true"
+                scrollHeight="200px"
+                [autoLayout]="true"
+                [resizableColumns]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate>
+                RenewalPolicy.companyName
+              </th>
+              <th  translate>
+                RenewalPolicy.insuredType
+              </th>
+              <th translate>
+                RenewalPolicy.expiryDate
+              </th>
+              <th  translate>
+                RenewalPolicy.renewalDate
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-policy>
+            <tr>
+              <td style="word-wrap: break-word">
+                {{ policy.companyName || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{  policy.productType || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.expiryDate || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.renewalDate || emptyStringValue }}
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+
+
+
+    <!-- <p
+        *ngIf="!renewalReportData"
+        style="text-align: center"
+        translate
+      >
+        common.noRecordsFound
+    </p>  -->
+    </div>
+  </div>
+</div>
+

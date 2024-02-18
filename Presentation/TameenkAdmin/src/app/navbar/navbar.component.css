@@ -1,0 +1,12 @@
+.nav-item_child {
+  list-style: none
+}
+.nav-item_child a {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+  text-decoration: none;
+}
+.nav-item_child a:hover {
+  background-color: #eee;
+}

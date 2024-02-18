@@ -1,0 +1,75 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header" translate> user.addUser </h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12 col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <form #userTemplate="ngForm" (ngSubmit)="onSubmit()" novalidate autocomplete="off">
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(fullName)">
+              <label for="fullName" class="control-label required" translate>user.name</label>
+              <input type="text" class="form-control" id="fullName" required [(ngModel)]="user.fullName" name="fullName"
+                #fullName="ngModel">
+              <div *ngIf="submitted && fullName.errors">
+                <div class="error-msg" *ngIf="fullName.errors['required']" translate>user.name_required</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(email)">
+              <label for="email" class="control-label required" translate>login.email</label>
+              <input type="email" class="form-control" id="email" email required [(ngModel)]="user.email" name="email"
+                #email="ngModel">
+              <div *ngIf="submitted && email.errors">
+                <div class="error-msg" *ngIf="email.errors['required']" translate>login.email_required</div>
+                <div class="error-msg" *ngIf="email.errors['email']" translate>login.email_invalid</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(password)">
+              <label for="password" class="control-label required" translate>login.password</label>
+              <input type="password" class="form-control" id="password" required [(ngModel)]="user.password" name="password"
+                #password="ngModel">
+              <div *ngIf="submitted && password.errors">
+                <div class="error-msg" *ngIf="password.errors['required']" translate>login.password_required</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(bank)">
+              <label for="bank" class="control-label required" translate>autolease.bank</label>
+              <select class="form-control" id="bank" required [(ngModel)]="user.bankId" name="bank"
+                #bank="ngModel">
+                <option *ngFor="let bank of banks" [value]="bank.id">{{bank.name}}</option>
+              </select>
+              <div *ngIf="submitted && bank.errors">
+                <div class="error-msg" *ngIf="bank.errors['required']" translate>autolease.bank_required</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(PhoneNumber)">
+              <label for="PhoneNumber" class="control-label required" translate>user.mobile</label>
+              <input type="PhoneNumber" class="form-control" id="PhoneNumber" required [(ngModel)]="user.mobile" name="PhoneNumber"
+                #PhoneNumber="ngModel">
+              <div *ngIf="submitted && PhoneNumber.errors">
+                <div class="error-msg" *ngIf="PhoneNumber.errors['required']" translate>login.PhoneNumber_required</div>
+                <div class="error-msg" *ngIf="PhoneNumber.errors['PhoneNumber']" translate>login.PhoneNumber_invalid</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12">
+            <div class="form-group">
+              <button type="button" routerLink="/usersAutolease" class="btn btn-default mr-r_s" translate>common.back</button>
+              <button type="submit" [disabled]="!userTemplate.valid || clicked" class="btn btn-primary" translate> user.add </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

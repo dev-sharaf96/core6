@@ -1,0 +1,7 @@
+.btn:not(:last-child) {
+    margin-inline-end: 20px
+}
+
+img {
+    max-height: 100px;
+}

@@ -1,0 +1,96 @@
+<div class="row">
+  <div class="col-lg-6">
+    <h4 class="page-header" translate>updateRequest.updateRequests</h4>
+  </div>
+  <!-- <div class="col-lg-6">
+      <h4 class="page-header">Total Pending Chart</h4>
+    </div> -->
+</div>
+<div class="row">
+  <div class="col-lg-12">
+      <p-dialog [ngClass]="uploadLoading ? 'hide' : ''" [draggable]="false" [resizable]="false" [maximizable]="false" [(visible)]="display" [modal]="true" [responsive]="true"
+      [width]="350" [baseZIndex]="10000">
+      <app-reject *ngIf="status === 'reject'" (close)="display = false" (reject)="setUpdateRequestChange($event, id)"></app-reject>
+      <app-approve *ngIf="status === 'approve'" [policyId]="policyId" (close)="display = false" (loading)="uploadLoading = $event" (approve)="setUpdateRequestChange($event, id)"></app-approve>
+      <app-confirm *ngIf="status === 'accept'" (showpopup)="showDialog($event, id)"></app-confirm>
+      <app-payment *ngIf="status === 'payment'" [policyUpdateRequestId]="policyUpdateRequestId" (close)="display = false" (payment)="setUpdateRequestChange($event, id)"></app-payment>
+    </p-dialog>
+
+    <p-table #updateRequestTable [value]="updateRequestData" [lazy]="true" (onLazyLoad)="updateRequestLazyLoad($event)"
+      [totalRecords]="updateRequestTotalRecords" [rowsPerPageOptions]=[5,10,20] [rows]="10" [loading]="updateRequestLoading" [paginator]="true"
+      [responsive]="true" scrollHeight="200px" [resizableColumns]="true">
+      <ng-template pTemplate="caption" class="panel-heading">
+        <div style="text-align: right">
+          <!-- <input class="form-control input-sm input-search" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="updateRequestTable.filterGlobal($event.target.value, 'contains')"> -->
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th [pSortableColumn]="'guid'" translate>requests.requestNo
+            <p-sortIcon [field]="'guid'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'policyNo'" translate>common.policyNumber
+            <p-sortIcon [field]="'policyNo'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'userName'" translate>common.clientName
+            <p-sortIcon [field]="'userName'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'userEmail'" translate>common.clientEmail
+            <p-sortIcon [field]="'userEmail'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'policyEffectiveDate'" translate>requests.requestDate
+            <p-sortIcon [field]="'policyEffectiveDate'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'policy.companyName'" translate>requests.companyName
+            <p-sortIcon [field]="'companyName'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'statusId'" translate>common.status
+            <p-sortIcon [field]="'statusId'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+          <th translate>common.action</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-request>
+        <tr>
+          <td style="word-wrap: break-word">{{request.guid || 'ـــــــــــــــــ'}}</td>
+          <td style="word-wrap: break-word">{{request.policy.policyNo || 'ـــــــــــــــــ'}}</td>
+          <td style="word-wrap: break-word">{{request.policy.userName || 'ـــــــــــــــــ'}}</td>
+          <td style="word-wrap: break-word">{{request.policy.userEmail || 'ـــــــــــــــــ'}}</td>
+          <td style="word-wrap: break-word">{{request.policy.policyEffectiveDate || 'ـــــــــــــــــ' | date}}</td>
+          <td style="word-wrap: break-word">{{request.policy.companyName || 'ـــــــــــــــــ'}}</td>
+          <td style="word-wrap: break-word">{{request.statusId | policyUpdateRequestStatus }}</td>
+          <td style="word-wrap: break-word" *ngIf="request.statusId === 0">
+            <button (click)="showDialog('accept', request.id, request.policy.id, request.id)" class="btn btn-success mr-r_s" translate>updateRequest.accept</button>
+            <button (click)="showDialog('reject', request.id)" class="btn btn-danger" translate>updateRequest.reject</button>
+          </td>
+          <td style="word-wrap: break-word" *ngIf="request.statusId === 1">ـــــــــــــــــ</td>
+          <td style="word-wrap: break-word" *ngIf="request.statusId === 2">ـــــــــــــــــ</td>
+          <td style="word-wrap: break-word" *ngIf="request.statusId === 3">ـــــــــــــــــ</td>
+          <td style="word-wrap: break-word" *ngIf="request.statusId === 4">
+            <button (click)="showDialog('approve', request.id, request.policy.id)" class="btn btn-success mr-r_s" translate>updateRequest.approve</button>
+          </td>
+          <td style="word-wrap: break-word" *ngIf="request.statusId === 5" translate>
+            updateRequest.expire
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td style="text-align: center" translate>
+            common.noRecordsFound
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- /.table-responsive -->
+    <div class="loader-Container" *ngIf="uploadLoading">
+        <div class="loader">
+          <svg class="circular" viewBox="25 25 50 50">
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+          </svg>
+        </div>
+      </div>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->

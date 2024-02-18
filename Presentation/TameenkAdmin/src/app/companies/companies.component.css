@@ -1,0 +1,16 @@
+th, td {
+  text-align: center
+}
+
+input {
+  display: inline-block;
+  width: auto;
+  vertical-align: middle;
+}
+.add-company {
+  margin-bottom: 10px;
+}
+.panel-body button {
+  margin: 0 5px;
+  padding: 0.1em 0.5em;
+}

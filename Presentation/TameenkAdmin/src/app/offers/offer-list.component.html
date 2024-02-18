@@ -1,0 +1,133 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'navbar.offers' | translate }}</h4>
+
+    <button (click)="showOfferPopup('add', null)" class="btn btn-danger action-btn"
+      style="float: left">
+      {{'offer.addNewOOffer' | translate}}
+    </button>
+  </div>
+</div>  
+
+ 
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <!-- <a (click)="exportCsv()" class="pointer" translate>common.export</a> -->
+        <div class="text-left clearfix">
+          {{'common.results_count' | translate}} : {{OffersCount}}
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table #table [value]="Offers" [lazy]="true" (onLazyLoad)="requestsLazyLoad($event)" [lazyLoadOnInit]="false"
+          [totalRecords]="OffersCount" [resetPageOnSort]="true" [rowsPerPageOptions]="[5, 10, 20]" [loading]="loading"
+          [paginator]="true" [rows]="10" [responsive]="true" scrollHeight="200px" [autoLayout]="true"
+          [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="reportsTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate> occupation.descriptionEn </th>
+              <th translate> occupation.descriptionAr </th>
+              <th translate> offer.image </th>
+              <th translate> offer.status </th>
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-occupation>
+            <tr>
+              <td style="word-wrap: break-word;text-align: center"> {{ occupation.textEn || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center"> {{ occupation.textAr || emptyStringValue }} </td>
+              <td>
+                <img style="width: 88px;height: 32px;" [src]="occupation.oldImage">
+              </td>
+              <td>
+                <p-inputSwitch [(ngModel)]="!occupation.isDeleted" 
+                  (onChange)="handleChange($event,occupation.id)">
+               </p-inputSwitch>
+              </td>
+              <td style="word-wrap: break-word;text-align: center">
+                <button (click)="showOfferPopup('edit', occupation)" class="btn btn-danger action-btn">
+                  {{'insuranceCompany.edit' | translate}} </button> 
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+  [ngStyle]="{'display': openPpUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" translate>offer.addNewOOffer</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closePoupUp()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form #AddNewModelTemplate="ngForm" (ngSubmit)="AddOrUpdateOffer()" novalidate>
+
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="model.oldImage != null">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>offer.oldImage</label>
+                <img style="width: 88px;height: 32px;" [src]="model.oldImage">
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>offer.newImage</label>
+                 <input type="file" id="fileupload" accept="image/*" class="reUploadPolicyFileInput" 
+                name="fileupload" mode="basic"
+                (change)="handleReUploadFileInput($event, $event.target.files)" />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>occupation.descriptionEn</label>
+                <input type="text" [(ngModel)]="model.textEn" required class="form-control" id="textEn" name="textEn"
+                  #textEn="ngModel" />
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label for="" class="lebel-for-required" translate>occupation.descriptionAr</label>
+                <input type="text" [(ngModel)]="model.textAr" required class="form-control" id="textAr" name="textAr"
+                  #textAr="ngModel" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closePoupUp()">Close</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!AddNewModelTemplate.valid || clicked" translate>
+            insuranceCompany.save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

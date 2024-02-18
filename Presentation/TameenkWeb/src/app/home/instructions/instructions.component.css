@@ -1,0 +1,36 @@
+.slider-steps .item {
+  display: none;
+  height: 300px;
+  width: 80%;
+  position: relative;
+  float: right;
+  border-top-left-radius: 30px;
+  overflow: hidden;
+}
+
+.slider-steps .item img {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: auto;
+}
+
+.slider-steps .item h3 {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  color: #fff;
+  background: #186a9e;
+  padding: 15px 30px;
+  line-height: 21px;
+  padding-bottom: 20px;
+}
+
+
+@media (max-width: 992px) {
+  .slider-steps .item h3 {
+    bottom: 140px;
+    right: 30px;
+  }
+}

@@ -1,0 +1,12 @@
+<select name="insuranceCompany" (change)="selectCompany($event.target.value)">
+  <option value="0" translate>common.selectCompany</option>
+  <option *ngFor="let ic of insuranceCompany" value="{{ic.id}}">{{ic.name}}</option>
+</select>
+
+<select name="insuranceType" (change)="selectInsuranceType($event.target.value)">
+  <option value="0" translate>common.selectInsuranceType</option>
+  <option *ngFor="let it of insuranceTypes" value="{{it.id}}">{{it.name}}</option>
+</select>
+
+<button (click)="testQuotation()">Test Quotation</button>
+<button (click)="testPolicy()">Test Policy</button>

@@ -1,0 +1,12 @@
+.edit-btn {
+  cursor: pointer;
+  height: 100%;
+  display: inline-block;
+  width: 100%;
+  padding: 0 3px;
+}
+
+input[readonly] {
+  user-select: none;
+  background-color: #dcdcdc;
+}

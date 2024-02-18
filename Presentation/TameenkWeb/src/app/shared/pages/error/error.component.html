@@ -1,0 +1,25 @@
+<div class="container">
+  <article class="over-hidden md-mar-bot">
+    <div class="row">
+      <section class="inactive md-ver-spc search-info bg-ofwhite content-view over-hidden section active show-search-info">
+        <div class="container">
+          <h1 style="color:#f7811c; padding-bottom: 0px;" class="txt-black txt-lr md-lh txt-right">
+            عذرا حدث خطأ
+          </h1>
+          <!-- @if (!string.IsNullOrWhiteSpace(ViewBag.Message)) { -->
+          <h2> <!-- @Html.Raw(ViewBag.Message) --> </h2>
+          <!-- } -->
+          <h3 class="txt-black txt-md">
+            نأسف، حدث خطأ اثناء معالجة طلبك..
+            <br />
+            <!-- if(ViewBag.ErrorCode !=null) {
+                @: @Html.Raw(Tameenk.LangText.ErrorCode) : @ViewBag.ErrorCode
+            } -->
+            <a routerLink="/" translate>common.home_page</a>
+            <br />
+          </h3>
+        </div>
+      </section>
+    </div>
+  </article>
+</div>

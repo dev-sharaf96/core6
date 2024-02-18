@@ -1,0 +1,125 @@
+<div class="container edit-section" >
+  <form #editDriverAddress="ngForm" (submit)="onSubmit(editDriverAddress)" novalidate>
+      <h3>{{'driver.driverAddressInfo' | translate}} :</h3>
+      <div class="row" *ngIf="address">
+            <div class="col-xs-12 col-md-12 form-group row">
+              <label for="title" class="col-sm-4 col-form-label">{{'address.title' | translate}}</label>
+              <div class="col-sm-12">
+                <input type="text" class="form-control" id="title" [(ngModel)]="address.title" name="title" #addressModelName="ngModel">
+              </div>
+            </div>
+            <div class="col-xs-12 col-md-12 form-group row">
+              <label for="address1" class="col-sm-4 col-form-label">{{'address.address1' | translate}}</label>
+              <div class="col-sm-12">
+                <input type="text" class="form-control" id="address1" [(ngModel)]="address.address1" name="address1" #addressModelName="ngModel">
+              </div>
+            </div>
+            <div class="col-xs-12 col-md-12 form-group row">
+              <label for="address2" class="col-sm-4 col-form-label">{{'address.address2' | translate}}</label>
+              <div class="col-sm-12">
+                <input type="text" class="form-control" id="address2" [(ngModel)]="address.address2" name="address2" #addressModelName="ngModel">
+              </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="buildingNumber" class="col-sm-4 col-form-label ">{{'address.buildingNumber' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="buildingNumber" [(ngModel)]="address.buildingNumber" name="buildingNumber" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="street" class="col-sm-4 col-form-label">{{'address.street' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="street" [(ngModel)]="address.street" name="street" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="district" class="col-sm-4 col-form-label">{{'address.district' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="district" [(ngModel)]="address.district" name="district" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="unitNumber" class="col-sm-4 col-form-label">{{'address.unitNumber' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="unitNumber" [(ngModel)]="address.unitNumber" name="unitNumber" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="postCode" class="col-sm-4 col-form-label">{{'address.postCode' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="postCode" [(ngModel)]="address.postCode" name="postCode" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="additionalNumber" class="col-sm-4 col-form-label">{{'address.additionalNumber' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="additionalNumber" [(ngModel)]="address.additionalNumber" name="additionalNumber" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="cityId" class="col-sm-4 col-form-label">{{'address.cityId' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="cityId" [(ngModel)]="address.cityId" name="cityId" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="city" class="col-sm-4 col-form-label">{{'address.cityName' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="city" [(ngModel)]="address.city" name="city" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="regionId" class="col-sm-4 col-form-label">{{'address.regionID' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="regionId" [(ngModel)]="address.regionId" name="regionId" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="regionName" class="col-sm-4 col-form-label">{{'address.regionName' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="regionName" [(ngModel)]="address.regionName" name="regionName" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="latitude" class="col-sm-4 col-form-label">{{'address.latitude' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="latitude" [(ngModel)]="address.latitude" name="latitude" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="longitude" class="col-sm-4 col-form-label">{{'address.longitude' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="longitude" [(ngModel)]="address.longitude" name="longitude" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="polygonString" class="col-sm-4 col-form-label">{{'address.polygonString' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="polygonString" [(ngModel)]="address.polygonString" name="polygonString" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="restriction" class="col-sm-4 col-form-label">{{'address.restriction' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="restriction" [(ngModel)]="address.restriction" name="restriction" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="addressLoction" class="col-sm-4 col-form-label">{{'address.addressLoction' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="addressLoction" [(ngModel)]="address.addressLoction" name="addressLoction" #addressModelName="ngModel">
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 form-group row">
+                <label for="isPrimaryAddress" class="col-sm-4 col-form-label">{{'address.isPrimaryAddress' | translate}}</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="isPrimaryAddress" [(ngModel)]="address.isPrimaryAddress" name="isPrimaryAddress" #addressModelName="ngModel">
+                </div>
+            </div>
+          
+      </div>
+
+    <a [routerLink]="['/admin/drivers/edit/',address.driverId]" class="btn btn-default mr-r_s">{{'common.back' | translate}}</a>
+    <button type="submit" class="btn btn-primary" [disabled]="!editDriverAddress.valid">{{'insuranceCompany.save' | translate}}</button>
+  </form>
+</div>

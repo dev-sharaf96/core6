@@ -1,0 +1,32 @@
+import { Vehicle } from '.';
+import { IPolicyStatus } from './policy-status.model';
+import { INajmStatus } from './najm-status';
+export interface IUserPolicy {
+  id: number;
+  insuranceCompanyID: number;
+  statusCode: number;
+  najmStatus: string;
+  najmStatusCode: number;
+  policyNo: string;
+  policyIssueDate: Date;
+  policyEffectiveDate: Date;
+  policyExpiryDate: Date;
+  checkOutDetailsId: string;
+  policyFileId: string;
+  userEmail: string;
+  userName: string;
+  companyName: string;
+  companyNameAr: string;
+  companyNameEn: string;
+  isRefunded: boolean;
+  insuredFullNameAr: string;
+  insuredFullNameEn: string;
+  insuredNIN: string;
+  vehiclePlateNumber: string;
+  policyStatusName: string;
+  vehicleModelName: string;
+  PolicyFileByte: string;
+  vehicle: Vehicle;
+  policyStatus: IPolicyStatus;
+  najmStatusObj: INajmStatus;
+}

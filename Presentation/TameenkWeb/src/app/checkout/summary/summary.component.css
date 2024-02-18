@@ -1,0 +1,46 @@
+aside {
+    padding: 15px;
+  }
+aside .img-cutter {
+    display: block;
+    max-width: 50%;
+    overflow: hidden;
+    margin: 0 auto
+}
+aside ul {
+    padding: 0 20px;
+}
+.price-description {
+  font-size: 17px;
+  color: #535f69;
+  max-width: 78%
+}
+.value {
+  font-weight: bold;
+  max-width: 22%;
+  display: inline-block;
+  text-align: left;
+}
+
+li {
+  padding: 0
+}
+@media screen and (min-width: 64em) {
+aside {
+  padding: 30px;
+  padding-right: 60px;
+  padding-top: 18px;
+    }
+
+    }
+
+/* ltr Style */
+:host-context(html[dir="ltr"]) aside {
+    padding-right: 30px;
+    padding-left: 60px;
+}
+:host-context(html[dir="ltr"]) .benefits-list {
+    padding-left: 7px;
+}
+/* ltr Style */
+

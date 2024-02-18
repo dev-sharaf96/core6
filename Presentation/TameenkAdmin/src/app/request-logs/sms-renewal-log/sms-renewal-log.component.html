@@ -1,0 +1,143 @@
+<div class="row" >
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'smsRenewalLogs.smsRenewalLogs' | translate }}</h4>
+  </div>
+</div>
+
+<div class="row">
+  <div class="panel panel-default">
+    <div class="panel-heading" translate>common.filter_by</div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+          <div class="row">
+              <div class="col-md-6">
+                  <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.from'| translate}}</label>
+                  <div class="form-group">
+                  <p-calendar
+                    [(ngModel)]="smsRenewalLogFilter.startDate"
+                    [showIcon]="true"
+                    [placeholder]="'common.from' | translate"
+                    [maxDate]="smsRenewalLogFilter.endDate || today"
+                    styleClass="w-100" inputStyleClass="form-control"
+                  ></p-calendar>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.to'| translate}}</label>
+                    <div class="form-group">
+                  <p-calendar
+                    [(ngModel)]="smsRenewalLogFilter.endDate"
+                    [showIcon]="true"
+                    [placeholder]="'common.to' | translate"
+                    [minDate]="smsRenewalLogFilter.startDate"
+                    [maxDate]="today"
+                    styleClass="w-100" inputStyleClass="form-control"
+                    ></p-calendar>
+                </div>
+              </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-6">
+          <div class="row">
+            <div class="col-xs-12 col-md-6">
+              <button (click)="filterClick(smsLogTable)" [disabled]="isSearch"
+                      class="btn btn-primary" style="margin-top: 25px;" translate>
+                  common.search
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+    </div>
+  </div>
+
+  <div class="row" [ngClass]="{'hidden': firstTime}" >
+      <div class="col-lg-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a (click)="exportCsv()" [disabled]="isSearch" class="pointer" translate>common.export</a>
+            <!-- <div class="text-left clearfix">{{'common.results_count' | translate}} : {{smsLogsCount}}
+            </div> -->
+          </div>
+          <!-- /.panel-heading -->
+          <div class="panel-body">
+            <p-table
+              #smsLogTable
+              [value]="smsRenewalLogs"
+              [lazy]="true"
+              (onLazyLoad)="smsLogLazyLoad($event)"
+              [lazyLoadOnInit]="false"
+              [totalRecords]="smsLogsCount"
+              [loading]="loading"
+              [responsive]="true"
+              scrollHeight="200px"
+              [autoLayout]="true"
+              [resizableColumns]="true">
+              <ng-template pTemplate="caption" class="panel-heading">
+                <div style="text-align: right">
+                </div>
+              </ng-template>
+              <ng-template pTemplate="header">
+                <tr>
+                  <th [pSortableColumn]="'RenewalMessages'">
+                      {{ 'smsRenewalLogs.RenewalMessages' | translate }}
+                      <p-sortIcon
+                        [field]="'RenewalMessages'"
+                        ariaLabel="Activate to sort"
+                        ariaLabelDesc="Activate to sort in descending order"
+                        ariaLabelAsc="Activate to sort in ascending order"
+                      ></p-sortIcon>
+                  </th>
+                  <th [pSortableColumn]="'count'">
+                      {{ 'common.count' | translate }}
+                      <p-sortIcon
+                        [field]="'count'"
+                        ariaLabel="Activate to sort"
+                        ariaLabelDesc="Activate to sort in descending order"
+                        ariaLabelAsc="Activate to sort in ascending order"
+                      ></p-sortIcon>
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-rowIndex="rowIndex">
+                <tr>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{'smsRenewalLogs.' + smsRenewalLogs[rowIndex].type | translate}}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{smsRenewalLogs[rowIndex].count || emptyStringValue }}
+                  </td>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="footer">
+                <tr>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{'Total' | translate}}
+                  </td>
+                  <td style="word-wrap: break-word;text-align: center">
+                    {{smsLogsCount || emptyStringValue }}
+                  </td>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td style="text-align: center">
+                    {{ "common.noRecordsFound" | translate }}
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+            <!-- /.table-responsive -->
+          </div>
+          <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+      </div>
+      <!-- /.col-lg-12 -->
+    </div>

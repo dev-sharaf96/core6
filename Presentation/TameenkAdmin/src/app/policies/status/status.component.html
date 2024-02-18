@@ -1,0 +1,202 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'policy.policy_status' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="policy_number" translate>policy.policy_no</label>
+              <input type="text" [(ngModel)]="statusFilter.policyNo" class="form-control" id="policy_number" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="invoiceNo" translate>policy.invoiceNo</label>
+              <input type="text" [(ngModel)]="statusFilter.invoiceNo" class="form-control" id="invoiceNo" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="sequenceNo" translate>policy.sequenceNo</label>
+              <input type="text" [(ngModel)]="statusFilter.sequenceNo" class="form-control" id="sequenceNo" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="customNo" translate>policy.customNo</label>
+              <input type="text" [(ngModel)]="statusFilter.customNo" class="form-control" id="customNo" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="nationalId" translate>policy.insured_NIN</label>
+              <input type="text" [(ngModel)]="statusFilter.nationalId" class="form-control" id="nationalId" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="insuredFirstNameAr" translate>policy.insured_first_name</label>
+              <input type="text" [(ngModel)]="statusFilter.insuredFirstNameAr" class="form-control" id="insuredFirstNameAr" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="insuredLastNameAr" translate>policy.insured_last_Arabic_Name</label>
+              <input type="text" [(ngModel)]="statusFilter.insuredLastNameAr" class="form-control" id="insuredLastNameAr" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="insuredEmail" translate>policy.userEmail</label>
+              <input type="text" [(ngModel)]="statusFilter.insuredEmail" class="form-control" id="insuredEmail" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="referenceNo" translate>invoice.reference_id</label>
+              <input type="text" [(ngModel)]="statusFilter.referenceNo" class="form-control" id="referenceNo" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="merchantid" translate>invoice.merchantId</label>
+              <input type="text" [(ngModel)]="statusFilter.merchantId" class="form-control" id="merchantId" />
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-2">
+            <button (click)="filterClick(reportsTable)" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.search
+            </button>
+          </div>
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+
+<div class="row" [ngClass]="{'hidden': firstTime}">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <!-- <a (click)="exportCsv()" class="pointer" translate>common.export</a> -->
+        <div class="text-left">{{'common.results_count' | translate}} : {{policyListingCount}}</div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table #reportsTable [value]="policyListing" [lazy]="true" (onLazyLoad)="StatusPoliciesLazyLoad($event)" [lazyLoadOnInit]="false"
+          [totalRecords]="policyListingCount" [rowsPerPageOptions]="[5, 10, 20]" [loading]="loading" [paginator]="true"
+          [rows]="10" [responsive]="true" scrollHeight="200px" [autoLayout]="true" [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="reportsTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="isEnglish ? 'insuredFullNameEn' : 'insuredFullNameAr'" translate>
+                clients.ownerName
+                <p-sortIcon [field]="isEnglish ? 'insuredFullNameEn' : 'insuredFullNameAr'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'CheckoutDetail.Driver.NIN'" translate>
+                clients.ownerID
+                <p-sortIcon [field]="'CheckoutDetail.Driver.NIN'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="isEnglish ? 'InsuranceCompany.NameEN' : 'InsuranceCompany.NameAR'" translate>
+                common.company
+                <p-sortIcon [field]="isEnglish ? 'InsuranceCompany.NameEN' : 'InsuranceCompany.NameAR'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <!-- <th [pSortableColumn]="'noOfRequests'" translate>No. Of Requests
+                  <p-sortIcon [field]="'noOfRequests'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                </th> -->
+              <th [pSortableColumn]="'CheckoutDetail.ProductType.EnglishDescription'" translate>
+                policy.productType
+                <p-sortIcon [field]="'CheckoutDetail.ProductType.EnglishDescription'" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'policyIssueDate'" translate>
+                policy.policy_issue_date
+                <p-sortIcon [field]="'policyIssueDate'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'Status'" translate>
+                common.status
+                <p-sortIcon [field]="'Status'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-policy>
+            <tr>
+              <td style="word-wrap: break-word">
+                {{ isEnglish ? policy.insuredFullNameEn : policy.insuredFullNameAr || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.insuredNIN || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ isEnglish ? policy.insuranceCompanyNameEn : policy.insuranceCompanyNameAr || emptyStringValue }}
+              </td>
+              <!-- <td style="word-wrap: break-word">{{policy.policyNo || emptyStringValue}}</td> -->
+              <td style="word-wrap: break-word">
+
+                {{ isEnglish ? policy.productTypeDescEN : policy.productTypeDescAR || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.policyIssueDate || emptyStringValue | date:'medium' }}
+              </td>
+              <td style="word-wrap: break-word">
+                {{ policy.policyStatuskey || emptyStringValue }}
+              </td>
+              <td style="word-wrap: break-word;text-align: center">
+                <button *ngIf="policy.policyFileId" (click)="downloadPolicy(policy.policyFileId, policy.referenceId, policy.policyNo)"
+                  class="btn btn-info action-btn" translate>common.download</button>
+                  <button *ngIf="policy.policyStatusKey === PolicyStatusEnum[PolicyStatusEnum.PolicyFileDownloadFailure]"
+                  type="button" (click)="reDownloadPolicyFile(policy.referenceId, policy.referenceId)" class="btn download-btn action-btn"
+                  [ngClass]="policy.policyStatusKey" translate>common.reDownload</button>
+                <button *ngIf="policy.policyStatusKey === PolicyStatusEnum[PolicyStatusEnum.PolicyFileGeneraionFailure]"
+                  type="button" (click)="reGeneratePolicy(policy.referenceId, policy.referenceId)" class="btn download-btn action-btn"
+                  [ngClass]="policy.policyStatusKey" translate>common.generate</button>
+                <button type="button" routerLink="/admin/policies/status/details/{{policy.referenceId}}/{{policy.policyStatusId}}" routerLinkActive="active"
+                  class="btn btn-secondary action-btn" translate>policy.details</button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->

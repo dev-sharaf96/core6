@@ -1,0 +1,12 @@
+<form>
+<div class="form-group">
+  <label for="policy" translate>updateRequest.uploadPolicy</label>
+  <!-- <input #fileupload type="file" name="policy" ngModel accept="application/pdf" (change)="handleFileInput($event.target.files)"/> -->
+  <p-fileUpload #fileupload styleClass="form-control" id="policy" accept="application/pdf" (onSelect)="handleFileInput($event, fileupload.files)" mode="basic" name="policy" customUpload="true" chooseLabel="Browse"></p-fileUpload>
+</div>
+<footer class="text-right">
+  <button class="btn btn-success mr-r_s" (click)="uploadPolicy()" translate>updateRequest.upload</button>
+  <button class="btn btn-secondary mr-r_s" (click)="fileupload.clear()" translate>updateRequest.clear</button>
+  <button class="btn btn-danger"  (click)="closePopup()" translate>updateRequest.cancel</button>
+</footer>
+</form>

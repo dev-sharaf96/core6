@@ -1,0 +1,5 @@
+<div class="container">
+  <h1>{{'insuranceCompany.insuranceCompanyForm' | translate}}</h1>
+  <app-form-edit-add-company [errorMessage]="errorMessage" [error]="error" [(insuranceCompany)]="insuranceCompany"
+    (onSubmit)="OnSubmit()"></app-form-edit-add-company>
+</div>

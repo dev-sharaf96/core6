@@ -1,0 +1,138 @@
+<div class="container edit-section" *ngIf="vehicle">
+  <!-- <h2><span>#</span>{{vehicle.id}}</h2> -->
+
+  <form #editvehicle="ngForm" (submit)="onSubmit(editvehicle)" novalidate>
+      <h3>{{'vehicle.vehicleInfo' | translate}} :</h3>
+      <div class="row" *ngIf="vehicle">
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="sequenceNumber" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.sequenceNo' | translate}}</label>
+          <div class="col-sm-6">
+            <input type="number" class="form-control" id="sequenceNumber" disabled required [(ngModel)]="vehicle.sequenceNumber" name="sequenceNumber" #vehicleModelName="ngModel">
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="customCardNumber" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.customNo' | translate}}</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="customCardNumber" disabled [(ngModel)]="vehicle.customCardNumber" name="customCardNumber" #vehicleModelName="ngModel">
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="vehicleMaker" class="col-sm-4 col-form-label lebel-for-required">{{ 'vehicle.modelMaker' | translate}}</label>
+          <div class="col-sm-6">
+            <p-dropdown *ngIf="vehicle.vehicleMakerCode !== undefined" [options]="vehicleMakers" [(ngModel)]="maker" name="vehicleMakerCode"
+                        (onChange)="changeMakerCode()" optionLabel="name" filter="true" [style]="{'width':'100%'}"></p-dropdown>
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="modelName" class="col-sm-4 col-form-label lebel-for-required">{{ 'vehicle.modelName' | translate}}</label>
+          <div class="col-sm-6">
+            <p-dropdown *ngIf="vehicle.vehicleMakerCode !== undefined" [options]="vehicleModels" [(ngModel)]="model" name="vehicleModelCode"
+                        (onChange)="changeModelCode()" optionLabel="name" filter="true" [style]="{'width':'100%'}"></p-dropdown>
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="modelYear" class="col-sm-4 col-form-label lebel-for-required">{{ 'vehicle.modelYear' | translate}}</label>
+          <div class="col-sm-6">
+            <p-dropdown *ngIf="vehicle.modelYear !== undefined" [options]="vehicleModelyears" [(ngModel)]="vehicleModelyear" name="vehicleModelyear"
+                        (onChange)="changeModelYear()" optionLabel="name" filter="true" [style]="{'width':'100%'}"></p-dropdown>
+
+            <!-- <input type="text" class="form-control" id="modelYear" disabled [(ngModel)]="vehicle.modelYear" name="modelYear" required #modelYear="ngModel"> -->
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="carPlateNumber" class="col-sm-4 col-form-label lebel-for-required">{{'policy.vehicle_plate_number' | translate}}</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="carPlateNumber" disabled [(ngModel)]="vehicle.carPlateNumber" name="carPlateNumber" required #carPlateNumber="ngModel">
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="carPlateTextAr" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.vehicle_plate_text' | translate}}</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="carPlateTextAr" disabled [(ngModel)]="vehicle.carPlateTextAr" name="carPlateTextAr" required #carPlateTextAr="ngModel">
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="carPlateTextEn" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.vehicle_plate_text_En' | translate}}</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="carPlateTextEn" disabled [(ngModel)]="vehicle.carPlateTextEn" name="carPlateTextEn" required #carPlateTextEn="ngModel">
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="carOwnerName" class="col-sm-4 col-form-label lebel-for-required">{{ 'clients.ownerName' | translate}}</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="carOwnerName" disabled [(ngModel)]="vehicle.carOwnerName" name="carOwnerName" required #carOwnerName="ngModel">
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="carOwnerNIN" class="col-sm-4 col-form-label lebel-for-required">{{ 'clients.ownerID' | translate}}</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="carOwnerNIN" disabled [(ngModel)]="vehicle.carOwnerNIN" name="carOwnerNIN" required #carOwnerNIN="ngModel">
+          </div>
+        </div>
+
+
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="vehicleMaker" class="col-sm-4 col-form-label lebel-for-required">{{ 'vehicle.breakingSystem' | translate}}</label>
+          <div class="col-sm-6">
+            <p-dropdown *ngIf="vehicle.brakeSystemId !== undefined" [options]="vehicleBreakingSystems" [(ngModel)]="breakingSystem" name="brakeSystemId"
+                        (onChange)="changeBreakingSystemId()" optionLabel="name" filter="true" [style]="{'width':'100%'}"></p-dropdown>
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="vehicleMaker" class="col-sm-4 col-form-label lebel-for-required">{{ 'vehicle.sensor' | translate}}</label>
+          <div class="col-sm-6">
+            <p-dropdown *ngIf="vehicle.parkingSensorId !== undefined" [options]="vehicleSensors" [(ngModel)]="sensor" name="parkingSensorId"
+                        (onChange)="changeParkingSensorId()" optionLabel="name" filter="true" [style]="{'width':'100%'}"></p-dropdown>
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="vehicleMaker" class="col-sm-4 col-form-label lebel-for-required">{{ 'vehicle.cameratype' | translate}}</label>
+          <div class="col-sm-6">
+            <p-dropdown *ngIf="vehicle.cameraTypeId !== undefined" [options]="vehicleCameraTypes" [(ngModel)]="cameraType" name="cameraTypeId"
+                        (onChange)="changeCameraTypeId()" optionLabel="name" filter="true" [style]="{'width':'100%'}"></p-dropdown>
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-md-6 form-group row">
+          <label for="vehicleMaker" class="col-sm-4 col-form-label lebel-for-required">{{ 'vehicle.color' | translate}}</label>
+          <div class="col-sm-6">
+            <p-dropdown *ngIf="vehicle.majorColor !== undefined" [options]="vehicleColors" [(ngModel)]="color" name="majorColor"
+                        (onChange)="changeVehicleColor()" optionLabel="name" filter="true" [style]="{'width':'100%'}"></p-dropdown>
+          </div>
+        </div>
+
+        <div class="col-xs-12 form-group row" style="margin-bottom: 0;">
+          <label for="licenseExpiryDate" class="col-sm-4 col-form-label lebel-for-required">{{ 'vehicle.licenseExpiryDate' | translate}} :</label>
+        </div>
+        <div class="col-sm-3 col-md-1">
+          <!-- <input type="text" class="form-control" id="licenseExpiryDate" disabled [(ngModel)]="vehicle.licenseExpiryDate" name="licenseExpiryDate" required #licenseExpiryDate="ngModel"> -->
+          <div class="form-group">
+            <label for="day" translate>common.day</label>
+            <select class="form-control" id="day" (change)="getHijri()" [(ngModel)]="expiryDayValue" [ngModelOptions]="{standalone: true}">
+              <option class="dropdown-item" *ngFor="let day of dayes" [value]="day" [title]="day">{{day}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-3 col-md-2">
+          <div class="form-group">
+            <label for="month" translate>common.month</label>
+            <select class="form-control" id="month" (change)="getHijri()" [(ngModel)]="expiryMonthValue" [ngModelOptions]="{standalone: true}">
+              <option class="dropdown-item" *ngFor="let month of months" [value]="month.id" [title]="month.name">{{month.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-3 col-md-2">
+          <div class="form-group">
+            <label for="year" translate>common.year</label>
+            <select class="form-control" id="year" (change)="getHijri()" [(ngModel)]="expiryYearValue" [ngModelOptions]="{standalone: true}">
+              <option class="dropdown-item" *ngFor="let year of years" [value]="year" [title]="year">{{year}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    <a [routerLink]="'/admin/vehicles'" class="btn btn-default mr-r_s">{{'common.back' | translate}}</a>
+    <button type="submit" class="btn btn-primary" [disabled]="!editvehicle.valid">{{'insuranceCompany.save' | translate}}</button>
+  </form>
+</div>

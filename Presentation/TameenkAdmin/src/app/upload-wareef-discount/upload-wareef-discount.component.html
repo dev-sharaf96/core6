@@ -1,0 +1,79 @@
+<!-- page title section -->
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'wareef.Adddiscountbeneficiaries' | translate }}</h4>
+  </div>
+</div>
+
+<!-- page search section -->
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+            <div class="form-group">
+                <label for="tdate">{{'serviceRequests.date'| translate}} {{'common.to'| translate}}</label>
+                <div class="form-group">
+              <p-calendar
+                [(ngModel)]="date"
+                [showIcon]="true"
+                [placeholder]="'common.to' | translate"
+                styleClass="w-100" inputStyleClass="form-control"
+                ></p-calendar>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+          <button (click)="showUploadingWindow()" class="btn btn-primary" style="margin-top: 20px;" translate [disabled]="date==null">
+            updateRequest.upload
+          </button>
+        </div>
+        <br />
+        <div *ngIf="showEmptySearchValidation">
+          <span class="uploadDiscountSheetFileValidation" [innerHtml]="emptyValidationTextToAdd">
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- search result setion -->
+
+<!-- upload discounts sheet section -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" [ngStyle]="{'display': openPpUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" translate>updateRequest.upload</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeUploadingWindow()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #uploadDiscountSheetFileForm="ngForm" (ngSubmit)="uploadPromotionDiscountsSheet()" novalidate>
+        <div class="modal-body">
+          <div class="form-group row">
+            <input type="file" id="fileupload" accept=".xlsx, .xls, .csv" class="uploadDiscountSheetFileInput" name="fileupload" mode="basic"
+                     (change)="handleReUploadFileInput($event, $event.target.files)" />
+          </div>
+          <div *ngIf="showUploadPromotionDiscountFileValidation">
+            <span class="uploadDiscountSheetFileValidation" [innerHtml]="ploadPromotionDiscountFileValidationTextToAdd">
+            </span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeUploadingWindow()">Close</button>
+          <button *ngIf="!uploading" [disabled]="showUploadPromotionDiscountFileValidation" type="submit" class="btn btn-primary" translate>
+            insuranceCompany.save
+          </button>
+
+          <button *ngIf="uploading" type="submit" class="btn btn-primary" [disabled]="clicked" translate>
+            promotion.uploading <i class="fa fa-spinner fa-spin"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

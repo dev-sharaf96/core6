@@ -1,0 +1,36 @@
+<section class="sm-ver-spc bg-ofwhite section over-hidden">
+  <div class="col-xs-12 col-lg-8 bx-center">
+    <h1 class="txt-black txt-lr  md-lh xs-mar-bot txt-right sm-mar-bot" translate>
+      account.verify_code_title
+    </h1>
+
+    <div class="mb-50"></div>
+
+    <div>
+      <h4 translate>account.verify_code_subtitle</h4>
+      <h5></h5>
+      <hr />
+
+      <div>
+        <span class="field-error" style="color:red;position:absolute;"></span>
+      </div>
+
+      <div class="col-md-12 form-group mb-10">
+        <div class="input-container">
+          <input class="input-element" appFloatedLabel type="text" id="verifyCode" [(ngModel)]="code" />
+          <label class="input-label" for="verifyCode" translate>account.verify_code_code</label>
+          <span class="field-error" style="color:red;position:absolute;"></span>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-lg-6 col-md-4 bx-left">
+        <br>
+        <input type="button" class="bx-left btn sm dis-block no-trans bx-left txt-white continue txt-brand bg-brand-hvr txt-xs bg-gr-main  circ-rdus l-shadow md-mar"
+          [value]="'account.verify_code_confirm' | translate" (click)="VerifyPhoneNumber()">
+
+        <input type="button" class="bx-left btn sm dis-block no-trans bx-left txt-white continue txt-brand bg-brand-hvr txt-xs bg-gr-main  circ-rdus l-shadow md-mar"
+          value="Resend Code" (click)="ResendVerifyCode()">
+      </div>
+    </div>
+  </div>
+</section>

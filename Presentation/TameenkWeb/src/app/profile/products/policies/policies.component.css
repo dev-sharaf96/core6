@@ -1,0 +1,12 @@
+a {
+  cursor: pointer;
+}
+
+.status-txt {
+  display: inline-block;
+  color: #22d022;
+  font-weight: bold
+}
+.not-active {
+  pointer-events: none;
+}

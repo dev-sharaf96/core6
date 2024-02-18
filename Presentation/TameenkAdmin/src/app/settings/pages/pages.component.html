@@ -1,0 +1,62 @@
+<div class="row">
+  <div class="col-xs-12">
+    <div class="page-header">
+      <h4 class="bx_left">{{ 'settings.pages' | translate }}</h4>
+      <div class="bx_right">
+        <button [routerLink]="['page']" class="btn btn-default text-right" translate>settings.addPage</button>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</div>
+
+<div class="row" [ngClass]="{'hidden': firstTime}">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <!-- <div class="text-left clearfix">{{'common.results_count' | translate}} : {{'pagesCount'}} -->
+        <!-- </div> -->
+      </div>
+      <div class="panel-body">
+        <p-table #pagesTable [value]="pages" [responsive]="true" scrollHeight="200px" [autoLayout]="true" [resizableColumns]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Order</th>
+              <th>Title</th>
+              <th>TitleEn</th>
+              <th>RouteName</th>
+              <th>IconName</th>
+              <th>ParentId</th>
+              <th>RoleId</th>
+              <th>Active</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-page>
+            <tr [pSelectableRow]="page">
+              <td>{{page.Order}}</td>
+              <td>{{page.Title}}</td>
+              <td>{{page.TitleEn}}</td>
+              <td>{{page.RouteName}}</td>
+              <td>{{page.IconName}}</td>
+              <td>{{page.ParentId}}</td>
+              <td>{{page.RoleId}}</td>
+              <td>
+                <p-inputSwitch styleClass="mr-r_s" [(ngModel)]="page.IsActive" (onChange)="changeState(page)"></p-inputSwitch>
+                <button type="button" [routerLink]="['page', page.Id]" class="btn btn-secondary" style="vertical-align: text-bottom;" translate>insuranceCompany.edit</button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center" colspan="8">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+      </div>
+    </div>
+  </div>
+</div>
+<app-loader *ngIf="firstTime"></app-loader>

@@ -1,0 +1,16 @@
+/* .td {
+  height: 50px;
+  display: block!important;
+  overflow-y: scroll;
+} */
+
+.info-row:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+    padding: 5px 0
+  
+  }
+  
+  .info-row span:first-child {
+    font-weight: bold
+  }
+  

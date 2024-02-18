@@ -1,0 +1,260 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'navbar.tickets' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="" translate>ticket.ticketType</label>
+              <app-ticket-type-dropdown [(selectedValue)]="ticketFilter.ticketTypeId"></app-ticket-type-dropdown>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+              <label for="" translate>ticket.status</label>
+              <app-ticket-status-dropdown [(selectedValue)]="ticketFilter.statusId"> </app-ticket-status-dropdown>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="channel" translate>requestLogs.channel</label>
+              <app-channels-dropdown [(selectedValue)]="ticketFilter.channel"> </app-channels-dropdown>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="policy_number" translate>ticket.id</label>
+              <input type="text" [(ngModel)]="ticketFilter.id" class="form-control" id="policy_number" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="insuredEmail" translate>policy.userEmail</label>
+              <input type="text" [(ngModel)]="ticketFilter.userEmail" class="form-control" id="invoiceNo" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="nationalId" translate>policy.insured_NIN</label>
+              <input type="text" [(ngModel)]="ticketFilter.nin" class="form-control" id="sequenceNo" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="referenceNo" translate>invoice.reference_id</label>
+              <input type="text" [(ngModel)]="ticketFilter.referenceNo" class="form-control" id="customNo" />
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="sequenceNo" translate>ticket.checkoutEmail</label>
+              <input type="text" [(ngModel)]="ticketFilter.checkoutEmail" class="form-control" id="sequenceNo" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="customNo" translate>ticket.checkoutphone</label>
+              <input type="text" [(ngModel)]="ticketFilter.checkoutphone" class="form-control" id="customNo" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="policy_number" translate>policy.policy_no</label>
+              <input type="text" [(ngModel)]="ticketFilter.policyNo" class="form-control" id="policy_number" />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label for="invoiceNo" translate>policy.invoiceNo</label>
+              <input type="text" [(ngModel)]="ticketFilter.invoiceNo" class="form-control" id="invoiceNo" />
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.from'| translate}}</label>
+                    <div class="form-group">
+                    <p-calendar
+                      [(ngModel)]="ticketFilter.fromDate"
+                      [showIcon]="true"
+                      [placeholder]="'common.from' | translate"
+                      [maxDate]="ticketFilter.toDate || today"
+                      styleClass="w-100" inputStyleClass="form-control"
+                    ></p-calendar>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                      <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.to'| translate}}</label>
+                      <div class="form-group">
+                    <p-calendar
+                      [(ngModel)]="ticketFilter.toDate"
+                      [showIcon]="true"
+                      [placeholder]="'common.to' | translate"
+                      [minDate]="ticketFilter.fromDate"
+                      [maxDate]="today"
+                      styleClass="w-100" inputStyleClass="form-control"
+                      ></p-calendar>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-2">
+            <button (click)="filterClick(ticketTable)" [disabled]="isSearch" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.search
+            </button>
+          </div>
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row" [ngClass]="{'hidden': firstTime}">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+         <a (click)="exportCsv()" class="pointer" translate>common.export</a>
+        <div class="text-left clearfix">{{'common.results_count' | translate}} : {{ticketsCount}}
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table
+          #ticketTable
+            [value]="tickets"
+            [lazy]="true"
+            (onLazyLoad)="requestsLazyLoad($event)"
+            [lazyLoadOnInit]="false"
+            [totalRecords]="ticketsCount"
+            [resetPageOnSort]="true"
+            [rowsPerPageOptions]="[5, 10, 20]"
+            [loading]="loading"
+            [paginator]="true"
+            [rows]="10"
+            [responsive]="true"
+            scrollHeight="200px"
+            [autoLayout]="true"
+            [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="reportsTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate> ticket.id </th>
+              <th translate> ticket.id </th>
+              <th translate> ticket.status </th>
+              <th translate> ticket.ticketType </th>
+              <th translate> policy.policy_no </th>
+              <th translate> policy.invoiceNo </th>
+              <th translate> driver.nin </th>
+              <th translate> ticket.sequenceNumber</th>
+              <th translate> ticket.customCardNumber</th>
+
+
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-ticket>
+            <tr>
+              <td>
+                <p-checkbox [ngClass]="ticket.checked ? 'checkpoxClosed' : 'checkpoxAvailable'" [binary]="ticket.checked"
+                name="group1" value="{{ticket.id}}" [(ngModel)]="selectedTickets" inputId="sf" [disabled]="ticket.checked"></p-checkbox>
+              </td>
+              <td style="word-wrap: break-word"> {{ ticket.id || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ ticket.status || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ ticket.ticketType || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ ticket.policyNo || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ ticket.invoiceNo || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ ticket.nin || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ ticket.sequenceNumber || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ ticket.customCardNumber || emptyStringValue }} </td>
+
+              <td style="word-wrap: break-word;text-align: center">
+                <button type="button" routerLink="/admin/tickets/details/{{ticket.id}}" routerLinkActive="active"
+                        class="btn btn-secondary action-btn" translate>policy.details </button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <div style="text-align: right;padding-right: 2%;">
+        <button type="submit"  class="btn btn-primary ml-2" [disabled]="selectedTickets.length<1"  (click)="showPopup(selectedTickets)">{{'common.replay' | translate}}</button>
+
+        </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<!-- <app-loader *ngIf="firstTime"></app-loader> -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+  [ngStyle]="{'display': openPpUp ? 'block' : 'none', 'opacity': 1}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+     <div class="modal-header">
+        <!-- <h5 class="modal-title" translate>RenewalPolicy.addNew</h5> -->
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="panel-body">
+        <div class="panel-body">
+          <form #ticketActionForm="ngForm" (ngSubmit)="onSubmit($event)" novalidate>
+            <!--<h3>{{'driver.driverAddressInfo' | translate}} :</h3>-->
+            <div class="row">
+              <div class="col-xs-12 col-md-6 form-group dispFlex">
+                <input type="checkbox" class="md-mar dis-block" id="isClosed" (change)="onCheckboxChange($event)"
+                         [checked]="isClosed" [(ngModel)]="isClosed" name="isClosed"/>
+                <label class="">{{'ticket.close' | translate}}</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12 col-md-6">
+                <div class="from-group">
+                  <label for="adminReply" class="col-sm-4 col-form-label lebel-for-required">{{'ticket.adminReply' | translate}}</label>
+                  <textarea rows="5" type="text" class="form-control" required id="adminReply" [(ngModel)]="ticketReplay" name="adminReply" #ticketActionForm="ngModel"></textarea>
+                </div>
+              </div>
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-primary" [disabled]="!ticketActionForm.valid || clicked">{{'common.add' | translate}}</button>
+          </form>
+          <!-- /.table-responsive -->
+        </div>
+        <!-- /.table-responsive -->
+      </div>
+    </div>
+  </div>
+</div>

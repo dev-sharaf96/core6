@@ -1,0 +1,157 @@
+<div class="row">
+  <div class="col-xs-12">
+    <h4 class="page-header">{{ 'navbar.tickets' | translate }}</h4>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>common.filter_by</div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="policy_number" translate>invoice.reference_id</label>
+              <input type="text" [(ngModel)]="logFilter.referenceNo" class="form-control" id="policy_number" />
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="policy_number" translate>policy.insured_NIN</label>
+              <input type="text" [(ngModel)]="logFilter.nin" class="form-control" id="policy_number" />
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="channel" translate>requestLogs.channel</label>
+              <app-channels-dropdown [(selectedValue)]="logFilter.channel"> </app-channels-dropdown>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.from'| translate}}</label>
+                    <div class="form-group">
+                    <p-calendar
+                      [(ngModel)]="logFilter.fromDate"
+                      [showIcon]="true"
+                      [placeholder]="'common.from' | translate"
+                      [maxDate]="logFilter.toDate || today"
+                      styleClass="w-100" inputStyleClass="form-control"
+                    ></p-calendar>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                      <label for="fdate">{{'serviceRequests.date'| translate}} {{'common.to'| translate}}</label>
+                      <div class="form-group">
+                    <p-calendar
+                      [(ngModel)]="logFilter.toDate"
+                      [showIcon]="true"
+                      [placeholder]="'common.to' | translate"
+                      [minDate]="logFilter.fromDate"
+                      [maxDate]="today"
+                      styleClass="w-100" inputStyleClass="form-control"
+                      ></p-calendar>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-2">
+            <button (click)="filterClick(logTable)" class="btn btn-primary" style="margin-top: 20px;" translate>
+              common.search
+            </button>
+          </div>
+        </div>
+        <br />
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row" [ngClass]="{'hidden': firstTime}">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a (click)="exportCsv()" class="pointer" translate>common.export</a>
+        <div class="text-left clearfix">{{'common.results_count' | translate}} : {{logCount}}
+        </div>
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <p-table
+          #logTable
+            [value]="logs"
+            [lazy]="true"
+            (onLazyLoad)="requestsLazyLoad($event)"
+            [lazyLoadOnInit]="false"
+            [totalRecords]="logCount"
+            [resetPageOnSort]="true"
+            [rowsPerPageOptions]="[5, 10, 20]"
+            [loading]="loading"
+            [paginator]="true"
+            [rows]="10"
+            [responsive]="true"
+            scrollHeight="200px"
+            [autoLayout]="true"
+            [resizableColumns]="true">
+          <ng-template pTemplate="caption" class="panel-heading">
+            <div style="text-align: right">
+              <!-- <input class="form-control input-sm" type="text" pInputText placeholder="{{'common.search' | translate}}" (input)="reportsTable.filterGlobal($event.target.value, 'contains')"> -->
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th translate> invoice.reference_id </th>
+              <th translate> policy.insured_NIN </th>
+              <th translate> serviceRequests.method </th>
+              <th translate> serviceRequests.date </th>
+              <th translate> serviceRequests.errorCode </th>
+              <th translate> serviceRequests.errorDescription </th>
+              <th translate>common.action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-log>
+            <tr>
+              <td style="word-wrap: break-word"> {{ log.referenceId || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ log.driverNin || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ log.methodName || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ log.createdDate || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ log.errorCode || emptyStringValue }} </td>
+              <td style="word-wrap: break-word"> {{ log.errorDescription || emptyStringValue }} </td>
+              <td style="word-wrap: break-word;text-align: center">
+                <button type="button" class="btn btn-secondary action-btn" (click)="showDetails(log)" translate>policy.details</button>
+            </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td style="text-align: center">
+                {{ "common.noRecordsFound" | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<!-- <app-loader *ngIf="firstTime"></app-loader> -->
+
+<p-dialog [(visible)]="selectedLog" [modal]="true" [responsive]="true" [minY]="70" [baseZIndex]="10000" [dismissableMask]="true" [rtl]="!isEnglish">
+  <div *ngIf="selectedLog">
+    <div class="info-row"><h4 class="">{{'policy.details' | translate}}:</h4>
+      <p class="">{{selectedLog || emptyStringValue}}</p>
+    </div>
+   </div>
+</p-dialog>

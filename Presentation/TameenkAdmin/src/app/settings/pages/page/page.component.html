@@ -1,0 +1,85 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 class="page-header" translate>{{isEditPage ? 'settings.editPage' : 'settings.addPage'}}</h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <form (ngSubmit)="onSubmit(userForm)" #userForm="ngForm" novalidate>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(Title)">
+              <label for="Title" class="control-label required" translate>settings.title</label>
+              <input type="text" class="form-control" id="Title" required [(ngModel)]="pageInfo.Title" name="Title"
+                #Title="ngModel">
+              <div *ngIf="submitted && Title.errors">
+                <div class="error-msg" *ngIf="Title.errors['required']" translate>settings.title_required</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(TitleEn)">
+              <label for="TitleEn" class="control-label required" translate>settings.titleEn</label>
+              <input type="text" class="form-control" id="TitleEn" required [(ngModel)]="pageInfo.TitleEn" name="TitleEn"
+                #TitleEn="ngModel">
+              <div *ngIf="submitted && TitleEn.errors">
+                <div class="error-msg" *ngIf="TitleEn.errors['required']" translate>settings.titleEn_required</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(RouteName)">
+              <label for="RouteName" class="control-label required" translate>settings.routeName</label>
+              <input type="RouteName" class="form-control" id="RouteName" RouteName required [(ngModel)]="pageInfo.RouteName" name="RouteName"
+                #RouteName="ngModel">
+              <div *ngIf="submitted && RouteName.errors">
+                <div class="error-msg" *ngIf="RouteName.errors['required']" translate>settings.routeName_required</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(IconName)">
+              <label for="IconName" class="control-label required" translate>settings.iconName</label>
+              <input type="IconName" class="form-control" id="IconName" required [(ngModel)]="pageInfo.IconName" name="IconName"
+                #IconName="ngModel">
+              <div *ngIf="submitted && IconName.errors">
+                <div class="error-msg" *ngIf="IconName.errors['required']" translate>settings.iconName_required</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <div class="form-group">
+              <label for="parentId" class="control-label required" translate>settings.parentId</label>
+              <select class="form-control" id="parentId" [(ngModel)]="pageInfo.ParentId" name="parentId"
+                #parentId="ngModel">
+                <option [value]="null" translate>settings.notFound</option>
+                <option *ngFor="let page of pages" [value]="page.Id">{{page['bind.pageTitle' | translate]}}</option>
+              </select>
+            </div>
+          </div>
+          <!-- <div class="col-xs-12 col-sm-6">
+            <div class="form-group" [ngClass]="displayFieldCss(roleId)">
+              <label for="roleId" class="control-label required" translate>roleId</label>
+              <select class="form-control" id="roleId" required [(ngModel)]="pageInfo.RoleId" name="roleId"
+                #roleId="ngModel">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+              <div *ngIf="submitted && roleId.errors">
+                <div class="error-msg" *ngIf="roleId.errors['required']" translate>roleId_required</div>
+              </div>
+            </div>
+          </div> -->
+          <div class="col-xs-12">
+            <div class="form-group">
+                <button type="button" [routerLink]="'/s/pages'" class="btn btn-secondary mr-r_s">{{'common.back' | translate}}</button>
+                <button type="submit" class="btn btn-primary" translate>{{isEditPage ? 'user.edit' : 'user.add'}}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+.input-container .input-element {
+  background-color: #fff
+}
+
+.input-container .input-element[readonly]:not(.effectiveDate) {
+  background-color: #ddd
+}
+
+.radio-holder input[disabled]~.checkmark {
+  background-color: #ddd
+}
+
+.radio-holder input[disabled]~.checkmark:after {
+  background-color: #186a9e
+}

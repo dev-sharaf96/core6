@@ -1,0 +1,97 @@
+<h3 class="txt-md f_width dis-block lr-mar txt-md lr-mar col-xs-12 col-lg-12 col-md-12" translate>checkout.checkout_Vehicle_Photos</h3>
+<div class="col-xs-12 col-md-12 col-lg-12 sm-mar car-upload-images">
+  <img src="assets/imgs/car-upload-middle.png" [ngStyle]="{'display': !imageBody.valid ? 'none' : ''}" />
+  <img src="assets/imgs/car-upload-front.png" [ngStyle]="{'display': !imageFront.valid ? 'none' : ''}" />
+  <img src="assets/imgs/car-upload-back.png" [ngStyle]="{'display': !imageBack.valid ? 'none' : ''}" />
+  <img src="assets/imgs/car-upload-left.png" [ngStyle]="{'display': !imageLeft.valid ? 'none' : ''}" />
+  <img src="assets/imgs/car-upload-right.png" [ngStyle]="{'display': !imageRight.valid ? 'none' : ''}" />
+  <img src="assets/imgs/car-upload-0.png" />
+</div>
+<div class="no-column-padding row">
+  <div class="col-xs-12 col-lg-5ths col-md-5ths sm-mar bx-right">
+    <label class="fileupload input--file">
+      <span class="input__text  sm-mar dis-block" translate>checkout.checkout_Front_Side</span>
+      <input type="file" class="input__field" [(ngModel)]="checkoutModel.imageFront" required #imageFront="ngModel" name="imageFront" accept="image/*" id="ImageFront" target="car-upload-front" />
+      <span class="input__support sm-mar">
+        <span class="input__helper"></span>
+      </span>
+    </label>
+    <div class="preview-upload"></div>
+  </div>
+  <div class="col-xs-12 col-lg-5ths col-md-5ths sm-mar bx-right">
+    <label class="fileupload input--file">
+      <span class="input__text sm-mar dis-block" translate>checkout.checkout_right_side</span>
+      <input type="file" class="input__field" [(ngModel)]="checkoutModel.imageRight" #imageRight="ngModel" accept="image/*" name="imageRight" id="ImageRight" required target="car-upload-right" />
+      <span class="input__support sm-mar">
+        <span class="input__helper"></span>
+      </span>
+    </label>
+    <div class="preview-upload"></div>
+  </div>
+  <div class="col-xs-12 col-lg-5ths col-md-5ths sm-mar bx-right">
+    <label class="fileupload input--file">
+      <span class="input__text  sm-mar dis-block" translate>checkout.checkout_left_side</span>
+      <input type="file" class="input__field" [(ngModel)]="checkoutModel.imageLeft" #imageLeft="ngModel" accept="image/*" name="imageLeft" id="ImageLeft" required target="car-upload-left" />
+      <span class="input__support sm-mar">
+        <span class="input__helper"></span>
+      </span>
+    </label>
+    <div class="preview-upload"></div>
+  </div>
+  <div class="col-xs-12 col-lg-5ths col-md-5ths sm-mar bx-right">
+    <label class="fileupload input--file">
+      <span class="input__text  sm-mar dis-block" translate>checkout.checkout_back_side</span>
+      <input type="file" class="input__field" [(ngModel)]="checkoutModel.imageBack" #imageBack="ngModel" accept="image/*" name="imageBack" id="ImageBack" required target="car-upload-back" />
+      <span class="input__support sm-mar">
+        <span class="input__helper"></span>
+      </span>
+    </label>
+    <div class="preview-upload"></div>
+  </div>
+  <div class="col-xs-12 col-lg-5ths col-md-5ths sm-mar bx-right">
+    <label class="fileupload input--file">
+      <span class="input__text  sm-mar dis-block" translate>checkout.checkout_chasis_image</span>
+      <input type="file" class="input__field" [(ngModel)]="checkoutModel.imageBody" #imageBody="ngModel" accept="image/*" name="imageBody" id="ImageBody" required target="car-upload-middle" />
+      <span class="input__support sm-mar">
+        <span class="input__helper"></span>
+      </span>
+    </label>
+    <div class="preview-upload"></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12 lr-mar">
+    <label for="checkImgAgreement" class="agreement-container">
+      <div class="checkbox-holder bx-right">
+        <input type="checkbox" [(ngModel)]="imgAgreementCheckbox" name="imgAgreementCheckbox" (change)="checkImgAgreement($event)" id="checkImgAgreement" class="inp-checkbox" style="display: none">
+        <label for="checkImgAgreement" class="checkValidation">
+          <span>
+            <svg width="12px" height="10px" viewBox="0 0 12 10">
+              <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+            </svg>
+          </span>
+        </label>
+      </div>
+      <div class="col-xs-12 txt-justify bx-right">
+        <h3 translate>checkout.img_condiation_policy</h3>
+      </div>
+    </label>
+  </div>
+  <div class="col-xs-12 md-mar">
+    <label for="checkComprehensiveAgreement" class="agreement-container">
+      <div class="checkbox-holder bx-right">
+        <input type="checkbox" [(ngModel)]="agreementCheckbox" name="agreementCheckbox" (change)="checkagreement($event)" id="checkComprehensiveAgreement" class="inp-checkbox" style="display: none">
+        <label for="checkComprehensiveAgreement" class="checkValidation">
+          <span>
+            <svg width="12px" height="10px" viewBox="0 0 12 10">
+              <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+            </svg>
+          </span>
+        </label>
+      </div>
+      <div class="col-xs-12 txt-justify bx-right">
+        <h3 [innerHTML]="'checkout.comprehensive_condiation_policy' | translate"></h3>
+      </div>
+    </label>
+  </div>
+</div>

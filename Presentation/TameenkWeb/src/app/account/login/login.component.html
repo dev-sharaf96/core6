@@ -1,0 +1,64 @@
+<div id="login-form" class="tab active">
+  <h1 class="txt-black txt-lr  md-lh xs-mar-bot txt-right sm-mar-bot" translate>
+    account.login
+  </h1>
+  <form [formGroup]="loginForm" (ngSubmit)="submitLogin()">
+    <div *ngIf="errors && errors.length">
+      <div class="field-error" style="color:red;" *ngFor="let error of errors">
+        {{error}}
+      </div>
+    </div>
+    <div class="sm-mar-bot">
+      <div class="input-container" [ngClass]="{ 'red-border': submitted && loginForm.controls['Email'].errors }">
+        <input class="input-element" appFloatedLabel formControlName="Email" email id="loginEmail" />
+        <label class="input-label" for="loginEmail" translate>account.email</label>
+        <span *ngIf="submitted && loginForm.controls['Email'].errors" class="field-error" style="color:red;position:absolute;">
+          <span *ngIf="loginForm.controls['Email'].errors.required">{{'account.email_required' | translate}}</span>
+          <span *ngIf="loginForm.controls['Email'].errors.email">{{'account.email_invalid' | translate}}</span>
+        </span>
+      </div>
+      <div class="input-container" [ngClass]="{ 'red-border': submitted && loginForm.controls['Password'].errors }">
+        <input class="input-element pass-to-show" appFloatedLabel formControlName="Password" [type]="showPassword ? 'text' : 'password'" id="loginPassword" />
+        <label class="input-label" for="loginPassword" translate>account.password</label>
+        <i class="ic-icons-220 in-ico txt-black pointer show-password" (mouseover)="showPassword=true" (mouseout)="showPassword=false"></i>
+        <span *ngIf="submitted && loginForm.controls['Password'].errors" class="field-error" style="color:red;position:absolute;">
+          <span *ngIf="loginForm.controls['Password'].errors.required">{{'account.password_required' | translate}}</span>
+          <span *ngIf="loginForm.controls['Password'].errors.minlength">{{'account.password_invalid' | translate}}</span>
+        </span>
+      </div>
+    </div>
+    <div class="col-xs-12 col-lg-6 col-md-6 sm-mar bx-right">
+      <label for="rememberMe">
+        <div class="checkbox-holder bx-right">
+          <input type="checkbox" id="rememberMe" class="inp-checkbox" style="display: none" [checked]="rememberMe"
+            (change)="rememberMe = !rememberMe">
+          <label for="rememberMe" class="checkValidation">
+            <span>
+              <svg width="12px" height="10px" viewBox="0 0 12 10">
+                <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+              </svg>
+            </span>
+          </label>
+        </div>
+        <div class="txt-justify bx-right" style="margin: 0 10px">
+          <h4 translate>account.remember_me</h4>
+        </div>
+      </label>
+      <a href="#" data-popup-open="forgetpassword" class="txt-brand txt-xs xs-mar bx-right clear-b" translate>account.forget_password</a>
+    </div>
+    <button id="btn_login_Submit" [disabled]="loading" class="bx-left btn sm dis-block no-trans bx-left txt-white continue txt-brand bg-brand-hvr txt-xs bg-gr-main circ-rdus l-shadow sm-mar" translate>account.login_btn</button>
+  </form>
+  <app-loader *ngIf="loading"></app-loader>
+  <!-- Popup Start -->
+  <app-popup [title]="'account.forget_password_heading' | translate" [ref]="'forgetpassword'">
+    <div class="modal-body">
+      <div class="input-container">
+        <input class="input-element" appFloatedLabel type="email" id="ResetEmail" />
+        <label class="input-label" for="ResetEmail" translate>account.email</label>
+        <span class="field-error" style="color:red;position:absolute;"></span>
+      </div>
+      <span style="color:#186A9E;position:absolute;display:none"></span>
+      <button (click)="forgetPassword()" class="bx-left btn sm dis-block no-trans bx-left txt-white continue txt-brand bg-brand-hvr txt-xs bg-gr-main  circ-rdus l-shadow md-mar" translate>account.forget_password_btn</button>
+    </div>
+  </app-popup>
+  <!-- Popup End -->

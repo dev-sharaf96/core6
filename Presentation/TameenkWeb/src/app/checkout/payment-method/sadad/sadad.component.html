@@ -1,0 +1,25 @@
+<!-- <section class="inactive md-ver-spc search-info bg-ofwhite content-view over-hidden section active show-search-info">
+  <div class="container">
+    <h1 class="txt-black txt-lr md-lh txt-right">شكرا لإختياركم طلب عرض السعر من شركة العربيه للتأمين</h1>
+  </div>
+</section> -->
+<section *ngIf="SadadData?.Status == 'Succeeded'" class="md-ver-spc search-inputs section">
+  <div class="wrapper-bx">
+    <!-- @if (Model.Status == Tameenk.Core.Domain.Enums.EStatus.Succeeded) -->
+    <h2>لإتمام عملية الدفع عن طريق سداد،اتبع الخطوات التالية:</h2>
+    <p>
+      <span class="txt-mgray dis-block no-mar">اسم المفوتر: <b class="txt-black">biller_name</b></span>
+    </p>
+    <p>
+      <span class="txt-mgray dis-block no-mar">رقم مرجع الفاتورة: <b class="txt-black">{{SadadData.ReferenceNumber}}</b></span>
+    </p>
+    <p>
+      <span class="txt-mgray dis-block no-mar">يرجى سداد الفاتوره قبل: <b class="txt-black">{{SadadData.BillDueDate}}</b></span>
+    </p>
+    <!-- else -->
+    <div *ngIf="SadadData?.Status == 'Failed'">
+      <p class="bx-right" style="margin-bottom: 0">هناك خطأ في الدفع بواسطة سداد نرجو إعادة المحاولة في وقت أخر</p>
+      <a  routerLink="/checkout/payment-method" class="bx-shdw btn sm dis-block txt-white-hvr txt-brand txt-xs bg-gr-main circ-rdus l-shadow bx-left">عودة</a>
+    </div>
+  </div>
+</section>

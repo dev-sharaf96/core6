@@ -1,0 +1,280 @@
+<div class="container edit-section" *ngIf="checkoutsModel">
+  <form #editcheckouts="ngForm" (ngSubmit)="OnSubmit()" novalidate>
+    <h3>{{'checkouts.checkoutsInfo' | translate}} :</h3>
+    <div class="row" *ngIf="checkoutsModel">
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="referenceId"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.referenceNumber' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="referenceId" disabled required
+            [(ngModel)]="checkoutsModel.referenceId" name="referenceId" #checkoutsModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="email" class="col-sm-4 col-form-label lebel-for-required">{{ 'common.email' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="email" [disabled]="!editEmail" required [(ngModel)]="checkoutsModel.email"
+            name="email" #checkoutsModelModel="ngModel">
+        </div>
+        <div *ngIf="editEmail" class="col-sm-2">
+          <button type="button" (click)="UpdateEmail()" class="btn btn-primary" translate>
+            common.editEmail
+          </button>
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="phone"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.clientPhone' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="phone" disabled required [(ngModel)]="checkoutsModel.phone"
+            name="phone" #checkoutsModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="iban" class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.iban' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="iban" disabled required [(ngModel)]="checkoutsModel.iban"
+            name="iban" #checkoutsModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row" *ngIf="checkoutsModel?.policyStatus">
+        <label for="key"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.policy_status' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="key" disabled required
+            [(ngModel)]="checkoutsModel.policyStatus.key" name="key" #policyStatus="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="paymentMethodName"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.payments_method' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="paymentMethodName" disabled required
+            [(ngModel)]="checkoutsModel.paymentMethodName" name="paymentMethodName" #checkoutsModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="CreatedDateTime"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.createdAt' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="CreatedDateTime" disabled required
+            [(ngModel)]="checkoutsModel.createdDateTime" name="CreatedDateTime" #checkoutsModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="bankCodeId"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.bankCode' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="bankCodeId" disabled required
+            [(ngModel)]="checkoutsModel.bankCodeId" name="bankCodeId" #checkoutsModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="selectedLanguage"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.selectedLanguage' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="selectedLanguage" disabled required
+            [(ngModel)]="checkoutsModel.selectedLanguage" name="selectedLanguage" #checkoutsModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="insuranceCompany"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'insuranceCompany.insuranceCompany' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="insuranceCompany" disabled required
+            [(ngModel)]="checkoutsModel.insuranceCompanyName" name="insuranceCompany" #checkoutsModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="modifiedDate"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.modifiedDate' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="modifiedDate" disabled required
+            [(ngModel)]="checkoutsModel.modifiedDate" name="modifiedDate" #checkoutsModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="isCancelled"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.IsCancelled' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="isCancelled" disabled required
+            [(ngModel)]="checkoutsModel.isCancelled" name="isCancelled" #checkoutsModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="merchantId"
+          class="col-sm-4 col-form-label lebel-for-required">{{'invoice.merchantId' | translate}}</label>
+        <div class="col-sm-7">
+          <input type="text" name="merchantId" [(ngModel)]="checkoutsModel.merchantId" class="form-control" #checkoutsModelModel="ngModel" id="merchantId" disabled required/>
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row" *ngIf="checkoutsModel.isCancelled">
+        <label for="cancelationDate"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.cancelationDate' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="cancelationDate" disabled required
+            [(ngModel)]="checkoutsModel.cancelationDate" name="cancelationDate" #checkoutsModelModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row" *ngIf="checkoutsModel.isCancelled">
+        <label for="cancelledBy"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'policy.cancelledBy' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="cancelledBy" disabled required
+            [(ngModel)]="checkoutsModel.cancelledBy" name="cancelledBy" #checkoutsModelModel="ngModel">
+        </div>
+      </div>
+
+    </div>
+
+    <br>
+    <h3>{{'vehicle.vehicleInfo' | translate}} :</h3>
+    <div class="row" *ngIf="checkoutsModel">
+      <div class="col-xs-12 col-md-6 form-group row" *ngIf="checkoutsModel?.vehicle">
+        <label for="sequenceNumber"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'common.sequenceNumber' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="sequenceNumber" disabled required
+            [(ngModel)]="checkoutsModel.vehicle.sequenceNumber" name="sequenceNumber" #vehicleModel="ngModel">
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <h3>{{'driver.driverInfo' | translate}} :</h3>
+    <div class="row" *ngIf="checkoutsModel?.driver">
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="nin" class="col-sm-4 col-form-label lebel-for-required">{{ 'driver.nin' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="nin" disabled [(ngModel)]="checkoutsModel.driver.nin" name="nin"
+            #driverModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="nationalityCode"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'driver.nationalityCode' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="nationalityCode" disabled
+            [(ngModel)]="checkoutsModel.driver.nationalityCode" name="nationalityCode" #driverModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="fullArabicName"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'driver.fullArabicName' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="fullArabicName" disabled
+            [(ngModel)]="checkoutsModel.driver.fullArabicName" name="fullArabicName" #driverModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="fullEnglishName"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'driver.fullEnglishName' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="fullEnglishName" disabled
+            [(ngModel)]="checkoutsModel.driver.fullEnglishName" name="fullEnglishName" #driverModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="dateOfBirthG"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'driver.dateOfBirthG' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="dateOfBirthG" disabled
+            [(ngModel)]="checkoutsModel.driver.dateOfBirthG" name="dateOfBirthG" #driverModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="dateOfBirthH"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'driver.dateOfBirthH' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="dateOfBirthH" disabled
+            [(ngModel)]="checkoutsModel.driver.dateOfBirthH" name="dateOfBirthH" #driverModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="idIssuePlace"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'driver.idIssuePlace' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="idIssuePlace" disabled
+            [(ngModel)]="checkoutsModel.driver.idIssuePlace" name="idIssuePlace" #driverModel="ngModel">
+        </div>
+      </div>
+      <div class="col-xs-12 col-md-6 form-group row">
+        <label for="idExpiryDate"
+          class="col-sm-4 col-form-label lebel-for-required">{{ 'driver.idExpiryDate' | translate}}</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="idExpiryDate" disabled
+            [(ngModel)]="checkoutsModel.driver.idExpiryDate" name="idExpiryDate" #driverModel="ngModel">
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="checkoutsModel.insuranceTypeCode == 2">
+      <h3>{{'checkouts.images' | translate}} :</h3>
+
+      <div class="row" style="margin-bottom:10px;">
+        <div class="col-xs 12 col-sm-6 col-md-3">
+          <img *ngIf="checkoutsModel.imageFront.imageData && !showImageFront" [src]="'data:image/jpg;base64,' + checkoutsModel.imageFront.imageData" />
+          <img *ngIf="showImageFront" [src]="'data:image/jpg;base64,' + imageFrontToUpload">
+          <div>
+            <input type='file' #imageFrontUpload id="imageFront" name="imageFrontUpload" class="col-sm-2 uploadBtn"
+                   (change)="handleFileInput($event, 'front', imageFrontUpload.files)" accept="image/*">
+            <i class="fa fa-times closeBtn" aria-hidden="true" (click)="ClearImage('front')"></i>
+          </div>
+        </div>
+
+        <div class="col-xs 12 col-sm-6 col-md-3">
+          <img *ngIf="checkoutsModel.imageBack.imageData && !showImageBack" [src]="'data:image/jpg;base64,' + checkoutsModel.imageBack.imageData" />
+          <img *ngIf="showImageBack" [src]="'data:image/jpg;base64,' + imageBackToUpload">
+          <div>
+            <input type='file' #imageBackUpload id="imageBack" name="imageBackUpload" class="col-sm-2 uploadBtn"
+                   (change)="handleFileInput($event, 'back', imageBackUpload.files)"  accept="image/*">
+            <i class="fa fa-times closeBtn" aria-hidden="true" (click)="ClearImage('back')"></i>
+          </div>
+        </div>
+
+        <div class="col-xs 12 col-sm-6 col-md-3">
+          <img *ngIf="checkoutsModel.imageBody.imageData && !showImageBody" [src]="'data:image/jpg;base64,' + checkoutsModel.imageBody.imageData"  />
+          <img *ngIf="showImageBody" [src]="'data:image/jpg;base64,' + imageBodyToUpload">
+          <div>
+            <input type='file' #imageBodyUpload id="imageBody" name="imageBodyUpload" class="col-sm-2 uploadBtn"
+                   accept="image/*" (change)="handleFileInput($event, 'body', imageBodyUpload.files)">
+            <i class="fa fa-times closeBtn" aria-hidden="true" (click)="ClearImage('body')"></i>
+          </div>
+        </div>
+
+        <div class="col-xs 12 col-sm-6 col-md-3">
+          <img *ngIf="checkoutsModel.imageRight.imageData && !showImageRight" [src]="'data:image/jpg;base64,' + checkoutsModel.imageRight.imageData" />
+          <img *ngIf="showImageRight" [src]="'data:image/jpg;base64,' + imageRightToUpload">
+          <div>
+            <input type='file' #imageRightUpload id="imageRight" name="imageRightUpload" class="col-sm-2 uploadBtn"
+                   accept="image/*" (change)="handleFileInput($event, 'right', imageRightUpload.files)">
+            <i class="fa fa-times closeBtn" aria-hidden="true" (click)="ClearImage('right')"></i>
+          </div>
+        </div>
+
+        <div class="col-xs 12 col-sm-6 col-md-3">
+          <img *ngIf="checkoutsModel.imageLeft.imageData && !showImageLeft" [src]="'data:image/jpg;base64,' + checkoutsModel.imageLeft.imageData" />
+          <img *ngIf="showImageLeft" [src]="'data:image/jpg;base64,' + imageLeftToUpload">
+          <div>
+            <input type='file' #imageLeftUpload id="imageLeft" name="imageLeftUpload" class="col-sm-2 uploadBtn"
+                   (change)="handleFileInput($event, 'left', imageLeftUpload.files)"
+                 accept="image/*">
+            <i class="fa fa-times closeBtn" aria-hidden="true" (click)="ClearImage('left')"></i>
+          </div>
+        </div>
+      </div>
+
+      <br/>
+
+      <div>
+        <button type="submit" class="btn btn-primary" translate>
+          insuranceCompany.save
+        </button>
+      </div>
+    </div>
+
+    <br>
+    <a [routerLink]="'/admin/checkouts'" class="btn btn-default mr-r_s">{{'common.back' | translate}}</a>
+    <br>
+  </form>
+</div>

@@ -1,0 +1,153 @@
+<div class="row login">
+  <div class="col-md-4 col-md-offset-4" style="float: left;">
+    <div class="login-panel panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title" translate>login.sign_in</h3>
+      </div>
+      <div class="panel-body">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <fieldset>
+            <!--
+                <div class="form-group" *ngIf="errors && errors.length > 0">
+              <ul class="alert alert-danger">
+                <li class="list-unstyled" *ngFor="let err of errors">
+                  {{err}}
+                </li>
+              </ul>
+            </div>
+                -->
+            <div class="form-group" *ngIf="loading">
+              <div class="spinner">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <input class="form-control uname" [placeholder]="'login.email' | translate" formControlName="email"
+                     [ngClass]="{ 'alert alert-danger': submitted && f.email.errors }" type="email" autofocus>
+              <div *ngIf="submitted && f['email'].errors" class="alert alert-danger">
+                <div *ngIf="f['email'].errors.required" translate>login.email_required</div>
+                <div *ngIf="f['email'].errors.email" translate>login.email_invalid</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <input class="form-control pwd" [placeholder]="'login.password' | translate" formControlName="password"
+                     [ngClass]="{ 'alert alert-danger': submitted && f.password.errors }" type="password" value="">
+              <div *ngIf="submitted && f['password'].errors" class="alert alert-danger">
+                <div *ngIf="f['password'].errors.required" translate>login.password_required</div>
+              </div>
+            </div>
+            <div class="col-xs-12 bx-right">
+              <div class="row">
+                <!-- <app-captcha [(captcha)]="captchaModel" (success)="checkCaptcha($event)"></app-captcha> -->
+                <div class="col-xs-6 bx-right md-mar no-pd">
+                  <div class="input-container">
+                    <span class="captcha-container">
+                      <img class="captcha-img" alt="الرمز" title="الرمز" [src]="image" [ngClass]="{'red-border': isValid('captchaImg')}" *ngIf="image">
+                      <button type="button" class="reload-btn" (click)="getCaptcha()" [title]="'captcha.reload' | translate"> <span class="material-icons"> autorenew </span> </button>
+                      <div *ngFor="let error of validationErrors.captcha['captchaImg']" class="field-error" style="color:red;position:absolute;bottom: -22px;">{{ error | translate}}</div>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-xs-6 bx-right md-mar no-pd">
+                  <div class="input-container">
+                    <input formControlName="captchaInput" class="form-control cap" type="tel" id="captchaCode" placeholder="{{ 'captcha.input_symbols' | translate }}"
+                           (keypress)="restrictNumeric($event)" autocomplete="off" required maxlength="4" (input)="checkCaptchaInput($event)" onPaste="return false">
+                    <div *ngFor="let error of validationErrors.captcha['captchaInput']" class="field-error" style="color:red;position:absolute;min-width: 140px">{{ error | translate}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Change this to a button or input when using this as a form -->
+            <!-- <button type="submit" [attr.disabled]="loading?'': null" class="btn btn-lg btn-success btn-block" translate>login.login</button> -->
+            <button type="submit" [disabled]="!loginForm.valid || isDisable"  class="btn btn-lg btn-success btn-block" translate>login.login</button>
+          </fieldset>
+        </form>
+      </div>
+      <!-- <div class="panel-footer">
+        <a href="#" data-target="#pwdModal" data-toggle="modal" translate>login.forgetPass</a>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+
+<!--modal-->
+<div id="pwdModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="text-center">
+
+                <p translate>login.forgetPassHeading</p>
+                <div class="panel-body">
+                  <fieldset>
+                    <div class="form-group">
+                      <input class="form-control input-lg" [placeholder]="'login.email' | translate" name="email" type="email">
+                    </div>
+                    <button type="submit" class="btn btn-lg btn-primary btn-block" translate>login.sendLink</button>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+      <div class="modal-footer">
+        <div class="col-md-12">
+          <button class="btn" data-dismiss="modal" aria-hidden="true" translate>updateRequest.cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation code -->
+<div id="verifyModal" [ngStyle]="{'display': showConfirmationCodePpUp ? 'block' : 'none', 'opacity': 1}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" style="margin-top: 10%;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeCOnfirmationModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="text-center">
+                <p translate>login.verificationCode</p>
+                <div class="panel-body">
+                  <fieldset>
+                    <form #ValidateOtpTemplate="ngForm" (ngSubmit)="submitVerificationCode()" novalidate>
+                      <div class="form-group">
+                        <input type="text" class="form-control input-lg" maxlength="6" required [(ngModel)]="verificationCode"
+                               (keypress)="restrictNumeric($event)" [placeholder]="'login.code' | translate" name="verificationCode"
+                               onPaste="return false" autocomplete=off>
+                      </div>
+                      <button type="submit" [disabled]="!ValidateOtpTemplate.valid || submitted" class="btn btn-lg btn-primary btn-block" translate>login.verify</button>
+                    </form>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+      <div class="modal-footer">
+        <div class="col-md-12">
+          <button class="btn" data-dismiss="modal" aria-hidden="true" (click)="closeCOnfirmationModal()" translate>updateRequest.cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

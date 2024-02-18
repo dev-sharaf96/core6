@@ -1,0 +1,233 @@
+<div class="insured">
+  <h2 translate>inquiry.insured_info.insured_information</h2>
+  <form #insuredForm="ngForm" (submit)="next(insuredForm)" class="editForm" novalidate>
+    <div>
+      <div class="col-xs-12 col-lg-3 col-md-6 bx-right">
+        <div class="input-container"
+          [ngClass]="{'red-border': birthDateMonth.invalid && insuredForm.submitted, 'active': BM.isOpen || BM.hasValue}">
+          <label class="input-label" for="birthMonth" translate>inquiry.insured_info.birth_month</label>
+          <ng-select #BM class="input-element inq-ins-month" labelForId="birthMonth" [items]="months"
+            (focus)="BM.open()" [clearable]="false" [loadingText]="'common.loading' | translate"
+            [disabled]="isEditRequest" required [notFoundText]="'common.no_items_found' | translate" bindLabel="name"
+            bindValue="id" #birthDateMonth="ngModel" name="birthDateMonth"
+            [(ngModel)]="inquiryModel.insured.birthDateMonth">
+            <ng-template ng-option-tmp let-item="item">
+              <div title="{{item.name}}">{{item.name}}</div>
+            </ng-template>
+          </ng-select>
+          <span *ngIf="birthDateMonth.invalid && insuredForm.submitted">
+            <span class="field-error" *ngIf="birthDateMonth.errors['required']" translate>common.required</span>
+          </span>
+          <span *ngFor="let error of validationErrors.insured['birthDateMonth']" class="field-error"
+            style="color:red;position:absolute;">{{error
+            | translate}}</span>
+        </div>
+      </div>
+      <div class="col-xs-12 col-lg-3 col-md-6 bx-right">
+        <div class="input-container"
+          [ngClass]="{'red-border': birthDateYear.invalid && insuredForm.submitted, 'active': BY.isOpen || BY.hasValue}">
+          <label class="input-label" for="birthYear" translate>inquiry.insured_info.birth_year</label>
+          <ng-select #BY class="input-element inq-ins-year" [loadingText]="'common.loading' | translate" required
+            [notFoundText]="'common.no_items_found' | translate" [disabled]="isEditRequest" labelForId="birthYear"
+            [items]="years" (focus)="BY.open()" required [clearable]="false" #birthDateYear="ngModel"
+            name="birthDateYear" [(ngModel)]="inquiryModel.insured.birthDateYear">
+            <ng-template ng-option-tmp let-item="item">
+              <div title="{{item}}">{{item}}</div>
+            </ng-template>
+          </ng-select>
+          <span *ngIf="birthDateYear.invalid && insuredForm.submitted">
+            <span class="field-error" *ngIf="birthDateYear.errors['required']" translate>common.required</span>
+          </span>
+          <span *ngFor="let error of validationErrors.insured['birthDateYear']" class="field-error"
+            style="color:red;position:absolute;">{{error
+            | translate}}</span>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 bx-right">
+        <div class="input-container"
+          [ngClass]="{'red-border': cityCode.invalid && insuredForm.submitted, 'active': carcity.isOpen || carcity.hasValue}">
+          <label class="input-label" for="carcity" translate>inquiry.vehicle.city</label>
+          <ng-select #carcity class="input-element inq-vh-city" [loadingText]="'common.loading' | translate"
+            [notFoundText]="'common.no_items_found' | translate" labelForId="carcity" [items]="cities"
+            (focus)="carcity.open()" required bindLabel="name" bindValue="code" [clearable]="false" #cityCode="ngModel"
+            name="cityCode" [(ngModel)]="inquiryModel.cityCode">
+            <ng-template ng-option-tmp let-item="item">
+              <div title="{{item.name}}">{{item.name}}</div>
+            </ng-template>
+          </ng-select>
+          <span *ngIf="cityCode.invalid && insuredForm.submitted">
+            <span class="field-error" *ngIf="cityCode.errors['required']" translate>requestmodel.citycode</span>
+          </span>
+        </div>
+      </div>
+      <div class="col-xs-12 col-lg-6 col-md-6 bx-right">
+        <div class="input-container" [ngClass]="insuredEducation.isOpen || insuredEducation.hasValue ? 'active' : ''">
+          <label class="input-label" for="insuredEducation" translate>inquiry.education_level</label>
+          <ng-select #insuredEducation class="input-element inq-ins-edu" [loadingText]="'common.loading' | translate"
+            required [notFoundText]="'common.no_items_found' | translate" labelForId="insuredEducation"
+            [items]="educationCodes" (focus)="insuredEducation.open()" [clearable]="false" bindLabel="name"
+            bindValue="id" #edcuationId="ngModel" name="edcuationId" [(ngModel)]="inquiryModel.insured.edcuationId">
+            <ng-template ng-option-tmp let-item="item">
+              <div title="{{item.name}}">{{item.name}}</div>
+            </ng-template>
+          </ng-select>
+        </div>
+      </div>
+      <div class="col-xs-12 col-lg-6 col-md-6 bx-right">
+        <div class="input-container"
+          [ngClass]="insuredChildrenCount.isOpen || insuredChildrenCount.hasValue ? 'active' : ''">
+          <label class="input-label" for="insuredChildrenCount" translate>inquiry.children_below_16_years</label>
+          <ng-select #insuredChildrenCount class="input-element inq-ins-Childs"
+            [loadingText]="'common.loading' | translate" required [notFoundText]="'common.no_items_found' | translate"
+            labelForId="insuredChildrenCount" [items]="childrenCount" (focus)="insuredChildrenCount.open()"
+            [clearable]="false" bindLabel="name" bindValue="id" #childrenBelow16Years="ngModel"
+            name="childrenBelow16Years" [(ngModel)]="inquiryModel.insured.childrenBelow16Years">
+            <ng-template ng-option-tmp let-item="item">
+              <div title="{{item.name}}">{{item.name}}</div>
+            </ng-template>
+          </ng-select>
+          <span class="field-error" style="color:red;position:absolute;" id="childrenCountError"></span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="col-xs-12 col-sm-6 bx-right">
+        <h3 class="txt-black dis-block sm-mar xs-mar-bot" translate>inquiry.owner_has_violations</h3>
+        <input type="checkbox" class="thereViolationCheck switchIco md-mar dis-block" id="thereViolation"
+          [checked]="inquiryModel.drivers[0].violationIds?.length > 0"
+          (change)="toggleViolations($event.target.checked)" />
+        <label class="labelSwitch" for="thereViolation">
+          <span class="stat true txt-brand" translate>common.yes</span>
+          <span class="stat false txt-gray" translate>common.no</span>
+        </label>
+      </div>
+      <div class="col-xs-12 col-lg-6 col-md-6 bx-right">
+        <div class="input-container" [ngClass]="medicalCondition.isOpen || medicalCondition.hasValue ? 'active' : ''">
+          <label class="input-label" for="medicalCondition" translate>inquiry.driver_medical_cond</label>
+          <ng-select #medicalCondition class="input-element inq-m_d-medi" labelForId="medicalCondition"
+            [items]="medicalCondations" (focus)="medicalCondition.open()" [clearable]="false" bindLabel="name"
+            bindValue="id" [loadingText]="'common.loading' | translate" required
+            [notFoundText]="'common.no_items_found' | translate" #medicalConditionId="ngModel" name="medicalConditionId"
+            [(ngModel)]="inquiryModel.drivers[0].medicalConditionId">
+            <ng-template ng-option-tmp let-item="item">
+              <div title="{{item.name}}">{{item.name}}</div>
+            </ng-template>
+          </ng-select>
+        </div>
+      </div>
+      <div class="col-xs-12 bx-right" *ngIf="inquiryModel.drivers[0].violationIds?.length > 0">
+        <div *ngFor="let v of inquiryModel.drivers[0].violationIds; let i = index;trackBy:trackByIdx">
+          <div class="col-xs-10 col-md-6 bx-right">
+            <div class="input-container"
+              [ngClass]="{'red-border': insuredForm.controls['v'+i]?.invalid && insuredForm.submitted, 'active': violation.isOpen || violation.hasValue}">
+              <label class="input-label" [for]="'v'+i" translate>inquiry.violation_type</label>
+              <ng-select #violation class="input-element" [ngClass]="'inq-m_d-vio_'+i"
+                [loadingText]="'common.loading' | translate" [notFoundText]="'common.no_items_found' | translate"
+                [labelForId]="'v'+i" [items]="violationsCodes" (focus)="violation.open()" [clearable]="false"
+                bindLabel="name" bindValue="id" required [(ngModel)]="inquiryModel.drivers[0].violationIds[i]"
+                [name]="'v'+i">
+                <ng-template ng-option-tmp let-item="item">
+                  <div title="{{item.name}}">{{item.name}}</div>
+                </ng-template>
+              </ng-select>
+              <span *ngIf="insuredForm.controls['v'+i]?.invalid && insuredForm.submitted">
+                <span class="field-error" *ngIf="insuredForm.controls['v'+i]?.errors['required']"
+                  translate>common.required</span>
+              </span>
+            </div>
+          </div>
+          <div class="col-xs-2 col-md-1 remove-icon">
+            <a class="txt-black remove" (click)="removeViolation(i)">
+              <i class="ic-plus rotate"></i>
+            </a>
+          </div>
+        </div>
+        <div class="col-xs-12 driver-fields sm-mar xs-mar-bot bx-right">
+          <a class="add-driver bx-shdw btn sm dis-block bx-right txt-brand txt-white-hvr login txt-brand bg-gr-main  circ-rdus l-shadow bx-right right"
+            (click)="addViolation()" translate>inquiry.add_violation</a>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 bx-right">
+        <h3 class="txt-black dis-block xs-mar xs-mar-bot" translate>inquiry.add_another_driver</h3>
+        <input type="checkbox" class="switchIco md-mar dis-block" id="addnewdriver"
+          [checked]="additionalDrivers?.length > 0" (change)="toggleDriver($event.target.checked)" />
+        <label class="labelSwitch" for="addnewdriver">
+          <span class="stat true txt-brand" translate>common.yes</span>
+          <span class="stat false txt-gray" translate>common.no</span>
+        </label>
+      </div>
+      <div class="col-xs-12 bx-right driver-fields" *ngIf="additionalDrivers?.length > 0">
+        <app-additional-driver *ngFor="let driver of additionalDrivers; let i = index" [driver]="driver" [index]="i"
+          [totalPercentage]="totalPercentage" (changedTotalPercentage)="changeTotalPercentage()"
+          (removeComponent)="removeDriver($event)" (formValidation)="driversValidation($event)">
+        </app-additional-driver>
+        <div class="col-xs-12 driver-fields md-mar xs-mar-bot" *ngIf="additionalDrivers?.length < 2">
+          <a class="add-driver bx-shdw btn sm dis-block bx-right txt-brand txt-white-hvr login txt-brand bg-gr-main  circ-rdus l-shadow bx-right right"
+            (click)="addDriver()" translate>inquiry.additional_Driver_info.add_driver</a>
+        </div>
+      </div>
+      <!-- <div class="col-xs-12 bx-right">
+        <h3 class="txt-black dis-block over-hidden sm-mar xs-mar-bot" translate>inquiry.additional_Driver_info.have_international_license</h3>
+        <input type="checkbox" class="switchIco md-mar dis-block" id="toggleExtraLicenses" (change)="toggleExtraLicenses($event.target.checked)"
+          [(ngModel)]="this.inquiryModel.drivers[0].hasExtraLicenses" name="hasExtraLicenses" />
+        <label class="labelSwitch" for="toggleExtraLicenses">
+          <span class="stat true txt-brand" translate>common.yes</span>
+          <span class="stat false txt-gray" translate>common.no</span>
+        </label>
+      </div> -->
+      <!-- <div class="col-xs-12 bx-right" *ngIf="this.inquiryModel.drivers[0].driverExtraLicenses?.length > 0">
+        <div *ngFor="let licenses of this.inquiryModel.drivers[0].driverExtraLicenses; let i = index">
+          <div class="col-xs-5 bx-right">
+            <div class="input-container" [ngClass]="{'red-border': insuredForm.controls['countryId'+i]?.invalid && insuredForm.submitted, 'active': countryId.isOpen || countryId.hasValue}">
+              <label class="input-label" [for]="'countryId'+i" translate>inquiry.additional_Driver_info.country</label>
+              <ng-select #countryId class="input-element" [loadingText]="'common.loading' | translate" [notFoundText]="'common.no_items_found' | translate"
+                [labelForId]="'countryId'+i" [items]="countries" (focus)="countryId.open()" [clearable]="false"
+                bindLabel="name" bindValue="code" required [(ngModel)]="licenses.countryId" [name]="'countryId'+i">
+                <ng-template ng-option-tmp let-item="item">
+                  <div title="{{item.name}}">{{item.name}}</div>
+                </ng-template>
+              </ng-select>
+              <span *ngIf="insuredForm.controls['countryId'+i]?.invalid && insuredForm.submitted">
+                <span class="field-error" *ngIf="insuredForm.controls['countryId'+i]?.errors['required']" translate>common.required</span>
+              </span>
+            </div>
+          </div>
+          <div class="col-xs-5 bx-right">
+            <div class="input-container" [ngClass]="{'red-border': insuredForm.controls['licenseYearsId'+i]?.invalid && insuredForm.submitted, 'active': licenseYears.isOpen || licenseYears.hasValue}">
+              <label class="input-label" [for]="'licenseYearsId'+i" translate>inquiry.additional_Driver_info.years</label>
+              <ng-select #licenseYears class="input-element" [loadingText]="'common.loading' | translate"
+                [notFoundText]="'common.no_items_found' | translate" [labelForId]="'licenseYearsId'+i" [items]="licenseYearsLookup"
+                (focus)="licenseYears.open()" [clearable]="false" bindLabel="name" bindValue="id" required [(ngModel)]="licenses.licenseYearsId"
+                [name]="'licenseYearsId'+i">
+                <ng-template ng-option-tmp let-item="item">
+                  <div title="{{item.name}}">{{item.name}}</div>
+                </ng-template>
+              </ng-select>
+              <span *ngIf="insuredForm.controls['licenseYearsId'+i]?.invalid && insuredForm.submitted">
+                <span class="field-error" *ngIf="insuredForm.controls['licenseYearsId'+i]?.errors['required']"
+                  translate>common.required</span>
+              </span>
+            </div>
+          </div>
+          <div class="col-xs-2 remove-icon">
+            <a class="txt-black remove" (click)="removeExtraLicense(i)">
+              <i class="ic-plus rotate"></i>
+            </a>
+          </div>
+        </div>
+        <div class="col-xs-12 driver-fields sm-mar xs-mar-bot bx-right">
+          <a class="add-driver bx-shdw btn sm dis-block bx-right txt-brand txt-white-hvr login txt-brand bg-gr-main  circ-rdus l-shadow bx-right right"
+            (click)="addExtraLicense()" translate>inquiry.additional_Driver_info.add_license</a>
+        </div>
+      </div> -->
+      <div class="col-xs-12 col-md-6 bx-left">
+        <input type="button" (click)="prev()"
+          class="no-trans btn sm dis-block bx-right txt-white submit-continue txt-brand bg-brand-hvr bg-gr-main circ-rdus l-shadow sm-mar"
+          value="{{ 'common.prev' | translate }}" />
+        <button type="submit"
+          class="no-trans btn sm dis-block bx-left txt-white submit-continue txt-brand bg-brand-hvr bg-gr-main circ-rdus l-shadow sm-mar"
+          translate>{{ isLastStep ? 'inquiry.show_quotes' : 'common.next' }}</button>
+      </div>
+    </div>
+  </form>
+</div>
