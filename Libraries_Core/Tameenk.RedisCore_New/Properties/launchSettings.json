@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Tameenk.RedisCore_New": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:63901;http://localhost:63909"
+    }
+  }
+}
