@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Tameenk.Services.Core.Http
 {
-    public interface IHttpClient
+    public interface IHttpClient   
     {
         Task<HttpResponseMessage> GetAsync(string uri, string authorizationToken = null, string authorizationMethod = "Bearer", Dictionary<string, string> headers = null);
 
