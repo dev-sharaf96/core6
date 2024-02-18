@@ -1,4 +1,5 @@
 ﻿using MedGulfService;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -37,15 +38,17 @@ namespace Tameenk.Integration.Providers.MedGulf
         private const string _password = "4491@TKZUPZ";
         private const string _userNameAutoleasing = "TmnkMg";
         private const string _passwordAutoleasing = "KpNg@3075";
+        private readonly IServiceProvider _serviceProvider;
         #endregion
 
         #region ctor
-        public MedGulfInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+        public MedGulfInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
              : base(new ProviderConfiguration() { ProviderName = "Med Gulf" }, logger)
         {
             _logger = logger;
             _tameenkConfig = tameenkConfig;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
+            _serviceProvider = serviceProvider;
         }
         #endregion
 
@@ -484,7 +487,7 @@ namespace Tameenk.Integration.Providers.MedGulf
 
         public override bool ValidateQuotationBeforeCheckout(QuotationRequest quotationRequest, out List<string> errors)
         {
-            var addressService = EngineContext.Current.Resolve<IAddressService>();
+            var addressService = _serviceProvider.GetRequiredService<IAddressService>();
             errors = new List<string>();
             var mainDriverAddress = quotationRequest.Driver.Addresses.FirstOrDefault();
             if (mainDriverAddress != null)

@@ -33,6 +33,7 @@ namespace Tameenk.Integration.Core.Providers
 
         public InsuranceProvider(
             ProviderConfiguration configuration
+, ILogger logger
             //ILogger logger
             )
         {

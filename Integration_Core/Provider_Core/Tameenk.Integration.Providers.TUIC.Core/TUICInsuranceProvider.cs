@@ -41,7 +41,6 @@ namespace Tameenk.Integration.Providers.TUIC
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
             _tameenkConfig = tameenkConfig;
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
             _accessTokenBase64 = _restfulConfiguration.AccessToken;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
         }

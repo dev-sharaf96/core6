@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -33,8 +34,9 @@ namespace Tameenk.Integration.Providers.SAICO
         private readonly IHttpClient _httpClient;
         private readonly string _accessTokenBase64;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
+        private readonly IServiceProvider _serviceProvider;
 
-        public SAICOInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+        public SAICOInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
           : base(tameenkConfig, new RestfulConfiguration
           {
               GenerateQuotationUrl = "https://tmk.saico.com.sa:8074/TameenK/quotes",
@@ -48,10 +50,11 @@ namespace Tameenk.Integration.Providers.SAICO
           }, logger, policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
+           
             _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
              null : Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
+            _serviceProvider = serviceProvider;
         }
 
         protected override QuotationServiceRequest HandleQuotationRequestObjectMapping(QuotationServiceRequest quotation)
@@ -472,7 +475,7 @@ namespace Tameenk.Integration.Providers.SAICO
         {
             if (!string.IsNullOrEmpty(policy.InsuredCity)&& string.IsNullOrEmpty(policy.InsuredCityCode))
             {
-                var addressService = EngineContext.Current.Resolve<IAddressService>();
+                var addressService = _serviceProvider.GetRequiredService<IAddressService>();
                 var city = addressService.GetCityCenterByArabicName(policy.InsuredCity);//trying to get city by arabic name 
                 if (city == null)//if no try to get by english name
                 {
@@ -495,7 +498,7 @@ namespace Tameenk.Integration.Providers.SAICO
         }
         public override bool ValidateQuotationBeforeCheckout(QuotationRequest quotationRequest, out List<string> errors)
         {
-            var addressService = EngineContext.Current.Resolve<IAddressService>();
+            var addressService = _serviceProvider.GetRequiredService<IAddressService>();
             errors = new List<string>();
             var mainDriverAddress = quotationRequest.Driver.Addresses.FirstOrDefault();
             if (mainDriverAddress != null)

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -35,7 +36,6 @@ using Tameenk.Services.Core.Quotations;
 using Tameenk.Services.Core.Vehicles;
 using Tameenk.Services.Extensions;
 using Tameenk.Services.Implementation.Policies;
-using Tameenk.Services.Inquiry.Components;
 using Tameenk.Services.Logging;
 
 namespace Tameenk.Integration.Providers.Wataniya
@@ -104,8 +104,9 @@ namespace Tameenk.Integration.Providers.Wataniya
         private const string CERTIFCATE_BATH = "C:/inetpub/wwwroot/QuotationNewApi/watinyacert/browser.pfx";
        // private const string CERTIFCATE_PASSWORD = "W@t15An2020";
         private const string CERTIFCATE_PASSWORD = "rZ7dzXq60L3lf3E";
+        private readonly IServiceProvider _serviceProvider;
 
-        public WataniyaInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository,
+        public WataniyaInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger,IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository,
             IRepository<QuotationResponse> quotationResponseRepository, IRepository<WataniyaDraftPolicy> wataniyaDraftPolicyRepository,
             IQuotationService quotationService, IRepository<WataniyaMotorPolicyInfo> wataniyaMotorPolicyInfoRepository
             , IRepository<BankNins> bankNinsRepository, IWataniyaNajmQueueService wataniyaNajmQueueService)
@@ -128,7 +129,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
             _tameenkConfig = tameenkConfig;
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
+            _serviceProvider = serviceProvider;
             _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
                 null :
                 Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));
@@ -300,7 +301,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     initialDraftModel.CreatedDate = DateTime.Now;
 
                     string exception = string.Empty;
-                    var _quotationService = EngineContext.Current.Resolve<IQuotationService>();
+                    var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
                     _quotationService.InsertOrupdateWataniyaMotorPolicyInfo(initialDraftModel, out exception);
                     if (!string.IsNullOrEmpty(exception))
                     {
@@ -350,7 +351,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     initialDraftModel.CreatedDate = DateTime.Now;
 
                     string exception = string.Empty;
-                    var _quotationService = EngineContext.Current.Resolve<IQuotationService>();
+                    var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
                     _quotationService.InsertOrupdateWataniyaMotorPolicyInfo(initialDraftModel, out exception);
                     if (!string.IsNullOrEmpty(exception))
                     {
@@ -522,7 +523,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                 initialDraftModel.CreatedDate = log.CreatedDate;
 
                 string exception = string.Empty;
-                var _quotationService = EngineContext.Current.Resolve<IQuotationService>();
+                var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
                 _quotationService.InsertOrupdateWataniyaAutoleasePolicyInfo(initialDraftModel, out exception);
                 if (!string.IsNullOrEmpty(exception))
                 {
@@ -1410,7 +1411,7 @@ namespace Tameenk.Integration.Providers.Wataniya
 
         private Address GetDriverAddressByDriverNin(string nin)
         {
-            var addressService = EngineContext.Current.Resolve<IAddressService>();
+            var addressService = _serviceProvider.GetRequiredService<IAddressService>();
             var address = addressService.GetAddressesByNin(nin);
             if (address == null)
                 return null;
@@ -1587,7 +1588,7 @@ namespace Tameenk.Integration.Providers.Wataniya
             }
 
             string exception = string.Empty;
-            var wataniyaNajmQueueService = EngineContext.Current.Resolve<IWataniyaNajmQueueService>();
+            var wataniyaNajmQueueService = _serviceProvider.GetRequiredService<IWataniyaNajmQueueService>();
             bool value = wataniyaNajmQueueService.AddWataniyaNajmQueue(policy.ReferenceId, predefinedLogInfo.PolicyNo, out exception);
             if (!value || !string.IsNullOrEmpty(exception))
             {
@@ -1631,7 +1632,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                 request.DriverNin = log.DriverNin;
                 request.VehicleId = log.VehicleId;
 
-                var _quotationService = EngineContext.Current.Resolve<IQuotationService>();
+                var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
                 var initialDraftModel = _quotationService.GetWataniyaMotorPolicyInfoByReference(policy.ReferenceId);
                 if (initialDraftModel == null)
                 {
@@ -2076,7 +2077,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     return output;
                 }
 
-                var _quotationService = EngineContext.Current.Resolve<IQuotationService>();
+                var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
                 var initialDraftModel = _quotationService.GetWataniyaMotorPolicyInfoByReference(policy.ReferenceId);
                 if (initialDraftModel == null)
                 {
@@ -2627,7 +2628,7 @@ namespace Tameenk.Integration.Providers.Wataniya
 
         private void HandleAutoleaseMakerAndModel(PolicyRiskListRequest wataniyaAutoLeasingQuotationPolicyRiskObjectDetails, QuotationServiceRequest quoteModel)
         {
-            var _vehicleService = EngineContext.Current.Resolve<IVehicleService>();
+            var _vehicleService = _serviceProvider.GetRequiredService<IVehicleService>();
 
             var makerId = short.Parse(quoteModel.VehicleMakerCode);
             var modelId = long.Parse(quoteModel.VehicleModelCode);
@@ -3067,7 +3068,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     return output;
                 }
 
-                var _quotationService = EngineContext.Current.Resolve<IQuotationService>();
+                var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
                 var initialDraftModel = _quotationService.GetWataniyaAutoleasePolicyInfoByReference(quoteModel.ReferenceId);
                 if (initialDraftModel == null)
                 {
@@ -3206,7 +3207,7 @@ namespace Tameenk.Integration.Providers.Wataniya
 
         private void HandleAutoleaseDraftPolicyMakerAndModel(DraftPolicyRiskListRequest wataniyaAutoLeasingQuotationPolicyRiskObjectDetails, QuotationServiceRequest quoteModel)
         {
-            var _vehicleService = EngineContext.Current.Resolve<IVehicleService>();
+            var _vehicleService = _serviceProvider.GetRequiredService<IVehicleService>();
 
             var makerId = short.Parse(quoteModel.VehicleMakerCode);
             var modelId = long.Parse(quoteModel.VehicleModelCode);
@@ -3432,7 +3433,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                 request.VehicleId = log.VehicleId;
             }
 
-            var _quotationService = EngineContext.Current.Resolve<IQuotationService>();
+            var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
             var initialDraftModel = _quotationService.GetWataniyaAutoleasePolicyInfoByReference(policy.ReferenceId);
             if (initialDraftModel == null)
             {

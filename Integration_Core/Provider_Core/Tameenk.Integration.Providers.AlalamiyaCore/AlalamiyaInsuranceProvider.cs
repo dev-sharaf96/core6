@@ -5,16 +5,13 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using Tameenk.Common.Utilities;
 using Tameenk.Core;
 using Tameenk.Core.Configuration;
 using Tameenk.Core.Data;
-using Tameenk.Core.Domain.Dtos;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Entities.Policies;
 using Tameenk.Core.Exceptions;
-using Tameenk.Core.Infrastructure;
 using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
@@ -53,7 +50,6 @@ namespace Tameenk.Integration.Providers.Alalamiya
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
             _tameenkConfig = tameenkConfig;
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
             _logger = logger;
             _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
                null : Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));

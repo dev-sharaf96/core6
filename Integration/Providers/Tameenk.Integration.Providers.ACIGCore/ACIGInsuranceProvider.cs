@@ -1,17 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using Tameenk.Core;
 using Tameenk.Core.Configuration;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities.Policies;
 using Tameenk.Core.Domain.Entities.Quotations;
-using Tameenk.Core.Infrastructure;
 using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
@@ -19,8 +13,6 @@ using Tameenk.Loggin.DAL;
 using Tameenk.Resources.Quotations;
 using Tameenk.Services.Core.Addresses;
 using Tameenk.Services.Core.Http;
-using Tameenk.Services.Core.InsuranceCompanies;
-using Tameenk.Services.Core.Quotations;
 using Tameenk.Services.Logging;
 
 namespace Tameenk.Integration.Providers.ACIG
@@ -53,7 +45,6 @@ namespace Tameenk.Integration.Providers.ACIG
              },  logger, policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
-            //_httpClient = EngineContext.Current.Resolve<IHttpClient>(); by Atheer
             _serviceProvider = serviceProvider;
         }
         public override bool ValidateQuotationBeforeCheckout(QuotationRequest quotationRequest, out List<string> errors)

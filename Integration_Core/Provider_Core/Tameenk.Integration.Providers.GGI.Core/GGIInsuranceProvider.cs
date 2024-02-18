@@ -65,7 +65,6 @@ namespace Tameenk.Integration.Providers.GGI
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
             _tameenkConfig = tameenkConfig;
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
             _logger = logger;
             _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
                null : Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));

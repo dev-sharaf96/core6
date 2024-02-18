@@ -49,7 +49,6 @@ namespace Tameenk.Integration.Providers.UCA
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
             _tameenkConfig = tameenkConfig;
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
             _logger = logger;
             _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
                   null : _restfulConfiguration.AccessToken;
