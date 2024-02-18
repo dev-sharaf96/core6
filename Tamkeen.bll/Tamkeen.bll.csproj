@@ -311,10 +311,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Integration\Tameenk.Integration.Dto\Tameenk.Integration.Dto.csproj">
-      <Project>{51816323-E9BA-457F-844C-0237993AC117}</Project>
-      <Name>Tameenk.Integration.Dto</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Libraries\Tameenk.Core.Domain\Tameenk.Core.Domain.csproj">
       <Project>{8edfcd3e-4461-4b2c-a83e-175983e9c6b7}</Project>
       <Name>Tameenk.Core.Domain</Name>

@@ -287,10 +287,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Integration\Tameenk.Integration.Core\Tameenk.Integration.Core.csproj">
-      <Project>{75031295-C1C2-499D-8DD3-1AC7357FC897}</Project>
-      <Name>Tameenk.Integration.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\Tameenk.Core.Domain\Tameenk.Core.Domain.csproj">
       <Project>{8edfcd3e-4461-4b2c-a83e-175983e9c6b7}</Project>
       <Name>Tameenk.Core.Domain</Name>

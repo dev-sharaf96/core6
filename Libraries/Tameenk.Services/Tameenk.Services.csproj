@@ -588,10 +588,6 @@
     <Folder Include="Implementation\Users\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Integration\Tameenk.Integration.Dto\Tameenk.Integration.Dto.csproj">
-      <Project>{51816323-e9ba-457f-844c-0237993ac117}</Project>
-      <Name>Tameenk.Integration.Dto</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Tameenk.Common.Utilities\Tameenk.Common.Utilities.csproj">
       <Project>{14f920b0-e1f2-4e7b-be22-4bde4fc9541f}</Project>
       <Name>Tameenk.Common.Utilities</Name>
