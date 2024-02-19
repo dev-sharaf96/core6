@@ -23,74 +23,74 @@ namespace Tameenk.Services.Implementation
             _corporateUsersRepository = corporateUsersRepository;
         }
 
-        public List<CorporateUserModel> GetCorporateUsersWithFilter(CorporateFilterModel filterModel, int pageIndex, int pageSize, int commandTimeout, bool export, out int totalCount, out string exception)
-        {
-            totalCount = 0;
-            exception = string.Empty;
-            var dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //public List<CorporateUserModel> GetCorporateUsersWithFilter(CorporateFilterModel filterModel, int pageIndex, int pageSize, int commandTimeout, bool export, out int totalCount, out string exception)
+        //{
+        //    totalCount = 0;
+        //    exception = string.Empty;
+        //    var dbContext = EngineContext.Current.Resolve<IDbContext>();
 
-            try
-            {
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetAllCorporateUsersFromDBWithFilter";
-                command.CommandType = CommandType.StoredProcedure;
-                dbContext.DatabaseInstance.CommandTimeout = commandTimeout;
+        //    try
+        //    {
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetAllCorporateUsersFromDBWithFilter";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        dbContext.DatabaseInstance.CommandTimeout = commandTimeout;
 
-                if (!string.IsNullOrEmpty(filterModel.Email))
-                {
-                    SqlParameter EmailParameter = new SqlParameter() { ParameterName = "Email", Value = filterModel.Email };
-                    command.Parameters.Add(EmailParameter);
-                }
+        //        if (!string.IsNullOrEmpty(filterModel.Email))
+        //        {
+        //            SqlParameter EmailParameter = new SqlParameter() { ParameterName = "Email", Value = filterModel.Email };
+        //            command.Parameters.Add(EmailParameter);
+        //        }
 
-                if (!string.IsNullOrEmpty(filterModel.PhoneNumber))
-                {
-                    SqlParameter PhoneNumberParameter = new SqlParameter() { ParameterName = "PhoneNumber", Value = filterModel.PhoneNumber };
-                    command.Parameters.Add(PhoneNumberParameter);
-                }
+        //        if (!string.IsNullOrEmpty(filterModel.PhoneNumber))
+        //        {
+        //            SqlParameter PhoneNumberParameter = new SqlParameter() { ParameterName = "PhoneNumber", Value = filterModel.PhoneNumber };
+        //            command.Parameters.Add(PhoneNumberParameter);
+        //        }
 
-                if (filterModel.AccountId.HasValue)
-                {
-                    SqlParameter accountIdParameter = new SqlParameter() { ParameterName = "accountId", Value = filterModel.AccountId.Value };
-                    command.Parameters.Add(accountIdParameter);
-                }
+        //        if (filterModel.AccountId.HasValue)
+        //        {
+        //            SqlParameter accountIdParameter = new SqlParameter() { ParameterName = "accountId", Value = filterModel.AccountId.Value };
+        //            command.Parameters.Add(accountIdParameter);
+        //        }
 
-                SqlParameter pageIndexParameter = new SqlParameter() { ParameterName = "pageIndex", Value = pageIndex > 0 ? pageIndex : 1 };
-                command.Parameters.Add(pageIndexParameter);
+        //        SqlParameter pageIndexParameter = new SqlParameter() { ParameterName = "pageIndex", Value = pageIndex > 0 ? pageIndex : 1 };
+        //        command.Parameters.Add(pageIndexParameter);
 
-                SqlParameter pageSizeParameter = new SqlParameter() { ParameterName = "pageSize", Value = pageSize };
-                command.Parameters.Add(pageSizeParameter);
+        //        SqlParameter pageSizeParameter = new SqlParameter() { ParameterName = "pageSize", Value = pageSize };
+        //        command.Parameters.Add(pageSizeParameter);
 
-                SqlParameter exportParameter = new SqlParameter() { ParameterName = "export", Value = export };
-                command.Parameters.Add(exportParameter);
+        //        SqlParameter exportParameter = new SqlParameter() { ParameterName = "export", Value = export };
+        //        command.Parameters.Add(exportParameter);
 
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
 
-                // get data
-                List<CorporateUserModel> filteredData = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<CorporateUserModel>(reader).ToList();
+        //        // get data
+        //        List<CorporateUserModel> filteredData = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<CorporateUserModel>(reader).ToList();
 
-                if (export)
-                    totalCount = filteredData.Count();
-                else
-                {
-                    //get data count
-                    reader.NextResult();
-                    totalCount = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
-                }
+        //        if (export)
+        //            totalCount = filteredData.Count();
+        //        else
+        //        {
+        //            //get data count
+        //            reader.NextResult();
+        //            totalCount = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
+        //        }
 
-                return filteredData;
-            }
-            catch (Exception exp)
-            {
-                exception = exp.ToString();
-                return null;
-            }
-            finally
-            {
-                if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
-                    dbContext.DatabaseInstance.Connection.Close();
-            }
-        }
+        //        return filteredData;
+        //    }
+        //    catch (Exception exp)
+        //    {
+        //        exception = exp.ToString();
+        //        return null;
+        //    }
+        //    finally
+        //    {
+        //        if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
+        //            dbContext.DatabaseInstance.Connection.Close();
+        //    }
+        //}
 
         public List<CorporateUsers> GetAccountUsers(int accountId)
         {
@@ -110,7 +110,7 @@ namespace Tameenk.Services.Implementation
                 exception = exp.ToString();
             }
         }
-        public List<CorporateNotificationModel> GetCorporateUsersLessThan2000(out string exception)        {            IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();            exception = string.Empty;            try            {                idbContext.DatabaseInstance.CommandTimeout = new int?(60);                var command = idbContext.DatabaseInstance.Connection.CreateCommand();                command.CommandText = "GetCorporateUsersLessThan2000";                command.CommandType = CommandType.StoredProcedure;                idbContext.DatabaseInstance.Connection.Open();                var reader = command.ExecuteReader();                var result = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<CorporateNotificationModel>(reader).ToList();                idbContext.DatabaseInstance.Connection.Close();                return result;            }            catch (Exception ex)            {                idbContext.DatabaseInstance.Connection.Close();                exception = ex.ToString();                return null;            }        }
+        //public List<CorporateNotificationModel> GetCorporateUsersLessThan2000(out string exception)        //{        //    IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();        //    exception = string.Empty;        //    try        //    {        //        idbContext.DatabaseInstance.CommandTimeout = new int?(60);        //        var command = idbContext.DatabaseInstance.Connection.CreateCommand();        //        command.CommandText = "GetCorporateUsersLessThan2000";        //        command.CommandType = CommandType.StoredProcedure;        //        idbContext.DatabaseInstance.Connection.Open();        //        var reader = command.ExecuteReader();        //        var result = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<CorporateNotificationModel>(reader).ToList();        //        idbContext.DatabaseInstance.Connection.Close();        //        return result;        //    }        //    catch (Exception ex)        //    {        //        idbContext.DatabaseInstance.Connection.Close();        //        exception = ex.ToString();        //        return null;        //    }        //}
         public bool UpdateCorporateUsersWithLastNotification(string username, out string exception)        {            exception = string.Empty;            try            {                if (string.IsNullOrEmpty(username))                {                    exception = " NULL email ";                    return false;                }
                 var corporateUsers = _corporateUsersRepository.Table.Where(c => c.UserName == username).FirstOrDefault();
                 if (corporateUsers == null)

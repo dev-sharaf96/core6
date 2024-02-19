@@ -217,51 +217,51 @@ namespace Tameenk.Services.Implementation.Orders
                 .Where(sci => sci.UserId == userId && sci.ReferenceId == referenceId).OrderByDescending(a=>a.Id).FirstOrDefault();
         }
 
-        public ShoppingCartItemDB GetUserShoppingCartItemDBByUserIdAndReferenceId(string userId, string referenceId)
-        {
-            ShoppingCartItemDB shoppingCartItemDB = null;
+        //public ShoppingCartItemDB GetUserShoppingCartItemDBByUserIdAndReferenceId(string userId, string referenceId)
+        //{
+        //    ShoppingCartItemDB shoppingCartItemDB = null;
 
-            IDbContext dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //    IDbContext dbContext = EngineContext.Current.Resolve<IDbContext>();
 
-            try
-            {
-                dbContext.DatabaseInstance.CommandTimeout = 60;
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetShoppingCartItemDB";
-                command.CommandType = CommandType.StoredProcedure;
-                SqlParameter userIdParameter = new SqlParameter() { ParameterName = "userId", Value = userId };
-                SqlParameter referenceIdParameter = new SqlParameter() { ParameterName = "referenceId", Value = referenceId };
-                command.Parameters.Add(userIdParameter);
-                command.Parameters.Add(referenceIdParameter);
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
+        //    try
+        //    {
+        //        dbContext.DatabaseInstance.CommandTimeout = 60;
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetShoppingCartItemDB";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        SqlParameter userIdParameter = new SqlParameter() { ParameterName = "userId", Value = userId };
+        //        SqlParameter referenceIdParameter = new SqlParameter() { ParameterName = "referenceId", Value = referenceId };
+        //        command.Parameters.Add(userIdParameter);
+        //        command.Parameters.Add(referenceIdParameter);
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
 
-                shoppingCartItemDB = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<ShoppingCartItemDB>(reader).FirstOrDefault();
-                if (shoppingCartItemDB != null)
-                {
-                    reader.NextResult();
-                    List<ShoppingCartItemBenefitsList> shoppingCartItemBenefitsList = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<ShoppingCartItemBenefitsList>(reader).ToList();
-                    reader.NextResult();
-                    List<PriceDetailsList> priceDetailsList = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<PriceDetailsList>(reader).ToList();
-                    shoppingCartItemDB.ShoppingCartItemBenefits = shoppingCartItemBenefitsList;
-                    shoppingCartItemDB.PriceDetails = priceDetailsList;
+        //        shoppingCartItemDB = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<ShoppingCartItemDB>(reader).FirstOrDefault();
+        //        if (shoppingCartItemDB != null)
+        //        {
+        //            reader.NextResult();
+        //            List<ShoppingCartItemBenefitsList> shoppingCartItemBenefitsList = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<ShoppingCartItemBenefitsList>(reader).ToList();
+        //            reader.NextResult();
+        //            List<PriceDetailsList> priceDetailsList = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<PriceDetailsList>(reader).ToList();
+        //            shoppingCartItemDB.ShoppingCartItemBenefits = shoppingCartItemBenefitsList;
+        //            shoppingCartItemDB.PriceDetails = priceDetailsList;
 
-                    //reader.NextResult();
-                    //List<ShoppingCartItemDriversList> shoppingCartItemDriversList = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<ShoppingCartItemDriversList>(reader).ToList();
-                    //shoppingCartItemDB.ShoppingCartItemDrivers = shoppingCartItemDriversList;
-                }
-            }
-            catch (Exception)
-            {
+        //            //reader.NextResult();
+        //            //List<ShoppingCartItemDriversList> shoppingCartItemDriversList = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<ShoppingCartItemDriversList>(reader).ToList();
+        //            //shoppingCartItemDB.ShoppingCartItemDrivers = shoppingCartItemDriversList;
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
 
-            }
-            finally
-            {
-                if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
-                    dbContext.DatabaseInstance.Connection.Close();
-            }
-            return shoppingCartItemDB;
-        }
+        //    }
+        //    finally
+        //    {
+        //        if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
+        //            dbContext.DatabaseInstance.Connection.Close();
+        //    }
+        //    return shoppingCartItemDB;
+        //}
         public Product GetProduct(Guid productId,int companyId)
         {
             return _productRepository.TableNoTracking.Include(a=>a.Product_Benefits).Where(a => a.Id == productId && a.ProviderId==companyId).FirstOrDefault();
@@ -514,52 +514,52 @@ namespace Tameenk.Services.Implementation.Orders
             }
         }
 
-        public ShoppingCartItemDB GetLeasingUserShoppingCartItemDBByUserIdAndReferenceId(string userId, string referenceId)
-        {
-            ShoppingCartItemDB shoppingCartItemDB = null;
+        //public ShoppingCartItemDB GetLeasingUserShoppingCartItemDBByUserIdAndReferenceId(string userId, string referenceId)
+        //{
+        //    ShoppingCartItemDB shoppingCartItemDB = null;
 
-            IDbContext dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //    IDbContext dbContext = EngineContext.Current.Resolve<IDbContext>();
 
-            try
-            {
-                dbContext.DatabaseInstance.CommandTimeout = 60;
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetLeasingShoppingCartItemDB";
-                command.CommandType = CommandType.StoredProcedure;
-                SqlParameter userIdParameter = new SqlParameter() { ParameterName = "userId", Value = userId };
-                SqlParameter referenceIdParameter = new SqlParameter() { ParameterName = "referenceId", Value = referenceId };
-                command.Parameters.Add(userIdParameter);
-                command.Parameters.Add(referenceIdParameter);
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
+        //    try
+        //    {
+        //        dbContext.DatabaseInstance.CommandTimeout = 60;
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetLeasingShoppingCartItemDB";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        SqlParameter userIdParameter = new SqlParameter() { ParameterName = "userId", Value = userId };
+        //        SqlParameter referenceIdParameter = new SqlParameter() { ParameterName = "referenceId", Value = referenceId };
+        //        command.Parameters.Add(userIdParameter);
+        //        command.Parameters.Add(referenceIdParameter);
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
 
-                shoppingCartItemDB = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<ShoppingCartItemDB>(reader).FirstOrDefault();
-                if (shoppingCartItemDB != null)
-                {
-                    reader.NextResult();
-                    List<ShoppingCartItemBenefitsList> shoppingCartItemBenefitsList = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<ShoppingCartItemBenefitsList>(reader).ToList();
-                    reader.NextResult();
-                    List<PriceDetailsList> priceDetailsList = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<PriceDetailsList>(reader).ToList();
-                    shoppingCartItemDB.ShoppingCartItemBenefits = shoppingCartItemBenefitsList;
-                    shoppingCartItemDB.PriceDetails = priceDetailsList;
+        //        shoppingCartItemDB = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<ShoppingCartItemDB>(reader).FirstOrDefault();
+        //        if (shoppingCartItemDB != null)
+        //        {
+        //            reader.NextResult();
+        //            List<ShoppingCartItemBenefitsList> shoppingCartItemBenefitsList = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<ShoppingCartItemBenefitsList>(reader).ToList();
+        //            reader.NextResult();
+        //            List<PriceDetailsList> priceDetailsList = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<PriceDetailsList>(reader).ToList();
+        //            shoppingCartItemDB.ShoppingCartItemBenefits = shoppingCartItemBenefitsList;
+        //            shoppingCartItemDB.PriceDetails = priceDetailsList;
 
-                    reader.NextResult();
-                    List<ShoppingCartItemDriversList> shoppingCartItemDriversList = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<ShoppingCartItemDriversList>(reader).ToList();
-                    shoppingCartItemDB.ShoppingCartItemDrivers = shoppingCartItemDriversList;
-                }
-            }
-            catch (Exception)
-            {
+        //            reader.NextResult();
+        //            List<ShoppingCartItemDriversList> shoppingCartItemDriversList = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<ShoppingCartItemDriversList>(reader).ToList();
+        //            shoppingCartItemDB.ShoppingCartItemDrivers = shoppingCartItemDriversList;
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
-            finally
-            {
-                if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
-                    dbContext.DatabaseInstance.Connection.Close();
-            }
-            return shoppingCartItemDB;
-        }
+        //        throw;
+        //    }
+        //    finally
+        //    {
+        //        if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
+        //            dbContext.DatabaseInstance.Connection.Close();
+        //    }
+        //    return shoppingCartItemDB;
+        //}
 
         #endregion
     }

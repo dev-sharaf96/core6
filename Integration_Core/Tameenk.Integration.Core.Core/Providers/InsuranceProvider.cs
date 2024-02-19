@@ -25,7 +25,7 @@ namespace Tameenk.Integration.Core.Providers
 
         private readonly ILogger _logger;
         private readonly ProviderConfiguration _configuration;
-        private readonly IRepository<AutomatedTestIntegrationTransaction> _automatedTestIntegrationTransactionRepository;
+        //private readonly IRepository<AutomatedTestIntegrationTransaction> _automatedTestIntegrationTransactionRepository;
 
         #endregion
 
@@ -39,7 +39,7 @@ namespace Tameenk.Integration.Core.Providers
         {
             _configuration = configuration;
             //_logger = logger;
-            _automatedTestIntegrationTransactionRepository = EngineContext.Current.Resolve<IRepository<AutomatedTestIntegrationTransaction>>();
+            //_automatedTestIntegrationTransactionRepository = EngineContext.Current.Resolve<IRepository<AutomatedTestIntegrationTransaction>>();
         }
 
         #endregion
@@ -182,21 +182,21 @@ namespace Tameenk.Integration.Core.Providers
         {
             try
             {
-                var toBeDeleted = this._automatedTestIntegrationTransactionRepository.TableNoTracking
-                                      .Where(x => x.Retrieved == true && string.Equals(x.Message, transactionMethod))
-                                      .ToList();
-                this._automatedTestIntegrationTransactionRepository.Delete(toBeDeleted);
+                //var toBeDeleted = this._automatedTestIntegrationTransactionRepository.TableNoTracking
+                //                      .Where(x => x.Retrieved == true && string.Equals(x.Message, transactionMethod))
+                //                      .ToList();
+                //this._automatedTestIntegrationTransactionRepository.Delete(toBeDeleted);
 
-                this._automatedTestIntegrationTransactionRepository
-                    .Insert(new AutomatedTestIntegrationTransaction
-                    {
-                        Message = transactionMethod,
-                        Date = DateTime.Now,
-                        InputParams = JsonConvert.SerializeObject(request),
-                        OutputParams = JsonConvert.SerializeObject(response),
-                        Retrieved = false,
-                        StatusId = statusCode.Value
-                    });
+                //this._automatedTestIntegrationTransactionRepository
+                //    .Insert(new AutomatedTestIntegrationTransaction
+                //    {
+                //        Message = transactionMethod,
+                //        Date = DateTime.Now,
+                //        InputParams = JsonConvert.SerializeObject(request),
+                //        OutputParams = JsonConvert.SerializeObject(response),
+                //        Retrieved = false,
+                //        StatusId = statusCode.Value
+                //    });
             }
             catch (Exception ex)
             {

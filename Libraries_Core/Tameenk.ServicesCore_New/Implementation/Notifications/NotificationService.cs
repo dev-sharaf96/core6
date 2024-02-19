@@ -306,24 +306,24 @@ namespace Tameenk.Services.Implementation.Notifications
         #region Sms
 
 
-        /// <summary>
-        /// Send SMS
-        /// </summary>
-        /// <param name="phoneNumber">The SMS reciever number.</param>
-        /// <param name="messageBody">The SMS message body</param>
-        /// <returns></returns>
-        public async Task SendSmsAsync(string phoneNumber, string messageBody,string method)
-        {
-            if (Utilities.GetAppSetting("SmsProvider") == "MobiShastra")
-            {
-                string exception = string.Empty;
-                _smsService.SendSmsMobiShastra(phoneNumber, messageBody, method, out exception);
-            }
-            else
-            {
-                await _smsService.SendSmsAsync(phoneNumber, messageBody, method);
-            }
-        }
+        ///// <summary>
+        ///// Send SMS
+        ///// </summary>
+        ///// <param name="phoneNumber">The SMS reciever number.</param>
+        ///// <param name="messageBody">The SMS message body</param>
+        ///// <returns></returns>
+        //public async Task SendSmsAsync(string phoneNumber, string messageBody,string method)
+        //{
+        //    if (Utilities.GetAppSetting("SmsProvider") == "MobiShastra")
+        //    {
+        //        string exception = string.Empty;
+        //        _smsService.SendSmsMobiShastra(phoneNumber, messageBody, method, out exception);
+        //    }
+        //    else
+        //    {
+        //        await _smsService.SendSmsAsync(phoneNumber, messageBody, method);
+        //    }
+        //}
 
         public async Task SendWhatsAppMessageAsync(string phoneNumber, string messageBody, string method,string referenceId, string langCode)
         {
@@ -333,14 +333,14 @@ namespace Tameenk.Services.Implementation.Notifications
         {
             await _smsService.SendWhatsAppMessageForPolicyRenewalAsync( phoneNumber,  message,  make,  model,  plateText,  url,  method,  referenceId,  langCode, expiryDate);
         }
-        public bool SendSms(string phoneNumber, string messageBody,string method, out string exception)        {            if (Utilities.GetAppSetting("SmsProvider") == "MobiShastra")
-            {
-                return _smsService.SendSmsMobiShastra(phoneNumber, messageBody, method, out exception); 
-            }            else
-            {
-                return _smsService.SendSmsSTC(phoneNumber, messageBody, method, out exception);            }
-            //return _smsService.SendSms(phoneNumber, messageBody, method, out exception);
-        }
+        //public bool SendSms(string phoneNumber, string messageBody,string method, out string exception)        //{        //    if (Utilities.GetAppSetting("SmsProvider") == "MobiShastra")
+        //    {
+        //        return _smsService.SendSmsMobiShastra(phoneNumber, messageBody, method, out exception); 
+        //    }        //    else
+        //    {
+        //        return _smsService.SendSmsSTC(phoneNumber, messageBody, method, out exception);        //    }
+        //    //return _smsService.SendSms(phoneNumber, messageBody, method, out exception);
+        //}
         #endregion
 
         #endregion
@@ -429,7 +429,7 @@ namespace Tameenk.Services.Implementation.Notifications
                 log.Channel = model.Channel;
                 log.ReferenceId = model.ReferenceId;                log.MobileNumber = model.PhoneNumber;                log.SMSMessage = model.MessageBody;                log.UserIP = Utilities.GetUserIPAddress();
                 log.ServerIP = Utilities.GetInternalServerIP();
-                log.Headers["User-Agent"].ToString() = Utilities.GetUserAgent();
+                //log.Headers["User-Agent"].ToString() = Utilities.GetUserAgent();
                 log.ErrorCode = 12;                log.ErrorDescription = $"no SMSProviderSetting in DB with Module {model.Module} and method {model.Method}";                SMSLogsDataAccess.AddToSMSLogsDataAccess(log);                SMSOutput output = new SMSOutput();                output.ErrorCode = log.ErrorCode.Value;
                 output.ErrorDescription = log.ErrorDescription;                return output;
             }
@@ -470,7 +470,7 @@ namespace Tameenk.Services.Implementation.Notifications
             EmailLog log = new EmailLog();
             log.UserIP = Utilities.GetUserIPAddress();
             log.ServerIP = Utilities.GetInternalServerIP();
-            log.Headers["User-Agent"].ToString() = Utilities.GetUserAgent();
+            //log.Headers["User-Agent"].ToString() = Utilities.GetUserAgent();
           
             DateTime dtBeforeCalling = DateTime.Now;
             try

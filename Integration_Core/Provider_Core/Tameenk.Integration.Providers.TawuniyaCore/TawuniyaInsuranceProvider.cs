@@ -44,7 +44,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
         private readonly ILogger _logger;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly IRepository<QuotationEntity.TawuniyaProposal> _tawuniyaProposalRepository;
-        private readonly IQuotationService _quotationService;
+        //private readonly IQuotationService _quotationService;
         private readonly IRepository<QuotationEntity.QuotationRequest> _quotationRequestRepository;
         private readonly IRepository<QuotationEntity.QuotationResponse> _quotationResponseRepository;
         private readonly IRepository<Product> _productRepository;
@@ -80,8 +80,8 @@ namespace Tameenk.Integration.Providers.Tawuniya
             , IRepository<QuotationEntity.TawuniyaProposal> tawuniyaProposalRepository
             , IRepository<QuotationEntity.QuotationResponse> quotationResponseRepository
             , IRepository<Product> productRepository
-            , IQuotationService quotationService,
-             IRepository<Insured> _insuredRepo
+            //, IQuotationService quotationService,
+             ,IRepository<Insured> _insuredRepo
             , IRepository<Address> _addressRepo
             , IRepository<Bank> _bankRepo
             , IRepository<BankInsuranceCompany> _insuranceBankRepo
@@ -111,7 +111,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
             _quotationRequestRepository = quotationRequestRepository;
             _quotationResponseRepository = quotationResponseRepository;
             _tawuniyaProposalRepository = tawuniyaProposalRepository;
-            _quotationService = quotationService;
+            //_quotationService = quotationService;
             _productRepository = productRepository;
             insuredRepo = _insuredRepo;
             bankRepo = _bankRepo;
@@ -2607,375 +2607,375 @@ namespace Tameenk.Integration.Providers.Tawuniya
 
         #endregion
 
-        private QuotationOutput GetTawuniyaQuotationTemp(PolicyRequest policy, ServiceRequestLog log)
-        {
-            //var quotationLog = new ServiceRequestLog
-            //{
-            //    CompanyID = log.CompanyID,
-            //    CreatedDate = log.CreatedDate,
-            //    InsuranceTypeCode = log.InsuranceTypeCode,
-            //    RequestId = log.RequestId,
-            //    ServiceURL = log.ServiceURL,
-            //    UserID = log.UserID,
-            //    UserName = log.UserName,
-            //    VehicleId = log.VehicleId,
-            //    DriverNin = log.DriverNin
-            //};
+        //private QuotationOutput GetTawuniyaQuotationTemp(PolicyRequest policy, ServiceRequestLog log)
+        //{
+        //    //var quotationLog = new ServiceRequestLog
+        //    //{
+        //    //    CompanyID = log.CompanyID,
+        //    //    CreatedDate = log.CreatedDate,
+        //    //    InsuranceTypeCode = log.InsuranceTypeCode,
+        //    //    RequestId = log.RequestId,
+        //    //    ServiceURL = log.ServiceURL,
+        //    //    UserID = log.UserID,
+        //    //    UserName = log.UserName,
+        //    //    VehicleId = log.VehicleId,
+        //    //    DriverNin = log.DriverNin
+        //    //};
 
-            var configuration = Configuration as RestfulConfiguration;
-            HttpResponseMessage message = new HttpResponseMessage();
-            message.StatusCode = System.Net.HttpStatusCode.OK;
-            QuotationOutput output = new QuotationOutput();
-            log.ReferenceId = policy.ReferenceId;
-            log.ServiceURL = configuration.GenerateQuotationUrl;
-            //log.Channel = "Portal";
-            //log.ServerIP = ServicesUtilities.GetServerIP();
-            log.Method = "Quotation";
-            log.CompanyName = "Tawuniya";
+        //    var configuration = Configuration as RestfulConfiguration;
+        //    HttpResponseMessage message = new HttpResponseMessage();
+        //    message.StatusCode = System.Net.HttpStatusCode.OK;
+        //    QuotationOutput output = new QuotationOutput();
+        //    log.ReferenceId = policy.ReferenceId;
+        //    log.ServiceURL = configuration.GenerateQuotationUrl;
+        //    //log.Channel = "Portal";
+        //    //log.ServerIP = ServicesUtilities.GetServerIP();
+        //    log.Method = "Quotation";
+        //    log.CompanyName = "Tawuniya";
 
-            try
-            {
-                if (_tameenkConfig.Quotatoin.TestMode)
-                {
-                    string nameOfFileJson = ".TestData.quotationTestData.json";
-                    string tawuniyaResponse = ReadResource(GetType().Namespace, nameOfFileJson);
-                    var handledResponse = JsonConvert.SerializeObject(HandleTawuniyaQuotationResponse(tawuniyaResponse));
-                    message.Content = new StringContent(handledResponse);
-                    output.ErrorCode = QuotationOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
-                    return output;
-                }
+        //    try
+        //    {
+        //        if (_tameenkConfig.Quotatoin.TestMode)
+        //        {
+        //            string nameOfFileJson = ".TestData.quotationTestData.json";
+        //            string tawuniyaResponse = ReadResource(GetType().Namespace, nameOfFileJson);
+        //            var handledResponse = JsonConvert.SerializeObject(HandleTawuniyaQuotationResponse(tawuniyaResponse));
+        //            message.Content = new StringContent(handledResponse);
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.Success;
+        //            output.ErrorDescription = "Success";
+        //            return output;
+        //        }
 
-                var request = CreateQuotationRequestTemp(policy, log);
-                string stringPayload = JsonConvert.SerializeObject(request);
-                log.ServiceRequest = stringPayload;
-                output.ServiceRequest = stringPayload;
-                var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-                string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(configuration.AccessToken));
-                DateTime dtBeforeCalling = DateTime.Now;
-                var response = _httpClient.PostAsync(configuration.GenerateQuotationUrl, httpContent, authToken, null, "Basic").Result;
-                DateTime dtAfterCalling = DateTime.Now;
-                log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
-                if (response == null)
-                {
-                    output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = output.ErrorCode.ToString();
-                    log.ServiceErrorDescription = output.ErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
+        //        var request = CreateQuotationRequestTemp(policy, log);
+        //        string stringPayload = JsonConvert.SerializeObject(request);
+        //        log.ServiceRequest = stringPayload;
+        //        output.ServiceRequest = stringPayload;
+        //        var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+        //        string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(configuration.AccessToken));
+        //        DateTime dtBeforeCalling = DateTime.Now;
+        //        var response = _httpClient.PostAsync(configuration.GenerateQuotationUrl, httpContent, authToken, null, "Basic").Result;
+        //        DateTime dtAfterCalling = DateTime.Now;
+        //        log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
+        //        if (response == null)
+        //        {
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = output.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = output.ErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
 
-                if (response.Content == null)
-                {
-                    output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
-                {
-                    output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content result return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
+        //        if (response.Content == null)
+        //        {
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+        //        {
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content result return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
 
-                var value = response.Content.ReadAsStringAsync().Result;
-                log.ServiceResponse = value;
-                output.ServiceResponse = value;
-                var tawuniyaModifiedResponse = HandleTawuniyaQuotationResponse(value);
-                var tawuniyaJson = JsonConvert.SerializeObject(tawuniyaModifiedResponse);
-                message.Content = new StringContent(tawuniyaJson);
+        //        var value = response.Content.ReadAsStringAsync().Result;
+        //        log.ServiceResponse = value;
+        //        output.ServiceResponse = value;
+        //        var tawuniyaModifiedResponse = HandleTawuniyaQuotationResponse(value);
+        //        var tawuniyaJson = JsonConvert.SerializeObject(tawuniyaModifiedResponse);
+        //        message.Content = new StringContent(tawuniyaJson);
 
-                if (tawuniyaModifiedResponse.StatusCode == 1)
-                {
-                    UpdateProductQuotationNo(tawuniyaModifiedResponse.QuotationNo, policy.ProductInternalId);
-                    policy.QuotationNo = tawuniyaModifiedResponse.QuotationNo;
-                }
-                if (tawuniyaModifiedResponse.StatusCode != 1)
-                {
-                    StringBuilder servcieErrors = new StringBuilder();
-                    StringBuilder servcieErrorsCodes = new StringBuilder();
+        //        if (tawuniyaModifiedResponse.StatusCode == 1)
+        //        {
+        //            UpdateProductQuotationNo(tawuniyaModifiedResponse.QuotationNo, policy.ProductInternalId);
+        //            policy.QuotationNo = tawuniyaModifiedResponse.QuotationNo;
+        //        }
+        //        if (tawuniyaModifiedResponse.StatusCode != 1)
+        //        {
+        //            StringBuilder servcieErrors = new StringBuilder();
+        //            StringBuilder servcieErrorsCodes = new StringBuilder();
 
-                    foreach (var error in tawuniyaModifiedResponse.Errors)
-                    {
-                        servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
-                        servcieErrorsCodes.AppendLine(error.Code);
-                    }
-                    output.ErrorCode = QuotationOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "Quotation Service response error is : " + servcieErrors.ToString();
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = servcieErrorsCodes.ToString();
-                    log.ServiceErrorDescription = servcieErrors.ToString();
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                output.Output = message;
-                output.ErrorCode = QuotationOutput.ErrorCodes.Success;
-                output.ErrorDescription = "Success";
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                log.ServiceErrorCode = log.ErrorCode.ToString();
-                log.ServiceErrorDescription = log.ServiceErrorDescription;
-                //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-            catch (Exception ex)
-            {
-                output.ErrorCode = QuotationOutput.ErrorCodes.ServiceException;
-                output.ErrorDescription = ex.ToString();
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-        }
-        private QuotationRequestDto CreateQuotationRequestTemp(PolicyRequest policy, ServiceRequestLog log)
-        {
-            var quotationRequest = _quotationRequestRepository.Table
-                .Include(e => e.Insured)
-                .Include(e => e.Vehicle)
-                .Include(e => e.QuotationResponses)
-                .Include(e => e.Driver)
-                .Include(e => e.Insured.Occupation)
-                .Include(e => e.Drivers.Select(d => d.DriverViolations))
-                .Include(e => e.Driver.Occupation)
-                .Include(e => e.Insured.IdIssueCity)
-                .Include(e => e.Insured.City)
-                .FirstOrDefault(e => e.ID == policy.QuotationRequestId);
+        //            foreach (var error in tawuniyaModifiedResponse.Errors)
+        //            {
+        //                servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
+        //                servcieErrorsCodes.AppendLine(error.Code);
+        //            }
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "Quotation Service response error is : " + servcieErrors.ToString();
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = servcieErrorsCodes.ToString();
+        //            log.ServiceErrorDescription = servcieErrors.ToString();
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        output.Output = message;
+        //        output.ErrorCode = QuotationOutput.ErrorCodes.Success;
+        //        output.ErrorDescription = "Success";
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        log.ServiceErrorCode = log.ErrorCode.ToString();
+        //        log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //        //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.ErrorCode = QuotationOutput.ErrorCodes.ServiceException;
+        //        output.ErrorDescription = ex.ToString();
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //}
+        //private QuotationRequestDto CreateQuotationRequestTemp(PolicyRequest policy, ServiceRequestLog log)
+        //{
+        //    var quotationRequest = _quotationRequestRepository.Table
+        //        .Include(e => e.Insured)
+        //        .Include(e => e.Vehicle)
+        //        .Include(e => e.QuotationResponses)
+        //        .Include(e => e.Driver)
+        //        .Include(e => e.Insured.Occupation)
+        //        .Include(e => e.Drivers.Select(d => d.DriverViolations))
+        //        .Include(e => e.Driver.Occupation)
+        //        .Include(e => e.Insured.IdIssueCity)
+        //        .Include(e => e.Insured.City)
+        //        .FirstOrDefault(e => e.ID == policy.QuotationRequestId);
 
-            if (quotationRequest == null)
-            {
-                throw new TameenkArgumentException("There is no quotation request with this id");
-            }
+        //    if (quotationRequest == null)
+        //    {
+        //        throw new TameenkArgumentException("There is no quotation request with this id");
+        //    }
 
-            var quotationResponse = quotationRequest.QuotationResponses.FirstOrDefault(e => e.ReferenceId == policy.ReferenceId);
+        //    var quotationResponse = quotationRequest.QuotationResponses.FirstOrDefault(e => e.ReferenceId == policy.ReferenceId);
 
-            var quotation = _quotationService.GetQuotationRequestData(quotationRequest,
-                quotationResponse, quotationResponse.InsuranceTypeCode.Value, false, log.UserID?.ToString(), quotationResponse.DeductibleValue);
+        //    var quotation = _quotationService.GetQuotationRequestData(quotationRequest,
+        //        quotationResponse, quotationResponse.InsuranceTypeCode.Value, false, log.UserID?.ToString(), quotationResponse.DeductibleValue);
 
-            var p = _productRepository.Table.FirstOrDefault(e => e.Id == policy.ProductInternalId);
-            if (p == null)
-            {
-                throw new TameenkArgumentException("There is no product  with this id " + policy.ProductInternalId);
-            }
-            var tawuniyaProposal = _tawuniyaProposalRepository.Table.FirstOrDefault(e => e.ReferenceId == policy.ReferenceId && e.ProposalTypeCode == p.InsuranceTypeCode);
-            if (tawuniyaProposal == null)
-            {
-                throw new TameenkArgumentException("There is no proposal for this reference id");
-            }
+        //    var p = _productRepository.Table.FirstOrDefault(e => e.Id == policy.ProductInternalId);
+        //    if (p == null)
+        //    {
+        //        throw new TameenkArgumentException("There is no product  with this id " + policy.ProductInternalId);
+        //    }
+        //    var tawuniyaProposal = _tawuniyaProposalRepository.Table.FirstOrDefault(e => e.ReferenceId == policy.ReferenceId && e.ProposalTypeCode == p.InsuranceTypeCode);
+        //    if (tawuniyaProposal == null)
+        //    {
+        //        throw new TameenkArgumentException("There is no proposal for this reference id");
+        //    }
 
-            var request = new QuotationRequestDto();
+        //    var request = new QuotationRequestDto();
 
-            #region Header
-            request.CreateQuoteRequest.Header.InitiatedDateTime = DateTime.Now.ToString();
-            request.CreateQuoteRequest.Header.MesssageType = "createQuote";
-            request.CreateQuoteRequest.Header.TrackingId = policy.ReferenceId;
-            request.CreateQuoteRequest.Header.RoutingIdentifier = "TAWN";
-            request.CreateQuoteRequest.Header.Sender = "TAWN";
-            request.CreateQuoteRequest.Header.Version = "1";
-            #endregion
+        //    #region Header
+        //    request.CreateQuoteRequest.Header.InitiatedDateTime = DateTime.Now.ToString();
+        //    request.CreateQuoteRequest.Header.MesssageType = "createQuote";
+        //    request.CreateQuoteRequest.Header.TrackingId = policy.ReferenceId;
+        //    request.CreateQuoteRequest.Header.RoutingIdentifier = "TAWN";
+        //    request.CreateQuoteRequest.Header.Sender = "TAWN";
+        //    request.CreateQuoteRequest.Header.Version = "1";
+        //    #endregion
 
-            #region QuotationInfo
-            request.CreateQuoteRequest.QuotationRequest.QuotationInfo = new QuotationInfo
-            {
-                ///ProductCode = tawuniyaProposal.ProposalTypeCode == 1 ? "MotorImtiazeTP" : tawuniyaProposal.ProposalTypeCode == 2 ? "PRMotorImtiazeCO" : "PRMotorImtiazeSP",
-                ProductCode = p.InsuranceTypeCode == 1 ? "MotorImtiazeTP" : p.InsuranceTypeCode == 2 ? "PRMotorImtiazeCO" : "PRMotorImtiazeSP",
-                IdNumber = quotation.InsuredId.ToString(),
-                LanguageCode = GetCurrentLanguageCode(),
-                RequiredInceptionDate = quotation.PolicyEffectiveDate.ToString("yyyy-MM-dd", new CultureInfo("en-US")),
-                SpecialSchemeCode = string.IsNullOrEmpty(quotation.PromoCode) ? "AGGREGATOR" : quotation.PromoCode,
-                ProposalNumber = tawuniyaProposal.ProposalNumber
-            };
-            #endregion
+        //    #region QuotationInfo
+        //    request.CreateQuoteRequest.QuotationRequest.QuotationInfo = new QuotationInfo
+        //    {
+        //        ///ProductCode = tawuniyaProposal.ProposalTypeCode == 1 ? "MotorImtiazeTP" : tawuniyaProposal.ProposalTypeCode == 2 ? "PRMotorImtiazeCO" : "PRMotorImtiazeSP",
+        //        ProductCode = p.InsuranceTypeCode == 1 ? "MotorImtiazeTP" : p.InsuranceTypeCode == 2 ? "PRMotorImtiazeCO" : "PRMotorImtiazeSP",
+        //        IdNumber = quotation.InsuredId.ToString(),
+        //        LanguageCode = GetCurrentLanguageCode(),
+        //        RequiredInceptionDate = quotation.PolicyEffectiveDate.ToString("yyyy-MM-dd", new CultureInfo("en-US")),
+        //        SpecialSchemeCode = string.IsNullOrEmpty(quotation.PromoCode) ? "AGGREGATOR" : quotation.PromoCode,
+        //        ProposalNumber = tawuniyaProposal.ProposalNumber
+        //    };
+        //    #endregion
 
-            #region ChannelDetails
-            request.CreateQuoteRequest.QuotationRequest.ChannelDetails = new List<ChannelDetail> {
-                new ChannelDetail
-                {
-                    ConsumerApplicationTypeReference ="TMNK",
-                    UserName =/*"FRS2050002"*/"FRS2050002",
-                    SourceCode ="755927",
-                    ChannelCode ="205"
-                }
-            };
-            #endregion
+        //    #region ChannelDetails
+        //    request.CreateQuoteRequest.QuotationRequest.ChannelDetails = new List<ChannelDetail> {
+        //        new ChannelDetail
+        //        {
+        //            ConsumerApplicationTypeReference ="TMNK",
+        //            UserName =/*"FRS2050002"*/"FRS2050002",
+        //            SourceCode ="755927",
+        //            ChannelCode ="205"
+        //        }
+        //    };
+        //    #endregion
 
-            #region customerDetails
+        //    #region customerDetails
 
-            var customerDetail = new CustomerDetail
-            {
-                FullNameInEnglish = $"{quotation.InsuredFirstNameEn} {quotation.InsuredMiddleNameEn} {quotation.InsuredLastNameEn}",
-                FirstNameEnglish = quotation.InsuredFirstNameEn,
-                MidNameEnglish = quotation.InsuredMiddleNameEn,
-                LastNameEnglish = quotation.InsuredLastNameEn,
-                FullNameInArabic = $"{quotation.InsuredFirstNameAr} {quotation.InsuredMiddleNameAr} {quotation.InsuredLastNameAr}",
-                FirstNameArabic = quotation.InsuredFirstNameAr,
-                MidNameArabic = quotation.InsuredMiddleNameAr,
-                LastNameArabic = quotation.InsuredLastNameAr,
-                NationalityCode = quotation.InsuredNationalityCode,
-                AddressCity = quotation.InsuredCity,
-                Occupation = quotation.InsuredOccupationCode,
-                MaritalStatus = quotation.InsuredSocialStatusCode,
-                Gender = quotation.InsuredGenderCode == "M" ? "1" : "2",
-                InsuredEducationCode = quotation.InsuredEducationCode?.ToString()
-            };
-            if (!string.IsNullOrEmpty(quotation.InsuredBirthDateG))
-            {
-                var birthDateG = quotation.InsuredBirthDateG.Split('-');
-                customerDetail.DobGreg = $"{birthDateG[2]}-{birthDateG[1]}-{birthDateG[0]}";
-            }
+        //    var customerDetail = new CustomerDetail
+        //    {
+        //        FullNameInEnglish = $"{quotation.InsuredFirstNameEn} {quotation.InsuredMiddleNameEn} {quotation.InsuredLastNameEn}",
+        //        FirstNameEnglish = quotation.InsuredFirstNameEn,
+        //        MidNameEnglish = quotation.InsuredMiddleNameEn,
+        //        LastNameEnglish = quotation.InsuredLastNameEn,
+        //        FullNameInArabic = $"{quotation.InsuredFirstNameAr} {quotation.InsuredMiddleNameAr} {quotation.InsuredLastNameAr}",
+        //        FirstNameArabic = quotation.InsuredFirstNameAr,
+        //        MidNameArabic = quotation.InsuredMiddleNameAr,
+        //        LastNameArabic = quotation.InsuredLastNameAr,
+        //        NationalityCode = quotation.InsuredNationalityCode,
+        //        AddressCity = quotation.InsuredCity,
+        //        Occupation = quotation.InsuredOccupationCode,
+        //        MaritalStatus = quotation.InsuredSocialStatusCode,
+        //        Gender = quotation.InsuredGenderCode == "M" ? "1" : "2",
+        //        InsuredEducationCode = quotation.InsuredEducationCode?.ToString()
+        //    };
+        //    if (!string.IsNullOrEmpty(quotation.InsuredBirthDateG))
+        //    {
+        //        var birthDateG = quotation.InsuredBirthDateG.Split('-');
+        //        customerDetail.DobGreg = $"{birthDateG[2]}-{birthDateG[1]}-{birthDateG[0]}";
+        //    }
 
-            if (quotation.InsuredIdTypeCode == 1)
-            {
-                if (!string.IsNullOrEmpty(quotation.InsuredBirthDateH))
-                {
-                    var birthDateH = quotation.InsuredBirthDateH.Split('-');
-                    customerDetail.DobHijri = $"{birthDateH[2]}-{birthDateH[1]}-{birthDateH[0]}";
-                }
-            }
+        //    if (quotation.InsuredIdTypeCode == 1)
+        //    {
+        //        if (!string.IsNullOrEmpty(quotation.InsuredBirthDateH))
+        //        {
+        //            var birthDateH = quotation.InsuredBirthDateH.Split('-');
+        //            customerDetail.DobHijri = $"{birthDateH[2]}-{birthDateH[1]}-{birthDateH[0]}";
+        //        }
+        //    }
 
-            request.CreateQuoteRequest.QuotationRequest.CustomerDetails = new List<CustomerDetail>
-            {
-                customerDetail
-            };
-            #endregion
+        //    request.CreateQuoteRequest.QuotationRequest.CustomerDetails = new List<CustomerDetail>
+        //    {
+        //        customerDetail
+        //    };
+        //    #endregion
 
-            #region vehicleDetails
-            string registrationExpiryDate = null;
-            if (!string.IsNullOrWhiteSpace(quotation.VehicleRegExpiryDate))
-            {
-                var registrationExpiryDateParts = quotation.VehicleRegExpiryDate.Split('-');
-                registrationExpiryDate = $"{registrationExpiryDateParts[2]}-{registrationExpiryDateParts[1]}-{registrationExpiryDateParts[0]}";
-            }
-            bool isVehicleRegistered = quotation.VehicleIdTypeCode == 1 ? true : false;
+        //    #region vehicleDetails
+        //    string registrationExpiryDate = null;
+        //    if (!string.IsNullOrWhiteSpace(quotation.VehicleRegExpiryDate))
+        //    {
+        //        var registrationExpiryDateParts = quotation.VehicleRegExpiryDate.Split('-');
+        //        registrationExpiryDate = $"{registrationExpiryDateParts[2]}-{registrationExpiryDateParts[1]}-{registrationExpiryDateParts[0]}";
+        //    }
+        //    bool isVehicleRegistered = quotation.VehicleIdTypeCode == 1 ? true : false;
 
-            var vehicleDetail = new VehicleDetail
-            {
-                PlateType = !string.IsNullOrWhiteSpace(quotation.VehiclePlateTypeCode) ? quotation.VehiclePlateTypeCode : "10",
-                MakeCode = quotation.VehicleMakerCode,
-                ModelCode = quotation.VehicleModelCode,
-                PlateNumber = quotation.VehiclePlateNumber.ToString(),
-                PlateText1 = quotation.VehiclePlateText1,
-                PlateText2 = quotation.VehiclePlateText2,
-                PlateText3 = quotation.VehiclePlateText3,
-                YearOfManufacture = quotation.VehicleModelYear.ToString(),
-                ChassisNumber = quotation.VehicleChassisNumber,
-                RegistrationExpiryDate = registrationExpiryDate,
-                Color = quotation.VehicleMajorColorCode,
-                RegistrationOfficeCity = quotation.VehicleRegPlace,
-                MajorDrivingCity = quotation.InsuredCity,
-                NCDYears = quotation.NCDFreeYears.ToString(),
-                InsurancePeriod = "1",
-                AgencyRepairRequired = quotation.VehicleAgencyRepair.Value ? "Y":"N",
-                UsageType = "PRIVATE",
-                Deductible = quotation.DeductibleValue.HasValue ? quotation.DeductibleValue.Value.ToString() : "",
-                VehicleValue = quotation.VehicleValue.HasValue ? quotation.VehicleValue.Value.ToString() : ""
-            };
+        //    var vehicleDetail = new VehicleDetail
+        //    {
+        //        PlateType = !string.IsNullOrWhiteSpace(quotation.VehiclePlateTypeCode) ? quotation.VehiclePlateTypeCode : "10",
+        //        MakeCode = quotation.VehicleMakerCode,
+        //        ModelCode = quotation.VehicleModelCode,
+        //        PlateNumber = quotation.VehiclePlateNumber.ToString(),
+        //        PlateText1 = quotation.VehiclePlateText1,
+        //        PlateText2 = quotation.VehiclePlateText2,
+        //        PlateText3 = quotation.VehiclePlateText3,
+        //        YearOfManufacture = quotation.VehicleModelYear.ToString(),
+        //        ChassisNumber = quotation.VehicleChassisNumber,
+        //        RegistrationExpiryDate = registrationExpiryDate,
+        //        Color = quotation.VehicleMajorColorCode,
+        //        RegistrationOfficeCity = quotation.VehicleRegPlace,
+        //        MajorDrivingCity = quotation.InsuredCity,
+        //        NCDYears = quotation.NCDFreeYears.ToString(),
+        //        InsurancePeriod = "1",
+        //        AgencyRepairRequired = quotation.VehicleAgencyRepair.Value ? "Y":"N",
+        //        UsageType = "PRIVATE",
+        //        Deductible = quotation.DeductibleValue.HasValue ? quotation.DeductibleValue.Value.ToString() : "",
+        //        VehicleValue = quotation.VehicleValue.HasValue ? quotation.VehicleValue.Value.ToString() : ""
+        //    };
 
-            if (isVehicleRegistered)
-            {
-                vehicleDetail.SerialNumber = quotation.VehicleId.ToString();
-            }
-            else
-            {
-                vehicleDetail.CustomCardNumber = quotation.VehicleId.ToString();
-            }
+        //    if (isVehicleRegistered)
+        //    {
+        //        vehicleDetail.SerialNumber = quotation.VehicleId.ToString();
+        //    }
+        //    else
+        //    {
+        //        vehicleDetail.CustomCardNumber = quotation.VehicleId.ToString();
+        //    }
 
-            if (quotation.VehicleOwnerTransfer)
-            {
-                vehicleDetail.VehicleTransferFlag = "Y";
-                vehicleDetail.TrassferCaseOwnerId = quotation.VehicleOwnerId.ToString();
-            }
-            else
-                vehicleDetail.VehicleTransferFlag = "N";
+        //    if (quotation.VehicleOwnerTransfer)
+        //    {
+        //        vehicleDetail.VehicleTransferFlag = "Y";
+        //        vehicleDetail.TrassferCaseOwnerId = quotation.VehicleOwnerId.ToString();
+        //    }
+        //    else
+        //        vehicleDetail.VehicleTransferFlag = "N";
 
-            #region VehicleMoreInfo
+        //    #region VehicleMoreInfo
 
-            vehicleDetail.VehicleMoreInfo = new List<VehicleMoreInfo>()
-            {
-                new VehicleMoreInfo
-                {
-                    AnnualMileage=quotation.VehicleMileageExpectedAnnualCode?.ToString(),
-                    AxleWeightCode = quotation.VehicleAxleWeightCode.ToString(),
-                    EngineSizeCode=quotation.VehicleEngineSizeCode?.ToString(),
-                    Mileage = quotation.VehicleMileage?.ToString(),
-                    OverNightParkCode=quotation.VehicleOvernightParkingLocationCode?.ToString()
-                }
-            };
-            #endregion
+        //    vehicleDetail.VehicleMoreInfo = new List<VehicleMoreInfo>()
+        //    {
+        //        new VehicleMoreInfo
+        //        {
+        //            AnnualMileage=quotation.VehicleMileageExpectedAnnualCode?.ToString(),
+        //            AxleWeightCode = quotation.VehicleAxleWeightCode.ToString(),
+        //            EngineSizeCode=quotation.VehicleEngineSizeCode?.ToString(),
+        //            Mileage = quotation.VehicleMileage?.ToString(),
+        //            OverNightParkCode=quotation.VehicleOvernightParkingLocationCode?.ToString()
+        //        }
+        //    };
+        //    #endregion
 
-            #region VehicleDriverDetails
+        //    #region VehicleDriverDetails
 
-            if (quotation.Drivers != null)
-            {
-                vehicleDetail.VehicleDriverDetails = new List<VehicleDriverDetail>();
-                foreach (var driver in quotation.Drivers)
-                {
-                    var diverBirthDate = driver.DriverBirthDate.Split('-');
-                    var vehicleDriver = new VehicleDriverDetail
-                    {
-                        IdNo = driver.DriverId.ToString(),
-                        EName = $"{driver.DriverFirstNameEn} {driver.DriverMiddleNameEn} {driver.DriverLastNameEn}",
-                        EFirstName = driver.DriverFirstNameEn,
-                        EMiddleName = driver.DriverMiddleNameEn,
-                        ELastName = driver.DriverLastNameEn,
-                        AName = $"{driver.DriverFirstNameAr} {driver.DriverMiddleNameAr} {driver.DriverLastNameAr}",
-                        AFirstName = driver.DriverFirstNameAr,
-                        AMiddleName = driver.DriverMiddleNameAr,
-                        ALastName = driver.DriverLastNameAr,
-                        Gender = driver.DriverGenderCode == "M" ? "1" : "2",
-                        DriverType = driver.DriverTypeCode == 1 ? "MD" : "AD",
-                        NationalityCode = driver.DriverNationalityCode,
-                        SocialStatusCode = driver.DriverSocialStatusCode,
-                        EducationCode = driver.DriverEducationCode?.ToString(),
-                        MedicalConditionCode = driver.DriverMedicalConditionCode?.ToString(),
-                        ChildrenBelow16Years = driver.DriverChildrenBelow16Years?.ToString(),
-                        NCD = driver.DriverNCDFreeYears?.ToString(),
-                        Relation = "PH"
-                    };
-                    if (driver.DriverIdTypeCode == 1)
-                    {
-                        vehicleDriver.DobHijri = $"{diverBirthDate[2]}-{diverBirthDate[1]}-{diverBirthDate[0]}";
-                    }
-                    else
-                    {
-                        vehicleDriver.DobGreg = driver.DriverBirthDateG.ToString("yyyy-MM-dd", new CultureInfo("en-US"));//$"{diverBirthDate[2]}-{diverBirthDate[1]}-{diverBirthDate[0]}";
-                    }
+        //    if (quotation.Drivers != null)
+        //    {
+        //        vehicleDetail.VehicleDriverDetails = new List<VehicleDriverDetail>();
+        //        foreach (var driver in quotation.Drivers)
+        //        {
+        //            var diverBirthDate = driver.DriverBirthDate.Split('-');
+        //            var vehicleDriver = new VehicleDriverDetail
+        //            {
+        //                IdNo = driver.DriverId.ToString(),
+        //                EName = $"{driver.DriverFirstNameEn} {driver.DriverMiddleNameEn} {driver.DriverLastNameEn}",
+        //                EFirstName = driver.DriverFirstNameEn,
+        //                EMiddleName = driver.DriverMiddleNameEn,
+        //                ELastName = driver.DriverLastNameEn,
+        //                AName = $"{driver.DriverFirstNameAr} {driver.DriverMiddleNameAr} {driver.DriverLastNameAr}",
+        //                AFirstName = driver.DriverFirstNameAr,
+        //                AMiddleName = driver.DriverMiddleNameAr,
+        //                ALastName = driver.DriverLastNameAr,
+        //                Gender = driver.DriverGenderCode == "M" ? "1" : "2",
+        //                DriverType = driver.DriverTypeCode == 1 ? "MD" : "AD",
+        //                NationalityCode = driver.DriverNationalityCode,
+        //                SocialStatusCode = driver.DriverSocialStatusCode,
+        //                EducationCode = driver.DriverEducationCode?.ToString(),
+        //                MedicalConditionCode = driver.DriverMedicalConditionCode?.ToString(),
+        //                ChildrenBelow16Years = driver.DriverChildrenBelow16Years?.ToString(),
+        //                NCD = driver.DriverNCDFreeYears?.ToString(),
+        //                Relation = "PH"
+        //            };
+        //            if (driver.DriverIdTypeCode == 1)
+        //            {
+        //                vehicleDriver.DobHijri = $"{diverBirthDate[2]}-{diverBirthDate[1]}-{diverBirthDate[0]}";
+        //            }
+        //            else
+        //            {
+        //                vehicleDriver.DobGreg = driver.DriverBirthDateG.ToString("yyyy-MM-dd", new CultureInfo("en-US"));//$"{diverBirthDate[2]}-{diverBirthDate[1]}-{diverBirthDate[0]}";
+        //            }
 
-                    vehicleDriver.HomeAddress = new HomeAddress
-                    {
-                        HomeCityName = driver.DriverHomeCity
-                    };
-                    vehicleDetail.VehicleDriverDetails.Add(vehicleDriver);
-                }
+        //            vehicleDriver.HomeAddress = new HomeAddress
+        //            {
+        //                HomeCityName = driver.DriverHomeCity
+        //            };
+        //            vehicleDetail.VehicleDriverDetails.Add(vehicleDriver);
+        //        }
 
-            }
+        //    }
 
-            #endregion
+        //    #endregion
 
-            request.CreateQuoteRequest.QuotationRequest.VehicleDetails = new List<VehicleDetail>
-            {
-                vehicleDetail,
-            };
+        //    request.CreateQuoteRequest.QuotationRequest.VehicleDetails = new List<VehicleDetail>
+        //    {
+        //        vehicleDetail,
+        //    };
 
-            #endregion
+        //    #endregion
 
-            return request;
-        }
+        //    return request;
+        //}
 
         private static List<BenefitDto> GetProductBenefitsNew(List<ApplicableFeatureGroup> applicableFeatureGroup, bool isSandPlus)
         {

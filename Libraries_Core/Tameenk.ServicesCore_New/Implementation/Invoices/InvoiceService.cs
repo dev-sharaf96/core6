@@ -163,66 +163,66 @@ namespace Tameenk.Services.Implementation.Invoices
             }
             return new PagedList<Invoice>(query, pageIndex, pageSize, sortField, sortOrder);
         }
-        public List<InvoiceModel> GetAutoleasingInvoice(InvoiceFilters filter, int bankId, int pageIndex, int pageSize, out int totalCount, out string exception)
-        {
-            var dbContext = EngineContext.Current.Resolve<IDbContext>();
-            exception = string.Empty;
-            totalCount = 0;
-            try
-            {
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetAutoleasingInvoice";
-                command.CommandType = CommandType.StoredProcedure;
-                dbContext.DatabaseInstance.CommandTimeout = 60;
+        //public List<InvoiceModel> GetAutoleasingInvoice(InvoiceFilters filter, int bankId, int pageIndex, int pageSize, out int totalCount, out string exception)
+        //{
+        //    var dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //    exception = string.Empty;
+        //    totalCount = 0;
+        //    try
+        //    {
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetAutoleasingInvoice";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        dbContext.DatabaseInstance.CommandTimeout = 60;
 
-                if (filter.InsuranceCompanyId.HasValue)
-                {
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@insuranceCompanyID", Value = filter.InsuranceCompanyId.Value });
-                }
-                if (filter.StartDate.HasValue)
-                {
-                    DateTime dtStart = new DateTime(filter.StartDate.Value.Year, filter.StartDate.Value.Month, filter.StartDate.Value.Day, 0, 0, 0);
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@startDate", Value = dtStart });
-                }
-                if (filter.EndDate.HasValue)
-                {
-                    DateTime dtEnd = new DateTime(filter.EndDate.Value.Year, filter.EndDate.Value.Month, filter.EndDate.Value.Day, 23, 59, 59);
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@endDate", Value = dtEnd });
-                }
-                if (!string.IsNullOrEmpty(filter.ReferenceId))
-                {
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@ReferenceId", Value = filter.ReferenceId });
-                } 
-                if (!string.IsNullOrEmpty(filter.NIN))
-                {
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@NIN", Value = filter.NIN });
-                } 
-                if (!string.IsNullOrEmpty(filter.PolicyNo))
-                {
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@PolicyNo", Value = filter.PolicyNo });
-                } 
-                if (filter.InvoiceNo.HasValue)
-                {
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@InvoiceNo", Value = filter.InvoiceNo });
-                }
-                command.Parameters.Add(new SqlParameter() { ParameterName = "@bankId", Value = bankId });
-                command.Parameters.Add(new SqlParameter() { ParameterName = "@pageNumber", Value = pageIndex });
-                command.Parameters.Add(new SqlParameter() { ParameterName = "@pageSize", Value = pageSize });
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                List<InvoiceModel> data = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<InvoiceModel>(reader).ToList();
-                    reader.NextResult();
-                    totalCount = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
-                dbContext.DatabaseInstance.Connection.Close();
-                return data;
-            }
-            catch (Exception ex)
-            {
-                dbContext.DatabaseInstance.Connection.Close();
-                exception = ex.ToString();
-                return null;
-            }
-        }
+        //        if (filter.InsuranceCompanyId.HasValue)
+        //        {
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@insuranceCompanyID", Value = filter.InsuranceCompanyId.Value });
+        //        }
+        //        if (filter.StartDate.HasValue)
+        //        {
+        //            DateTime dtStart = new DateTime(filter.StartDate.Value.Year, filter.StartDate.Value.Month, filter.StartDate.Value.Day, 0, 0, 0);
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@startDate", Value = dtStart });
+        //        }
+        //        if (filter.EndDate.HasValue)
+        //        {
+        //            DateTime dtEnd = new DateTime(filter.EndDate.Value.Year, filter.EndDate.Value.Month, filter.EndDate.Value.Day, 23, 59, 59);
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@endDate", Value = dtEnd });
+        //        }
+        //        if (!string.IsNullOrEmpty(filter.ReferenceId))
+        //        {
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@ReferenceId", Value = filter.ReferenceId });
+        //        } 
+        //        if (!string.IsNullOrEmpty(filter.NIN))
+        //        {
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@NIN", Value = filter.NIN });
+        //        } 
+        //        if (!string.IsNullOrEmpty(filter.PolicyNo))
+        //        {
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@PolicyNo", Value = filter.PolicyNo });
+        //        } 
+        //        if (filter.InvoiceNo.HasValue)
+        //        {
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@InvoiceNo", Value = filter.InvoiceNo });
+        //        }
+        //        command.Parameters.Add(new SqlParameter() { ParameterName = "@bankId", Value = bankId });
+        //        command.Parameters.Add(new SqlParameter() { ParameterName = "@pageNumber", Value = pageIndex });
+        //        command.Parameters.Add(new SqlParameter() { ParameterName = "@pageSize", Value = pageSize });
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        List<InvoiceModel> data = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<InvoiceModel>(reader).ToList();
+        //            reader.NextResult();
+        //            totalCount = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
+        //        dbContext.DatabaseInstance.Connection.Close();
+        //        return data;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        dbContext.DatabaseInstance.Connection.Close();
+        //        exception = ex.ToString();
+        //        return null;
+        //    }
+        //}
 
         /// <summary>
         /// get invoice file by id

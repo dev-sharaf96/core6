@@ -12,7 +12,7 @@ namespace Tameenk.Services.Core.Policies
 {
     public interface ICustomCardQueueService
     {
-        List<CustomCardQueue> GetFromCustomCardQueue(out string exception);
+        //List<CustomCardQueue> GetFromCustomCardQueue(out string exception);
         bool GetAndUpdateCustomCardProcessingQueue(int id, CustomCardQueue policy, string serverIP, out string exception);
         void AddCustomCardQueue(CheckoutDetail input, string policyNo);
      

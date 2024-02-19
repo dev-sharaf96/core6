@@ -53,7 +53,7 @@ namespace Tameenk.Services.Core.Invoices
         /// <param name="id">ID</param>
         /// <returns></returns>
         InvoiceFile GetInvoiceFile(int id);
-        List<InvoiceModel> GetAutoleasingInvoice(InvoiceFilters filter, int bankId,int pageIndex, int pageSize, out int totalCount, out string exception);
+        //List<InvoiceModel> GetAutoleasingInvoice(InvoiceFilters filter, int bankId,int pageIndex, int pageSize, out int totalCount, out string exception);
         IPagedList<CommissionsAndFees> GetCommissionAfterFilters(int? companycode, int? producttype, int pageIndex = 0, int pageSize = int.MaxValue, string sortField = null, bool sortOrder = false);
         string UpdateCommessionsAndFees(CommissionAndFeesModel commission, out string exception);
     }

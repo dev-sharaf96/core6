@@ -29,7 +29,7 @@ using Tameenk.Integration.Providers.Wataniya.MappingResources;
 using Tameenk.Loggin.DAL;
 using Tameenk.Resources.WebResources;
 using Tameenk.Services.Core.Addresses;
-using Tameenk.Services.Core.Checkouts;
+//using Tameenk.Services.Core.Checkouts;
 using Tameenk.Services.Core.Http;
 using Tameenk.Services.Core.Policies;
 using Tameenk.Services.Core.Quotations;
@@ -159,19 +159,19 @@ namespace Tameenk.Integration.Providers.Wataniya
             return output.Output;
         }
 
-        protected override object ExecuteAutoleasingQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
-        {
-            //in case test mode execute the code from the base.
-            if (_tameenkConfig.Quotatoin.TestMode)
-                return base.ExecuteAutoleasingQuotationRequest(quotation, predefinedLogInfo);
+        //protected override object ExecuteAutoleasingQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        //{
+        //    //in case test mode execute the code from the base.
+        //    if (_tameenkConfig.Quotatoin.TestMode)
+        //        return base.ExecuteAutoleasingQuotationRequest(quotation, predefinedLogInfo);
 
-            ServiceOutput output = SubmitAutLoeasingQuotationRequest(quotation, predefinedLogInfo);
-            if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
-            {
-                return null;
-            }
-            return output.Output;
-        }
+        //    ServiceOutput output = SubmitAutLoeasingQuotationRequest(quotation, predefinedLogInfo);
+        //    if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
+        //    {
+        //        return null;
+        //    }
+        //    return output.Output;
+        //}
 
         protected override ServiceOutput SubmitQuotationRequest(QuotationServiceRequest quoteModel, ServiceRequestLog log)
         {
@@ -389,176 +389,176 @@ namespace Tameenk.Integration.Providers.Wataniya
             }
         }
 
-        private ServiceOutput SubmitAutLoeasingQuotationRequest(QuotationServiceRequest quoteModel, ServiceRequestLog log)
-        {
-            ServiceOutput output = new ServiceOutput();
-            if (string.IsNullOrEmpty(log.Channel))
-                log.Channel = "AutoLease";
-            log.ServiceURL = _restfulConfiguration.GenerateAutoleasingQuotationUrl;
-            log.ServerIP = ServicesUtilities.GetServerIP();
-            log.Method = "AutoleasingQuotation";
-            log.ReferenceId = quoteModel.ReferenceId;
-            log.CompanyName = "Wataniya";
-            log.VehicleId = quoteModel.VehicleId.ToString();
-            log.VehicleMaker = quoteModel?.VehicleMaker;
-            log.VehicleMakerCode = quoteModel?.VehicleMakerCode;
-            log.VehicleModel = quoteModel?.VehicleModel;
-            log.VehicleModelCode = quoteModel?.VehicleModelCode;
-            log.VehicleModelYear = quoteModel?.VehicleModelYear;
+        //private ServiceOutput SubmitAutLoeasingQuotationRequest(QuotationServiceRequest quoteModel, ServiceRequestLog log)
+        //{
+        //    ServiceOutput output = new ServiceOutput();
+        //    if (string.IsNullOrEmpty(log.Channel))
+        //        log.Channel = "AutoLease";
+        //    log.ServiceURL = _restfulConfiguration.GenerateAutoleasingQuotationUrl;
+        //    log.ServerIP = ServicesUtilities.GetServerIP();
+        //    log.Method = "AutoleasingQuotation";
+        //    log.ReferenceId = quoteModel.ReferenceId;
+        //    log.CompanyName = "Wataniya";
+        //    log.VehicleId = quoteModel.VehicleId.ToString();
+        //    log.VehicleMaker = quoteModel?.VehicleMaker;
+        //    log.VehicleMakerCode = quoteModel?.VehicleMakerCode;
+        //    log.VehicleModel = quoteModel?.VehicleModel;
+        //    log.VehicleModelCode = quoteModel?.VehicleModelCode;
+        //    log.VehicleModelYear = quoteModel?.VehicleModelYear;
 
-            var stringPayload = string.Empty;
-            HttpResponseMessage response = new HttpResponseMessage();
-            try
-            {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
-                if (testMode)
-                {
-                    const string nameOfFile = ".TestData.quotationTestData.json";
-                    string responseData = ReadResource(GetType().Namespace, nameOfFile);
-                    HttpResponseMessage message = new HttpResponseMessage();
-                    message.Content = new StringContent(responseData);
-                    message.StatusCode = System.Net.HttpStatusCode.OK;
+        //    var stringPayload = string.Empty;
+        //    HttpResponseMessage response = new HttpResponseMessage();
+        //    try
+        //    {
+        //        var testMode = _tameenkConfig.Quotatoin.TestMode;
+        //        if (testMode)
+        //        {
+        //            const string nameOfFile = ".TestData.quotationTestData.json";
+        //            string responseData = ReadResource(GetType().Namespace, nameOfFile);
+        //            HttpResponseMessage message = new HttpResponseMessage();
+        //            message.Content = new StringContent(responseData);
+        //            message.StatusCode = System.Net.HttpStatusCode.OK;
 
-                    output.Output = message;
-                    output.ErrorCode = ServiceOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
+        //            output.Output = message;
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.Success;
+        //            output.ErrorDescription = "Success";
 
-                    return output;
-                }
+        //            return output;
+        //        }
 
-                // quotation service call
-                var quotation = MappingWataniyaAutoLeasingQuotationRequest(quoteModel);
-                //if (quoteModel.BankId == 2)// Alyusr
-                //    _restfulConfiguration.AutoleasingAccessToken = "Yusr.BacreAutolease:Yusr@123";
-              if (quoteModel.BankId == 3)//Aljaber
-                    _restfulConfiguration.AutoleasingAccessToken = "Aljabr_Bcare:Aljabr@123";
+        //        // quotation service call
+        //        var quotation = MappingWataniyaAutoLeasingQuotationRequest(quoteModel);
+        //        //if (quoteModel.BankId == 2)// Alyusr
+        //        //    _restfulConfiguration.AutoleasingAccessToken = "Yusr.BacreAutolease:Yusr@123";
+        //      if (quoteModel.BankId == 3)//Aljaber
+        //            _restfulConfiguration.AutoleasingAccessToken = "Aljabr_Bcare:Aljabr@123";
 
-                log.ServiceRequest = JsonConvert.SerializeObject(quotation);
-                var _autoLeaseAccesToken = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AutoleasingAccessToken));
-                DateTime dtBeforeCalling = DateTime.Now;
-                var postTask = _httpClient.PostAsyncWithCertificate(_restfulConfiguration.GenerateAutoleasingQuotationUrl, quotation, AUTOLEASE_CERTIFCATE_BATH, AUTOLEASE_CERTIFCATE_PASSWORD, _autoLeaseAccesToken, authorizationMethod: "Basic");
-                postTask.Wait();
-                DateTime dtAfterCalling = DateTime.Now;
-                response = postTask.Result;
-                log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
-                if (response == null)
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (response.Content == null)
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content result return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+        //        log.ServiceRequest = JsonConvert.SerializeObject(quotation);
+        //        var _autoLeaseAccesToken = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AutoleasingAccessToken));
+        //        DateTime dtBeforeCalling = DateTime.Now;
+        //        var postTask = _httpClient.PostAsyncWithCertificate(_restfulConfiguration.GenerateAutoleasingQuotationUrl, quotation, AUTOLEASE_CERTIFCATE_BATH, AUTOLEASE_CERTIFCATE_PASSWORD, _autoLeaseAccesToken, authorizationMethod: "Basic");
+        //        postTask.Wait();
+        //        DateTime dtAfterCalling = DateTime.Now;
+        //        response = postTask.Result;
+        //        log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
+        //        if (response == null)
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (response.Content == null)
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content result return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
 
-                var desrialisedObj = JsonConvert.DeserializeObject<WatnyiaAutoLeaseQuotationResponse>(response.Content.ReadAsStringAsync().Result);
-                if (desrialisedObj != null && desrialisedObj.Status != 1 && desrialisedObj.ErrorList != null && desrialisedObj.ErrorList.Count > 0)
-                {
-                    StringBuilder servcieErrors = new StringBuilder();
-                    StringBuilder servcieErrorsCodes = new StringBuilder();
+        //        var desrialisedObj = JsonConvert.DeserializeObject<WatnyiaAutoLeaseQuotationResponse>(response.Content.ReadAsStringAsync().Result);
+        //        if (desrialisedObj != null && desrialisedObj.Status != 1 && desrialisedObj.ErrorList != null && desrialisedObj.ErrorList.Count > 0)
+        //        {
+        //            StringBuilder servcieErrors = new StringBuilder();
+        //            StringBuilder servcieErrorsCodes = new StringBuilder();
 
-                    foreach (var error in desrialisedObj.ErrorList)
-                    {
-                        servcieErrors.AppendLine("Error Code: " + error.ErrorCode + " and the error message : " + error.ErrorMessage);
-                        servcieErrorsCodes.AppendLine(error.ErrorCode);
-                    }
+        //            foreach (var error in desrialisedObj.ErrorList)
+        //            {
+        //                servcieErrors.AppendLine("Error Code: " + error.ErrorCode + " and the error message : " + error.ErrorMessage);
+        //                servcieErrorsCodes.AppendLine(error.ErrorCode);
+        //            }
 
-                    output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "Quotation Service response error is : " + servcieErrors.ToString();
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = servcieErrorsCodes.ToString();
-                    log.ServiceErrorDescription = servcieErrors.ToString();
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "Quotation Service response error is : " + servcieErrors.ToString();
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = servcieErrorsCodes.ToString();
+        //            log.ServiceErrorDescription = servcieErrors.ToString();
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
 
-                if (desrialisedObj.Policy == null)
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content result return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
+        //        if (desrialisedObj.Policy == null)
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content result return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
 
-                var initialDraftModel = new WataniyaDraftPolicy();
-                initialDraftModel.ReferenceId = quoteModel.ReferenceId;
-                //initialDraftModel.ReferenceId = quotation.Policy.RequestReferenceNumber.ToString();
-                initialDraftModel.QuotationNumber = desrialisedObj.Policy.ReferenceNumber;
-                initialDraftModel.PolicyEffectiveDate = quotation.Policy.PolicyEffectiveDate;
-                initialDraftModel.PolicyExpiryDate = quotation.Policy.PolicyExpiryDate;
-                initialDraftModel.Channel = log.Channel;
-                initialDraftModel.Method = log.Method;
-                initialDraftModel.UserName = log.UserName;
-                initialDraftModel.UserID = log.UserID;
-                initialDraftModel.CreatedDate = log.CreatedDate;
+        //        var initialDraftModel = new WataniyaDraftPolicy();
+        //        initialDraftModel.ReferenceId = quoteModel.ReferenceId;
+        //        //initialDraftModel.ReferenceId = quotation.Policy.RequestReferenceNumber.ToString();
+        //        initialDraftModel.QuotationNumber = desrialisedObj.Policy.ReferenceNumber;
+        //        initialDraftModel.PolicyEffectiveDate = quotation.Policy.PolicyEffectiveDate;
+        //        initialDraftModel.PolicyExpiryDate = quotation.Policy.PolicyExpiryDate;
+        //        initialDraftModel.Channel = log.Channel;
+        //        initialDraftModel.Method = log.Method;
+        //        initialDraftModel.UserName = log.UserName;
+        //        initialDraftModel.UserID = log.UserID;
+        //        initialDraftModel.CreatedDate = log.CreatedDate;
 
-                string exception = string.Empty;
-                var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
-                _quotationService.InsertOrupdateWataniyaAutoleasePolicyInfo(initialDraftModel, out exception);
-                if (!string.IsNullOrEmpty(exception))
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "Error happend when try to insert Initial policy info " + exception;
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorDescription.ToString();
-                    log.ServiceErrorDescription = log.ErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
+        //        string exception = string.Empty;
+        //        var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
+        //        _quotationService.InsertOrupdateWataniyaAutoleasePolicyInfo(initialDraftModel, out exception);
+        //        if (!string.IsNullOrEmpty(exception))
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "Error happend when try to insert Initial policy info " + exception;
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorDescription.ToString();
+        //            log.ServiceErrorDescription = log.ErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
 
-                output.Output = response;
-                output.ErrorCode = ServiceOutput.ErrorCodes.Success;
-                output.ErrorDescription = "Success";
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                log.ServiceErrorCode = log.ErrorCode.ToString();
-                log.ServiceErrorDescription = log.ServiceErrorDescription;
-                //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-            catch (Exception ex)
-            {
-                output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
-                output.ErrorDescription = ex.ToString();
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
+        //        output.Output = response;
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.Success;
+        //        output.ErrorDescription = "Success";
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        log.ServiceErrorCode = log.ErrorCode.ToString();
+        //        log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //        //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
+        //        output.ErrorDescription = ex.ToString();
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
 
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-        }
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //}
 
         #region Common Methods
 
@@ -2960,701 +2960,701 @@ namespace Tameenk.Integration.Providers.Wataniya
             return errors;
         }
 
-        #region Autolease Draft Policy
-
-        public override ServiceOutput GetWataniyaAutoleasingDraftpolicy(QuotationServiceRequest quotation, Product selectedProduct, ServiceRequestLog predefinedLogInfo)
-        {
-            ServiceOutput serviceOutput = new ServiceOutput();
-            var output = SubmitAutLoeasingDraftPolicyRequest(quotation, selectedProduct, predefinedLogInfo);
-            if (output.ErrorCode == ServiceOutput.ErrorCodes.Success)
-            {
-                serviceOutput.ErrorCode = ServiceOutput.ErrorCodes.Success;
-                serviceOutput.Output = output.Output;
-                return serviceOutput;
-            }
-            else
-            {
-                serviceOutput.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                serviceOutput.ErrorDescription = output.ErrorDescription;
-                return serviceOutput;
-            }
-        }
-
-        private ServiceOutput SubmitAutLoeasingDraftPolicyRequest(QuotationServiceRequest quoteModel, Product selectedProduct, ServiceRequestLog log)
-        {
-            ServiceOutput output = new ServiceOutput();
-            if (string.IsNullOrEmpty(log.Channel))
-                log.Channel = "AutoLease";
-            log.ServiceURL = GET_AUTOLEASE_DRAFTPOLICY_URL;
-            log.ServerIP = ServicesUtilities.GetServerIP();
-            log.Method = "AutoleasingDraftPolicy";
-            log.CompanyName = _restfulConfiguration.ProviderName;
-            log.VehicleMaker = quoteModel?.VehicleMaker;
-            log.VehicleMakerCode = quoteModel?.VehicleMakerCode.ToString();
-            log.VehicleModel = quoteModel?.VehicleModel;
-            log.VehicleModelCode = quoteModel?.VehicleModelCode.ToString();
-            log.VehicleModelYear = quoteModel?.VehicleModelYear;
-            log.DriverNin = quoteModel.Drivers.FirstOrDefault().DriverId.ToString();
-            log.VehicleId = quoteModel.VehicleId.ToString();
-            log.ReferenceId = quoteModel.ReferenceId;
-
-            var stringPayload = string.Empty;
-            HttpResponseMessage response = new HttpResponseMessage();
-            try
-            {
-                WatnyiaAutoLeaseDraftPolicyRequest draftPolicyRequest = HandleAutoleasingDreaftPolicyRequest(quoteModel, selectedProduct);
-                log.ServiceRequest = JsonConvert.SerializeObject(draftPolicyRequest);
-
-                //if (quoteModel.BankId == 2)// Alyusr
-                //    _restfulConfiguration.AutoleasingAccessToken = "Yusr.BacreAutolease:Yusr@123";
-                 if (quoteModel.BankId == 3)//Aljaber
-                    _restfulConfiguration.AutoleasingAccessToken = "Aljabr_Bcare:Aljabr@123";
-
-                var _autoLeaseAccesToken = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AutoleasingAccessToken));
-                DateTime dtBeforeCalling = DateTime.Now;
-                var postTask = _httpClient.PostAsyncWithCertificate(GET_AUTOLEASE_DRAFTPOLICY_URL, draftPolicyRequest, AUTOLEASE_CERTIFCATE_BATH, AUTOLEASE_CERTIFCATE_PASSWORD, _autoLeaseAccesToken, authorizationMethod: "Basic");
-                postTask.Wait();
-                response = postTask.Result;
-                DateTime dtAfterCalling = DateTime.Now;
-                log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
-                if (response == null)
-                {
-                    log.ErrorCode = (int)ServiceOutput.ErrorCodes.NullResponse;
-                    log.ErrorDescription = "Draft Policy Service return null";
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (response.Content == null)
-                {
-                    log.ErrorCode = (int)ServiceOutput.ErrorCodes.NullResponse;
-                    log.ErrorDescription = "Draft Policy Service response content return null";
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
-                {
-                    log.ErrorCode = (int)ServiceOutput.ErrorCodes.NullResponse;
-                    log.ErrorDescription = "Draft Policy Service response content result return null";
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-
-                var desrialisedObj = JsonConvert.DeserializeObject<WatnyiaAutoLeaseDraftPolicyResponse>(response.Content.ReadAsStringAsync().Result);
-                if (desrialisedObj != null && desrialisedObj.ErrorList != null)
-                {
-                    StringBuilder servcieErrors = new StringBuilder();
-                    StringBuilder servcieErrorsCodes = new StringBuilder();
-
-                    foreach (var error in desrialisedObj.ErrorList)
-                    {
-                        servcieErrors.AppendLine("Error Code: " + error.ErrorCode + " and the error message : " + error.ErrorMessage);
-                        servcieErrorsCodes.AppendLine(error.ErrorCode);
-                    }
-
-                    output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "Autolease Draft Policy Service response error is : " + servcieErrors.ToString();
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = servcieErrorsCodes.ToString();
-                    log.ServiceErrorDescription = servcieErrors.ToString();
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-
-                var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
-                var initialDraftModel = _quotationService.GetWataniyaAutoleasePolicyInfoByReference(quoteModel.ReferenceId);
-                if (initialDraftModel == null)
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "No Wataniya Draft Policy Info created for this reference " + quoteModel.ReferenceId;
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-
-                string exception = string.Empty;
-                initialDraftModel.QuotationNumber = desrialisedObj.Policy.QuotationNumber;
-                initialDraftModel.ReferenceNumber = desrialisedObj.Policy.ReferenceNumber;
-                _quotationService.InsertOrupdateWataniyaAutoleasePolicyInfo(initialDraftModel, out exception);
-                if (!string.IsNullOrEmpty(exception))
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "Error happend wheb try to insert Initial policy info " + exception;
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorDescription.ToString();
-                    log.ServiceErrorDescription = log.ErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-
-                output.Output = response;
-                output.ErrorCode = ServiceOutput.ErrorCodes.Success;
-                output.ErrorDescription = "Success";
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                log.ServiceErrorCode = log.ErrorCode.ToString();
-                log.ServiceErrorDescription = log.ServiceErrorDescription;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-            catch (Exception ex)
-            {
-                output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
-                output.ErrorDescription = ex.ToString();
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-        }
-
-        private WatnyiaAutoLeaseDraftPolicyRequest HandleAutoleasingDreaftPolicyRequest(QuotationServiceRequest quoteModel, Product selectedProduct)
-        {
-            var wataniyaAutoLeasingQuotation = new WatnyiaAutoLeaseDraftPolicyRequest();
-            wataniyaAutoLeasingQuotation.Policy = HandleAutoLeasingDraftPolicyDetails(quoteModel);
-            wataniyaAutoLeasingQuotation.PolicyRiskList = HandleAutoLeasingDraftPolicyRiskListDetails(quoteModel, selectedProduct);
-
-            return wataniyaAutoLeasingQuotation;
-        }
-
-        private DraftPolicyRequest HandleAutoLeasingDraftPolicyDetails(QuotationServiceRequest quoteModel)
-        {
-            var wataniyaAutoLeasingQuotationPolicyDetails = new DraftPolicyRequest();
-
-            var draftPolicyInitialData = _quotationService.GetWataniyaDraftPolicyInitialData(quoteModel.ReferenceId);
-            if (draftPolicyInitialData != null)
-            {
-                wataniyaAutoLeasingQuotationPolicyDetails.ReferenceNumber = draftPolicyInitialData.QuotationNumber; // will be from WataniyaDraftPolicy (QuoteReferenceNo)
-                wataniyaAutoLeasingQuotationPolicyDetails.PolicyEffectiveDate = draftPolicyInitialData.PolicyEffectiveDate; // will be from WataniyaDraftPolicy (PolicyEffectiveDate)
-                wataniyaAutoLeasingQuotationPolicyDetails.PolicyExpiryDate = draftPolicyInitialData.PolicyExpiryDate; // will be from WataniyaDraftPolicy (PolicyExpiryDate)
-            }
-
-            return wataniyaAutoLeasingQuotationPolicyDetails;
-        }
-
-        private List<DraftPolicyRiskListRequest> HandleAutoLeasingDraftPolicyRiskListDetails(QuotationServiceRequest quoteModel, Product selectedProduct)
-        {
-            var wataniyaAutoLeasingDraftPolicyRiskList = new List<DraftPolicyRiskListRequest>();
-            var wataniyaAutoLeasingDraftPolicyRiskObjectDetails = new DraftPolicyRiskListRequest();
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.SequenceNo = quoteModel.VehicleId.ToString();
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.CustomID = quoteModel.VehicleId.ToString();
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.UseOfVehicle = "Private / Commercial but not for Domestic Drivers or Transportation of Public & Goods"; // as per felwa and wataniya said
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.RepairCondition = (quoteModel.VehicleAgencyRepair.HasValue && quoteModel.VehicleAgencyRepair.Value) ? 1 : 2;
-            if (!string.IsNullOrEmpty(quoteModel.VehiclePlateTypeCode))
-                wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PlateType = int.Parse(quoteModel.VehiclePlateTypeCode);
-            if (quoteModel.VehiclePlateNumber.HasValue)
-                wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PlateNo = quoteModel.VehiclePlateNumber.Value;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PlateNoA = quoteModel.VehiclePlateText1;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PlateNoB = quoteModel.VehiclePlateText2;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PlateNoC = quoteModel.VehiclePlateText3;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.IstmaraExpiryDate = "";
-            if (quoteModel.VehicleOvernightParkingLocationCode.HasValue)
-                wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleNightParking = quoteModel.VehicleOvernightParkingLocationCode.Value;
-            if (quoteModel.VehicleTransmissionTypeCode.HasValue)
-                wataniyaAutoLeasingDraftPolicyRiskObjectDetails.TransmissionType = quoteModel.VehicleTransmissionTypeCode.Value;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.IsThereAdditionalModification = (quoteModel.VehicleModification) ? 1 : 0;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.InterestDescription = (!string.IsNullOrEmpty(quoteModel.VehicleModificationDetails)) ? quoteModel.VehicleModificationDetails : "";
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.AntiLockBrakingSystem = (quoteModel.HasAntiTheftAlarm.HasValue && quoteModel.HasAntiTheftAlarm.Value) ? 1 : 2;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.FireExtinguisher = (quoteModel.HasFireExtinguisher.HasValue && quoteModel.HasFireExtinguisher.Value) ? 1 : 2;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.Weight = quoteModel.VehicleWeight;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.EngineNo = "";
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.EngineCapacity = quoteModel.VehicleCapacity.ToString();
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleCylinder = quoteModel.VehicleCylinders;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.TypeOfChassis = "";
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.SumInsured = quoteModel.VehicleValue.Value;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleMake = quoteModel.VehicleMaker;
-            if (!string.IsNullOrEmpty(quoteModel.VehicleMakerCode) && !string.IsNullOrEmpty(quoteModel.VehicleModelCode))
-                HandleAutoleaseDraftPolicyMakerAndModel(wataniyaAutoLeasingDraftPolicyRiskObjectDetails, quoteModel);
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleType = quoteModel.VehicleIdTypeCode;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.ChassisNo = quoteModel.VehicleChassisNumber;
-            if (!string.IsNullOrEmpty(quoteModel.VehicleMajorColor))
-                wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleColor = int.Parse(quoteModel.VehicleMajorColorCode); //HandleVehicleColorId(quoteModel.VehicleMajorColor);
-            else
-                wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleColor = 1;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleUsage = 3;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.ProductionYear = quoteModel.VehicleModelYear;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleDefinitionType = quoteModel.VehicleIdTypeCode;
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleRegion = (quoteModel.InsuredAddressRegionID.HasValue)
-                ? ((CentralRegions.Contains(quoteModel.InsuredAddressRegionID.Value))
-                    ? "Central"
-                    : ((WesternRegions.Contains(quoteModel.InsuredAddressRegionID.Value))
-                        ? "Western"
-                        : ((EasternRegions.Contains(quoteModel.InsuredAddressRegionID.Value))
-                            ? "Eastern"
-                            : ((SouthernRegions.Contains(quoteModel.InsuredAddressRegionID.Value))
-                                ? "Southern"
-                                : ((NorthernRegions.Contains(quoteModel.InsuredAddressRegionID.Value)) ? "Northern" : "")))))
-                : "";
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.AntiLockBrakingSystem = (quoteModel.HasAntiTheftAlarm.HasValue && quoteModel.HasAntiTheftAlarm.Value) ? 1 : 2;
-            if (quoteModel.Drivers != null && quoteModel.Drivers.Count > 0)
-                wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PolicyDriverList = HandleWataniyaAutoLeasingDraftPolicyRiskDriversList(quoteModel.Drivers);
-            wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PolicyPlanList = HandleWataniyaAutoleasingDraftPolicyPolicyPlanList(quoteModel, selectedProduct);
-
-            wataniyaAutoLeasingDraftPolicyRiskList.Add(wataniyaAutoLeasingDraftPolicyRiskObjectDetails);
-            return wataniyaAutoLeasingDraftPolicyRiskList;
-        }
-
-        private void HandleAutoleaseDraftPolicyMakerAndModel(DraftPolicyRiskListRequest wataniyaAutoLeasingQuotationPolicyRiskObjectDetails, QuotationServiceRequest quoteModel)
-        {
-            var _vehicleService = _serviceProvider.GetRequiredService<IVehicleService>();
-
-            var makerId = short.Parse(quoteModel.VehicleMakerCode);
-            var modelId = long.Parse(quoteModel.VehicleModelCode);
-            var vehicleModel = _vehicleService.GetVehicleModelByMakerCodeAndModelCode(makerId, modelId);
-            if (vehicleModel != null)
-            {
-                if (vehicleModel.WataniyaMakerCode.HasValue)
-                    wataniyaAutoLeasingQuotationPolicyRiskObjectDetails.VehicleMakeID = int.Parse(vehicleModel.WataniyaMakerCode.Value.ToString());
-                if (vehicleModel.WataniyaModelCode.HasValue)
-                    wataniyaAutoLeasingQuotationPolicyRiskObjectDetails.VehicleTypeID = int.Parse(vehicleModel.WataniyaModelCode.Value.ToString());
-            }
-        }
-
-        private List<PolicyPlanList> HandleWataniyaAutoleasingDraftPolicyPolicyPlanList(QuotationServiceRequest quoteModel, Product selectedProduct)
-        {
-            List<PolicyPlanList> policyPlanList = new List<PolicyPlanList>();
-            var plan = new PolicyPlanList();
-            plan.ActualPremium = HandlePlanActualPremium(selectedProduct);
-            plan.DeductibleType = selectedProduct.DeductibleType;
-            plan.MinDeductibleForPartialLoss = selectedProduct.DeductableValue.Value;
-            plan.PlanCode = selectedProduct.ExternalProductId;
-            plan.PolicyCoverageList = HandleAutoleasingDraftPolicyCoverageList(selectedProduct);
-
-            policyPlanList.Add(plan);
-            return policyPlanList;
-        }
-
-        private decimal HandlePlanActualPremium(Product selectedProduct)
-        {
-            foreach (var benefit in selectedProduct.Product_Benefits)
-            {
-                if (benefit.BenefitExternalId.Contains('-'))
-                    benefit.BenefitExternalId = benefit.BenefitExternalId.Split('-')[0];
-            }
-            var planActualPremium = selectedProduct.Product_Benefits.Where(a => a.BenefitExternalId != "MCOM" && a.IsSelected == true).Sum(a => a.BenefitPrice.Value);
-            return planActualPremium;
-        }
-
-        private List<PolicyCoverage> HandleAutoleasingDraftPolicyCoverageList(Product product)
-        {
-            List<PolicyCoverage> coverageList = new List<PolicyCoverage>();
-            foreach (var benefit in product.Product_Benefits)
-            {
-                if (!benefit.IsSelected.Value)
-                    continue;
-
-                if (benefit.BenefitExternalId.Contains('-'))
-                    benefit.BenefitExternalId = benefit.BenefitExternalId.Split('-')[0];
-
-                if (coverageList.Any(a => a.CoverageCode == benefit.BenefitExternalId))
-                    continue;
-
-                if (benefit.BenefitExternalId == "MCOM")
-                {
-                    coverageList.Add(new PolicyCoverage
-                    {
-                        ActualPremium = product.PolicyPremium,
-                        AnnualPremiumBFD = product.PriceDetails.Where(a => a.PriceTypeCode == 7).FirstOrDefault().PriceValue,
-                        CoverageCode = "MCOM",
-                        ODLimit = product.ODLimit,
-                        TPLLimit = product.TPLLimit
-                    });
-                }
-
-                else if (benefit.BenefitExternalId == "MME")
-                {
-                    coverageList.Add(new PolicyCoverage
-                    {
-                        CoverageCode = "MME",
-                        LIMIT = (benefit.Limit.HasValue) ? benefit.Limit : null
-                    });
-                }
-
-                else if (benefit.BenefitExternalId == "MNHS")
-                {
-                    coverageList.Add(new PolicyCoverage
-                    {
-                        CoverageCode = "MNHS",
-                        LIMIT = (benefit.Limit.HasValue) ? benefit.Limit : null
-                    });
-                }
-
-                else if (benefit.BenefitExternalId == "MTB")
-                {
-                    coverageList.Add(new PolicyCoverage
-                    {
-                        CoverageCode = "MTB",
-                        LIMIT = (benefit.Limit.HasValue) ? benefit.Limit : null
-                    });
-                }
-
-                else
-                {
-                    coverageList.Add(new PolicyCoverage
-                    {
-                        CoverageCode = (benefit.BenefitExternalId.Contains('-')) ? benefit.BenefitExternalId.Split('-')[0] : benefit.BenefitExternalId,
-                        ActualPremium = benefit.BenefitPrice,
-                        CoveredCountry = benefit.CoveredCountry,
-                        AveragePremium = benefit.AveragePremium,
-                        LIMIT = (benefit.Limit.HasValue) ? benefit.Limit : null
-                    });
-                }
-            }
-
-            return coverageList;
-        }
-
-        private List<DraftPolicyDriverListRequest> HandleWataniyaAutoLeasingDraftPolicyRiskDriversList(List<DriverDto> driversList)
-        {
-            var drivers = new List<DraftPolicyDriverListRequest>();
-
-            int i = 0;
-            foreach (var driver in driversList) // .Where(a => a.DriverId != request.InsuredId)
-            {
-                i++;
-                if (!driver.DriverDrivingPercentage.HasValue || driver.DriverDrivingPercentage == null || driver.DriverDrivingPercentage.Value == 0)
-                    continue;
-
-                var driverModel = new DraftPolicyDriverListRequest();
-                driverModel.Lessee = (i == 1) ? "Y" : "N";
-                driverModel.Usage = (float)driver.DriverDrivingPercentage.Value / 100;
-                driverModel.DriverName = $"{ driver.DriverFirstNameEn } { driver.DriverMiddleNameEn } { driver.DriverLastNameEn }";
-                driverModel.ArabicName = $"{ driver.DriverFirstNameAr } { driver.DriverMiddleNameAr } { driver.DriverLastNameAr }";
-                var year = driver.DriverBirthDateG.Year;
-                var month = (driver.DriverBirthDateG.Month.ToString().Length == 1) ? "0" + driver.DriverBirthDateG.Month : driver.DriverBirthDateG.Month.ToString();
-                var day = (driver.DriverBirthDateG.Day.ToString().Length == 1) ? "0" + driver.DriverBirthDateG.Day : driver.DriverBirthDateG.Day.ToString();
-                driverModel.BirthDate = $"{ year }-{ month }-{ day }";
-
-                if (driver.DriverIdTypeCode.HasValue)
-                    driverModel.DriverIdType = driver.DriverIdTypeCode.Value;
-                driverModel.LicenseNo = driver.DriverId.ToString();
-                if (driver.DriverLicenses != null && driver.DriverLicenses.Count > 0)
-                {
-                    if (driver.DriverLicenses.Any(a => a.DriverLicenseTypeCode == "3"))
-                    {
-                        var licenseTypeCode3 = driver.DriverLicenses.Where(a => a.DriverLicenseTypeCode == "3").FirstOrDefault();
-                        driverModel.LicenseType = "9";
-                        driverModel.LicenseYear = licenseTypeCode3.LicenseNumberYears;
-                    }
-                    else
-                    {
-                        var license = driver.DriverLicenses.FirstOrDefault();
-                        driverModel.LicenseType = HandleDriverLicenseType(license.DriverLicenseTypeCode);
-                        driverModel.LicenseYear = license.LicenseNumberYears;
-                    }
-                }
-
-                else
-                    driverModel.LicenseType = "9";
-
-                driverModel.Gender = driver.DriverGenderCode;
-                driverModel.MaritalStatus = int.Parse(driver.DriverSocialStatusCode);
-                driverModel.DriverEducation = Enum.GetName(typeof(EducationAr), driver.DriverEducationCode);
-                driverModel.DriverOccupation = driver.DriverOccupation;
-                driverModel.RelationWithPolicyHolder = "";
-                driverModel.Mobile = driver.MobileNo;
-
-                var address = GetDriverAddressByDriverNin(driver.DriverId.ToString());
-                if (address != null)
-                {
-                    driverModel.UnitNumber = (!string.IsNullOrEmpty(address.UnitNumber)) ? address.UnitNumber : "";
-                    driverModel.BuildingNumber = (!string.IsNullOrEmpty(address.BuildingNumber)) ? address.BuildingNumber : "";
-                    driverModel.StreetName = (!string.IsNullOrEmpty(address.Street)) ? address.Street : "";
-                    driverModel.DistrictName = (!string.IsNullOrEmpty(address.District)) ? address.District : "";
-                    driverModel.AdditionalNumber = (!string.IsNullOrEmpty(address.AdditionalNumber)) ? address.AdditionalNumber : "";
-                    driverModel.City = (!string.IsNullOrEmpty(address.City)) ? address.City : "";
-                    driverModel.Zone = "";
-                    driverModel.Country = "";
-                    driverModel.Latitude = (!string.IsNullOrEmpty(address.Latitude)) ? address.Latitude : "";
-                    driverModel.Longitude = (!string.IsNullOrEmpty(address.Longitude)) ? address.Longitude : "";
-                    driverModel.ZipCode = (!string.IsNullOrEmpty(address.PostCode)) ? address.PostCode : "";
-                }
-
-                drivers.Add(driverModel);
-            }
-
-            return drivers;
-        }
-
-        private string HandleDriverLicenseType(string driverLicenseTypeCode)
-        {
-            string license = "";
-            var licenseType = _quotationService.GetWataniyaDriverLicenseType(driverLicenseTypeCode);
-            if (licenseType != null && licenseType.AutoleasingWataniyaCode != null)
-                license = licenseType.AutoleasingWataniyaCode.ToString();
-
-            return license;
-        }
-
-        #endregion
-
-        #region Autolease Issue Policy
-
-        protected override object ExecuteAutoleasingPolicyRequest(Dto.Providers.PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
-        {
-            ServiceOutput output = SubmitWataniyaAutoleasingPolicyRequest(policy, predefinedLogInfo);
-            if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
-                return null;
-
-            return output.Output;
-        }
-
-        protected ServiceOutput SubmitWataniyaAutoleasingPolicyRequest(Dto.Providers.PolicyRequest policy, ServiceRequestLog log)
-        {
-            ServiceOutput output = new ServiceOutput();
-            log.ReferenceId = policy.ReferenceId;
-            if (string.IsNullOrEmpty(log.Channel))
-                log.Channel = "Portal";
-            log.ServiceURL = GET_AUTOLEASE_POLICY_URL;
-            log.ServerIP = ServicesUtilities.GetServerIP();
-            log.Method = "AutoleasingPolicy";
-            log.CompanyName = _restfulConfiguration.ProviderName;
-            var stringPayload = string.Empty;
-
-            var request = _policyProcessingQueueRepository.Table.Where(a => a.ReferenceId == policy.ReferenceId).FirstOrDefault();
-            if (request != null)
-            {
-                request.RequestID = log.RequestId;
-                request.CompanyName = log.CompanyName;
-                request.CompanyID = log.CompanyID;
-                request.InsuranceTypeCode = log.InsuranceTypeCode;
-                request.DriverNin = log.DriverNin;
-                request.VehicleId = log.VehicleId;
-            }
-
-            var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
-            var initialDraftModel = _quotationService.GetWataniyaAutoleasePolicyInfoByReference(policy.ReferenceId);
-            if (initialDraftModel == null)
-            {
-                output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                output.ErrorDescription = "No Wataniya Draft Policy Info created for this reference " + policy.ReferenceId;
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                log.ServiceErrorCode = log.ErrorCode.ToString();
-                log.ServiceErrorDescription = log.ServiceErrorDescription;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-
-            HttpResponseMessage response = new HttpResponseMessage();
-            try
-            {
-                var testMode = _tameenkConfig.Policy.TestMode;
-                if (testMode)
-                {
-                    const string nameOfFile = ".TestData.policyTestData.json";
-
-                    string responseData = ReadResource(GetType().Namespace, nameOfFile);
-                    HttpResponseMessage message = new HttpResponseMessage();
-                    message.Content = new StringContent(responseData);
-                    message.StatusCode = System.Net.HttpStatusCode.OK;
-                    output.Output = message;
-                    output.ErrorCode = ServiceOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
-
-                    return output;
-                }
-
-                var wataniyaPolicyRequest = new WataniyaAutoleasePolicyRequest()
-                {
-                    QuotationNo = initialDraftModel.QuotationNumber
-                };
-
-                log.ServiceRequest = JsonConvert.SerializeObject(wataniyaPolicyRequest);
-                request.ServiceRequest = log.ServiceRequest;
-
-                stringPayload = JsonConvert.SerializeObject(wataniyaPolicyRequest);
-                var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-
-                var bankInfo = _bankNinsRepository.TableNoTracking.Where(b => b.NIN == policy.InsuredId.ToString()).FirstOrDefault();
-                if (bankInfo != null)
-                {
-                    //if (bankInfo.BankId == 2)// Alyusr
-                    //    _restfulConfiguration.AutoleasingAccessToken = "Yusr.BacreAutolease:Yusr@123";
-                   if (bankInfo.BankId == 3)//Aljaber
-                        _restfulConfiguration.AutoleasingAccessToken = "Aljabr_Bcare:Aljabr@123";
-                }
-                var _autoLeaseAccesToken = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AutoleasingAccessToken));
-                var postTask = _httpClient.PostAsyncWithCertificate(GET_AUTOLEASE_POLICY_URL, wataniyaPolicyRequest, AUTOLEASE_CERTIFCATE_BATH, AUTOLEASE_CERTIFCATE_PASSWORD, _autoLeaseAccesToken, authorizationMethod: "Basic");
-                postTask.Wait();
-
-                response = postTask.Result;
-
-                DateTime dtBeforeCalling = DateTime.Now;
-                DateTime dtAfterCalling = DateTime.Now;
-                log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
-                if (response == null)
-                {
-                    if (request != null)
-                    {
-                        request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.Update(request);
-                    }
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (response.Content == null)
-                {
-                    if (request != null)
-                    {
-                        request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
-                    }
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
-                {
-                    if (request != null)
-                    {
-                        request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
-                    }
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content result return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                request.ServiceResponse = log.ServiceResponse;
-
-                var deserializeIssuePolicyResponse = JsonConvert.DeserializeObject<WataniyaAutoleasePolicyResponse>(response.Content.ReadAsStringAsync().Result);
-                if (deserializeIssuePolicyResponse != null && deserializeIssuePolicyResponse.ErrorList != null && deserializeIssuePolicyResponse.ErrorList.Count > 0)
-                {
-                    StringBuilder servcieErrors = new StringBuilder();
-                    StringBuilder servcieErrorsCodes = new StringBuilder();
-
-                    foreach (var error in deserializeIssuePolicyResponse.ErrorList)
-                    {
-                        servcieErrors.AppendLine("Error Code: " + error.ErrorCode + " and the error message : " + error.ErrorMessage);
-                        servcieErrorsCodes.AppendLine(error.ErrorCode);
-                    }
-
-                    output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "Policy Service response error is : " + servcieErrors.ToString();
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = servcieErrorsCodes.ToString();
-                    log.ServiceErrorDescription = servcieErrors.ToString();
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    if (request != null)
-                    {
-                        request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
-                    }
-
-                    return output;
-                }
-                if (string.IsNullOrEmpty(deserializeIssuePolicyResponse.PolicyNO))
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "No PolicyNo returned from company";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    if (request != null)
-                    {
-                        request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
-                    }
-                    return output;
-                }
-
-                output.Output = HandleAutoleaseIssuePolicyResposne(initialDraftModel, deserializeIssuePolicyResponse);
-                output.ErrorCode = ServiceOutput.ErrorCodes.Success;
-                output.ErrorDescription = "Success";
-                log.PolicyNo = deserializeIssuePolicyResponse.PolicyNO;
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                log.ServiceErrorCode = log.ErrorCode.ToString();
-                log.ServiceErrorDescription = log.ServiceErrorDescription;
-                if (request != null)
-                {
-                    request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
-                }
-
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-            catch (Exception ex)
-            {
-                output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
-                output.ErrorDescription = ex.ToString();
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-
-                if (request != null)
-                {
-                    request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
-                }
-
-                return output;
-            }
-        }
-
-        private HttpResponseMessage HandleAutoleaseIssuePolicyResposne(WataniyaDraftPolicy initialDraftModel, WataniyaAutoleasePolicyResponse deserializeIssuePolicyResponse)
-        {
-            try
-            {
-                PolicyResponse policyResponse = new PolicyResponse();
-                policyResponse.ReferenceId = initialDraftModel.ReferenceId.ToString();
-                policyResponse.StatusCode = 1;
-                policyResponse.PolicyNo = deserializeIssuePolicyResponse.PolicyNO;
-                policyResponse.PolicyIssuanceDate = DateTime.Now;
-                policyResponse.PolicyEffectiveDate = (initialDraftModel.PolicyEffectiveDate != null)
-                                            ? Utilities.ConvertStringToDateTimeFromAllianz(initialDraftModel.PolicyEffectiveDate)
-                                            : DateTime.Now.AddDays(1);
-                policyResponse.PolicyExpiryDate = (initialDraftModel.PolicyExpiryDate != null)
-                                            ? Utilities.ConvertStringToDateTimeFromAllianz(initialDraftModel.PolicyExpiryDate)
-                                            : policyResponse.PolicyEffectiveDate.Value.AddYears(1).AddDays(-1);
-
-                HttpResponseMessage response = new HttpResponseMessage()
-                {
-                    Content = new StringContent(JsonConvert.SerializeObject(policyResponse), System.Text.Encoding.UTF8, "application/json")
-                };
-
-                return response;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        #endregion
+        //#region Autolease Draft Policy
+
+        //public override ServiceOutput GetWataniyaAutoleasingDraftpolicy(QuotationServiceRequest quotation, Product selectedProduct, ServiceRequestLog predefinedLogInfo)
+        //{
+        //    ServiceOutput serviceOutput = new ServiceOutput();
+        //    var output = SubmitAutLoeasingDraftPolicyRequest(quotation, selectedProduct, predefinedLogInfo);
+        //    if (output.ErrorCode == ServiceOutput.ErrorCodes.Success)
+        //    {
+        //        serviceOutput.ErrorCode = ServiceOutput.ErrorCodes.Success;
+        //        serviceOutput.Output = output.Output;
+        //        return serviceOutput;
+        //    }
+        //    else
+        //    {
+        //        serviceOutput.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //        serviceOutput.ErrorDescription = output.ErrorDescription;
+        //        return serviceOutput;
+        //    }
+        //}
+
+        //private ServiceOutput SubmitAutLoeasingDraftPolicyRequest(QuotationServiceRequest quoteModel, Product selectedProduct, ServiceRequestLog log)
+        //{
+        //    ServiceOutput output = new ServiceOutput();
+        //    if (string.IsNullOrEmpty(log.Channel))
+        //        log.Channel = "AutoLease";
+        //    log.ServiceURL = GET_AUTOLEASE_DRAFTPOLICY_URL;
+        //    log.ServerIP = ServicesUtilities.GetServerIP();
+        //    log.Method = "AutoleasingDraftPolicy";
+        //    log.CompanyName = _restfulConfiguration.ProviderName;
+        //    log.VehicleMaker = quoteModel?.VehicleMaker;
+        //    log.VehicleMakerCode = quoteModel?.VehicleMakerCode.ToString();
+        //    log.VehicleModel = quoteModel?.VehicleModel;
+        //    log.VehicleModelCode = quoteModel?.VehicleModelCode.ToString();
+        //    log.VehicleModelYear = quoteModel?.VehicleModelYear;
+        //    log.DriverNin = quoteModel.Drivers.FirstOrDefault().DriverId.ToString();
+        //    log.VehicleId = quoteModel.VehicleId.ToString();
+        //    log.ReferenceId = quoteModel.ReferenceId;
+
+        //    var stringPayload = string.Empty;
+        //    HttpResponseMessage response = new HttpResponseMessage();
+        //    try
+        //    {
+        //        WatnyiaAutoLeaseDraftPolicyRequest draftPolicyRequest = HandleAutoleasingDreaftPolicyRequest(quoteModel, selectedProduct);
+        //        log.ServiceRequest = JsonConvert.SerializeObject(draftPolicyRequest);
+
+        //        //if (quoteModel.BankId == 2)// Alyusr
+        //        //    _restfulConfiguration.AutoleasingAccessToken = "Yusr.BacreAutolease:Yusr@123";
+        //         if (quoteModel.BankId == 3)//Aljaber
+        //            _restfulConfiguration.AutoleasingAccessToken = "Aljabr_Bcare:Aljabr@123";
+
+        //        var _autoLeaseAccesToken = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AutoleasingAccessToken));
+        //        DateTime dtBeforeCalling = DateTime.Now;
+        //        var postTask = _httpClient.PostAsyncWithCertificate(GET_AUTOLEASE_DRAFTPOLICY_URL, draftPolicyRequest, AUTOLEASE_CERTIFCATE_BATH, AUTOLEASE_CERTIFCATE_PASSWORD, _autoLeaseAccesToken, authorizationMethod: "Basic");
+        //        postTask.Wait();
+        //        response = postTask.Result;
+        //        DateTime dtAfterCalling = DateTime.Now;
+        //        log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
+        //        if (response == null)
+        //        {
+        //            log.ErrorCode = (int)ServiceOutput.ErrorCodes.NullResponse;
+        //            log.ErrorDescription = "Draft Policy Service return null";
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (response.Content == null)
+        //        {
+        //            log.ErrorCode = (int)ServiceOutput.ErrorCodes.NullResponse;
+        //            log.ErrorDescription = "Draft Policy Service response content return null";
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+        //        {
+        //            log.ErrorCode = (int)ServiceOutput.ErrorCodes.NullResponse;
+        //            log.ErrorDescription = "Draft Policy Service response content result return null";
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+
+        //        var desrialisedObj = JsonConvert.DeserializeObject<WatnyiaAutoLeaseDraftPolicyResponse>(response.Content.ReadAsStringAsync().Result);
+        //        if (desrialisedObj != null && desrialisedObj.ErrorList != null)
+        //        {
+        //            StringBuilder servcieErrors = new StringBuilder();
+        //            StringBuilder servcieErrorsCodes = new StringBuilder();
+
+        //            foreach (var error in desrialisedObj.ErrorList)
+        //            {
+        //                servcieErrors.AppendLine("Error Code: " + error.ErrorCode + " and the error message : " + error.ErrorMessage);
+        //                servcieErrorsCodes.AppendLine(error.ErrorCode);
+        //            }
+
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "Autolease Draft Policy Service response error is : " + servcieErrors.ToString();
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = servcieErrorsCodes.ToString();
+        //            log.ServiceErrorDescription = servcieErrors.ToString();
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+
+        //        var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
+        //        var initialDraftModel = _quotationService.GetWataniyaAutoleasePolicyInfoByReference(quoteModel.ReferenceId);
+        //        if (initialDraftModel == null)
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "No Wataniya Draft Policy Info created for this reference " + quoteModel.ReferenceId;
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+
+        //        string exception = string.Empty;
+        //        initialDraftModel.QuotationNumber = desrialisedObj.Policy.QuotationNumber;
+        //        initialDraftModel.ReferenceNumber = desrialisedObj.Policy.ReferenceNumber;
+        //        _quotationService.InsertOrupdateWataniyaAutoleasePolicyInfo(initialDraftModel, out exception);
+        //        if (!string.IsNullOrEmpty(exception))
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "Error happend wheb try to insert Initial policy info " + exception;
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorDescription.ToString();
+        //            log.ServiceErrorDescription = log.ErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+
+        //        output.Output = response;
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.Success;
+        //        output.ErrorDescription = "Success";
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        log.ServiceErrorCode = log.ErrorCode.ToString();
+        //        log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
+        //        output.ErrorDescription = ex.ToString();
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //}
+
+        //private WatnyiaAutoLeaseDraftPolicyRequest HandleAutoleasingDreaftPolicyRequest(QuotationServiceRequest quoteModel, Product selectedProduct)
+        //{
+        //    var wataniyaAutoLeasingQuotation = new WatnyiaAutoLeaseDraftPolicyRequest();
+        //    wataniyaAutoLeasingQuotation.Policy = HandleAutoLeasingDraftPolicyDetails(quoteModel);
+        //    wataniyaAutoLeasingQuotation.PolicyRiskList = HandleAutoLeasingDraftPolicyRiskListDetails(quoteModel, selectedProduct);
+
+        //    return wataniyaAutoLeasingQuotation;
+        //}
+
+        //private DraftPolicyRequest HandleAutoLeasingDraftPolicyDetails(QuotationServiceRequest quoteModel)
+        //{
+        //    var wataniyaAutoLeasingQuotationPolicyDetails = new DraftPolicyRequest();
+
+        //    var draftPolicyInitialData = _quotationService.GetWataniyaDraftPolicyInitialData(quoteModel.ReferenceId);
+        //    if (draftPolicyInitialData != null)
+        //    {
+        //        wataniyaAutoLeasingQuotationPolicyDetails.ReferenceNumber = draftPolicyInitialData.QuotationNumber; // will be from WataniyaDraftPolicy (QuoteReferenceNo)
+        //        wataniyaAutoLeasingQuotationPolicyDetails.PolicyEffectiveDate = draftPolicyInitialData.PolicyEffectiveDate; // will be from WataniyaDraftPolicy (PolicyEffectiveDate)
+        //        wataniyaAutoLeasingQuotationPolicyDetails.PolicyExpiryDate = draftPolicyInitialData.PolicyExpiryDate; // will be from WataniyaDraftPolicy (PolicyExpiryDate)
+        //    }
+
+        //    return wataniyaAutoLeasingQuotationPolicyDetails;
+        //}
+
+        //private List<DraftPolicyRiskListRequest> HandleAutoLeasingDraftPolicyRiskListDetails(QuotationServiceRequest quoteModel, Product selectedProduct)
+        //{
+        //    var wataniyaAutoLeasingDraftPolicyRiskList = new List<DraftPolicyRiskListRequest>();
+        //    var wataniyaAutoLeasingDraftPolicyRiskObjectDetails = new DraftPolicyRiskListRequest();
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.SequenceNo = quoteModel.VehicleId.ToString();
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.CustomID = quoteModel.VehicleId.ToString();
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.UseOfVehicle = "Private / Commercial but not for Domestic Drivers or Transportation of Public & Goods"; // as per felwa and wataniya said
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.RepairCondition = (quoteModel.VehicleAgencyRepair.HasValue && quoteModel.VehicleAgencyRepair.Value) ? 1 : 2;
+        //    if (!string.IsNullOrEmpty(quoteModel.VehiclePlateTypeCode))
+        //        wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PlateType = int.Parse(quoteModel.VehiclePlateTypeCode);
+        //    if (quoteModel.VehiclePlateNumber.HasValue)
+        //        wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PlateNo = quoteModel.VehiclePlateNumber.Value;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PlateNoA = quoteModel.VehiclePlateText1;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PlateNoB = quoteModel.VehiclePlateText2;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PlateNoC = quoteModel.VehiclePlateText3;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.IstmaraExpiryDate = "";
+        //    if (quoteModel.VehicleOvernightParkingLocationCode.HasValue)
+        //        wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleNightParking = quoteModel.VehicleOvernightParkingLocationCode.Value;
+        //    if (quoteModel.VehicleTransmissionTypeCode.HasValue)
+        //        wataniyaAutoLeasingDraftPolicyRiskObjectDetails.TransmissionType = quoteModel.VehicleTransmissionTypeCode.Value;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.IsThereAdditionalModification = (quoteModel.VehicleModification) ? 1 : 0;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.InterestDescription = (!string.IsNullOrEmpty(quoteModel.VehicleModificationDetails)) ? quoteModel.VehicleModificationDetails : "";
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.AntiLockBrakingSystem = (quoteModel.HasAntiTheftAlarm.HasValue && quoteModel.HasAntiTheftAlarm.Value) ? 1 : 2;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.FireExtinguisher = (quoteModel.HasFireExtinguisher.HasValue && quoteModel.HasFireExtinguisher.Value) ? 1 : 2;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.Weight = quoteModel.VehicleWeight;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.EngineNo = "";
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.EngineCapacity = quoteModel.VehicleCapacity.ToString();
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleCylinder = quoteModel.VehicleCylinders;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.TypeOfChassis = "";
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.SumInsured = quoteModel.VehicleValue.Value;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleMake = quoteModel.VehicleMaker;
+        //    if (!string.IsNullOrEmpty(quoteModel.VehicleMakerCode) && !string.IsNullOrEmpty(quoteModel.VehicleModelCode))
+        //        HandleAutoleaseDraftPolicyMakerAndModel(wataniyaAutoLeasingDraftPolicyRiskObjectDetails, quoteModel);
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleType = quoteModel.VehicleIdTypeCode;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.ChassisNo = quoteModel.VehicleChassisNumber;
+        //    if (!string.IsNullOrEmpty(quoteModel.VehicleMajorColor))
+        //        wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleColor = int.Parse(quoteModel.VehicleMajorColorCode); //HandleVehicleColorId(quoteModel.VehicleMajorColor);
+        //    else
+        //        wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleColor = 1;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleUsage = 3;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.ProductionYear = quoteModel.VehicleModelYear;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleDefinitionType = quoteModel.VehicleIdTypeCode;
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.VehicleRegion = (quoteModel.InsuredAddressRegionID.HasValue)
+        //        ? ((CentralRegions.Contains(quoteModel.InsuredAddressRegionID.Value))
+        //            ? "Central"
+        //            : ((WesternRegions.Contains(quoteModel.InsuredAddressRegionID.Value))
+        //                ? "Western"
+        //                : ((EasternRegions.Contains(quoteModel.InsuredAddressRegionID.Value))
+        //                    ? "Eastern"
+        //                    : ((SouthernRegions.Contains(quoteModel.InsuredAddressRegionID.Value))
+        //                        ? "Southern"
+        //                        : ((NorthernRegions.Contains(quoteModel.InsuredAddressRegionID.Value)) ? "Northern" : "")))))
+        //        : "";
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.AntiLockBrakingSystem = (quoteModel.HasAntiTheftAlarm.HasValue && quoteModel.HasAntiTheftAlarm.Value) ? 1 : 2;
+        //    if (quoteModel.Drivers != null && quoteModel.Drivers.Count > 0)
+        //        wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PolicyDriverList = HandleWataniyaAutoLeasingDraftPolicyRiskDriversList(quoteModel.Drivers);
+        //    wataniyaAutoLeasingDraftPolicyRiskObjectDetails.PolicyPlanList = HandleWataniyaAutoleasingDraftPolicyPolicyPlanList(quoteModel, selectedProduct);
+
+        //    wataniyaAutoLeasingDraftPolicyRiskList.Add(wataniyaAutoLeasingDraftPolicyRiskObjectDetails);
+        //    return wataniyaAutoLeasingDraftPolicyRiskList;
+        //}
+
+        //private void HandleAutoleaseDraftPolicyMakerAndModel(DraftPolicyRiskListRequest wataniyaAutoLeasingQuotationPolicyRiskObjectDetails, QuotationServiceRequest quoteModel)
+        //{
+        //    var _vehicleService = _serviceProvider.GetRequiredService<IVehicleService>();
+
+        //    var makerId = short.Parse(quoteModel.VehicleMakerCode);
+        //    var modelId = long.Parse(quoteModel.VehicleModelCode);
+        //    var vehicleModel = _vehicleService.GetVehicleModelByMakerCodeAndModelCode(makerId, modelId);
+        //    if (vehicleModel != null)
+        //    {
+        //        if (vehicleModel.WataniyaMakerCode.HasValue)
+        //            wataniyaAutoLeasingQuotationPolicyRiskObjectDetails.VehicleMakeID = int.Parse(vehicleModel.WataniyaMakerCode.Value.ToString());
+        //        if (vehicleModel.WataniyaModelCode.HasValue)
+        //            wataniyaAutoLeasingQuotationPolicyRiskObjectDetails.VehicleTypeID = int.Parse(vehicleModel.WataniyaModelCode.Value.ToString());
+        //    }
+        //}
+
+        //private List<PolicyPlanList> HandleWataniyaAutoleasingDraftPolicyPolicyPlanList(QuotationServiceRequest quoteModel, Product selectedProduct)
+        //{
+        //    List<PolicyPlanList> policyPlanList = new List<PolicyPlanList>();
+        //    var plan = new PolicyPlanList();
+        //    plan.ActualPremium = HandlePlanActualPremium(selectedProduct);
+        //    plan.DeductibleType = selectedProduct.DeductibleType;
+        //    plan.MinDeductibleForPartialLoss = selectedProduct.DeductableValue.Value;
+        //    plan.PlanCode = selectedProduct.ExternalProductId;
+        //    plan.PolicyCoverageList = HandleAutoleasingDraftPolicyCoverageList(selectedProduct);
+
+        //    policyPlanList.Add(plan);
+        //    return policyPlanList;
+        //}
+
+        //private decimal HandlePlanActualPremium(Product selectedProduct)
+        //{
+        //    foreach (var benefit in selectedProduct.Product_Benefits)
+        //    {
+        //        if (benefit.BenefitExternalId.Contains('-'))
+        //            benefit.BenefitExternalId = benefit.BenefitExternalId.Split('-')[0];
+        //    }
+        //    var planActualPremium = selectedProduct.Product_Benefits.Where(a => a.BenefitExternalId != "MCOM" && a.IsSelected == true).Sum(a => a.BenefitPrice.Value);
+        //    return planActualPremium;
+        //}
+
+        //private List<PolicyCoverage> HandleAutoleasingDraftPolicyCoverageList(Product product)
+        //{
+        //    List<PolicyCoverage> coverageList = new List<PolicyCoverage>();
+        //    foreach (var benefit in product.Product_Benefits)
+        //    {
+        //        if (!benefit.IsSelected.Value)
+        //            continue;
+
+        //        if (benefit.BenefitExternalId.Contains('-'))
+        //            benefit.BenefitExternalId = benefit.BenefitExternalId.Split('-')[0];
+
+        //        if (coverageList.Any(a => a.CoverageCode == benefit.BenefitExternalId))
+        //            continue;
+
+        //        if (benefit.BenefitExternalId == "MCOM")
+        //        {
+        //            coverageList.Add(new PolicyCoverage
+        //            {
+        //                ActualPremium = product.PolicyPremium,
+        //                AnnualPremiumBFD = product.PriceDetails.Where(a => a.PriceTypeCode == 7).FirstOrDefault().PriceValue,
+        //                CoverageCode = "MCOM",
+        //                ODLimit = product.ODLimit,
+        //                TPLLimit = product.TPLLimit
+        //            });
+        //        }
+
+        //        else if (benefit.BenefitExternalId == "MME")
+        //        {
+        //            coverageList.Add(new PolicyCoverage
+        //            {
+        //                CoverageCode = "MME",
+        //                LIMIT = (benefit.Limit.HasValue) ? benefit.Limit : null
+        //            });
+        //        }
+
+        //        else if (benefit.BenefitExternalId == "MNHS")
+        //        {
+        //            coverageList.Add(new PolicyCoverage
+        //            {
+        //                CoverageCode = "MNHS",
+        //                LIMIT = (benefit.Limit.HasValue) ? benefit.Limit : null
+        //            });
+        //        }
+
+        //        else if (benefit.BenefitExternalId == "MTB")
+        //        {
+        //            coverageList.Add(new PolicyCoverage
+        //            {
+        //                CoverageCode = "MTB",
+        //                LIMIT = (benefit.Limit.HasValue) ? benefit.Limit : null
+        //            });
+        //        }
+
+        //        else
+        //        {
+        //            coverageList.Add(new PolicyCoverage
+        //            {
+        //                CoverageCode = (benefit.BenefitExternalId.Contains('-')) ? benefit.BenefitExternalId.Split('-')[0] : benefit.BenefitExternalId,
+        //                ActualPremium = benefit.BenefitPrice,
+        //                CoveredCountry = benefit.CoveredCountry,
+        //                AveragePremium = benefit.AveragePremium,
+        //                LIMIT = (benefit.Limit.HasValue) ? benefit.Limit : null
+        //            });
+        //        }
+        //    }
+
+        //    return coverageList;
+        //}
+
+        //private List<DraftPolicyDriverListRequest> HandleWataniyaAutoLeasingDraftPolicyRiskDriversList(List<DriverDto> driversList)
+        //{
+        //    var drivers = new List<DraftPolicyDriverListRequest>();
+
+        //    int i = 0;
+        //    foreach (var driver in driversList) // .Where(a => a.DriverId != request.InsuredId)
+        //    {
+        //        i++;
+        //        if (!driver.DriverDrivingPercentage.HasValue || driver.DriverDrivingPercentage == null || driver.DriverDrivingPercentage.Value == 0)
+        //            continue;
+
+        //        var driverModel = new DraftPolicyDriverListRequest();
+        //        driverModel.Lessee = (i == 1) ? "Y" : "N";
+        //        driverModel.Usage = (float)driver.DriverDrivingPercentage.Value / 100;
+        //        driverModel.DriverName = $"{ driver.DriverFirstNameEn } { driver.DriverMiddleNameEn } { driver.DriverLastNameEn }";
+        //        driverModel.ArabicName = $"{ driver.DriverFirstNameAr } { driver.DriverMiddleNameAr } { driver.DriverLastNameAr }";
+        //        var year = driver.DriverBirthDateG.Year;
+        //        var month = (driver.DriverBirthDateG.Month.ToString().Length == 1) ? "0" + driver.DriverBirthDateG.Month : driver.DriverBirthDateG.Month.ToString();
+        //        var day = (driver.DriverBirthDateG.Day.ToString().Length == 1) ? "0" + driver.DriverBirthDateG.Day : driver.DriverBirthDateG.Day.ToString();
+        //        driverModel.BirthDate = $"{ year }-{ month }-{ day }";
+
+        //        if (driver.DriverIdTypeCode.HasValue)
+        //            driverModel.DriverIdType = driver.DriverIdTypeCode.Value;
+        //        driverModel.LicenseNo = driver.DriverId.ToString();
+        //        if (driver.DriverLicenses != null && driver.DriverLicenses.Count > 0)
+        //        {
+        //            if (driver.DriverLicenses.Any(a => a.DriverLicenseTypeCode == "3"))
+        //            {
+        //                var licenseTypeCode3 = driver.DriverLicenses.Where(a => a.DriverLicenseTypeCode == "3").FirstOrDefault();
+        //                driverModel.LicenseType = "9";
+        //                driverModel.LicenseYear = licenseTypeCode3.LicenseNumberYears;
+        //            }
+        //            else
+        //            {
+        //                var license = driver.DriverLicenses.FirstOrDefault();
+        //                driverModel.LicenseType = HandleDriverLicenseType(license.DriverLicenseTypeCode);
+        //                driverModel.LicenseYear = license.LicenseNumberYears;
+        //            }
+        //        }
+
+        //        else
+        //            driverModel.LicenseType = "9";
+
+        //        driverModel.Gender = driver.DriverGenderCode;
+        //        driverModel.MaritalStatus = int.Parse(driver.DriverSocialStatusCode);
+        //        driverModel.DriverEducation = Enum.GetName(typeof(EducationAr), driver.DriverEducationCode);
+        //        driverModel.DriverOccupation = driver.DriverOccupation;
+        //        driverModel.RelationWithPolicyHolder = "";
+        //        driverModel.Mobile = driver.MobileNo;
+
+        //        var address = GetDriverAddressByDriverNin(driver.DriverId.ToString());
+        //        if (address != null)
+        //        {
+        //            driverModel.UnitNumber = (!string.IsNullOrEmpty(address.UnitNumber)) ? address.UnitNumber : "";
+        //            driverModel.BuildingNumber = (!string.IsNullOrEmpty(address.BuildingNumber)) ? address.BuildingNumber : "";
+        //            driverModel.StreetName = (!string.IsNullOrEmpty(address.Street)) ? address.Street : "";
+        //            driverModel.DistrictName = (!string.IsNullOrEmpty(address.District)) ? address.District : "";
+        //            driverModel.AdditionalNumber = (!string.IsNullOrEmpty(address.AdditionalNumber)) ? address.AdditionalNumber : "";
+        //            driverModel.City = (!string.IsNullOrEmpty(address.City)) ? address.City : "";
+        //            driverModel.Zone = "";
+        //            driverModel.Country = "";
+        //            driverModel.Latitude = (!string.IsNullOrEmpty(address.Latitude)) ? address.Latitude : "";
+        //            driverModel.Longitude = (!string.IsNullOrEmpty(address.Longitude)) ? address.Longitude : "";
+        //            driverModel.ZipCode = (!string.IsNullOrEmpty(address.PostCode)) ? address.PostCode : "";
+        //        }
+
+        //        drivers.Add(driverModel);
+        //    }
+
+        //    return drivers;
+        //}
+
+        //private string HandleDriverLicenseType(string driverLicenseTypeCode)
+        //{
+        //    string license = "";
+        //    var licenseType = _quotationService.GetWataniyaDriverLicenseType(driverLicenseTypeCode);
+        //    if (licenseType != null && licenseType.AutoleasingWataniyaCode != null)
+        //        license = licenseType.AutoleasingWataniyaCode.ToString();
+
+        //    return license;
+        //}
+
+        //#endregion
+
+        //#region Autolease Issue Policy
+
+        //protected override object ExecuteAutoleasingPolicyRequest(Dto.Providers.PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
+        //{
+        //    ServiceOutput output = SubmitWataniyaAutoleasingPolicyRequest(policy, predefinedLogInfo);
+        //    if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
+        //        return null;
+
+        //    return output.Output;
+        //}
+
+        //protected ServiceOutput SubmitWataniyaAutoleasingPolicyRequest(Dto.Providers.PolicyRequest policy, ServiceRequestLog log)
+        //{
+        //    ServiceOutput output = new ServiceOutput();
+        //    log.ReferenceId = policy.ReferenceId;
+        //    if (string.IsNullOrEmpty(log.Channel))
+        //        log.Channel = "Portal";
+        //    log.ServiceURL = GET_AUTOLEASE_POLICY_URL;
+        //    log.ServerIP = ServicesUtilities.GetServerIP();
+        //    log.Method = "AutoleasingPolicy";
+        //    log.CompanyName = _restfulConfiguration.ProviderName;
+        //    var stringPayload = string.Empty;
+
+        //    var request = _policyProcessingQueueRepository.Table.Where(a => a.ReferenceId == policy.ReferenceId).FirstOrDefault();
+        //    if (request != null)
+        //    {
+        //        request.RequestID = log.RequestId;
+        //        request.CompanyName = log.CompanyName;
+        //        request.CompanyID = log.CompanyID;
+        //        request.InsuranceTypeCode = log.InsuranceTypeCode;
+        //        request.DriverNin = log.DriverNin;
+        //        request.VehicleId = log.VehicleId;
+        //    }
+
+        //    var _quotationService = _serviceProvider.GetRequiredService<IQuotationService>();
+        //    var initialDraftModel = _quotationService.GetWataniyaAutoleasePolicyInfoByReference(policy.ReferenceId);
+        //    if (initialDraftModel == null)
+        //    {
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //        output.ErrorDescription = "No Wataniya Draft Policy Info created for this reference " + policy.ReferenceId;
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        log.ServiceErrorCode = log.ErrorCode.ToString();
+        //        log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+
+        //    HttpResponseMessage response = new HttpResponseMessage();
+        //    try
+        //    {
+        //        var testMode = _tameenkConfig.Policy.TestMode;
+        //        if (testMode)
+        //        {
+        //            const string nameOfFile = ".TestData.policyTestData.json";
+
+        //            string responseData = ReadResource(GetType().Namespace, nameOfFile);
+        //            HttpResponseMessage message = new HttpResponseMessage();
+        //            message.Content = new StringContent(responseData);
+        //            message.StatusCode = System.Net.HttpStatusCode.OK;
+        //            output.Output = message;
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.Success;
+        //            output.ErrorDescription = "Success";
+
+        //            return output;
+        //        }
+
+        //        var wataniyaPolicyRequest = new WataniyaAutoleasePolicyRequest()
+        //        {
+        //            QuotationNo = initialDraftModel.QuotationNumber
+        //        };
+
+        //        log.ServiceRequest = JsonConvert.SerializeObject(wataniyaPolicyRequest);
+        //        request.ServiceRequest = log.ServiceRequest;
+
+        //        stringPayload = JsonConvert.SerializeObject(wataniyaPolicyRequest);
+        //        var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+
+        //        var bankInfo = _bankNinsRepository.TableNoTracking.Where(b => b.NIN == policy.InsuredId.ToString()).FirstOrDefault();
+        //        if (bankInfo != null)
+        //        {
+        //            //if (bankInfo.BankId == 2)// Alyusr
+        //            //    _restfulConfiguration.AutoleasingAccessToken = "Yusr.BacreAutolease:Yusr@123";
+        //           if (bankInfo.BankId == 3)//Aljaber
+        //                _restfulConfiguration.AutoleasingAccessToken = "Aljabr_Bcare:Aljabr@123";
+        //        }
+        //        var _autoLeaseAccesToken = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AutoleasingAccessToken));
+        //        var postTask = _httpClient.PostAsyncWithCertificate(GET_AUTOLEASE_POLICY_URL, wataniyaPolicyRequest, AUTOLEASE_CERTIFCATE_BATH, AUTOLEASE_CERTIFCATE_PASSWORD, _autoLeaseAccesToken, authorizationMethod: "Basic");
+        //        postTask.Wait();
+
+        //        response = postTask.Result;
+
+        //        DateTime dtBeforeCalling = DateTime.Now;
+        //        DateTime dtAfterCalling = DateTime.Now;
+        //        log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
+        //        if (response == null)
+        //        {
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = " service Return null";
+        //                _policyProcessingQueueRepository.Update(request);
+        //            }
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (response.Content == null)
+        //        {
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = " service response content return null";
+        //                _policyProcessingQueueRepository.Update(request);
+        //            }
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+        //        {
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = " Service response content result return null";
+        //                _policyProcessingQueueRepository.Update(request);
+        //            }
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content result return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+        //        request.ServiceResponse = log.ServiceResponse;
+
+        //        var deserializeIssuePolicyResponse = JsonConvert.DeserializeObject<WataniyaAutoleasePolicyResponse>(response.Content.ReadAsStringAsync().Result);
+        //        if (deserializeIssuePolicyResponse != null && deserializeIssuePolicyResponse.ErrorList != null && deserializeIssuePolicyResponse.ErrorList.Count > 0)
+        //        {
+        //            StringBuilder servcieErrors = new StringBuilder();
+        //            StringBuilder servcieErrorsCodes = new StringBuilder();
+
+        //            foreach (var error in deserializeIssuePolicyResponse.ErrorList)
+        //            {
+        //                servcieErrors.AppendLine("Error Code: " + error.ErrorCode + " and the error message : " + error.ErrorMessage);
+        //                servcieErrorsCodes.AppendLine(error.ErrorCode);
+        //            }
+
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "Policy Service response error is : " + servcieErrors.ToString();
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = servcieErrorsCodes.ToString();
+        //            log.ServiceErrorDescription = servcieErrors.ToString();
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = output.ErrorDescription;
+        //                _policyProcessingQueueRepository.Update(request);
+        //            }
+
+        //            return output;
+        //        }
+        //        if (string.IsNullOrEmpty(deserializeIssuePolicyResponse.PolicyNO))
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "No PolicyNo returned from company";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = output.ErrorDescription;
+        //                _policyProcessingQueueRepository.Update(request);
+        //            }
+        //            return output;
+        //        }
+
+        //        output.Output = HandleAutoleaseIssuePolicyResposne(initialDraftModel, deserializeIssuePolicyResponse);
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.Success;
+        //        output.ErrorDescription = "Success";
+        //        log.PolicyNo = deserializeIssuePolicyResponse.PolicyNO;
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        log.ServiceErrorCode = log.ErrorCode.ToString();
+        //        log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //        if (request != null)
+        //        {
+        //            request.ErrorDescription = output.ErrorDescription;
+        //            _policyProcessingQueueRepository.Update(request);
+        //        }
+
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
+        //        output.ErrorDescription = ex.ToString();
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+
+        //        if (request != null)
+        //        {
+        //            request.ErrorDescription = output.ErrorDescription;
+        //            _policyProcessingQueueRepository.Update(request);
+        //        }
+
+        //        return output;
+        //    }
+        //}
+
+        //private HttpResponseMessage HandleAutoleaseIssuePolicyResposne(WataniyaDraftPolicy initialDraftModel, WataniyaAutoleasePolicyResponse deserializeIssuePolicyResponse)
+        //{
+        //    try
+        //    {
+        //        PolicyResponse policyResponse = new PolicyResponse();
+        //        policyResponse.ReferenceId = initialDraftModel.ReferenceId.ToString();
+        //        policyResponse.StatusCode = 1;
+        //        policyResponse.PolicyNo = deserializeIssuePolicyResponse.PolicyNO;
+        //        policyResponse.PolicyIssuanceDate = DateTime.Now;
+        //        policyResponse.PolicyEffectiveDate = (initialDraftModel.PolicyEffectiveDate != null)
+        //                                    ? Utilities.ConvertStringToDateTimeFromAllianz(initialDraftModel.PolicyEffectiveDate)
+        //                                    : DateTime.Now.AddDays(1);
+        //        policyResponse.PolicyExpiryDate = (initialDraftModel.PolicyExpiryDate != null)
+        //                                    ? Utilities.ConvertStringToDateTimeFromAllianz(initialDraftModel.PolicyExpiryDate)
+        //                                    : policyResponse.PolicyEffectiveDate.Value.AddYears(1).AddDays(-1);
+
+        //        HttpResponseMessage response = new HttpResponseMessage()
+        //        {
+        //            Content = new StringContent(JsonConvert.SerializeObject(policyResponse), System.Text.Encoding.UTF8, "application/json")
+        //        };
+
+        //        return response;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return null;
+        //    }
+        //}
+
+        //#endregion
 
         #endregion
 

@@ -12,7 +12,7 @@ namespace Tameenk.Services.Core.Policies
 {
     public interface IWataniyaNajmQueueService
     {
-        List<WataniyaNajmQueue> GetFromWataniyaNajmQueue(out string exception);
+        //List<WataniyaNajmQueue> GetFromWataniyaNajmQueue(out string exception);
         bool GetAndUpdateWataniyaNajmQueue(int id, WataniyaNajmQueue policy, string serverIP, out string exception);
         bool AddWataniyaNajmQueue(string policyNo, string referenceId, out string exception);
 

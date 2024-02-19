@@ -28,29 +28,29 @@ namespace Tameenk.Services.Implementation.Policies
         {
             _customCardQueueRepository = customCardQueueRepository;
         }
-        public List<CustomCardQueue> GetFromCustomCardQueue(out string exception)
-        {
-            IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
-            exception = string.Empty;
-            try
-            {
-                idbContext.DatabaseInstance.CommandTimeout = new int?(60);
-                var command = idbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetCustomCardSuccessPolicies";
-                command.CommandType = CommandType.StoredProcedure;
-                idbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                var result = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<CustomCardQueue>(reader).ToList();
-                idbContext.DatabaseInstance.Connection.Close();
-                return result;
-            }
-            catch (Exception ex)
-            {
-                idbContext.DatabaseInstance.Connection.Close();
-                exception = ex.ToString();
-                return null;
-            }
-        }
+        //public List<CustomCardQueue> GetFromCustomCardQueue(out string exception)
+        //{
+        //    IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
+        //    exception = string.Empty;
+        //    try
+        //    {
+        //        idbContext.DatabaseInstance.CommandTimeout = new int?(60);
+        //        var command = idbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetCustomCardSuccessPolicies";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        idbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        var result = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<CustomCardQueue>(reader).ToList();
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        return result;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        exception = ex.ToString();
+        //        return null;
+        //    }
+        //}
 
         public bool GetAndUpdateCustomCardProcessingQueue(int id, CustomCardQueue policy, string serverIP, out string exception)
         {

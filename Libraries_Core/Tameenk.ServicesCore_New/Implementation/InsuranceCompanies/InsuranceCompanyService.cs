@@ -275,39 +275,39 @@ namespace Tameenk.Services.Implementation.InsuranceCompanies
         /// <summary>        /// Change state of company address validation (Active / inactive)        /// </summary>        /// <param name="isActive">is Active</param>        /// <param name="insuranceCompanyId">Insurance Company identifier</param>        /// <returns></returns>        public InsuranceCompany ToggleCompanyAddressValidationActivation(bool isActive, int insuranceCompanyId)        {            var insuranceCompany = _insuranceCompanyRepository.Table.FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);            if (insuranceCompany == null)                throw new TameenkArgumentException("The insurance company not found in DB", "insuranceCompanyId");            insuranceCompany.IsAddressValidationEnabled = isActive;            _insuranceCompanyRepository.Update(insuranceCompany);            _cacheManager.RemoveByPattern(INSURANCE_COMPANIES_PATTERN);            insuranceCompany = _insuranceCompanyRepository.Table.FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);            return insuranceCompany;        }
 
 
-        public List<InsuranceCompany> GetInsuranceCompaniesByUserId(string userId, out int totalCount, out string exception)
-        {
-            totalCount = 0;
-            exception = string.Empty;
-            var dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //public List<InsuranceCompany> GetInsuranceCompaniesByUserId(string userId, out int totalCount, out string exception)
+        //{
+        //    totalCount = 0;
+        //    exception = string.Empty;
+        //    var dbContext = EngineContext.Current.Resolve<IDbContext>();
 
-            try
-            {
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetAutoleasingCompaniesByUserId";
-                command.CommandType = CommandType.StoredProcedure;
-                dbContext.DatabaseInstance.CommandTimeout = 60 * 60 * 60;
+        //    try
+        //    {
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetAutoleasingCompaniesByUserId";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        dbContext.DatabaseInstance.CommandTimeout = 60 * 60 * 60;
 
-                SqlParameter UserIdParameter = new SqlParameter() { ParameterName = "UserId", Value = userId };
-                command.Parameters.Add(UserIdParameter);
+        //        SqlParameter UserIdParameter = new SqlParameter() { ParameterName = "UserId", Value = userId };
+        //        command.Parameters.Add(UserIdParameter);
 
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
 
-                List<InsuranceCompany> filteredData = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<InsuranceCompany>(reader).ToList();
-                return filteredData;
-            }
-            catch (Exception exp)
-            {
-                exception = exp.ToString();
-                return null;
-            }
-            finally
-            {
-                if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
-                    dbContext.DatabaseInstance.Connection.Close();
-            }
-        }
+        //        List<InsuranceCompany> filteredData = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<InsuranceCompany>(reader).ToList();
+        //        return filteredData;
+        //    }
+        //    catch (Exception exp)
+        //    {
+        //        exception = exp.ToString();
+        //        return null;
+        //    }
+        //    finally
+        //    {
+        //        if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
+        //            dbContext.DatabaseInstance.Connection.Close();
+        //    }
+        //}
 
 
         public InsuranceCompany ToggleCompanyActivationTabby(bool isActive, int insuranceCompanyId, int insuranceType)        {            var insuranceCompany = _insuranceCompanyRepository.Table.FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);            if (insuranceCompany == null)                throw new TameenkArgumentException("The insurance company not found in DB", "insuranceCompanyId");            if (insuranceType == 1) // TPL
@@ -318,73 +318,73 @@ namespace Tameenk.Services.Implementation.InsuranceCompanies
 
         #region Get Insurance Companies With Grades
 
-        public void UpdateCompanyGrade()
-        {
-            try
-            {
-                List<InsuranseCompaniesNajmResponseTime> CompaniesNajmResponseTimes = GetCompaniesWithNajmResponseTime();
-                if (CompaniesNajmResponseTimes == null || CompaniesNajmResponseTimes.Count < 1)
-                    return;
+        //public void UpdateCompanyGrade()
+        //{
+        //    try
+        //    {
+        //        List<InsuranseCompaniesNajmResponseTime> CompaniesNajmResponseTimes = GetCompaniesWithNajmResponseTime();
+        //        if (CompaniesNajmResponseTimes == null || CompaniesNajmResponseTimes.Count < 1)
+        //            return;
 
-                foreach (var companyGrade in CompaniesNajmResponseTimes)
-                {
-                    if (companyGrade.AverageResponseTime < 15)
-                        companyGrade.NajmGrade = 4;
-                    else if (companyGrade.AverageResponseTime >= 15 && companyGrade.AverageResponseTime <= 30)
-                        companyGrade.NajmGrade = 3;
-                    else if (companyGrade.AverageResponseTime > 30 && companyGrade.AverageResponseTime <= 60)
-                        companyGrade.NajmGrade = 2;
-                    else if (companyGrade.AverageResponseTime >= 60 && companyGrade.AverageResponseTime <= 120)
-                        companyGrade.NajmGrade = 1;
-                    else
-                        companyGrade.NajmGrade = 0;
-                }
+        //        foreach (var companyGrade in CompaniesNajmResponseTimes)
+        //        {
+        //            if (companyGrade.AverageResponseTime < 15)
+        //                companyGrade.NajmGrade = 4;
+        //            else if (companyGrade.AverageResponseTime >= 15 && companyGrade.AverageResponseTime <= 30)
+        //                companyGrade.NajmGrade = 3;
+        //            else if (companyGrade.AverageResponseTime > 30 && companyGrade.AverageResponseTime <= 60)
+        //                companyGrade.NajmGrade = 2;
+        //            else if (companyGrade.AverageResponseTime >= 60 && companyGrade.AverageResponseTime <= 120)
+        //                companyGrade.NajmGrade = 1;
+        //            else
+        //                companyGrade.NajmGrade = 0;
+        //        }
 
-                var insuranceCopanyGrade = _insuranceCopanyGradeRepo.Table.ToList();
-                foreach (var row in insuranceCopanyGrade)
-                {
-                    if (!CompaniesNajmResponseTimes.Any(a => a.CompanyId == row.CompanyId))
-                        continue;
-                    row.Grade = CompaniesNajmResponseTimes.FirstOrDefault(a => a.CompanyId == row.CompanyId).NajmGrade;
-                    row.ModifyDate = DateTime.Now;
-                }
-                _insuranceCopanyGradeRepo.Update(insuranceCopanyGrade);
-            }
-            catch (Exception ex)
-            {
-                System.IO.File.WriteAllText(@"C:\inetpub\wwwroot\ScheduledTask\logs\CompanyGradeTask_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss_mms") + ".txt", " Exception is:" + ex.ToString());
-                return;
-            }
-        }
+        //        var insuranceCopanyGrade = _insuranceCopanyGradeRepo.Table.ToList();
+        //        foreach (var row in insuranceCopanyGrade)
+        //        {
+        //            if (!CompaniesNajmResponseTimes.Any(a => a.CompanyId == row.CompanyId))
+        //                continue;
+        //            row.Grade = CompaniesNajmResponseTimes.FirstOrDefault(a => a.CompanyId == row.CompanyId).NajmGrade;
+        //            row.ModifyDate = DateTime.Now;
+        //        }
+        //        _insuranceCopanyGradeRepo.Update(insuranceCopanyGrade);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        System.IO.File.WriteAllText(@"C:\inetpub\wwwroot\ScheduledTask\logs\CompanyGradeTask_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss_mms") + ".txt", " Exception is:" + ex.ToString());
+        //        return;
+        //    }
+        //}
 
 
-        public List<InsuranseCompaniesNajmResponseTime> GetCompaniesWithNajmResponseTime()
-        {
-            IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
-            try
-            {
-                idbContext.DatabaseInstance.CommandTimeout = 240;
-                var command = idbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetNajmAverageResponseTime";
-                command.CommandType = CommandType.StoredProcedure;
-                command.CommandTimeout = 600;
-                idbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                var companiesInfo = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<InsuranseCompaniesNajmResponseTime>(reader).ToList();
-                idbContext.DatabaseInstance.Connection.Close();                return companiesInfo;
-            }
-            catch (Exception ex)
-            {
-                System.IO.File.WriteAllText(@"C:\inetpub\wwwroot\ScheduledTask\logs\GetCompaniesWithNajmResponseTime_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss_mms") + ".txt", ex.ToString());
+        //public List<InsuranseCompaniesNajmResponseTime> GetCompaniesWithNajmResponseTime()
+        //{
+        //    IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
+        //    try
+        //    {
+        //        idbContext.DatabaseInstance.CommandTimeout = 240;
+        //        var command = idbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetNajmAverageResponseTime";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        command.CommandTimeout = 600;
+        //        idbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        var companiesInfo = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<InsuranseCompaniesNajmResponseTime>(reader).ToList();
+        //        idbContext.DatabaseInstance.Connection.Close();        //        return companiesInfo;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        System.IO.File.WriteAllText(@"C:\inetpub\wwwroot\ScheduledTask\logs\GetCompaniesWithNajmResponseTime_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss_mms") + ".txt", ex.ToString());
 
-                return null;
-            }
-            finally
-            {
-                if (idbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
-                    idbContext.DatabaseInstance.Connection.Close();
-            }
-        }
+        //        return null;
+        //    }
+        //    finally
+        //    {
+        //        if (idbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
+        //            idbContext.DatabaseInstance.Connection.Close();
+        //    }
+        //}
 
         #endregion
     }

@@ -144,30 +144,30 @@ namespace Tameenk.Services.Core.Vehicles
         bool InsertIntoVehicleRequests(string vehicleId, string driverNin, long cityId, out string exception);
         bool DeleteVehicleRequests(string sequenceNumber);
         VehicleBodyType GetVehicleBodyType(int code);
-        List<VehicleMakerModel> GetVehiclemakersWithFilter(out int total, bool export, string code, string description, int pageIndex, int pageSize);
+        //List<VehicleMakerModel> GetVehiclemakersWithFilter(out int total, bool export, string code, string description, int pageIndex, int pageSize);
         VehicleMakerModel GetMakerDetails(int code);
-        List<VehicleMakerModelsModel> GetVehiclemakermodels(out int total, string code, int pageIndex, int pageSize);
+        //List<VehicleMakerModelsModel> GetVehiclemakermodels(out int total, string code, int pageIndex, int pageSize);
         PolicyOutput AddorUpdateMakerModel(VehicleMakerModelsModel model, string action);
         PolicyOutput AddorNewMaker(VehicleMakerModel model);
         VehicleMakerModelsModel GetMakerModelDetails(int code, int makerCode);
-        List<VehicleMakerModelsModel> GetVehiclemakerModelsWithFilter(out int total, bool export, string code, string makerCode, string description, int pageIndex, int pageSize);
+        //List<VehicleMakerModelsModel> GetVehiclemakerModelsWithFilter(out int total, bool export, string code, string makerCode, string description, int pageIndex, int pageSize);
         bool CheckMakeCodeExist(int code);
         bool CheckMakeModelCodeExist(int code, int makerCode);
         IList<BreakingSystem> GetBreakingSystems();
         IList<Sensor> GetSensors();
         IList<CameraType> GetCameraTypes();
         VehicleColor GetVehicleColor(string vehicleMajorColor);
-        VehiclePolicyInformation GetVehiclePolicy(string vehicleId, out string exception);
+        //VehiclePolicyInformation GetVehiclePolicy(string vehicleId, out string exception);
         List<AutoleasingBenefit> GetBenifit();
         List<VehicleMaker> GetVehicleMakers(string lang = "");
         VehicleModel GetVehicleModelByMakerCodeAndModelCode(short vehicleMakerId, long vehicleModelId);
-        List<Vehicle> GetAllVehicleBasedOnFilter(string vehicleId, int pageIndex, int pageSize, out int totalCount, out string exception);
+        //List<Vehicle> GetAllVehicleBasedOnFilter(string vehicleId, int pageIndex, int pageSize, out int totalCount, out string exception);
         List<VehicleInfo> GetVehicleInfoByNin(string Nin, out string exception);
         int GetWataiyaPlateLetterId(string letter);
         IPagedList<VehicleUsage> GetVehicleUsage(int pageIndex = 0, int pageSize = int.MaxValue);
-        VehicleInfo GetVehicleInfoById(Guid vehicleId, out string exception);
+        //VehicleInfo GetVehicleInfoById(Guid vehicleId, out string exception);
         VehicleColor GetVehicleColorBycode(int majorColorCode, int defaultValue);
-        Vehicle GetVehicleInfoByExternalId(string externalId,long carOwnerNin, out string exception);
-        VehiclePolicyInformation GetVehiclePolicyDetails(string vehicleId, out string exception);
+        //Vehicle GetVehicleInfoByExternalId(string externalId,long carOwnerNin, out string exception);
+        //VehiclePolicyInformation GetVehiclePolicyDetails(string vehicleId, out string exception);
     }
 }

@@ -71,30 +71,30 @@ namespace Tameenk.Services.Implementation.Drivers
             _driverRepository.Update(driver);
         }
 
-        public Driver GetDriverByNin(string driverNin)
-        {
-            Driver driver = null;
-            IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
-            try
-            {
-                idbContext.DatabaseInstance.CommandTimeout = new int?(60);
-                var command = idbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetDriverByNin";
-                command.CommandType = CommandType.StoredProcedure;
-                SqlParameter driverNinParam = new SqlParameter() { ParameterName = "@driverNin", Value = driverNin };
-                command.Parameters.Add(driverNinParam);
-                idbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                driver = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<Driver>(reader).FirstOrDefault();
-                idbContext.DatabaseInstance.Connection.Close();
-                return driver;
-            }
-            catch (Exception  )
-            {
-                idbContext.DatabaseInstance.Connection.Close();
-                return null;
-            }
-        }
+        //public Driver GetDriverByNin(string driverNin)
+        //{
+        //    Driver driver = null;
+        //    IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
+        //    try
+        //    {
+        //        idbContext.DatabaseInstance.CommandTimeout = new int?(60);
+        //        var command = idbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetDriverByNin";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        SqlParameter driverNinParam = new SqlParameter() { ParameterName = "@driverNin", Value = driverNin };
+        //        command.Parameters.Add(driverNinParam);
+        //        idbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        driver = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<Driver>(reader).FirstOrDefault();
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        return driver;
+        //    }
+        //    catch (Exception  )
+        //    {
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        return null;
+        //    }
+        //}
 
         /// <summary>
         /// Get All drivers  based on filter

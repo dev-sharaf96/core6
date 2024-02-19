@@ -82,8 +82,8 @@ namespace Tameenk.Services.Core.InsuranceCompanies
 
         InsuranceCompany ToggleCompanyActivationByType(bool isActive, int insuranceCompanyId, int insuranceType);
         InsuranceCompany ToggleCompanyAddressValidationActivation(bool isActive, int insuranceCompanyId);
-        List<InsuranceCompany> GetInsuranceCompaniesByUserId(string userId, out int totalCount, out string exception);
+        //List<InsuranceCompany> GetInsuranceCompaniesByUserId(string userId, out int totalCount, out string exception);
         InsuranceCompany ToggleCompanyActivationTabby(bool isActive, int insuranceCompanyId, int insuranceType);
-        void UpdateCompanyGrade();
+        //void UpdateCompanyGrade();
     }
 }

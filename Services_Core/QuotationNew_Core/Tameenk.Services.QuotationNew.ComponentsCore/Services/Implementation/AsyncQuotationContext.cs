@@ -40,6 +40,7 @@ using QuotationIntegrationDTO = Tameenk.Integration.Dto.Quotation;
 using Tameenk.Redis;
 using Tameenk.Core.Domain;
 using NLog;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Tameenk.Services.QuotationNew.Components
 {
@@ -66,6 +67,7 @@ namespace Tameenk.Services.QuotationNew.Components
         private readonly IRepository<PriceType> _priceTypeRepository;
         private readonly IRepository<QuotationResponseCache> _quotationResponseCache;
         private readonly Logger logger;
+        private readonly IServiceProvider _serviceProvider;
 
         private readonly List<int> insuranceCompaniesExcluedFromSchemesQuotations = new List<int>()
         {
@@ -86,6 +88,7 @@ namespace Tameenk.Services.QuotationNew.Components
             , IRepository<VehicleInsurance.VehicleMaker> vehicleMakerRepository, IRepository<VehicleInsurance.VehicleModel> vehicleModelRepository, IRepository<LicenseType> licenseTypeRepository
             , IRepository<InsuredExtraLicenses> insuredExtraLicenses, IRepository<Driver> driverRepository, IRepository<DriverViolation> _driverViolationRepository
             , IRepository<VehiclePlateText> vehiclePlateTextRepository, IRepository<Benefit> benefitRepository, IRepository<PriceType> priceTypeRepository, IRepository<QuotationResponseCache> quotationResponseCache
+            , IServiceProvider serviceProvider
             )
         {
             _quotationResponseRepository = quotationResponseRepository;
@@ -106,6 +109,7 @@ namespace Tameenk.Services.QuotationNew.Components
             _tameenkConfig = tameenkConfig;
             _quotationResponseCache = quotationResponseCache;
             this.logger = LogManager.GetCurrentClassLogger();
+            _serviceProvider = serviceProvider;
         }
 
 
@@ -197,55 +201,55 @@ namespace Tameenk.Services.QuotationNew.Components
 
         #region Private Methods
 
-        private QuotationResponseCache GetFromQuotationResponseCacheDB(int insuranceCompanyId, int insuranceTypeCode, string externalId, bool vehicleAgencyRepair, int? deductibleValue, Guid userId)
-        {
-            QuotationResponseCache responseCache = null;
-            IDbContext dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //private QuotationResponseCache GetFromQuotationResponseCacheDB(int insuranceCompanyId, int insuranceTypeCode, string externalId, bool vehicleAgencyRepair, int? deductibleValue, Guid userId)
+        //{
+        //    QuotationResponseCache responseCache = null;
+        //    IDbContext dbContext = EngineContext.Current.Resolve<IDbContext>();
 
-            try
-            {
-                dbContext.DatabaseInstance.CommandTimeout = 60;
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetFromQuotationResponseCache";
-                command.CommandType = CommandType.StoredProcedure;
-                SqlParameter insuranceCompanyIdParam = new SqlParameter() { ParameterName = "insuranceCompanyId", Value = insuranceCompanyId };
-                SqlParameter insuranceTypeCodeParam = new SqlParameter() { ParameterName = "insuranceTypeCode", Value = insuranceTypeCode };
-                SqlParameter externalIdParam = new SqlParameter() { ParameterName = "externalId", Value = externalId };
-                SqlParameter vehicleAgencyRepairParam = new SqlParameter() { ParameterName = "vehicleAgencyRepair", Value = vehicleAgencyRepair };
-                SqlParameter userIdParam = new SqlParameter() { ParameterName = "userId", Value = userId };
-                SqlParameter deductibleValueParam = new SqlParameter("deductibleValue", SqlDbType.Int);
-                if (deductibleValue.HasValue)
-                    deductibleValueParam.Value = deductibleValue.Value;
-                else
-                    deductibleValueParam.Value = (object)DBNull.Value;
+        //    try
+        //    {
+        //        dbContext.DatabaseInstance.CommandTimeout = 60;
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetFromQuotationResponseCache";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        SqlParameter insuranceCompanyIdParam = new SqlParameter() { ParameterName = "insuranceCompanyId", Value = insuranceCompanyId };
+        //        SqlParameter insuranceTypeCodeParam = new SqlParameter() { ParameterName = "insuranceTypeCode", Value = insuranceTypeCode };
+        //        SqlParameter externalIdParam = new SqlParameter() { ParameterName = "externalId", Value = externalId };
+        //        SqlParameter vehicleAgencyRepairParam = new SqlParameter() { ParameterName = "vehicleAgencyRepair", Value = vehicleAgencyRepair };
+        //        SqlParameter userIdParam = new SqlParameter() { ParameterName = "userId", Value = userId };
+        //        SqlParameter deductibleValueParam = new SqlParameter("deductibleValue", SqlDbType.Int);
+        //        if (deductibleValue.HasValue)
+        //            deductibleValueParam.Value = deductibleValue.Value;
+        //        else
+        //            deductibleValueParam.Value = (object)DBNull.Value;
 
-                command.Parameters.Add(insuranceCompanyIdParam);
-                command.Parameters.Add(insuranceTypeCodeParam);
-                command.Parameters.Add(externalIdParam);
-                command.Parameters.Add(vehicleAgencyRepairParam);
-                command.Parameters.Add(deductibleValueParam);
-                command.Parameters.Add(userIdParam);
+        //        command.Parameters.Add(insuranceCompanyIdParam);
+        //        command.Parameters.Add(insuranceTypeCodeParam);
+        //        command.Parameters.Add(externalIdParam);
+        //        command.Parameters.Add(vehicleAgencyRepairParam);
+        //        command.Parameters.Add(deductibleValueParam);
+        //        command.Parameters.Add(userIdParam);
 
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                responseCache = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<QuotationResponseCache>(reader).FirstOrDefault();
-                dbContext.DatabaseInstance.Connection.Close();
-                if (responseCache != null)
-                {
-                    return responseCache;
-                }
-                return responseCache;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-            finally
-            {
-                if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
-                    dbContext.DatabaseInstance.Connection.Close();
-            }
-        }
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        responseCache = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<QuotationResponseCache>(reader).FirstOrDefault();
+        //        dbContext.DatabaseInstance.Connection.Close();
+        //        if (responseCache != null)
+        //        {
+        //            return responseCache;
+        //        }
+        //        return responseCache;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return null;
+        //    }
+        //    finally
+        //    {
+        //        if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
+        //            dbContext.DatabaseInstance.Connection.Close();
+        //    }
+        //}
 
         private async Task<QuotationNewOutput> GetQuote(int insuranceCompanyId, string qtRqstExtrnlId, string channel, Guid userId, string userName, QuotationRequestLog log, DateTime excutionStartDate, Guid? parentRequestId = null, int insuranceTypeCode = 1, bool vehicleAgencyRepair = false, int? deductibleValue = null, string policyNo = null, string policyExpiryDate = null, string hashed = null, bool OdQuotation = false)
         {
@@ -806,7 +810,7 @@ namespace Tameenk.Services.QuotationNew.Components
             //IDbContext _dbContext = EngineContext.Current.ContainerManager.ResolveUnregistered(providerType, scope) as IDbContext;
             //var scheduleTaskService = EngineContext.Current.ContainerManager.Resolve<IDbContext>("", scope);
 
-            IDbContext dbContext = EngineContext.Current.Resolve<IDbContext>();
+            IDbContext dbContext = _serviceProvider.GetRequiredService<IDbContext>(); //EngineContext.Current.Resolve<IDbContext>();
             try
             {
                 dbContext.DatabaseInstance.CommandTimeout = 90;
@@ -1378,24 +1382,24 @@ namespace Tameenk.Services.QuotationNew.Components
                 }
                 if (instance == null)
                 {
-                    var scope = EngineContext.Current.ContainerManager.Scope();
+                    //var scope = EngineContext.Current.ContainerManager.Scope();
                     var providerType = Type.GetType(providerFullTypeName);
 
                     if (providerType != null)
                     {
-                        if (!EngineContext.Current.ContainerManager.TryResolve(providerType, scope, out instance))
-                        {
-                            //not resolved
-                            instance = EngineContext.Current.ContainerManager.ResolveUnregistered(providerType, scope);
-                        }
+                        //if (!EngineContext.Current.ContainerManager.TryResolve(providerType, scope, out instance))
+                        //{
+                        //    //not resolved
+                        //    instance = EngineContext.Current.ContainerManager.ResolveUnregistered(providerType, scope);
+                        //}
                         provider = instance as IInsuranceProvider;
                     }
                     if (provider == null)
                     {
                         throw new Exception("Unable to find provider.");
                     }
-                    if (insuranceCompany.Key != "Tawuniya")
-                        Utilities.AddValueToCache("instance_" + providerFullTypeName + quotationResponse.InsuranceTypeCode, instance, 1440);
+                    //if (insuranceCompany.Key != "Tawuniya")
+                    //    Utilities.AddValueToCache("instance_" + providerFullTypeName + quotationResponse.InsuranceTypeCode, instance, 1440);
 
                     if (provider != null)
                     {
@@ -1408,7 +1412,7 @@ namespace Tameenk.Services.QuotationNew.Components
                             results = provider.GetQuotation(requestMessage, predefinedLogInfo, automatedTest);
                         }
                     }
-                    scope.Dispose();
+                    //scope.Dispose();
                 }
                 else
                 {
@@ -1958,7 +1962,7 @@ namespace Tameenk.Services.QuotationNew.Components
         private Address GetAddressesByNin(string driverNin)
         {
             Address address = null;
-            IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
+            IDbContext idbContext = _serviceProvider.GetRequiredService<IDbContext>(); //EngineContext.Current.Resolve<IDbContext>();
             try
             {
                 idbContext.DatabaseInstance.CommandTimeout = new int?(60);
@@ -2002,7 +2006,7 @@ namespace Tameenk.Services.QuotationNew.Components
 
         public PromotionProgramUserModel GetUserPromotionCodeInfo(string userId, string nationalId, int insuranceCompanyId, int insuranceTypeCode)
         {
-            IDbContext dbContext = EngineContext.Current.Resolve<IDbContext>();
+            IDbContext dbContext = _serviceProvider.GetRequiredService<IDbContext>(); //EngineContext.Current.Resolve<IDbContext>();
 
             try
             {

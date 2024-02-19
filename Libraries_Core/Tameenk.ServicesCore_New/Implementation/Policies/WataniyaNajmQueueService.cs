@@ -30,30 +30,30 @@ namespace Tameenk.Services.Implementation.Policies
             _wataniyaNamQueueRepository = wataniyaNajmQueueRepository;
             _checkoutDetailRepository = checkoutDetailRepository;
         }
-        public List<WataniyaNajmQueue> GetFromWataniyaNajmQueue(out string exception)
-        {
-            IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
-            exception = string.Empty;
-            try
-            {
-                idbContext.DatabaseInstance.CommandTimeout = new int?(60);
-                var command = idbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetWataniyaNajmProcessingQueue";
-                command.CommandType = CommandType.StoredProcedure;
-                idbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                var result = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<WataniyaNajmQueue>(reader).ToList();
-                idbContext.DatabaseInstance.Connection.Close();
-                return result;
+        //public List<WataniyaNajmQueue> GetFromWataniyaNajmQueue(out string exception)
+        //{
+        //    IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
+        //    exception = string.Empty;
+        //    try
+        //    {
+        //        idbContext.DatabaseInstance.CommandTimeout = new int?(60);
+        //        var command = idbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetWataniyaNajmProcessingQueue";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        idbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        var result = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<WataniyaNajmQueue>(reader).ToList();
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        return result;
               
-            }
-            catch (Exception ex)
-            {
-                idbContext.DatabaseInstance.Connection.Close();
-                exception = ex.ToString();
-                return null;
-            }
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        exception = ex.ToString();
+        //        return null;
+        //    }
+        //}
 
         public bool GetAndUpdateWataniyaNajmQueue(int id, WataniyaNajmQueue policy, string serverIP, out string exception)
         {

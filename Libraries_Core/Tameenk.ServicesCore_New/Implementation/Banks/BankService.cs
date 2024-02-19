@@ -97,115 +97,115 @@ namespace Tameenk.Services.Implementation
             }
 
         }
-        public List<AutoleasingWalletReportModel> GetAutoleasingWalletReport(AutoleasingWalletHistoryFilterModel filter, int bankId, out int totalCount, out string exception)
-        {
-            var dbContext = EngineContext.Current.Resolve<IDbContext>();
-            exception = string.Empty;
-            totalCount = 0;
-            try
-            {
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetAutoleasingWalletReport";
-                command.CommandType = CommandType.StoredProcedure;
-                dbContext.DatabaseInstance.CommandTimeout = 60;
+        //public List<AutoleasingWalletReportModel> GetAutoleasingWalletReport(AutoleasingWalletHistoryFilterModel filter, int bankId, out int totalCount, out string exception)
+        //{
+        //    var dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //    exception = string.Empty;
+        //    totalCount = 0;
+        //    try
+        //    {
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetAutoleasingWalletReport";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        dbContext.DatabaseInstance.CommandTimeout = 60;
 
-                if (filter.InsuranceCompanyId.HasValue)
-                {
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@insuranceCompanyId", Value = filter.InsuranceCompanyId.Value });
-                }
-                if (filter.StartDate.HasValue)
-                {
-                    DateTime dtStart = new DateTime(filter.StartDate.Value.Year, filter.StartDate.Value.Month, filter.StartDate.Value.Day, 0, 0, 0);
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@startDate", Value = dtStart });
-                }
-                if (filter.EndDate.HasValue)
-                {
-                    DateTime dtEnd = new DateTime(filter.EndDate.Value.Year, filter.EndDate.Value.Month, filter.EndDate.Value.Day, 23, 59, 59);
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@endDate", Value = dtEnd });
-                }
-                if (!string.IsNullOrEmpty(filter.Email))
-                {
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@email", Value = filter.Email });
-                }
-                command.Parameters.Add(new SqlParameter() { ParameterName = "@bankId", Value = bankId });
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                List<AutoleasingWalletReportModel> data = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<AutoleasingWalletReportModel>(reader).ToList();
+        //        if (filter.InsuranceCompanyId.HasValue)
+        //        {
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@insuranceCompanyId", Value = filter.InsuranceCompanyId.Value });
+        //        }
+        //        if (filter.StartDate.HasValue)
+        //        {
+        //            DateTime dtStart = new DateTime(filter.StartDate.Value.Year, filter.StartDate.Value.Month, filter.StartDate.Value.Day, 0, 0, 0);
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@startDate", Value = dtStart });
+        //        }
+        //        if (filter.EndDate.HasValue)
+        //        {
+        //            DateTime dtEnd = new DateTime(filter.EndDate.Value.Year, filter.EndDate.Value.Month, filter.EndDate.Value.Day, 23, 59, 59);
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@endDate", Value = dtEnd });
+        //        }
+        //        if (!string.IsNullOrEmpty(filter.Email))
+        //        {
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@email", Value = filter.Email });
+        //        }
+        //        command.Parameters.Add(new SqlParameter() { ParameterName = "@bankId", Value = bankId });
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        List<AutoleasingWalletReportModel> data = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<AutoleasingWalletReportModel>(reader).ToList();
 
-                //get data count
-                if (!filter.IsExcel)
-                {
-                    reader.NextResult();
-                    totalCount = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
-                }
+        //        //get data count
+        //        if (!filter.IsExcel)
+        //        {
+        //            reader.NextResult();
+        //            totalCount = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
+        //        }
 
-                dbContext.DatabaseInstance.Connection.Close();
-                return data;
-            }
-            catch (Exception ex)
-            {
-                dbContext.DatabaseInstance.Connection.Close();
-                exception = ex.ToString();
-                return null;
-            }
-        }
+        //        dbContext.DatabaseInstance.Connection.Close();
+        //        return data;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        dbContext.DatabaseInstance.Connection.Close();
+        //        exception = ex.ToString();
+        //        return null;
+        //    }
+        //}
 
 
-        public List<AutoleasingWalletHistory> GetAutoleasingWalletHistory(AutoleasingWalletHistoryFilterModel filter, int bankId, int pageIndex, int pageSize, out int totalCount, out string exception)
-        {
-            var dbContext = EngineContext.Current.Resolve<IDbContext>();
-            exception = string.Empty;
-            totalCount = 0;
-            try
-            {
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetAutoleasingWalletHistory";
-                command.CommandType = CommandType.StoredProcedure;
-                dbContext.DatabaseInstance.CommandTimeout = 60;
+        //public List<AutoleasingWalletHistory> GetAutoleasingWalletHistory(AutoleasingWalletHistoryFilterModel filter, int bankId, int pageIndex, int pageSize, out int totalCount, out string exception)
+        //{
+        //    var dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //    exception = string.Empty;
+        //    totalCount = 0;
+        //    try
+        //    {
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetAutoleasingWalletHistory";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        dbContext.DatabaseInstance.CommandTimeout = 60;
 
-                if (filter.InsuranceCompanyId.HasValue)
-                {
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@insuranceCompanyId", Value = filter.InsuranceCompanyId.Value });
-                }
-                if (filter.StartDate.HasValue)
-                {
-                    DateTime dtStart = new DateTime(filter.StartDate.Value.Year, filter.StartDate.Value.Month, filter.StartDate.Value.Day, 0, 0, 0);
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@startDate", Value = dtStart });
-                }
-                if (filter.EndDate.HasValue)
-                {
-                    DateTime dtEnd = new DateTime(filter.EndDate.Value.Year, filter.EndDate.Value.Month, filter.EndDate.Value.Day, 23, 59, 59);
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@endDate", Value = dtEnd });
-                }
-                if (!string.IsNullOrEmpty(filter.Email))
-                {
-                    command.Parameters.Add(new SqlParameter() { ParameterName = "@email", Value = filter.Email });
-                }
-                command.Parameters.Add(new SqlParameter() { ParameterName = "@bankId", Value = bankId });
-                command.Parameters.Add(new SqlParameter() { ParameterName = "@pageNumber", Value = pageIndex });
-                command.Parameters.Add(new SqlParameter() { ParameterName = "@pageSize", Value = pageSize });
-                command.Parameters.Add(new SqlParameter() { ParameterName = "@isExcel", Value = filter.IsExcel ? 1 : 0 });
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                List<AutoleasingWalletHistory> data = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<AutoleasingWalletHistory>(reader).ToList();
+        //        if (filter.InsuranceCompanyId.HasValue)
+        //        {
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@insuranceCompanyId", Value = filter.InsuranceCompanyId.Value });
+        //        }
+        //        if (filter.StartDate.HasValue)
+        //        {
+        //            DateTime dtStart = new DateTime(filter.StartDate.Value.Year, filter.StartDate.Value.Month, filter.StartDate.Value.Day, 0, 0, 0);
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@startDate", Value = dtStart });
+        //        }
+        //        if (filter.EndDate.HasValue)
+        //        {
+        //            DateTime dtEnd = new DateTime(filter.EndDate.Value.Year, filter.EndDate.Value.Month, filter.EndDate.Value.Day, 23, 59, 59);
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@endDate", Value = dtEnd });
+        //        }
+        //        if (!string.IsNullOrEmpty(filter.Email))
+        //        {
+        //            command.Parameters.Add(new SqlParameter() { ParameterName = "@email", Value = filter.Email });
+        //        }
+        //        command.Parameters.Add(new SqlParameter() { ParameterName = "@bankId", Value = bankId });
+        //        command.Parameters.Add(new SqlParameter() { ParameterName = "@pageNumber", Value = pageIndex });
+        //        command.Parameters.Add(new SqlParameter() { ParameterName = "@pageSize", Value = pageSize });
+        //        command.Parameters.Add(new SqlParameter() { ParameterName = "@isExcel", Value = filter.IsExcel ? 1 : 0 });
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        List<AutoleasingWalletHistory> data = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<AutoleasingWalletHistory>(reader).ToList();
 
-                //get data count
-                if (!filter.IsExcel)
-                {
-                    reader.NextResult();
-                    totalCount = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
-                }
+        //        //get data count
+        //        if (!filter.IsExcel)
+        //        {
+        //            reader.NextResult();
+        //            totalCount = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
+        //        }
 
-                dbContext.DatabaseInstance.Connection.Close();
-                return data;
-            }
-            catch (Exception ex)
-            {
-                dbContext.DatabaseInstance.Connection.Close();
-                exception = ex.ToString();
-                return null;
-            }
-        }
+        //        dbContext.DatabaseInstance.Connection.Close();
+        //        return data;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        dbContext.DatabaseInstance.Connection.Close();
+        //        exception = ex.ToString();
+        //        return null;
+        //    }
+        //}
         public Bank GetBank(int id)
         {
             return _bankRepository.Table.FirstOrDefault(d => d.Id == id);

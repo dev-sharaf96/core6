@@ -49,7 +49,7 @@ namespace Tameenk.Services.Orders
         ShoppingCartItem GetUserShoppingCartItemByUserIdAndReferenceId(string userId, string referenceId);
 
         Product GetProduct(Guid productId, int companyId);
-        ShoppingCartItemDB GetUserShoppingCartItemDBByUserIdAndReferenceId(string userId, string referenceId);
+        //ShoppingCartItemDB GetUserShoppingCartItemDBByUserIdAndReferenceId(string userId, string referenceId);
 
         bool AddItemToCartBulkAutoleasing(string userId, string referenceId, Guid productId, string externalId);
         List<long> GetUserShoppingCartItemBenefitsByUserIdAndReferenceId(string userId, string referenceId);
@@ -58,6 +58,6 @@ namespace Tameenk.Services.Orders
 
         void EmptyLeasingShoppingCart(string userId, string referenceId);
         bool AddLeasingItemToCart(out string exception, string userId, string referenceId, Guid productId, List<Product_Benefit> productBenfits, List<Product_Driver> productDrivers, int quantity = 1);
-        ShoppingCartItemDB GetLeasingUserShoppingCartItemDBByUserIdAndReferenceId(string userId, string referenceId);
+        //ShoppingCartItemDB GetLeasingUserShoppingCartItemDBByUserIdAndReferenceId(string userId, string referenceId);
     }
 }

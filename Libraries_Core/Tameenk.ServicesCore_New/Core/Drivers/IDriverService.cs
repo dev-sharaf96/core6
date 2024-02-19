@@ -36,7 +36,7 @@ namespace Tameenk.Services.Core.Drivers
         /// <param name="driverFilter">driver Filter</param>
         /// <param name="showInActive">show in Active</param>
         /// <returns></returns>
-        Driver GetDriverByNin(string driverNin);
+        //Driver GetDriverByNin(string driverNin);
 
         /// <summary>
         /// Get All drivers  based on filter

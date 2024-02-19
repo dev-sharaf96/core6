@@ -157,43 +157,43 @@ namespace Tameenk.Services.Implementation.Vehicles
             return _vehicleRepository.TableNoTracking.Where(v => v.IsDeleted == false &&(v.SequenceNumber == vehicleFilter.SequenceNumber || v.CustomCardNumber == vehicleFilter.SequenceNumber));
         }
 
-        public List<Vehicle> GetAllVehicleBasedOnFilter(string vehicleId,int pageIndex,int pageSize, out int totalCount, out string exception)
-        {
-            exception = string.Empty;
-            totalCount = 0;
-            IDbContext dbContext = EngineContext.Current.Resolve<IDbContext>();
-            try
-            {
-                List<Vehicle> vehicles = null;
-                dbContext.DatabaseInstance.CommandTimeout = 60;
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetVehiclesBySequenceNumberORCustomCardNumber";
-                command.CommandType = CommandType.StoredProcedure;
-                SqlParameter VehicleIdParam = new SqlParameter() { ParameterName = "@VehicleId", Value = vehicleId };
-                command.Parameters.Add(VehicleIdParam);
-                command.Parameters.Add(new SqlParameter() { ParameterName = "@pageNumber", Value = pageIndex + 1 });
-                command.Parameters.Add(new SqlParameter() { ParameterName = "@pageSize", Value = pageSize });
+        //public List<Vehicle> GetAllVehicleBasedOnFilter(string vehicleId,int pageIndex,int pageSize, out int totalCount, out string exception)
+        //{
+        //    exception = string.Empty;
+        //    totalCount = 0;
+        //    IDbContext dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //    try
+        //    {
+        //        List<Vehicle> vehicles = null;
+        //        dbContext.DatabaseInstance.CommandTimeout = 60;
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetVehiclesBySequenceNumberORCustomCardNumber";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        SqlParameter VehicleIdParam = new SqlParameter() { ParameterName = "@VehicleId", Value = vehicleId };
+        //        command.Parameters.Add(VehicleIdParam);
+        //        command.Parameters.Add(new SqlParameter() { ParameterName = "@pageNumber", Value = pageIndex + 1 });
+        //        command.Parameters.Add(new SqlParameter() { ParameterName = "@pageSize", Value = pageSize });
 
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                vehicles = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<Vehicle>(reader).ToList();
-                if (vehicles != null)
-                {
-                    reader.NextResult();
-                    totalCount = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
-                    dbContext.DatabaseInstance.Connection.Close();
-                    return vehicles;
-                }
-                dbContext.DatabaseInstance.Connection.Close();
-                return null;
-            }
-            catch (Exception exp)
-            {
-                exception += "exception is " + exp.ToString();
-                dbContext.DatabaseInstance.Connection.Close();
-                return null;
-            }
-        }
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        vehicles = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<Vehicle>(reader).ToList();
+        //        if (vehicles != null)
+        //        {
+        //            reader.NextResult();
+        //            totalCount = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
+        //            dbContext.DatabaseInstance.Connection.Close();
+        //            return vehicles;
+        //        }
+        //        dbContext.DatabaseInstance.Connection.Close();
+        //        return null;
+        //    }
+        //    catch (Exception exp)
+        //    {
+        //        exception += "exception is " + exp.ToString();
+        //        dbContext.DatabaseInstance.Connection.Close();
+        //        return null;
+        //    }
+        //}
 
         /// <summary>
         /// Get all vehicles based on filter
@@ -548,56 +548,56 @@ namespace Tameenk.Services.Implementation.Vehicles
 
         #region VehicleMakers
 
-        public List<VehicleMakerModel> GetVehiclemakersWithFilter(out int total, bool export, string code, string description, int pageIndex, int pageSize)
-        {
-            var dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //public List<VehicleMakerModel> GetVehiclemakersWithFilter(out int total, bool export, string code, string description, int pageIndex, int pageSize)
+        //{
+        //    var dbContext = EngineContext.Current.Resolve<IDbContext>();
 
-            try
-            {
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetAllMakersWithFilter";
-                command.CommandType = CommandType.StoredProcedure;
-                dbContext.DatabaseInstance.CommandTimeout = 60 * 60 * 60;
+        //    try
+        //    {
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetAllMakersWithFilter";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        dbContext.DatabaseInstance.CommandTimeout = 60 * 60 * 60;
 
-                SqlParameter CodeParameter = new SqlParameter() { ParameterName = "code", Value = code ?? "" };
-                command.Parameters.Add(CodeParameter);
+        //        SqlParameter CodeParameter = new SqlParameter() { ParameterName = "code", Value = code ?? "" };
+        //        command.Parameters.Add(CodeParameter);
 
-                SqlParameter DescriptionParameter = new SqlParameter() { ParameterName = "description", Value = description ?? "" };
-                command.Parameters.Add(DescriptionParameter);
+        //        SqlParameter DescriptionParameter = new SqlParameter() { ParameterName = "description", Value = description ?? "" };
+        //        command.Parameters.Add(DescriptionParameter);
 
-                SqlParameter pageNumberParameter = new SqlParameter() { ParameterName = "pageNumber", Value = pageIndex + 1 };
-                command.Parameters.Add(pageNumberParameter);
+        //        SqlParameter pageNumberParameter = new SqlParameter() { ParameterName = "pageNumber", Value = pageIndex + 1 };
+        //        command.Parameters.Add(pageNumberParameter);
 
-                SqlParameter pageSizeParameter = new SqlParameter() { ParameterName = "pageSize", Value = pageSize };
-                command.Parameters.Add(pageSizeParameter);
+        //        SqlParameter pageSizeParameter = new SqlParameter() { ParameterName = "pageSize", Value = pageSize };
+        //        command.Parameters.Add(pageSizeParameter);
 
-                SqlParameter ExportParameter = new SqlParameter() { ParameterName = "export", Value = export };
-                command.Parameters.Add(ExportParameter);
+        //        SqlParameter ExportParameter = new SqlParameter() { ParameterName = "export", Value = export };
+        //        command.Parameters.Add(ExportParameter);
 
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
 
-                // get policy filteration data
-                List<VehicleMakerModel> filteredData = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<VehicleMakerModel>(reader).ToList();
+        //        // get policy filteration data
+        //        List<VehicleMakerModel> filteredData = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<VehicleMakerModel>(reader).ToList();
 
-                //get data count
-                reader.NextResult();
-                total = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
+        //        //get data count
+        //        reader.NextResult();
+        //        total = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
 
-                return filteredData;
-            }
-            catch (Exception ex)
-            {
-                total = 0;
-                ErrorLogger.LogError(ex.Message, ex, false);
-                return null;
-            }
-            finally
-            {
-                if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
-                    dbContext.DatabaseInstance.Connection.Close();
-            }
-        }
+        //        return filteredData;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        total = 0;
+        //        ErrorLogger.LogError(ex.Message, ex, false);
+        //        return null;
+        //    }
+        //    finally
+        //    {
+        //        if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
+        //            dbContext.DatabaseInstance.Connection.Close();
+        //    }
+        //}
 
         public VehicleMakerModel GetMakerDetails(int code)
         {
@@ -612,50 +612,50 @@ namespace Tameenk.Services.Implementation.Vehicles
             return makerModel;
         }
 
-        public List<VehicleMakerModelsModel> GetVehiclemakermodels(out int total, string code, int pageIndex, int pageSize)
-        {
-            var dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //public List<VehicleMakerModelsModel> GetVehiclemakermodels(out int total, string code, int pageIndex, int pageSize)
+        //{
+        //    var dbContext = EngineContext.Current.Resolve<IDbContext>();
 
-            try
-            {
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetAllMakerModels";
-                command.CommandType = CommandType.StoredProcedure;
-                dbContext.DatabaseInstance.CommandTimeout = 60 * 60 * 60;
+        //    try
+        //    {
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetAllMakerModels";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        dbContext.DatabaseInstance.CommandTimeout = 60 * 60 * 60;
 
-                SqlParameter MakerCodeParameter = new SqlParameter() { ParameterName = "makerCode", Value = code ?? "" };
-                command.Parameters.Add(MakerCodeParameter);
+        //        SqlParameter MakerCodeParameter = new SqlParameter() { ParameterName = "makerCode", Value = code ?? "" };
+        //        command.Parameters.Add(MakerCodeParameter);
 
-                SqlParameter pageNumberParameter = new SqlParameter() { ParameterName = "pageNumber", Value = pageIndex + 1 };
-                command.Parameters.Add(pageNumberParameter);
+        //        SqlParameter pageNumberParameter = new SqlParameter() { ParameterName = "pageNumber", Value = pageIndex + 1 };
+        //        command.Parameters.Add(pageNumberParameter);
 
-                SqlParameter pageSizeParameter = new SqlParameter() { ParameterName = "pageSize", Value = pageSize };
-                command.Parameters.Add(pageSizeParameter);
+        //        SqlParameter pageSizeParameter = new SqlParameter() { ParameterName = "pageSize", Value = pageSize };
+        //        command.Parameters.Add(pageSizeParameter);
 
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
 
-                // get policy filteration data
-                List<VehicleMakerModelsModel> filteredData = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<VehicleMakerModelsModel>(reader).ToList();
+        //        // get policy filteration data
+        //        List<VehicleMakerModelsModel> filteredData = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<VehicleMakerModelsModel>(reader).ToList();
 
-                //get data count
-                reader.NextResult();
-                total = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
+        //        //get data count
+        //        reader.NextResult();
+        //        total = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
 
-                return filteredData;
-            }
-            catch (Exception ex)
-            {
-                total = 0;
-                ErrorLogger.LogError(ex.Message, ex, false);
-                return null;
-            }
-            finally
-            {
-                if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
-                    dbContext.DatabaseInstance.Connection.Close();
-            }
-        }
+        //        return filteredData;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        total = 0;
+        //        ErrorLogger.LogError(ex.Message, ex, false);
+        //        return null;
+        //    }
+        //    finally
+        //    {
+        //        if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
+        //            dbContext.DatabaseInstance.Connection.Close();
+        //    }
+        //}
 
         public PolicyOutput AddorUpdateMakerModel(VehicleMakerModelsModel model, string action)
         {
@@ -736,59 +736,59 @@ namespace Tameenk.Services.Implementation.Vehicles
             return makerModel;
         }
 
-        public List<VehicleMakerModelsModel> GetVehiclemakerModelsWithFilter(out int total, bool export, string code, string makerCode, string description, int pageIndex, int pageSize)
-        {
-            var dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //public List<VehicleMakerModelsModel> GetVehiclemakerModelsWithFilter(out int total, bool export, string code, string makerCode, string description, int pageIndex, int pageSize)
+        //{
+        //    var dbContext = EngineContext.Current.Resolve<IDbContext>();
 
-            try
-            {
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetAllModelsWithFilter";
-                command.CommandType = CommandType.StoredProcedure;
-                dbContext.DatabaseInstance.CommandTimeout = 60 * 60 * 60;
+        //    try
+        //    {
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetAllModelsWithFilter";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        dbContext.DatabaseInstance.CommandTimeout = 60 * 60 * 60;
 
-                SqlParameter CodeParameter = new SqlParameter() { ParameterName = "code", Value = code ?? "" };
-                command.Parameters.Add(CodeParameter);
+        //        SqlParameter CodeParameter = new SqlParameter() { ParameterName = "code", Value = code ?? "" };
+        //        command.Parameters.Add(CodeParameter);
 
-                SqlParameter MakerCodeParameter = new SqlParameter() { ParameterName = "makerCode", Value = makerCode ?? "" };
-                command.Parameters.Add(MakerCodeParameter);
+        //        SqlParameter MakerCodeParameter = new SqlParameter() { ParameterName = "makerCode", Value = makerCode ?? "" };
+        //        command.Parameters.Add(MakerCodeParameter);
 
-                SqlParameter DescriptionParameter = new SqlParameter() { ParameterName = "description", Value = description ?? "" };
-                command.Parameters.Add(DescriptionParameter);
+        //        SqlParameter DescriptionParameter = new SqlParameter() { ParameterName = "description", Value = description ?? "" };
+        //        command.Parameters.Add(DescriptionParameter);
 
-                SqlParameter pageNumberParameter = new SqlParameter() { ParameterName = "pageNumber", Value = pageIndex + 1 };
-                command.Parameters.Add(pageNumberParameter);
+        //        SqlParameter pageNumberParameter = new SqlParameter() { ParameterName = "pageNumber", Value = pageIndex + 1 };
+        //        command.Parameters.Add(pageNumberParameter);
 
-                SqlParameter pageSizeParameter = new SqlParameter() { ParameterName = "pageSize", Value = pageSize };
-                command.Parameters.Add(pageSizeParameter);
+        //        SqlParameter pageSizeParameter = new SqlParameter() { ParameterName = "pageSize", Value = pageSize };
+        //        command.Parameters.Add(pageSizeParameter);
 
-                SqlParameter ExportParameter = new SqlParameter() { ParameterName = "export", Value = export };
-                command.Parameters.Add(ExportParameter);
+        //        SqlParameter ExportParameter = new SqlParameter() { ParameterName = "export", Value = export };
+        //        command.Parameters.Add(ExportParameter);
 
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
 
-                // get policy filteration data
-                List<VehicleMakerModelsModel> filteredData = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<VehicleMakerModelsModel>(reader).ToList();
+        //        // get policy filteration data
+        //        List<VehicleMakerModelsModel> filteredData = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<VehicleMakerModelsModel>(reader).ToList();
 
-                //get data count
-                reader.NextResult();
-                total = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
+        //        //get data count
+        //        reader.NextResult();
+        //        total = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
 
-                return filteredData;
-            }
-            catch (Exception ex)
-            {
-                total = 0;
-                ErrorLogger.LogError(ex.Message, ex, false);
-                return null;
-            }
-            finally
-            {
-                if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
-                    dbContext.DatabaseInstance.Connection.Close();
-            }
-        }
+        //        return filteredData;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        total = 0;
+        //        ErrorLogger.LogError(ex.Message, ex, false);
+        //        return null;
+        //    }
+        //    finally
+        //    {
+        //        if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
+        //            dbContext.DatabaseInstance.Connection.Close();
+        //    }
+        //}
 
         public bool CheckMakeCodeExist(int code)
         {
@@ -830,32 +830,32 @@ namespace Tameenk.Services.Implementation.Vehicles
             return GetVehicleColors().FirstOrDefault(color => color.ArabicDescription == vehicleMajorColor);
         }
 
-        public VehiclePolicyInformation GetVehiclePolicy (string vehicleId, out string exception)
-        {
-            IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
-            exception = string.Empty;
-            try
-            {
-                idbContext.DatabaseInstance.CommandTimeout = 60;
-                var command = idbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetVehiclePolicy";
-                command.CommandType = CommandType.StoredProcedure;
-                command.CommandTimeout = 80;
-                SqlParameter VehicleIdParam = new SqlParameter() { ParameterName = "VehicleId", Value = vehicleId };
-                command.Parameters.Add(VehicleIdParam);
-                idbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                VehiclePolicyInformation policy = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<VehiclePolicyInformation>(reader).FirstOrDefault();
-                idbContext.DatabaseInstance.Connection.Close();
-                return policy;
-            }
-            catch (Exception ex)
-            {
-                exception = ex.ToString();
-                idbContext.DatabaseInstance.Connection.Close();
-                return null;
-            }
-        }
+        //public VehiclePolicyInformation GetVehiclePolicy (string vehicleId, out string exception)
+        //{
+        //    IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
+        //    exception = string.Empty;
+        //    try
+        //    {
+        //        idbContext.DatabaseInstance.CommandTimeout = 60;
+        //        var command = idbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetVehiclePolicy";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        command.CommandTimeout = 80;
+        //        SqlParameter VehicleIdParam = new SqlParameter() { ParameterName = "VehicleId", Value = vehicleId };
+        //        command.Parameters.Add(VehicleIdParam);
+        //        idbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        VehiclePolicyInformation policy = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<VehiclePolicyInformation>(reader).FirstOrDefault();
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        return policy;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        exception = ex.ToString();
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        return null;
+        //    }
+        //}
 
         public List<AutoleasingBenefit> GetBenifit()
         {
@@ -929,32 +929,32 @@ namespace Tameenk.Services.Implementation.Vehicles
                 return new PagedList<VehicleUsage>(_vehicleUsageRepository.TableNoTracking.OrderBy(e => e.Id), pageIndex, pageSize);
             });
         }
-        public VehicleInfo GetVehicleInfoById(Guid vehicleId, out string exception)
-        {
-            IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
-            exception = string.Empty;
-            try
-            {
-                idbContext.DatabaseInstance.CommandTimeout = 240;
-                var command = idbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetVehiclesInfoById";
-                command.CommandType = CommandType.StoredProcedure;
-                command.CommandTimeout = 600;
-                SqlParameter VehicleIdParam = new SqlParameter() { ParameterName = "VehicleId", Value = vehicleId };
-                command.Parameters.Add(VehicleIdParam);
-                idbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                VehicleInfo vehiclesInfo = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<VehicleInfo>(reader).FirstOrDefault();
-                idbContext.DatabaseInstance.Connection.Close();
-                return vehiclesInfo;
-            }
-            catch (Exception ex)
-            {
-                exception = ex.ToString();
-                idbContext.DatabaseInstance.Connection.Close();
-                return null;
-            }
-        }
+        //public VehicleInfo GetVehicleInfoById(Guid vehicleId, out string exception)
+        //{
+        //    IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
+        //    exception = string.Empty;
+        //    try
+        //    {
+        //        idbContext.DatabaseInstance.CommandTimeout = 240;
+        //        var command = idbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetVehiclesInfoById";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        command.CommandTimeout = 600;
+        //        SqlParameter VehicleIdParam = new SqlParameter() { ParameterName = "VehicleId", Value = vehicleId };
+        //        command.Parameters.Add(VehicleIdParam);
+        //        idbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        VehicleInfo vehiclesInfo = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<VehicleInfo>(reader).FirstOrDefault();
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        return vehiclesInfo;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        exception = ex.ToString();
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        return null;
+        //    }
+        //}
 
         public VehicleColor GetVehicleColorBycode(int majorColorCode, int defaultValue)
         {
@@ -964,72 +964,72 @@ namespace Tameenk.Services.Implementation.Vehicles
             return color;
         }
 
-        public Vehicle GetVehicleInfoByExternalId(string externalId, long carOwnerNin, out string exception)
-        {
-            IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
-            exception = string.Empty;
-            try
-            {
-                idbContext.DatabaseInstance.CommandTimeout = 240;
-                var command = idbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetVehiclesInfoByExternalId";
-                command.CommandType = CommandType.StoredProcedure;
-                command.CommandTimeout = 600;
-                SqlParameter externalIdParam = new SqlParameter() { ParameterName = "externalId", Value = externalId };
-                SqlParameter carOwnerNinParam = new SqlParameter() { ParameterName = "CarOwnerNin", Value = carOwnerNin.ToString() };
-                command.Parameters.Add(externalIdParam);
-                idbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                Vehicle vehicle = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<Vehicle>(reader).FirstOrDefault();
-                idbContext.DatabaseInstance.Connection.Close();
+        //public Vehicle GetVehicleInfoByExternalId(string externalId, long carOwnerNin, out string exception)
+        //{
+        //    IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
+        //    exception = string.Empty;
+        //    try
+        //    {
+        //        idbContext.DatabaseInstance.CommandTimeout = 240;
+        //        var command = idbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetVehiclesInfoByExternalId";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        command.CommandTimeout = 600;
+        //        SqlParameter externalIdParam = new SqlParameter() { ParameterName = "externalId", Value = externalId };
+        //        SqlParameter carOwnerNinParam = new SqlParameter() { ParameterName = "CarOwnerNin", Value = carOwnerNin.ToString() };
+        //        command.Parameters.Add(externalIdParam);
+        //        idbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        Vehicle vehicle = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<Vehicle>(reader).FirstOrDefault();
+        //        idbContext.DatabaseInstance.Connection.Close();
 
-                DateTime dateFrom = DateTime.Now.AddDays(-1);
-                if(vehicle != null&& vehicle.CreatedDateTime.HasValue&& vehicle.CreatedDateTime < dateFrom)
-                {
-                    var vehicleData = _vehicleRepository.Table.Where(v => !v.IsDeleted && v.ID == vehicle.ID).FirstOrDefault();
-                    if(vehicleData!=null)
-                    {
-                        vehicleData.IsDeleted = true;
-                        _vehicleRepository.Update(vehicleData);
-                        return null;
-                    }
+        //        DateTime dateFrom = DateTime.Now.AddDays(-1);
+        //        if(vehicle != null&& vehicle.CreatedDateTime.HasValue&& vehicle.CreatedDateTime < dateFrom)
+        //        {
+        //            var vehicleData = _vehicleRepository.Table.Where(v => !v.IsDeleted && v.ID == vehicle.ID).FirstOrDefault();
+        //            if(vehicleData!=null)
+        //            {
+        //                vehicleData.IsDeleted = true;
+        //                _vehicleRepository.Update(vehicleData);
+        //                return null;
+        //            }
 
-                }
-                return vehicle;
-            }
-            catch (Exception ex)
-            {
-                exception = ex.ToString();
-                idbContext.DatabaseInstance.Connection.Close();
-                return null;
-            }
-        }
-        public VehiclePolicyInformation GetVehiclePolicyDetails(string vehicleId, out string exception)
-        {
-            IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
-            exception = string.Empty;
-            try
-            {
-                idbContext.DatabaseInstance.CommandTimeout = 60;
-                var command = idbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetVehiclePolicyDetails";
-                command.CommandType = CommandType.StoredProcedure;
-                command.CommandTimeout = 80;
-                SqlParameter VehicleIdParam = new SqlParameter() { ParameterName = "VehicleId", Value = vehicleId };
-                command.Parameters.Add(VehicleIdParam);
-                idbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                VehiclePolicyInformation policy = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<VehiclePolicyInformation>(reader).FirstOrDefault();
-                idbContext.DatabaseInstance.Connection.Close();
-                return policy;
-            }
-            catch (Exception ex)
-            {
-                exception = ex.ToString();
-                idbContext.DatabaseInstance.Connection.Close();
-                return null;
-            }
-        }
+        //        }
+        //        return vehicle;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        exception = ex.ToString();
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        return null;
+        //    }
+        //}
+        //public VehiclePolicyInformation GetVehiclePolicyDetails(string vehicleId, out string exception)
+        //{
+        //    IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
+        //    exception = string.Empty;
+        //    try
+        //    {
+        //        idbContext.DatabaseInstance.CommandTimeout = 60;
+        //        var command = idbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetVehiclePolicyDetails";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        command.CommandTimeout = 80;
+        //        SqlParameter VehicleIdParam = new SqlParameter() { ParameterName = "VehicleId", Value = vehicleId };
+        //        command.Parameters.Add(VehicleIdParam);
+        //        idbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
+        //        VehiclePolicyInformation policy = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<VehiclePolicyInformation>(reader).FirstOrDefault();
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        return policy;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        exception = ex.ToString();
+        //        idbContext.DatabaseInstance.Connection.Close();
+        //        return null;
+        //    }
+        //}
 
         public List<VehicleInfo> GetVehicleInfoByNin(string Nin, out string exception)
         {

@@ -25,7 +25,7 @@ namespace Tameenk.Services.Core
         IList<Bank> GetBankByName(string bankname);
         IPagedList<Bank> GetBanksWithFilter(IList<Bank> query, int pageIndex = 0, int pageSize = int.MaxValue);
         void updateBankForWallet(Bank bank, out string exception);
-        List<AutoleasingWalletHistory> GetAutoleasingWalletHistory(AutoleasingWalletHistoryFilterModel filter, int bankId, int pageIndex, int pageSize, out int totalCount, out string exception);
-        List<AutoleasingWalletReportModel> GetAutoleasingWalletReport(AutoleasingWalletHistoryFilterModel filter, int bankId, out int totalCount, out string exception);
+        //List<AutoleasingWalletHistory> GetAutoleasingWalletHistory(AutoleasingWalletHistoryFilterModel filter, int bankId, int pageIndex, int pageSize, out int totalCount, out string exception);
+        //List<AutoleasingWalletReportModel> GetAutoleasingWalletReport(AutoleasingWalletHistoryFilterModel filter, int bankId, out int totalCount, out string exception);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,48 +21,50 @@ namespace Tameenk.Services.Implementation.Http
     {
         private HttpClient _client;
         private readonly ILogger _logger;
+        private readonly IServiceProvider _serviceProvider;
 
-        public StandardHttpClient(ILogger logger)
+        public StandardHttpClient(ILogger logger,IServiceProvider serviceProvider)
         {
             _client = new HttpClient();
             _logger = logger;
+            _serviceProvider = serviceProvider;
         }
 
-        public async Task<string> GetStringAsync(string uri, bool returnResponseOnFailure = false, string authorizationToken = null, string authorizationMethod = "Bearer", Dictionary<string, string> headers = null)
-        {
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-            ServicePointManager.ServerCertificateValidationCallback =
-               delegate (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-               {
-                   return true;
-               };
-            SetAuthorizationHeader(requestMessage);
+        //public async Task<string> GetStringAsync(string uri, bool returnResponseOnFailure = false, string authorizationToken = null, string authorizationMethod = "Bearer", Dictionary<string, string> headers = null)
+        //{
+        //    var requestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
+        //    ServicePointManager.ServerCertificateValidationCallback =
+        //       delegate (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        //       {
+        //           return true;
+        //       };
+        //    SetAuthorizationHeader(requestMessage);
 
-            if (authorizationToken != null)
-            {
-                requestMessage.Headers.Authorization = new AuthenticationHeaderValue(authorizationMethod, authorizationToken);
-            }
+        //    if (authorizationToken != null)
+        //    {
+        //        requestMessage.Headers.Authorization = new AuthenticationHeaderValue(authorizationMethod, authorizationToken);
+        //    }
 
-            if(headers !=null)
-            {
-                AddHeadersToRequest(requestMessage, headers);
-            }
-            var response = await _client.SendAsync(requestMessage).ConfigureAwait(false);
+        //    if(headers !=null)
+        //    {
+        //        AddHeadersToRequest(requestMessage, headers);
+        //    }
+        //    var response = await _client.SendAsync(requestMessage).ConfigureAwait(false);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                _logger.Log($"StandardHttpClient -> GetStringAsync an the response return with failure status code, status code{response.StatusCode}, response string :{responseString}");
+        //    if (!response.IsSuccessStatusCode)
+        //    {
+        //        var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        //        _logger.Log($"StandardHttpClient -> GetStringAsync an the response return with failure status code, status code{response.StatusCode}, response string :{responseString}");
 
-                if (returnResponseOnFailure)
-                {
-                    throw new HttpRequestException(responseString);
-                }
-                return null;
-            }
+        //        if (returnResponseOnFailure)
+        //        {
+        //            throw new HttpRequestException(responseString);
+        //        }
+        //        return null;
+        //    }
 
-            return await response.Content.ReadAsStringAsync();
-        }
+        //    return await response.Content.ReadAsStringAsync();
+        //}
 
         public Task<HttpResponseMessage> GetAsync(string uri, string authorizationToken = null, string authorizationMethod = "Bearer", Dictionary<string, string> headers = null)
         {
@@ -178,7 +181,7 @@ namespace Tameenk.Services.Implementation.Http
 
         private void SetAuthorizationHeader(HttpRequestMessage requestMessage)
         {
-            var httpContext = EngineContext.Current.Resolve<HttpContextBase>();
+            var httpContext = _serviceProvider.GetRequiredService<HttpContextBase>();
             var authorizationHeader = httpContext.Request.Headers["Authorization"];
             if (!string.IsNullOrEmpty(authorizationHeader))
             {

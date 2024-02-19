@@ -8,7 +8,7 @@ namespace Tameenk.Services.Core.Http
     {
         Task<HttpResponseMessage> GetAsync(string uri, string? authorizationToken = null, string authorizationMethod = "Bearer", Dictionary<string, string>? headers = null);
 
-        Task<string> GetStringAsync(string uri, bool returnResponseOnFailure = false, string? authorizationToken = null, string authorizationMethod = "Bearer",Dictionary<string,string>? headers = null);
+        //Task<string> GetStringAsync(string uri, bool returnResponseOnFailure = false, string? authorizationToken = null, string authorizationMethod = "Bearer",Dictionary<string,string>? headers = null);
 
         Task<HttpResponseMessage> PostAsync<T>(string uri, T item, string? authorizationToken = null, string? requestId = null, string authorizationMethod = "Bearer", Dictionary<string, string>? headers = null);
 

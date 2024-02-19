@@ -2727,7 +2727,7 @@ namespace Tameenk.Common.Utilities
 
         public static object GetValueFromCache(string v)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
 

@@ -296,294 +296,294 @@ namespace Tameenk.Integration.Providers.ArabianShield
         }
         #endregion
         #region Autoleasing Methods
-        protected override object ExecuteAutoleasingQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
-        {
-            var result = SubmitAutoleasingQuotationRequest(quotation, predefinedLogInfo);
-            if (result.ErrorCode != QuotationOutput.ErrorCodes.Success)
-            {
-                return null;
-            }
+        //protected override object ExecuteAutoleasingQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        //{
+        //    var result = SubmitAutoleasingQuotationRequest(quotation, predefinedLogInfo);
+        //    if (result.ErrorCode != QuotationOutput.ErrorCodes.Success)
+        //    {
+        //        return null;
+        //    }
 
-            return result.Output;
-        }
+        //    return result.Output;
+        //}
 
-        protected QuotationOutput SubmitAutoleasingQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
-        {
-            QuotationOutput output = new QuotationOutput();
-            log.ReferenceId = quotation.ReferenceId;
-            log.Channel = "autoleasing";
-            log.ServerIP = ServicesUtilities.GetServerIP();
-            log.Method = "AutoleasingQuotation";
-            log.CompanyName = "ArabianShield";
-            log.VehicleMaker = quotation?.VehicleMaker;
-            log.VehicleMakerCode = quotation?.VehicleMakerCode;
-            log.VehicleModel = quotation?.VehicleModel;
-            log.VehicleModelCode = quotation?.VehicleModelCode;
-            log.VehicleModelYear = quotation?.VehicleModelYear;
-            try
-            {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
-                if (testMode)
-                {
-                    const string nameOfFile = ".TestData.quotationTestData.json";
-                    string responseData = ReadResource("Tameenk.Integration.Providers.ArabianShield", nameOfFile);
-                    HttpResponseMessage message = new HttpResponseMessage();
-                    message.Content = new StringContent(responseData);
-                    message.StatusCode = System.Net.HttpStatusCode.OK;
+        //protected QuotationOutput SubmitAutoleasingQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        //{
+        //    QuotationOutput output = new QuotationOutput();
+        //    log.ReferenceId = quotation.ReferenceId;
+        //    log.Channel = "autoleasing";
+        //    log.ServerIP = ServicesUtilities.GetServerIP();
+        //    log.Method = "AutoleasingQuotation";
+        //    log.CompanyName = "ArabianShield";
+        //    log.VehicleMaker = quotation?.VehicleMaker;
+        //    log.VehicleMakerCode = quotation?.VehicleMakerCode;
+        //    log.VehicleModel = quotation?.VehicleModel;
+        //    log.VehicleModelCode = quotation?.VehicleModelCode;
+        //    log.VehicleModelYear = quotation?.VehicleModelYear;
+        //    try
+        //    {
+        //        var testMode = _tameenkConfig.Quotatoin.TestMode;
+        //        if (testMode)
+        //        {
+        //            const string nameOfFile = ".TestData.quotationTestData.json";
+        //            string responseData = ReadResource("Tameenk.Integration.Providers.ArabianShield", nameOfFile);
+        //            HttpResponseMessage message = new HttpResponseMessage();
+        //            message.Content = new StringContent(responseData);
+        //            message.StatusCode = System.Net.HttpStatusCode.OK;
 
-                    output.Output = message;
-                    output.ErrorCode = QuotationOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
+        //            output.Output = message;
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.Success;
+        //            output.ErrorDescription = "Success";
 
-                    return output;
-                }
-                using (ArabianShieldAutoleasingService.BcareAutoLeaseClient serviceClient = new ArabianShieldAutoleasingService.BcareAutoLeaseClient())
-                {
-                    log.ServiceURL = serviceClient.Endpoint.ListenUri.AbsoluteUri;
-                    string stringPayload = JsonConvert.SerializeObject(quotation);
-                    string authorization = "{\"Authorization\":{\"UserName\":\"BcareLease\",\"Password\":\"Ag_2020$SA*LEA\"},";
-                    stringPayload = stringPayload.Trim();
-                    stringPayload = stringPayload.Remove(0, 1);
-                    stringPayload = stringPayload.Insert(0, authorization);
-                    log.ServiceRequest = stringPayload;
+        //            return output;
+        //        }
+        //        using (ArabianShieldAutoleasingService.BcareAutoLeaseClient serviceClient = new ArabianShieldAutoleasingService.BcareAutoLeaseClient())
+        //        {
+        //            log.ServiceURL = serviceClient.Endpoint.ListenUri.AbsoluteUri;
+        //            string stringPayload = JsonConvert.SerializeObject(quotation);
+        //            string authorization = "{\"Authorization\":{\"UserName\":\"BcareLease\",\"Password\":\"Ag_2020$SA*LEA\"},";
+        //            stringPayload = stringPayload.Trim();
+        //            stringPayload = stringPayload.Remove(0, 1);
+        //            stringPayload = stringPayload.Insert(0, authorization);
+        //            log.ServiceRequest = stringPayload;
 
-                    DateTime dtBeforeCalling = DateTime.Now;
-                    string result = serviceClient.Quotation(stringPayload);
-                    DateTime dtAfterCalling = DateTime.Now;
-                    log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
-                    if (string.IsNullOrEmpty(result))
-                    {
-                        output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
-                        output.ErrorDescription = "response return null";
-                        log.ErrorCode = (int)output.ErrorCode;
-                        log.ErrorDescription = output.ErrorDescription;
-                        log.ServiceErrorCode = log.ErrorCode.ToString();
-                        log.ServiceErrorDescription = log.ServiceErrorDescription;
-                        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                        return output;
-                    }
-                    log.ServiceResponse = result;
-                    var response = JsonConvert.DeserializeObject<object>(result);
-                    var policyServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
-                    if (policyServiceResponse != null && policyServiceResponse.Errors != null)
-                    {
-                        StringBuilder servcieErrors = new StringBuilder();
-                        StringBuilder servcieErrorsCodes = new StringBuilder();
+        //            DateTime dtBeforeCalling = DateTime.Now;
+        //            string result = serviceClient.Quotation(stringPayload);
+        //            DateTime dtAfterCalling = DateTime.Now;
+        //            log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
+        //            if (string.IsNullOrEmpty(result))
+        //            {
+        //                output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
+        //                output.ErrorDescription = "response return null";
+        //                log.ErrorCode = (int)output.ErrorCode;
+        //                log.ErrorDescription = output.ErrorDescription;
+        //                log.ServiceErrorCode = log.ErrorCode.ToString();
+        //                log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //                return output;
+        //            }
+        //            log.ServiceResponse = result;
+        //            var response = JsonConvert.DeserializeObject<object>(result);
+        //            var policyServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
+        //            if (policyServiceResponse != null && policyServiceResponse.Errors != null)
+        //            {
+        //                StringBuilder servcieErrors = new StringBuilder();
+        //                StringBuilder servcieErrorsCodes = new StringBuilder();
 
-                        foreach (var error in policyServiceResponse.Errors)
-                        {
-                            servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
-                            servcieErrorsCodes.AppendLine(error.Code);
+        //                foreach (var error in policyServiceResponse.Errors)
+        //                {
+        //                    servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
+        //                    servcieErrorsCodes.AppendLine(error.Code);
 
-                        }
-                        output.ErrorCode = QuotationOutput.ErrorCodes.ServiceError;
-                        output.ErrorDescription = "Service response error is : " + servcieErrors.ToString();
-                        log.ErrorCode = (int)output.ErrorCode;
-                        log.ErrorDescription = output.ErrorDescription;
-                        log.ServiceErrorCode = servcieErrorsCodes.ToString();
-                        log.ServiceErrorDescription = servcieErrors.ToString();
-                        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                        return output;
-                    }
-                    output.Output = response;
-                    output.ErrorCode = QuotationOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-            }
-            catch (Exception ex)
-            {
-                output.ErrorCode = QuotationOutput.ErrorCodes.ServiceException;
-                output.ErrorDescription = ex.ToString();
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-        }
+        //                }
+        //                output.ErrorCode = QuotationOutput.ErrorCodes.ServiceError;
+        //                output.ErrorDescription = "Service response error is : " + servcieErrors.ToString();
+        //                log.ErrorCode = (int)output.ErrorCode;
+        //                log.ErrorDescription = output.ErrorDescription;
+        //                log.ServiceErrorCode = servcieErrorsCodes.ToString();
+        //                log.ServiceErrorDescription = servcieErrors.ToString();
+        //                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //                return output;
+        //            }
+        //            output.Output = response;
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.Success;
+        //            output.ErrorDescription = "Success";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.ErrorCode = QuotationOutput.ErrorCodes.ServiceException;
+        //        output.ErrorDescription = ex.ToString();
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //}
 
-        protected override object ExecuteAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
-        {
-            var result = SubmitAutoleasingPolicyRequest(policy, predefinedLogInfo);
-            if (result.ErrorCode != PolicyOutput.ErrorCodes.Success)
-            {
-                return null;
-            }
+        //protected override object ExecuteAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
+        //{
+        //    var result = SubmitAutoleasingPolicyRequest(policy, predefinedLogInfo);
+        //    if (result.ErrorCode != PolicyOutput.ErrorCodes.Success)
+        //    {
+        //        return null;
+        //    }
 
-            return result.Output;
+        //    return result.Output;
 
-        }
+        //}
 
-        protected PolicyOutput SubmitAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog log)
-        {
-            PolicyOutput output = new PolicyOutput();
-            log.ReferenceId = policy.ReferenceId;
-            log.Channel = "autoleasing";
-            log.ServerIP = ServicesUtilities.GetServerIP();
-            log.Method = "AutoleasingPolicy";
-            log.CompanyName = "ArabianShield";
+        //protected PolicyOutput SubmitAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog log)
+        //{
+        //    PolicyOutput output = new PolicyOutput();
+        //    log.ReferenceId = policy.ReferenceId;
+        //    log.Channel = "autoleasing";
+        //    log.ServerIP = ServicesUtilities.GetServerIP();
+        //    log.Method = "AutoleasingPolicy";
+        //    log.CompanyName = "ArabianShield";
 
-            var request = _policyProcessingQueueRepository.Table.Where(a => a.ReferenceId == policy.ReferenceId).FirstOrDefault();
-            if (request != null)
-            {
-                request.RequestID = log.RequestId;
-                request.CompanyName = log.CompanyName;
-                request.CompanyID = log.CompanyID;
-                request.InsuranceTypeCode = log.InsuranceTypeCode;
-                request.DriverNin = log.DriverNin;
-                request.VehicleId = log.VehicleId;
-            }
+        //    var request = _policyProcessingQueueRepository.Table.Where(a => a.ReferenceId == policy.ReferenceId).FirstOrDefault();
+        //    if (request != null)
+        //    {
+        //        request.RequestID = log.RequestId;
+        //        request.CompanyName = log.CompanyName;
+        //        request.CompanyID = log.CompanyID;
+        //        request.InsuranceTypeCode = log.InsuranceTypeCode;
+        //        request.DriverNin = log.DriverNin;
+        //        request.VehicleId = log.VehicleId;
+        //    }
 
-            try
-            {
-                var testMode = _tameenkConfig.Policy.TestMode;
-                if (testMode)
-                {
-                    const string nameOfFile = ".TestData.policyTestData.json";
+        //    try
+        //    {
+        //        var testMode = _tameenkConfig.Policy.TestMode;
+        //        if (testMode)
+        //        {
+        //            const string nameOfFile = ".TestData.policyTestData.json";
 
-                    string responseData = ReadResource("Tameenk.Integration.Providers.ArabianShield", nameOfFile);
+        //            string responseData = ReadResource("Tameenk.Integration.Providers.ArabianShield", nameOfFile);
 
-                    output.Output = JsonConvert.DeserializeObject<object>(responseData);
-                    output.ErrorCode = PolicyOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
+        //            output.Output = JsonConvert.DeserializeObject<object>(responseData);
+        //            output.ErrorCode = PolicyOutput.ErrorCodes.Success;
+        //            output.ErrorDescription = "Success";
 
-                    return output;
-                }
-                using (ArabianShieldAutoleasingService.BcareAutoLeaseClient serviceClient = new ArabianShieldAutoleasingService.BcareAutoLeaseClient())
-                {
-                    log.ServiceURL = serviceClient.Endpoint.ListenUri.AbsoluteUri;
+        //            return output;
+        //        }
+        //        using (ArabianShieldAutoleasingService.BcareAutoLeaseClient serviceClient = new ArabianShieldAutoleasingService.BcareAutoLeaseClient())
+        //        {
+        //            log.ServiceURL = serviceClient.Endpoint.ListenUri.AbsoluteUri;
 
-                    var stringPayload = JsonConvert.SerializeObject(policy);
-                    string authorization = "{\"Authorization\":{\"UserName\":\"BcareLease\",\"Password\":\"Ag_2020$SA*LEA\"},";
-                    stringPayload = stringPayload.Trim();
-                    stringPayload = stringPayload.Remove(0, 1);
-                    stringPayload = stringPayload.Insert(0, authorization);
-                    log.ServiceRequest = stringPayload;
-                    request.ServiceRequest = log.ServiceRequest;
-                    DateTime dtBeforeCalling = DateTime.Now;
-                    string result = serviceClient.Policy(stringPayload);
-                    DateTime dtAfterCalling = DateTime.Now;
-                    log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
-                    if (string.IsNullOrEmpty(result))
-                    {
-                        output.ErrorCode = PolicyOutput.ErrorCodes.NullResponse;
-                        output.ErrorDescription = "response return null";
-                        log.ErrorCode = (int)output.ErrorCode;
-                        log.ErrorDescription = output.ErrorDescription;
-                        log.ServiceErrorCode = log.ErrorCode.ToString();
-                        log.ServiceErrorDescription = log.ServiceErrorDescription;
-                        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                        if (request != null)
-                        {
-                            request.ErrorDescription = output.ErrorDescription;
-                            _policyProcessingQueueRepository.Update(request);
-                        }
-                        return output;
-                    }
-                    log.ServiceResponse = result;
-                    request.ServiceResponse = log.ServiceResponse;
-                    var policyServiceResponse = JsonConvert.DeserializeObject<PolicyResponse>(result);
-                    if (policyServiceResponse != null && policyServiceResponse.Errors != null)
-                    {
-                        StringBuilder servcieErrors = new StringBuilder();
-                        StringBuilder servcieErrorsCodes = new StringBuilder();
+        //            var stringPayload = JsonConvert.SerializeObject(policy);
+        //            string authorization = "{\"Authorization\":{\"UserName\":\"BcareLease\",\"Password\":\"Ag_2020$SA*LEA\"},";
+        //            stringPayload = stringPayload.Trim();
+        //            stringPayload = stringPayload.Remove(0, 1);
+        //            stringPayload = stringPayload.Insert(0, authorization);
+        //            log.ServiceRequest = stringPayload;
+        //            request.ServiceRequest = log.ServiceRequest;
+        //            DateTime dtBeforeCalling = DateTime.Now;
+        //            string result = serviceClient.Policy(stringPayload);
+        //            DateTime dtAfterCalling = DateTime.Now;
+        //            log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
+        //            if (string.IsNullOrEmpty(result))
+        //            {
+        //                output.ErrorCode = PolicyOutput.ErrorCodes.NullResponse;
+        //                output.ErrorDescription = "response return null";
+        //                log.ErrorCode = (int)output.ErrorCode;
+        //                log.ErrorDescription = output.ErrorDescription;
+        //                log.ServiceErrorCode = log.ErrorCode.ToString();
+        //                log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //                if (request != null)
+        //                {
+        //                    request.ErrorDescription = output.ErrorDescription;
+        //                    _policyProcessingQueueRepository.Update(request);
+        //                }
+        //                return output;
+        //            }
+        //            log.ServiceResponse = result;
+        //            request.ServiceResponse = log.ServiceResponse;
+        //            var policyServiceResponse = JsonConvert.DeserializeObject<PolicyResponse>(result);
+        //            if (policyServiceResponse != null && policyServiceResponse.Errors != null)
+        //            {
+        //                StringBuilder servcieErrors = new StringBuilder();
+        //                StringBuilder servcieErrorsCodes = new StringBuilder();
 
-                        foreach (var error in policyServiceResponse.Errors)
-                        {
-                            servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
-                            servcieErrorsCodes.AppendLine(error.Code);
+        //                foreach (var error in policyServiceResponse.Errors)
+        //                {
+        //                    servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
+        //                    servcieErrorsCodes.AppendLine(error.Code);
 
-                        }
+        //                }
 
-                        output.ErrorCode = PolicyOutput.ErrorCodes.ServiceError;
-                        output.ErrorDescription = "Policy Service response error is : " + servcieErrors.ToString();
-                        log.ErrorCode = (int)output.ErrorCode;
-                        log.ErrorDescription = output.ErrorDescription;
-                        log.ServiceErrorCode = servcieErrorsCodes.ToString();
-                        log.ServiceErrorDescription = servcieErrors.ToString();
-                        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                        if (request != null)
-                        {
-                            request.ErrorDescription = output.ErrorDescription;
-                            _policyProcessingQueueRepository.Update(request);
-                        }
-                        return output;
-                    }
-                    if (string.IsNullOrEmpty(policyServiceResponse.PolicyNo))
-                    {
-                        output.ErrorCode = PolicyOutput.ErrorCodes.ServiceError;
-                        output.ErrorDescription = "No PolicyNo returned from company";
-                        log.ErrorCode = (int)output.ErrorCode;
-                        log.ErrorDescription = output.ErrorDescription;
-                        log.ServiceErrorCode = log.ErrorCode.ToString();
-                        log.ServiceErrorDescription = log.ServiceErrorDescription;
-                        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                        if (request != null)
-                        {
-                            request.ErrorDescription = output.ErrorDescription;
-                            _policyProcessingQueueRepository.Update(request);
-                        }
-                        return output;
-                    }
+        //                output.ErrorCode = PolicyOutput.ErrorCodes.ServiceError;
+        //                output.ErrorDescription = "Policy Service response error is : " + servcieErrors.ToString();
+        //                log.ErrorCode = (int)output.ErrorCode;
+        //                log.ErrorDescription = output.ErrorDescription;
+        //                log.ServiceErrorCode = servcieErrorsCodes.ToString();
+        //                log.ServiceErrorDescription = servcieErrors.ToString();
+        //                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //                if (request != null)
+        //                {
+        //                    request.ErrorDescription = output.ErrorDescription;
+        //                    _policyProcessingQueueRepository.Update(request);
+        //                }
+        //                return output;
+        //            }
+        //            if (string.IsNullOrEmpty(policyServiceResponse.PolicyNo))
+        //            {
+        //                output.ErrorCode = PolicyOutput.ErrorCodes.ServiceError;
+        //                output.ErrorDescription = "No PolicyNo returned from company";
+        //                log.ErrorCode = (int)output.ErrorCode;
+        //                log.ErrorDescription = output.ErrorDescription;
+        //                log.ServiceErrorCode = log.ErrorCode.ToString();
+        //                log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //                if (request != null)
+        //                {
+        //                    request.ErrorDescription = output.ErrorDescription;
+        //                    _policyProcessingQueueRepository.Update(request);
+        //                }
+        //                return output;
+        //            }
 
 
-                    var response = JsonConvert.DeserializeObject<object>(result);
-                    output.Output = response;
-                    output.ErrorCode = PolicyOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
-                    log.PolicyNo = policyServiceResponse.PolicyNo;
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    if (request != null)
-                    {
-                        request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
-                    }
-                    return output;
-                }
-            }
-            catch (Exception ex)
-            {
-                output.ErrorCode = PolicyOutput.ErrorCodes.ServiceException;
-                output.ErrorDescription = ex.GetBaseException().ToString();
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                if (request != null)
-                {
-                    request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
-                }
-                return output;
-            }
-        }
+        //            var response = JsonConvert.DeserializeObject<object>(result);
+        //            output.Output = response;
+        //            output.ErrorCode = PolicyOutput.ErrorCodes.Success;
+        //            output.ErrorDescription = "Success";
+        //            log.PolicyNo = policyServiceResponse.PolicyNo;
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = output.ErrorDescription;
+        //                _policyProcessingQueueRepository.Update(request);
+        //            }
+        //            return output;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.ErrorCode = PolicyOutput.ErrorCodes.ServiceException;
+        //        output.ErrorDescription = ex.GetBaseException().ToString();
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        if (request != null)
+        //        {
+        //            request.ErrorDescription = output.ErrorDescription;
+        //            _policyProcessingQueueRepository.Update(request);
+        //        }
+        //        return output;
+        //    }
+        //}
 
-        protected override PolicyResponse GetAutoleasingPolicyResponseObject(object response, PolicyRequest request = null)
-        {
-            string policyResponse = string.Empty;
-            PolicyResponse responseValue = null;
-            try
-            {
-                policyResponse = JsonConvert.SerializeObject(response);
-                responseValue = JsonConvert.DeserializeObject<PolicyResponse>(policyResponse);
-                //responseValue.IssueCompany = Company.ArabianShield;
+        //protected override PolicyResponse GetAutoleasingPolicyResponseObject(object response, PolicyRequest request = null)
+        //{
+        //    string policyResponse = string.Empty;
+        //    PolicyResponse responseValue = null;
+        //    try
+        //    {
+        //        policyResponse = JsonConvert.SerializeObject(response);
+        //        responseValue = JsonConvert.DeserializeObject<PolicyResponse>(policyResponse);
+        //        //responseValue.IssueCompany = Company.ArabianShield;
 
-                return responseValue;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log("ArabianShieldInsuranceProvider -> GetPolicyResponseObject", ex, LogLevel.Error);
-            }
-            return null;
-        }
+        //        return responseValue;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.Log("ArabianShieldInsuranceProvider -> GetPolicyResponseObject", ex, LogLevel.Error);
+        //    }
+        //    return null;
+        //}
 
         #endregion
 

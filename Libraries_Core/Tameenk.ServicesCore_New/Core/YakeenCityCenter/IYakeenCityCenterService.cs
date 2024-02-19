@@ -11,6 +11,6 @@ namespace Tameenk.Services.Core
     public interface IYakeenCityCenterService
     {
         PolicyOutput AddorNewYakeenCityCenter(YakeenCityCenterModel model);
-        List<YakeenCityCenterModel> GetYakeenCityCentersWithFilter(out int total, bool export, int cityId, string cityName, int zipCode, int elmCode, int pageIndex, int pageSize);
+        //List<YakeenCityCenterModel> GetYakeenCityCentersWithFilter(out int total, bool export, int cityId, string cityName, int zipCode, int elmCode, int pageIndex, int pageSize);
     }
 }

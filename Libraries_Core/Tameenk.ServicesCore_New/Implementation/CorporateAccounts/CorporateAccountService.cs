@@ -35,62 +35,62 @@ namespace Tameenk.Services.Implementation
             return _corporateAccountRepository.TableNoTracking.Where(a => a.Id == accountId).FirstOrDefault();
         }
 
-        public List<CorporateAccountModel> GetCorporateAccountWithFilter(CorporateAccountFilter filterModel, int pageIndex, int pageSize, int commandTimeout, bool export, out int totalCount, out string exception)
-        {
-            totalCount = 0;
-            exception = string.Empty;
-            var dbContext = EngineContext.Current.Resolve<IDbContext>();
+        //public List<CorporateAccountModel> GetCorporateAccountWithFilter(CorporateAccountFilter filterModel, int pageIndex, int pageSize, int commandTimeout, bool export, out int totalCount, out string exception)
+        //{
+        //    totalCount = 0;
+        //    exception = string.Empty;
+        //    var dbContext = EngineContext.Current.Resolve<IDbContext>();
 
-            try
-            {
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetAllCorporateAccountsFromDBWithFilter";
-                command.CommandType = CommandType.StoredProcedure;
-                dbContext.DatabaseInstance.CommandTimeout = commandTimeout;
+        //    try
+        //    {
+        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+        //        command.CommandText = "GetAllCorporateAccountsFromDBWithFilter";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        dbContext.DatabaseInstance.CommandTimeout = commandTimeout;
 
-                if (!string.IsNullOrEmpty(filterModel.Name))
-                {
-                    SqlParameter nameParameter = new SqlParameter() { ParameterName = "name", Value = filterModel.Name };
-                    command.Parameters.Add(nameParameter);
-                }
+        //        if (!string.IsNullOrEmpty(filterModel.Name))
+        //        {
+        //            SqlParameter nameParameter = new SqlParameter() { ParameterName = "name", Value = filterModel.Name };
+        //            command.Parameters.Add(nameParameter);
+        //        }
 
-                SqlParameter pageIndexParameter = new SqlParameter() { ParameterName = "pageIndex", Value = pageIndex > 0 ? pageIndex : 1 };
-                command.Parameters.Add(pageIndexParameter);
+        //        SqlParameter pageIndexParameter = new SqlParameter() { ParameterName = "pageIndex", Value = pageIndex > 0 ? pageIndex : 1 };
+        //        command.Parameters.Add(pageIndexParameter);
 
-                SqlParameter pageSizeParameter = new SqlParameter() { ParameterName = "pageSize", Value = pageSize };
-                command.Parameters.Add(pageSizeParameter);
+        //        SqlParameter pageSizeParameter = new SqlParameter() { ParameterName = "pageSize", Value = pageSize };
+        //        command.Parameters.Add(pageSizeParameter);
 
-                SqlParameter exportParameter = new SqlParameter() { ParameterName = "export", Value = export };
-                command.Parameters.Add(exportParameter);
+        //        SqlParameter exportParameter = new SqlParameter() { ParameterName = "export", Value = export };
+        //        command.Parameters.Add(exportParameter);
 
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
+        //        dbContext.DatabaseInstance.Connection.Open();
+        //        var reader = command.ExecuteReader();
 
-                // get data
-                List<CorporateAccountModel> filteredData = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<CorporateAccountModel>(reader).ToList();
+        //        // get data
+        //        List<CorporateAccountModel> filteredData = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<CorporateAccountModel>(reader).ToList();
 
-                if (export)
-                    totalCount = filteredData.Count();
-                else
-                {
-                    //get data count
-                    reader.NextResult();
-                    totalCount = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
-                }
+        //        if (export)
+        //            totalCount = filteredData.Count();
+        //        else
+        //        {
+        //            //get data count
+        //            reader.NextResult();
+        //            totalCount = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<int>(reader).FirstOrDefault();
+        //        }
 
-                return filteredData;
-            }
-            catch (Exception exp)
-            {
-                exception = exp.ToString();
-                return null;
-            }
-            finally
-            {
-                if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
-                    dbContext.DatabaseInstance.Connection.Close();
-            }
-        }
+        //        return filteredData;
+        //    }
+        //    catch (Exception exp)
+        //    {
+        //        exception = exp.ToString();
+        //        return null;
+        //    }
+        //    finally
+        //    {
+        //        if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
+        //            dbContext.DatabaseInstance.Connection.Close();
+        //    }
+        //}
 
         public CorporateAccount GetCorporateAccount(int accountId)
         {
