@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -13,8 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Integration_Core\Tameenk.Integration.Core.Core\Tameenk.Integration.Core.Core.csproj" />
-    <ProjectReference Include="..\..\..\Integration_Core\Tameenk.Integration.DtoCore\Tameenk.Integration.DtoCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.Common.UtilitiesCore_New\Tameenk.Common.UtilitiesCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.DataCore_New\Tameenk.DataCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.Loggin.DALCore_New\Tameenk.Loggin.DALCore.csproj" />

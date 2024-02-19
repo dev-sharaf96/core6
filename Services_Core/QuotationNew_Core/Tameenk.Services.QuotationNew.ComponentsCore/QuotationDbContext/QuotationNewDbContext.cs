@@ -72,81 +72,6 @@ namespace Tameenk.Services.QuotationNew.Components.QuotationDbContext
                                 request.MainDriverLicenses.Add(ObjectMapper<DriverLicense>.MapReaderToObjectList(reader));
                             }
                         }
-
-                        //request.ID = Convert.ToInt32(reader["ID"]);
-                        //request.ExternalId = Convert.ToString(reader["ExternalId"]);
-                        //request.RequestPolicyEffectiveDate = Convert.ToDateTime(reader["RequestPolicyEffectiveDate"]);
-                        //request.NajmNcdFreeYears = Convert.ToInt32(reader["NajmNcdFreeYears"]);
-                        //request.NajmNcdRefrence = Convert.ToString( reader["NajmNcdRefrence"]);
-                        //request.PostCode = Convert.ToString( reader["PostCode"]);
-                        //request.IsRenewal = Convert.ToBoolean(reader["IsRenewal"]);
-                        //request.NoOfAccident = Convert.ToInt32(reader["NoOfAcciden"]);
-                        //request.NajmResponse = Convert.ToString(reader["NajmResponse"]);
-                        //request.MainDriverId = Guid.Parse(reader["MainDriverId"].ToString());
-                        //request.VehicleId = Guid.Parse(reader["VehicleId"].ToString());
-                        //request.CityCode = Convert.ToInt64(reader["CityCode"]);
-                        //request.MissingFields = Convert.ToString(reader["MissingFields"]);
-                        //request.InsuredId = Convert.ToInt32(reader["InsuredId"]);
-                        //request.QuotationCreatedDate = Convert.ToDateTime( reader["QuotationCreatedDate"]);
-                        //request.NationalId = Convert.ToString(reader["NationalId"]);
-                        //request.InsuredBirthDate = Convert.ToDateTime(reader["InsuredBirthDate"]);
-                        //request.InsuredBirthDateH = Convert.ToString(reader["InsuredBirthDateH"]);
-                        //request.InsuredGenderId = Convert.ToInt32(reader["InsuredGenderId"]);
-                        //request.NationalityCode = Convert.ToString(reader["NationalityCode"]);
-                        //request.InsuredFirstNameAr = Convert.ToString(reader["InsuredFirstNameAr"]);
-                        //request.ManualEntry = Convert.ToBoolean(reader["ManualEntry"]);
-                        //request.HasAntiTheftAlarm = Convert.ToBoolean(reader["HasAntiTheftAlarm"]);
-                        //request.HasFireExtinguisher = Convert.ToBoolean(reader["HasFireExtinguisher"]);
-                        //request.HasTrailer = Convert.ToBoolean(reader["HasTrailer"]);
-                        //request.TrailerSumInsured = Convert.ToInt32(reader["TrailerSumInsured"]);
-                        //request.OtherUses = Convert.ToBoolean( reader["OtherUses"]);
-                        //request.IsRenewal = Convert.ToBoolean(reader["IsRenewal"]);
-                        //// request.VehicleUseId = Convert.ToInt32(reader["UserId"]);
-
-                        //if (request.ID > 0)
-                        //{
-                        //    if (reader.NextResult())
-                        //    {
-                        //        while (reader.Read())
-                        //        {
-                        //            Driver driver = new Driver();
-                        //            driver.DriverId = Guid.Parse(reader["DriverId"].ToString());
-                        //            driver.IsCitizen = Convert.ToBoolean(reader["IsCitizen"]);
-                        //            driver.NIN = Convert.ToString(reader["NIN"]);
-                        //            request.AdditionalDrivers.Add(driver);
-                        //        }
-                        //    }
-
-                        //    if (reader.NextResult())
-                        //    {
-                        //        while (reader.Read())
-                        //        {
-                        //            DriverViolation driverViolation = new DriverViolation();
-                        //            driverViolation.Id = Convert.ToInt32(reader["Id"]);
-                        //            driverViolation.DriverId = Guid.Parse(reader["DriverId"].ToString());
-                        //            driverViolation.ViolationId = Convert.ToInt32(reader["ViolationId"]);
-                        //            driverViolation.InsuredId = Convert.ToInt32(reader["InsuredId"]);
-                        //            driverViolation.NIN = Convert.ToString(reader["NIN"]);
-                        //            request.MainDriverViolation.Add(driverViolation);
-                        //        }
-                        //    }
-
-                        //    if (reader.NextResult())
-                        //    {
-                        //        while (reader.Read())
-                        //        {
-                        //            DriverLicense driverLicense = new DriverLicense();
-                        //            driverLicense.LicenseId = Convert.ToInt32(reader["LicenseId"]);
-                        //            driverLicense.DriverId = Guid.Parse(reader["DriverId"].ToString());
-                        //            driverLicense.TypeDesc = Convert.ToInt16(reader["TypeDesc"]);
-                        //            driverLicense.ExpiryDateH = Convert.ToString(reader["ExpiryDateH"]);
-                        //            driverLicense.IssueDateH = Convert.ToString(reader["IssueDateH"]);
-                        //            driverLicense.licnsTypeDesc = reader["licnsTypeDesc"].ToString();
-                        //            request.MainDriverLicenses.Add(driverLicense);
-                        //        }
-                        //    }
-                        //}
-
                         connection.Close();
                     }
                     catch (Exception ex)
@@ -179,38 +104,6 @@ namespace Tameenk.Services.QuotationNew.Components.QuotationDbContext
                     var reader = command.ExecuteReader();
 
                     address = ObjectMapper<Address>.MapReaderToObjectList(reader);
-                    
-                    //if (reader != null && reader.HasRows)
-                    //{
-                    //    address = new Address();
-                    //    address.Id = Convert.ToInt32(reader["Id"]);
-                    //    address.Title = Convert.ToString(reader["Title"]);
-                    //    address.Address1 = Convert.ToString(reader["Address1"]);
-                    //    address.Address2 = Convert.ToString(reader["Address2"]);
-                    //    address.ObjLatLng = Convert.ToString(reader["ObjLatLng"]);
-                    //    address.BuildingNumber = Convert.ToString(reader["BuildingNumber"]);
-                    //    address.Street = Convert.ToString(reader["Street"]);
-                    //    address.District = Convert.ToString(reader["District"]);
-                    //    address.City = Convert.ToString(reader["City"]);
-                    //    address.PostCode = Convert.ToString(reader["PostCode"]);
-                    //    address.AdditionalNumber = Convert.ToString(reader["AdditionalNumber"]);
-                    //    address.RegionName = Convert.ToString(reader["RegionName"]);
-                    //    address.PolygonString = Convert.ToString(reader["PolygonString"]);
-                    //    address.IsPrimaryAddress = Convert.ToString(reader["IsPrimaryAddress"]);
-                    //    address.UnitNumber = Convert.ToString(reader["UnitNumber"]);
-                    //    address.Latitude = Convert.ToString(reader["Latitude"]);
-                    //    address.Longitude = Convert.ToString(reader["Longitude"]);
-                    //    address.CityId = Convert.ToString(reader["CityId"]);
-                    //    address.RegionId = Convert.ToString(reader["RegionId"]);
-                    //    address.Restriction = Convert.ToString(reader["Restriction"]);
-                    //    address.PKAddressID = Convert.ToString(reader["PKAddressID"]);
-                    //    address.DriverId = Guid.Parse(reader["DriverId"].ToString());
-                    //    address.AddressLoction = Convert.ToString(reader["AddressLoction"]);
-                    //    address.CreatedDate = Convert.ToDateTime(reader["CreatedDate"]);
-                    //    address.NationalId = Convert.ToString(reader["NationalId"]);
-                    //    address.IsDeleted = Convert.ToBoolean(reader["IsDeleted"]);
-                    //    address.ModifiedDate = Convert.ToDateTime(reader["ModifiedDate"]);
-                    //}
 
                     connection.Close();
                 }
@@ -256,22 +149,6 @@ namespace Tameenk.Services.QuotationNew.Components.QuotationDbContext
 
 
                     promotionProgramUserModel = ObjectMapper<PromotionProgramUserModel>.MapReaderToObjectList(reader);
-
-                    //if (reader!=null && reader.HasRows)
-                    //{
-                    //    promotionProgramUserModel.NationalId = Convert.ToString(reader["NationalId"]);
-                    //    promotionProgramUserModel.Email = Convert.ToString(reader["Email"]);
-                    //    promotionProgramUserModel.Code = Convert.ToString(reader["Code"]);
-                    //    promotionProgramUserModel.PromotionProgramId = Convert.ToInt32(reader["PromotionProgramId"]);
-
-                    //    if (String.IsNullOrWhiteSpace(promotionProgramUserModel.NationalId) || promotionProgramUserModel.NationalId == null)
-                    //    {
-                    //        reader.NextResult();
-                    //        promotionProgramUserModel.Email = Convert.ToString(reader["Email"]);
-                    //        promotionProgramUserModel.Code = Convert.ToString(reader["Code"]);
-                    //        promotionProgramUserModel.PromotionProgramId = Convert.ToInt32(reader["PromotionProgramId"]);
-                    //    }
-                    //}
 
                     connection.Close();
                 }
