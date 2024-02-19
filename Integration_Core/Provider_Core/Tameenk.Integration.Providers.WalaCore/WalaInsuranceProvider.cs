@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,7 @@ namespace Tameenk.Integration.Providers.Wala
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly ILogger _logger;
+        private readonly IServiceProvider _serviceProvider;
         //private const string QUOTATION_TPL_URL = "https://online.walaa.com/bcaremotor/Walaa/TPL/QuotationRequest";
         //private const string POLICY_TPL_URL = "https://online.walaa.com/bcaremotor/Walaa/TPL/PolicyRequest";
         private const string QUOTATION_TPL_URL = "https://bcaresvc01.walaa.com:8083/Walaa/TPL/QuotationRequest";
@@ -40,7 +42,7 @@ namespace Tameenk.Integration.Providers.Wala
         private const string QUOTATION_COMPREHENSIVE_URL = "https://bcaresvc01.walaa.com:8083/Walaa/CMP/QuotationRequest";
         private const string POLICY_COMPREHENSIVE_URL = "https://bcaresvc01.walaa.com:8083/Walaa/CMP/PolicyRequest";
         #endregion
-        public WalaInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
+        public WalaInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger,IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
             : base(tameenkConfig, new RestfulConfiguration
             {
 
@@ -68,11 +70,12 @@ namespace Tameenk.Integration.Providers.Wala
             _logger = logger;
             _checkoutDetail = checkoutDetail;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
+            _serviceProvider = serviceProvider;
         }
 
         public override bool ValidateQuotationBeforeCheckout(QuotationRequest quotationRequest, out List<string> errors)
         {
-            var addressService = EngineContext.Current.Resolve<IAddressService>();
+            var addressService = _serviceProvider.GetRequiredService<IAddressService>(); 
             errors = new List<string>();
             var mainDriverAddress = quotationRequest.Driver.Addresses.FirstOrDefault();
             if (mainDriverAddress != null)

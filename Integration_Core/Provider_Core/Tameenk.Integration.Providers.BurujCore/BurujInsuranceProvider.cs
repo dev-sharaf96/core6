@@ -56,7 +56,7 @@ namespace Tameenk.Integration.Providers.Buruj
                 null :
                 Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));
             _checkoutDetail = checkoutDetail;
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
+
         }
 
         

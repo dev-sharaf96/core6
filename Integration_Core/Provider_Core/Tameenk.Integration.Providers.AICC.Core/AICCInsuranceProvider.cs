@@ -10,14 +10,11 @@ using Tameenk.Core.Configuration;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Entities.Policies;
-using Tameenk.Core.Infrastructure;
 using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
 using Tameenk.Loggin.DAL;
 using Tameenk.Services.Core.Http;
-using Tameenk.Services.Core.InsuranceCompanies;
-using Tameenk.Services.Core.Quotations;
 using Tameenk.Services.Logging;
 
 namespace Tameenk.Integration.Providers.AICC
@@ -57,7 +54,6 @@ namespace Tameenk.Integration.Providers.AICC
 
             _restfulConfiguration = Configuration as RestfulConfiguration;
             _tameenkConfig = tameenkConfig;
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
             _logger = logger;
             _accessTokenBase64 = _restfulConfiguration.AccessToken;
             _accessTokenBase64Autoleasing = Convert.ToBase64String(Encoding.ASCII.GetBytes(_restfulConfiguration.AutoleasingAccessToken));

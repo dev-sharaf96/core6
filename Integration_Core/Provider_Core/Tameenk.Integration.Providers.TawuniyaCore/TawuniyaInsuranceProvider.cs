@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -69,11 +70,12 @@ namespace Tameenk.Integration.Providers.Tawuniya
         private readonly IRepository<VehicleModel> _vehicleModelRepository;
         private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
         private readonly IRepository<Product_Benefit> _productBenefitRepository;
+        private readonly IServiceProvider _serviceProvider;
         #endregion
 
         #region Ctor
 
-        public TawuniyaInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
+        public TawuniyaInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
             , IRepository<QuotationEntity.QuotationRequest> quotationRequestRepository
             , IRepository<QuotationEntity.TawuniyaProposal> tawuniyaProposalRepository
             , IRepository<QuotationEntity.QuotationResponse> quotationResponseRepository
@@ -91,6 +93,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
             , IRepository<VehicleModel> vehicleModelRepository
             , IRepository<ShoppingCartItem> shoppingCartItemRepository
             , IRepository<Product_Benefit> productBenefitRepository)
+            
             : base(tameenkConfig, new RestfulConfiguration()
             {
                 GenerateAutoleasingQuotationUrl = GET_QUOTATION_AutoLease_URL,
@@ -102,7 +105,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
             }, logger, policyProcessingQueueRepository)
         {
             _tameenkConfig = tameenkConfig ?? throw new TameenkArgumentNullException(nameof(TameenkConfig));
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
+            _serviceProvider = serviceProvider;
             _logger = logger;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _quotationRequestRepository = quotationRequestRepository;
@@ -372,7 +375,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
 
         public override bool ValidateQuotationBeforeCheckout(QuotationEntity.QuotationRequest quotationRequest, out List<string> errors)
         {
-            var addressService = EngineContext.Current.Resolve<IAddressService>();
+            var addressService = _serviceProvider.GetRequiredService<IAddressService>();
             errors = new List<string>();
             var mainDriverAddress = quotationRequest.Driver.Addresses.FirstOrDefault();
             if (mainDriverAddress != null)
@@ -567,7 +570,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
 
             var driver = quotation.Drivers.FirstOrDefault();
             var insured = insuredRepo.TableNoTracking.OrderByDescending(e => e.NationalId == driver.DriverId.ToString()).FirstOrDefault();
-            var addressService = EngineContext.Current.Resolve<IAddressService>();
+            var addressService = _serviceProvider.GetRequiredService<IAddressService>();
             //var address = addressRepo.TableNoTracking.OrderByDescending(e => e.NationalId == driver.DriverId.ToString()).FirstOrDefault();
             var address = addressService.GetAddressesByNin(driver.DriverId.ToString());
 

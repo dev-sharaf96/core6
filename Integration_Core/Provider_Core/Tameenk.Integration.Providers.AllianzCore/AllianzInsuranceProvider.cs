@@ -9,7 +9,6 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System;
 using Tameenk.Common.Utilities;
-using Tameenk.Services.Implementation.Policies;
 using Tameenk.Loggin.DAL;
 using Tameenk.Core;
 using System.Linq;
@@ -17,7 +16,6 @@ using System.Text;
 using System.Net.Http.Headers;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Services.Core.Http;
-using Tameenk.Core.Infrastructure;
 
 namespace Tameenk.Integration.Providers.Allianz
 {
@@ -58,7 +56,6 @@ namespace Tameenk.Integration.Providers.Allianz
             _tameenkConfig = tameenkConfig;
             _accessTokenBase64 = _restfulConfiguration.AccessToken;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
             _checkoutDetail = checkoutDetail;
         }
         protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)

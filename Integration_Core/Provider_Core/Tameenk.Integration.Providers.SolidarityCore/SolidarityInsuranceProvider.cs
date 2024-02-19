@@ -8,7 +8,6 @@ using Tameenk.Core.Domain.Entities.Policies;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System;
-using Tameenk.Services.Implementation.Policies;
 using Tameenk.Loggin.DAL;
 using Tameenk.Core;
 using System.Linq;
@@ -16,7 +15,6 @@ using System.Text;
 using System.Net.Http.Headers;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Services.Core.Http;
-using Tameenk.Core.Infrastructure;
 using System.Net;
 
 namespace Tameenk.Integration.Providers.Solidarity
@@ -35,6 +33,7 @@ namespace Tameenk.Integration.Providers.Solidarity
         private readonly IHttpClient _httpClient;
         private const string QUOTATION_TPL_URL = "https://bcare.solidaritytakaful.com/BcareMotorApi/Quotation";
         private const string QUOTATION_COMPREHENSIVE_URL = "https://bcare.solidaritytakaful.com/BcareMotorApi/Quotation";
+
         #endregion
 
         public SolidarityInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger
@@ -53,7 +52,6 @@ namespace Tameenk.Integration.Providers.Solidarity
             _tameenkConfig = tameenkConfig;
             _accessTokenBase64 = _restfulConfiguration.AccessToken;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
             _checkoutDetail = checkoutDetail;
         }
         protected override ServiceOutput SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)        {            ServiceOutput output = new ServiceOutput();            log.ReferenceId = quotation.ReferenceId;            if (string.IsNullOrEmpty(log.Channel))                log.Channel = "Portal";            log.ServiceURL = _restfulConfiguration.GenerateQuotationUrl;            log.ServerIP = ServicesUtilities.GetServerIP();            log.Method = "Quotation";            log.CompanyName = _restfulConfiguration.ProviderName;            log.VehicleMaker = quotation?.VehicleMaker;            log.VehicleMakerCode = quotation?.VehicleMakerCode;            log.VehicleModel = quotation?.VehicleModel;            log.VehicleModelCode = quotation?.VehicleModelCode;            log.VehicleModelYear = quotation?.VehicleModelYear;            log.CompanyName = "Solidarity";            var stringPayload = string.Empty;

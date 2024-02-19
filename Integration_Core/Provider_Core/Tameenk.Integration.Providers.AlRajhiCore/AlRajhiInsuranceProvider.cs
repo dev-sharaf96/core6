@@ -1,20 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using Tameenk.Common.Utilities;
 using Tameenk.Core;
 using Tameenk.Core.Configuration;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities.Policies;
 using Tameenk.Core.Domain.Entities.Quotations;
-using Tameenk.Core.Infrastructure;
 using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
@@ -37,6 +32,7 @@ namespace Tameenk.Integration.Providers.AlRajhi
         private readonly IHttpClient _httpClient;
         private readonly string _accessTokenBase64;
         private readonly RestfulConfiguration _restfulConfiguration;
+        private readonly IServiceProvider _serviceProvider;
         #region ctor
         //public AlRajhiInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
         //     : base(new ProviderConfiguration() { ProviderName = "AlRajhi" }, logger)
@@ -46,7 +42,7 @@ namespace Tameenk.Integration.Providers.AlRajhi
         //    _policyProcessingQueueRepository = policyProcessingQueueRepository;
         //}
 
-        public AlRajhiInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+        public AlRajhiInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
            : base(tameenkConfig, new RestfulConfiguration
            {
                GenerateQuotationUrl = "https://dspeai.alrajhitakaful.com/ART.NCIS.TameenK/TameenK.svc/Quotation",
@@ -59,8 +55,7 @@ namespace Tameenk.Integration.Providers.AlRajhi
 
            }, logger, policyProcessingQueueRepository)
         {
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
-            _httpClient = EngineContext.Current.Resolve<IHttpClient>();
+            _serviceProvider = serviceProvider;
             _restfulConfiguration = Configuration as RestfulConfiguration;
             _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AutoleasingAccessToken) ?
              null :
@@ -69,7 +64,7 @@ namespace Tameenk.Integration.Providers.AlRajhi
 
         public override bool ValidateQuotationBeforeCheckout(QuotationRequest quotationRequest, out List<string> errors)
         {
-            var addressService = EngineContext.Current.Resolve<IAddressService>();
+            var addressService = _serviceProvider.GetRequiredService<IAddressService>();
             errors = new List<string>();
             var mainDriverAddress = quotationRequest.Driver.Addresses.FirstOrDefault();
             if (mainDriverAddress != null)
