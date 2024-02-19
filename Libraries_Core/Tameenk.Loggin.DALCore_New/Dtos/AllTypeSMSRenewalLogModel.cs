@@ -15,7 +15,7 @@ namespace Tameenk.Loggin.DAL.Dtos
             Sent14daysBefore = new List<SMSNotification>();
             SentDayBefore = new List<SMSNotification>();
             SentInsuranceExpire = new List<SMSNotification>();
-            NotSentDueTransferOfCarOwnership = new List<SMSNotification>();
+              NotSentDueTransferOfCarOwnership = new List<SMSNotification>();
         }
     }
 }
