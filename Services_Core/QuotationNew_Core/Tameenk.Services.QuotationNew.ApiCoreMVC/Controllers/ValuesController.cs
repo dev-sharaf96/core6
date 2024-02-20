@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Tameenk.Services.QuotationNew.ApiCore.AppSettingConfigs;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,10 +10,18 @@ namespace Tameenk.Services.QuotationNew.ApiCore.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private readonly IQuotationConfig quotationConfig;
+
+        public ValuesController(IQuotationConfig quotationConfig)
+        {
+            this.quotationConfig = quotationConfig;
+        }
+
         // GET: api/<ValuesController>
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            var url = quotationConfig.Url;
             return new string[] { "value1", "value2" };
         }
 

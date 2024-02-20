@@ -1,43 +1,67 @@
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Tameenk.Services.QuotationNew.ApiCore;
+using Microsoft.Extensions.Options;
+using System;
+using Tameenk.Services.QuotationNew.ApiCore.AppSettingConfigs;
+using Tameenk.Services.QuotationNew.ApiCore.DependancyInjection;
 
-Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            }).Build().Run();
+var builder = WebApplication.CreateBuilder(args);
+
+var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+var configuration = new ConfigurationBuilder()
+         .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+         .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
+         .AddEnvironmentVariables()
+         .Build();
+
+builder.Services.AddCustomServicesInjection(configuration);
+
+builder.Services.AddSystemWebAdapters();
+builder.Services.AddHttpForwarder();
+
+// Add services to the container.
+
+builder.Services.AddMvc();
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
 
 
-//var builder = WebApplication.CreateBuilder(args);
-//builder.Services.AddSystemWebAdapters();
-//builder.Services.AddHttpForwarder();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-//// Add services to the container.
+app.UseRouting();
+app.UseHttpsRedirection();
 
-//builder.Services.AddControllers();
-//// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-//builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+app.UseAuthorization();
+app.UseSystemWebAdapters();
 
-//var app = builder.Build();
+app.UseEndpoints(endpoints =>
+{
+    //endpoints.MapControllerRoute
+    //(
+    //    name: "GetQuotation",
+    //    pattern: "api/quote",
+    //    defaults: new { controller = "Quotation", action = "GetQuote" }
+    // );
 
-//// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
+    endpoints.MapControllerRoute("Default", "{controller=Home}/{action=Index}/{id?}");
 
-//app.UseHttpsRedirection();
+    endpoints.MapControllers();
+});
 
-//app.UseAuthorization();
-//app.UseSystemWebAdapters();
 
-//app.MapControllers();
-//app.MapForwarder("/{**catch-all}", app.Configuration["ProxyTo"]).Add(static builder => ((RouteEndpointBuilder)builder).Order = int.MaxValue);
 
-//app.MapControllerRoute("Default", "{controller=Home}/{action=Index}/{id?}");
-
-//app.Run();
+app.Run();
