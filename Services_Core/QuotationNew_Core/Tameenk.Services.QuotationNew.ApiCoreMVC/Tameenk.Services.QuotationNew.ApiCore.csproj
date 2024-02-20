@@ -40,4 +40,9 @@
     <ProjectReference Include="..\Tameenk.Services.QuotationNew.ComponentsCore\Tameenk.Services.QuotationNew.ComponentsCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="AppSettingConfigs\Intefaces\" />
+    <Folder Include="AppSettingConfigs\Models\" />
+  </ItemGroup>
+
 </Project>

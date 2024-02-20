@@ -49,8 +49,10 @@ namespace Tameenk.Services.QuotationNew.Components
 
         #region Fields
 
-        private readonly TameenkConfig _tameenkConfig;
+        private readonly IQuotationConfig _quotationConfig;
         private readonly ICacheManager _cacheManager;
+
+
         private readonly IRepository<QuotationResponse> _quotationResponseRepository;
         private readonly IRepository<QuotationRequest> _quotationRequestRepository;
         private readonly IRepository<InsuranceCompany> _insuranceCompanyRepository;
@@ -83,7 +85,7 @@ namespace Tameenk.Services.QuotationNew.Components
 
         #endregion
 
-        public AsyncQuotationContext(TameenkConfig tameenkConfig, IRepository<QuotationResponse> quotationResponseRepository, IRepository<QuotationRequest> quotationRequestRepository
+        public AsyncQuotationContext(IQuotationConfig quotationConfig, IRepository<QuotationResponse> quotationResponseRepository, IRepository<QuotationRequest> quotationRequestRepository
             , ICacheManager cacheManager, IRepository<InsuranceCompany> insuranceCompanyRepository, IRepository<City> cityRepository, IRepository<VehicleColor> vehicleColorRepository
             , IRepository<VehicleInsurance.VehicleMaker> vehicleMakerRepository, IRepository<VehicleInsurance.VehicleModel> vehicleModelRepository, IRepository<LicenseType> licenseTypeRepository
             , IRepository<InsuredExtraLicenses> insuredExtraLicenses, IRepository<Driver> driverRepository, IRepository<DriverViolation> _driverViolationRepository
@@ -91,6 +93,7 @@ namespace Tameenk.Services.QuotationNew.Components
             , IServiceProvider serviceProvider
             )
         {
+            _quotationConfig = quotationConfig;
             _quotationResponseRepository = quotationResponseRepository;
             _quotationRequestRepository = quotationRequestRepository;
             _cacheManager = cacheManager;
@@ -106,7 +109,6 @@ namespace Tameenk.Services.QuotationNew.Components
             _vehiclePlateTextRepository = vehiclePlateTextRepository;
             _benefitRepository = benefitRepository;
             _priceTypeRepository = priceTypeRepository;
-            _tameenkConfig = tameenkConfig;
             _quotationResponseCache = quotationResponseCache;
             this.logger = LogManager.GetCurrentClassLogger();
             _serviceProvider = serviceProvider;
@@ -1434,7 +1436,7 @@ namespace Tameenk.Services.QuotationNew.Components
 
                     results.Products = results.Products.Where(e => e.ProductPrice > 0).ToList();
 
-                    var showZeroPremium = _tameenkConfig.Quotatoin.showZeroPremium;
+                    var showZeroPremium = _quotationConfig.showZeroPremium;
 
                     if (showZeroPremium)
                     {

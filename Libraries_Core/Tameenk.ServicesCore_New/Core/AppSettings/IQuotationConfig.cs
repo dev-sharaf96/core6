@@ -1,4 +1,4 @@
-﻿namespace Tameenk.Services.QuotationNew.ApiCore.AppSettingConfigs
+﻿namespace Tameenk.Services
 {
     public interface IQuotationConfig
     {

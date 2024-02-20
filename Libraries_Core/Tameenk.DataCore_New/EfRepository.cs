@@ -33,6 +33,7 @@ namespace Tameenk.Data
         {
             this._context = context;
             _context.DatabaseInstance.CommandTimeout = 3 * 60 * 60;
+            //_context.DatabaseInstance.SetCommandTimeout(TimeSpan.FromHours(3));
         }
 
         #endregion

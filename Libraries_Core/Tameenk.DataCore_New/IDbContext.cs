@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.Collections.Generic;
 using System.Data.Entity;
 using Tameenk.Core.Domain.Entities;
 
