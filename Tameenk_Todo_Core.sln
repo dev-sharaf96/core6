@@ -234,8 +234,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Administration", "Administr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "QuotationNew", "QuotationNew", "{B362C48E-7DF1-4BB4-BFD1-15A42F534384}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Services.QuotationNew.ApiCore", "Services_Core\QuotationNew_Core\Tameenk.Services.QuotationNew.ApiCore\Tameenk.Services.QuotationNew.ApiCore.csproj", "{9A7BC7FB-F986-4B5E-BAD7-566B7701E1BC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Services.QuotationNew.ComponentsCore", "Services_Core\QuotationNew_Core\Tameenk.Services.QuotationNew.ComponentsCore\Tameenk.Services.QuotationNew.ComponentsCore.csproj", "{7FA4FC06-BA18-443F-B8E9-CEC0BF717488}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Services.Administration.IdentityCore", "Services_Core\AdministrationCore\Tameenk.Services.Administration.IdentityCore\Tameenk.Services.Administration.IdentityCore.csproj", "{5D5D1C6B-CA33-414F-A5A0-7E178ACB6E39}"
@@ -301,6 +299,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Services.YakeenIntegration.BusinessCore", "Services_Core\Inquiry\Tameenk.Services.YakeenIntegration.BusinessCore\Tameenk.Services.YakeenIntegration.BusinessCore.csproj", "{F7C03843-444C-455D-BC3B-01A5487236A7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Services.Capcha.APICore", "Services_Core\Captcha\Tameenk.Services.Capcha.APICore\Tameenk.Services.Capcha.APICore.csproj", "{E1FCA304-0022-4D19-B980-3DB0CF8FCF7F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Services.QuotationNew.ApiCore_", "Services_Core\QuotationNew_Core\Tameenk.Services.QuotationNew.ApiCore\Tameenk.Services.QuotationNew.ApiCore_.csproj", "{DE3CBF9E-F846-4590-82F3-46252D2D6166}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Services.QuotationNew.ApiCore", "Services_Core\QuotationNew_Core\Tameenk.Services.QuotationNew.ApiCoreMVC\Tameenk.Services.QuotationNew.ApiCore.csproj", "{1F8D598A-5CF5-403F-B330-01BDD2F081FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -672,10 +674,6 @@ Global
 		{DD676510-DEEE-4664-9D2F-AF11F9B8A792}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD676510-DEEE-4664-9D2F-AF11F9B8A792}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD676510-DEEE-4664-9D2F-AF11F9B8A792}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9A7BC7FB-F986-4B5E-BAD7-566B7701E1BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A7BC7FB-F986-4B5E-BAD7-566B7701E1BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A7BC7FB-F986-4B5E-BAD7-566B7701E1BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A7BC7FB-F986-4B5E-BAD7-566B7701E1BC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7FA4FC06-BA18-443F-B8E9-CEC0BF717488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7FA4FC06-BA18-443F-B8E9-CEC0BF717488}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FA4FC06-BA18-443F-B8E9-CEC0BF717488}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -772,6 +770,14 @@ Global
 		{E1FCA304-0022-4D19-B980-3DB0CF8FCF7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1FCA304-0022-4D19-B980-3DB0CF8FCF7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1FCA304-0022-4D19-B980-3DB0CF8FCF7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE3CBF9E-F846-4590-82F3-46252D2D6166}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE3CBF9E-F846-4590-82F3-46252D2D6166}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE3CBF9E-F846-4590-82F3-46252D2D6166}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE3CBF9E-F846-4590-82F3-46252D2D6166}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F8D598A-5CF5-403F-B330-01BDD2F081FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F8D598A-5CF5-403F-B330-01BDD2F081FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F8D598A-5CF5-403F-B330-01BDD2F081FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F8D598A-5CF5-403F-B330-01BDD2F081FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -874,7 +880,6 @@ Global
 		{DD676510-DEEE-4664-9D2F-AF11F9B8A792} = {D02961A0-F65D-422A-864E-3EC6EB5B5EB3}
 		{4B892D07-0019-40D8-AED6-9863CDC50273} = {5454F94A-44A4-4C9F-A6FD-16C84B71885B}
 		{B362C48E-7DF1-4BB4-BFD1-15A42F534384} = {5454F94A-44A4-4C9F-A6FD-16C84B71885B}
-		{9A7BC7FB-F986-4B5E-BAD7-566B7701E1BC} = {B362C48E-7DF1-4BB4-BFD1-15A42F534384}
 		{7FA4FC06-BA18-443F-B8E9-CEC0BF717488} = {B362C48E-7DF1-4BB4-BFD1-15A42F534384}
 		{5D5D1C6B-CA33-414F-A5A0-7E178ACB6E39} = {4B892D07-0019-40D8-AED6-9863CDC50273}
 		{7AE3B9BC-5129-4ACE-98C0-D163DE5DC5F3} = {B6376C68-25D3-4FCA-BE53-833129F67E74}
@@ -904,6 +909,8 @@ Global
 		{AC5F2BBE-D740-42E4-9CD4-BC363744315A} = {46493BC1-AB64-4207-80C3-FB24935F806A}
 		{F7C03843-444C-455D-BC3B-01A5487236A7} = {46493BC1-AB64-4207-80C3-FB24935F806A}
 		{E1FCA304-0022-4D19-B980-3DB0CF8FCF7F} = {2F37B1AA-4D7D-4887-AAE5-601518CE9E19}
+		{DE3CBF9E-F846-4590-82F3-46252D2D6166} = {B362C48E-7DF1-4BB4-BFD1-15A42F534384}
+		{1F8D598A-5CF5-403F-B330-01BDD2F081FA} = {B362C48E-7DF1-4BB4-BFD1-15A42F534384}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {81FBB495-09CE-4F05-9BB3-A9A4220F359B}
