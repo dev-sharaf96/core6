@@ -12,12 +12,12 @@ using Tameenk.Core.Domain.Entities.Messages;
 using Tameenk.Core.Exceptions;
 using Tameenk.Services.Core.Notifications;
 using Tameenk.Services.Core.Notifications.Models;
-using System.Data.Entity;
 using Tameenk.Core.Domain.Enums.Messages;
 using Tameenk.Common.Utilities;
 using Tameenk.Core.Caching;
 using Tameenk.Loggin.DAL;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tameenk.Services.Implementation.Notifications
 {

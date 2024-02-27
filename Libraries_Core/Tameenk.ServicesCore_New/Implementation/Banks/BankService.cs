@@ -1,21 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.Linq;
 using Tameenk.Core;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
-using Tameenk.Core.Domain.Entities.AutoleasingWallet;
-using Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Core.Exceptions;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Data;
 using Tameenk.Services.Core;
-using Tameenk.Services.Core.Drivers;
-using Tameenk.Services.Implementation.Banks;
 
 namespace Tameenk.Services.Implementation
 {
@@ -52,7 +43,7 @@ namespace Tameenk.Services.Implementation
             try
             {
                 var bankId = _bankRepository.Table.Where(x => x.Id == bank.Id).FirstOrDefault();
-                _bankRepository.Delete(bankId);
+                _bankRepository.DeleteAsync(bankId);
                 return true;
             }
             catch (Exception)
@@ -73,7 +64,7 @@ namespace Tameenk.Services.Implementation
                 bankUpdated.IBAN = string.IsNullOrEmpty(bank.IBAN) ? bankUpdated.IBAN : bank.IBAN;
                 bankUpdated.PhoneNumber = string.IsNullOrEmpty(bank.PhoneNumber) ? bankUpdated.PhoneNumber : bank.PhoneNumber;
 
-                _bankRepository.Update(bankUpdated);
+                _bankRepository.UpdateAsync(bankUpdated);
                 return true;
             }
             catch (Exception)
@@ -88,7 +79,7 @@ namespace Tameenk.Services.Implementation
             {
                 var bankUpdated = _bankRepository.Table.Where(x => x.Id == bankId).FirstOrDefault();
                 bankUpdated.IBAN = Iban;
-                _bankRepository.Update(bankUpdated);
+                _bankRepository.UpdateAsync(bankUpdated);
                 return true;
             }
             catch (Exception)
@@ -229,7 +220,7 @@ namespace Tameenk.Services.Implementation
             exception = string.Empty;
             try
             {
-                    _bankRepository.Update(bank);
+                    _bankRepository.UpdateAsync(bank);
             }
             catch (Exception exp)
             {

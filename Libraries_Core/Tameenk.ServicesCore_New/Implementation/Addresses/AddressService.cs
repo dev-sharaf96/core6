@@ -6,13 +6,10 @@ using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Services.Core.Addresses;
-using System.Data.Entity;
 using System.Collections.Generic;
 using Tameenk.Common.Utilities;
-using Tameenk.Core.Infrastructure;
 using System.Data;
-using System.Data.SqlClient;
-using System.Data.Entity.Infrastructure;
+using Microsoft.Data.SqlClient;
 
 namespace Tameenk.Services.Implementation.Addresses
 {
@@ -247,7 +244,7 @@ namespace Tameenk.Services.Implementation.Addresses
         /// <returns></returns>
         public void DeleteAddress(Address address)
         {
-            _addressRespository.Delete(address);
+            _addressRespository.DeleteAsync(address);
         }
 
         /// <summary>
@@ -277,7 +274,7 @@ namespace Tameenk.Services.Implementation.Addresses
         /// <returns></returns>
         public void UpdateAddress(Address address)
         {
-            _addressRespository.Update(address);
+            _addressRespository.UpdateAsync(address);
         }
         public List<Address> GetAllAddresses(Guid driverId)
         {
@@ -286,7 +283,7 @@ namespace Tameenk.Services.Implementation.Addresses
         }
         public void InsertAddresses(ICollection<Address> addresses)
         {
-            _addressRespository.Insert(addresses);
+            _addressRespository.InsertAsync(addresses);
         }
 
 

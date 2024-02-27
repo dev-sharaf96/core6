@@ -146,7 +146,7 @@ namespace Tameenk.Integration.Core.Providers
                     if (request != null)
                     {
                         request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request);
                     }
 
 
@@ -164,7 +164,7 @@ namespace Tameenk.Integration.Core.Providers
                     if (request != null)
                     {
                         request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request);
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -180,7 +180,7 @@ namespace Tameenk.Integration.Core.Providers
                     if (request != null)
                     {
                         request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request);
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -215,7 +215,7 @@ namespace Tameenk.Integration.Core.Providers
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request);
                     }
 
                     return output;
@@ -232,7 +232,7 @@ namespace Tameenk.Integration.Core.Providers
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request);
                     }
                     return output;
                 }
@@ -248,7 +248,7 @@ namespace Tameenk.Integration.Core.Providers
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request);
                     }
                     return output;
                 }
@@ -263,7 +263,7 @@ namespace Tameenk.Integration.Core.Providers
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request);
                 }
                   ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
@@ -283,7 +283,7 @@ namespace Tameenk.Integration.Core.Providers
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request);
                 }
 
                 return output;
@@ -1438,7 +1438,7 @@ namespace Tameenk.Integration.Core.Providers
                     if (request != null)
                     {
                         request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request);
                     }
 
 
@@ -1456,7 +1456,7 @@ namespace Tameenk.Integration.Core.Providers
                     if (request != null)
                     {
                         request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request);
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -1472,7 +1472,7 @@ namespace Tameenk.Integration.Core.Providers
                     if (request != null)
                     {
                         request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request);
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -1507,7 +1507,7 @@ namespace Tameenk.Integration.Core.Providers
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request);
                     }
 
                     return output;
@@ -1524,7 +1524,7 @@ namespace Tameenk.Integration.Core.Providers
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request);
                     }
                     return output;
                 }
@@ -1540,7 +1540,7 @@ namespace Tameenk.Integration.Core.Providers
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request);
                     }
                     return output;
                 }
@@ -1555,7 +1555,7 @@ namespace Tameenk.Integration.Core.Providers
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request);
                 }
                   ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
@@ -1575,7 +1575,7 @@ namespace Tameenk.Integration.Core.Providers
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request);
                 }
 
                 return output;

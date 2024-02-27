@@ -1,6 +1,7 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
 using Tameenk.Core.Domain.Entities;
 using TameenkDAL.Store;
+using static TameenkDAL.YourDbContext;
 
 namespace TameenkDAL.UoW
 {
@@ -11,7 +12,7 @@ namespace TameenkDAL.UoW
     {
         #region fields
 
-        private readonly TameenkDbContext _dbContext;
+        private readonly YourDbContext _dbContext;
         private QuotationRequestRepository _quotationRequestRepository;
         private QuotationResponseRepository _quotationResponseRepository;
         private ProductRepository _productRepository;
@@ -20,16 +21,16 @@ namespace TameenkDAL.UoW
         private GenericRepository<Invoice, int> _invoiceRepository;
         private GenericRepository<InsuranceCompany, int> _insuranceCompanyRepository;
         private PayfortPaymentRepository _payfortPaymentRepository;
-        private PolicyRepository _policyRepository;
+        //private PolicyRepository _policyRepository;
         private AdditionalInfoRepository _additionalInfoRepository;
         private TawuniyaRepository _tawuniyaRepository;
         #endregion
 
         #region ctor
 
-        public TameenkUoW()
+        public TameenkUoW(YourDbContext dbContext)
         {
-            _dbContext = new TameenkDbContext();
+            _dbContext = dbContext;
         }
 
         #endregion
@@ -107,14 +108,14 @@ namespace TameenkDAL.UoW
             }
         }
 
-        public PolicyRepository PolicyRepository
-        {
-            get
-            {
-                return _policyRepository ??
-                    (_policyRepository = new PolicyRepository());
-            }
-        }
+        //public PolicyRepository PolicyRepository
+        //{
+        //    get
+        //    {
+        //        return _policyRepository ??
+        //            (_policyRepository = new PolicyRepository());
+        //    }
+        //}
         
         public AdditionalInfoRepository AdditionalInfoRepository
         {

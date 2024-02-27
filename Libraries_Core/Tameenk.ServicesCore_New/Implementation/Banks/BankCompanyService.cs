@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using Tameenk.Core;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
-using Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Core.Exceptions;
 using Tameenk.Services.Core;
-using Tameenk.Services.Core.Drivers;
 
 namespace Tameenk.Services.Implementation
 {
@@ -86,7 +81,7 @@ namespace Tameenk.Services.Implementation
                     BankInsuranceCompany bankInsuranceCompany = new BankInsuranceCompany() { BankId = Bankid, CompanyId = id, IsActive = true };
                     bankInsuranceCompanies.Add(bankInsuranceCompany);
                 }
-                _bankInsuranceRepository.Insert(bankInsuranceCompanies);
+                _bankInsuranceRepository.InsertAsync(bankInsuranceCompanies);
                 return true;
             }
             catch (Exception)
@@ -99,7 +94,7 @@ namespace Tameenk.Services.Implementation
         {
             try
             {
-                _bankInsuranceRepository.Delete(insuranceCompany);
+                _bankInsuranceRepository.DeleteAsync(insuranceCompany);
                 return true;
             }
             catch (Exception)
@@ -120,7 +115,7 @@ namespace Tameenk.Services.Implementation
                     var company = _bankInsuranceRepository.Table.Where(x => x.BankId == Bankid && x.CompanyId == companyId).FirstOrDefault();
                     bankComapnies.Add(company);
                 }
-                _bankInsuranceRepository.Delete(bankComapnies);
+                _bankInsuranceRepository.DeleteAsync(bankComapnies);
                 return true;
             }
             catch (Exception)
@@ -150,7 +145,7 @@ namespace Tameenk.Services.Implementation
                 if (company != null)
                 {
                     company.IsActive = status;
-                    _bankInsuranceRepository.Update(company);
+                    _bankInsuranceRepository.UpdateAsync(company);
                 }
                 else
                     return false;

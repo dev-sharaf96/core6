@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tameenk", "Tameenk\Tameenk.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tamkeen.bll", "Tamkeen.bll\Tamkeen.bll.csproj", "{F0344826-89DF-484D-8B72-A31D51C77790}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TameenkDAL", "TameenkDAL\TameenkDAL.csproj", "{6EBBE2E6-D90A-4287-A92F-F0341DF48186}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PdfGeneratorService", "PdfGeneratorService", "{64E8AB18-4D4B-4A46-A688-F2ADC8547907}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{8DBDC892-4D5B-4BD8-A0B0-A6067169FE1B}"
@@ -302,6 +300,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Services.Capcha.API
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Services.QuotationNew.ApiCore", "Services_Core\QuotationNew_Core\Tameenk.Services.QuotationNew.ApiCoreMVC\Tameenk.Services.QuotationNew.ApiCore.csproj", "{1F8D598A-5CF5-403F-B330-01BDD2F081FA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TameenkDALCore", "TameenkDALCore\TameenkDALCore.csproj", "{62E63C5B-6C23-4670-B74B-8406F656C0F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -316,10 +316,6 @@ Global
 		{F0344826-89DF-484D-8B72-A31D51C77790}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0344826-89DF-484D-8B72-A31D51C77790}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0344826-89DF-484D-8B72-A31D51C77790}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6EBBE2E6-D90A-4287-A92F-F0341DF48186}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6EBBE2E6-D90A-4287-A92F-F0341DF48186}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6EBBE2E6-D90A-4287-A92F-F0341DF48186}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6EBBE2E6-D90A-4287-A92F-F0341DF48186}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9E27F8AF-2B2D-4A16-A0B3-EBF07FAC188E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9E27F8AF-2B2D-4A16-A0B3-EBF07FAC188E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E27F8AF-2B2D-4A16-A0B3-EBF07FAC188E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -772,6 +768,10 @@ Global
 		{1F8D598A-5CF5-403F-B330-01BDD2F081FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F8D598A-5CF5-403F-B330-01BDD2F081FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F8D598A-5CF5-403F-B330-01BDD2F081FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62E63C5B-6C23-4670-B74B-8406F656C0F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62E63C5B-6C23-4670-B74B-8406F656C0F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62E63C5B-6C23-4670-B74B-8406F656C0F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62E63C5B-6C23-4670-B74B-8406F656C0F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tameenk.Common.Utilities;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Exceptions;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Data;
 using Tameenk.Loggin.DAL.Dtos;
 using Tameenk.Services.Core;
 using Tameenk.Services.Implementation.Policies;

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using Tameenk.Core.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
 using Tameenk.Core.Domain.Entities.Quotations;
+using static TameenkDAL.YourDbContext;
 
 namespace TameenkDAL.Store
 {
     public class QuotationRequestRepository : GenericRepository<QuotationRequest, int>
     {
-        public QuotationRequestRepository(TameenkDbContext context)
+        public QuotationRequestRepository(YourDbContext context)
             : base(context)
         {
 

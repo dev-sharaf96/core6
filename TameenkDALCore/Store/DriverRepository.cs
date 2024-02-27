@@ -1,13 +1,12 @@
-﻿using System;
-using System.Data.Entity;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
+using static TameenkDAL.YourDbContext;
 
 namespace TameenkDAL.Store
 {
     public class DriverRepository : GenericRepository<Driver, Guid>
     {
-        public DriverRepository(TameenkDbContext context)
+        public DriverRepository(YourDbContext context)
             : base(context)
         {
 

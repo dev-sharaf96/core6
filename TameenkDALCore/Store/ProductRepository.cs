@@ -1,13 +1,12 @@
-﻿using System;
-using System.Data.Entity;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
 using Tameenk.Core.Domain.Entities;
+using static TameenkDAL.YourDbContext;
 
 namespace TameenkDAL.Store
 {
     public class ProductRepository : GenericRepository<Product, Guid>
     {
-        public ProductRepository(TameenkDbContext context)
+        public ProductRepository(YourDbContext context)
             : base(context)
         {
 

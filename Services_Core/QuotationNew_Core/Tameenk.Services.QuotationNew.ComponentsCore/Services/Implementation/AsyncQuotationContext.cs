@@ -1,46 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Globalization;
-using DocumentFormat.OpenXml.Packaging;
-using System.IO;
+﻿using System.Globalization;
 using Newtonsoft.Json;
-using System.Data.SqlClient;
 using System.Data;
-using System.Data.Entity.Infrastructure;
-using System.Net.Http;
-using System.Text;
 using Tameenk.Core.Domain.Entities;
-using Tameenk.Data;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Core.Domain.Entities.Quotations;
 using Tameenk.Loggin.DAL;
 using Tameenk.Resources.Inquiry;
 using Tameenk.Common.Utilities;
-using Tameenk.Services.Core.InsuranceCompanies;
 using Tameenk.Core.Data;
 using Tameenk.Resources.WebResources;
-using Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Core.Domain.Enums.Vehicles;
 using Tameenk.Integration.Dto.Providers;
-using Tameenk.Services.Core.Vehicles;
 using Tameenk.Core.Caching;
 using Tameenk.Core.Domain.Enums.Quotations;
 using Tameenk.Core.Domain.Enums;
 using Tameenk.Core;
-using VehicleInsurance = Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Services.Extensions;
-using Tameenk.Core.Domain.Entities.PromotionPrograms;
 using Tameenk.Core.Exceptions;
 using Tameenk.Integration.Core.Providers;
-using Tameenk.Core.Configuration;
-using System.Threading.Tasks;
 using QuotationIntegrationDTO = Tameenk.Integration.Dto.Quotation;
+using VehicleInsurance = Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Redis;
 using Tameenk.Core.Domain;
-using NLog;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+using Tameenk.Services.Core.Quotations;
+using Tameenk.Data;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Tameenk.Core.Domain.Entities.Quotations;
+using Tameenk.Core.Domain.Entities.VehicleInsurance;
+using Tameenk.Core.Domain.Entities.PromotionPrograms;
+using Address = Tameenk.Core.Domain.Entities.Address;
+using TameenkDAL;
 
 namespace Tameenk.Services.QuotationNew.Components
 {
@@ -68,8 +57,10 @@ namespace Tameenk.Services.QuotationNew.Components
         private readonly IRepository<Benefit> _benefitRepository;
         private readonly IRepository<PriceType> _priceTypeRepository;
         private readonly IRepository<QuotationResponseCache> _quotationResponseCache;
-        private readonly Logger logger;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IQuotationService _quotationService;
+        //private readonly TameenkLog dbContext;
+        private readonly YourDbContext dbContext;
 
         private readonly List<int> insuranceCompaniesExcluedFromSchemesQuotations = new List<int>()
         {
@@ -90,7 +81,7 @@ namespace Tameenk.Services.QuotationNew.Components
             , IRepository<VehicleInsurance.VehicleMaker> vehicleMakerRepository, IRepository<VehicleInsurance.VehicleModel> vehicleModelRepository, IRepository<LicenseType> licenseTypeRepository
             , IRepository<InsuredExtraLicenses> insuredExtraLicenses, IRepository<Driver> driverRepository, IRepository<DriverViolation> _driverViolationRepository
             , IRepository<VehiclePlateText> vehiclePlateTextRepository, IRepository<Benefit> benefitRepository, IRepository<PriceType> priceTypeRepository, IRepository<QuotationResponseCache> quotationResponseCache
-            , IServiceProvider serviceProvider
+            , IServiceProvider serviceProvider, YourDbContext dbContext, IQuotationService quotationService
             )
         {
             _quotationConfig = quotationConfig;
@@ -110,8 +101,9 @@ namespace Tameenk.Services.QuotationNew.Components
             _benefitRepository = benefitRepository;
             _priceTypeRepository = priceTypeRepository;
             _quotationResponseCache = quotationResponseCache;
-            this.logger = LogManager.GetCurrentClassLogger();
             _serviceProvider = serviceProvider;
+            quotationService = _quotationService;
+            this.dbContext = dbContext;
         }
 
 
@@ -194,7 +186,7 @@ namespace Tameenk.Services.QuotationNew.Components
             catch (Exception ex)
             {
                 //Log4NetManager.Instance.Log(nameof(InsertQuotationResponseIntoInmemoryCache), ex);
-                logger.Error(nameof(InsertQuotationResponseIntoInmemoryCache), ex);
+                //logger.Error(nameof(InsertQuotationResponseIntoInmemoryCache), ex);
             }
         }
 
@@ -383,14 +375,14 @@ namespace Tameenk.Services.QuotationNew.Components
                 }
                 else
                 {
-                    requestDetails = await GetQuotationRequestDetailsByExternalId(qtRqstExtrnlId);
-                    if (requestDetails == null)
-                    {
-                        output.ErrorCode = QuotationNewOutput.ErrorCodes.ServiceDown;
-                        output.ErrorDescription = WebResources.SerivceIsCurrentlyDown;
-                        output.LogDescription = "failed to get Quotation Request from DB, please check the log file";
-                        return output;
-                    }
+                    //requestDetails = await GetQuotationRequestDetailsByExternalId(qtRqstExtrnlId);
+                    //if (requestDetails == null)
+                    //{
+                    //    output.ErrorCode = QuotationNewOutput.ErrorCodes.ServiceDown;
+                    //    output.ErrorDescription = WebResources.SerivceIsCurrentlyDown;
+                    //    output.LogDescription = "failed to get Quotation Request from DB, please check the log file";
+                    //    return output;
+                    //}By Atheer
                 }
 
                 output = GetQuotationResponseDetails(requestDetails, insuranceCompany, qtRqstExtrnlId, predefinedLogInfo, log, insuranceTypeCode, vehicleAgencyRepair, deductibleValue, policyNo: policyNo, policyExpiryDate: policyExpiryDate, OdQuotation: OdQuotation);
@@ -606,7 +598,7 @@ namespace Tameenk.Services.QuotationNew.Components
                 if (quoteRequestInfo != null)
                 {
                     quoteRequestInfo.RequestPolicyEffectiveDate = quoteRequest.RequestPolicyEffectiveDate;
-                    _quotationRequestRepository.Update(quoteRequestInfo);
+                    _quotationRequestRepository.UpdateAsync(quoteRequestInfo);
                 }
             }
 
@@ -689,7 +681,7 @@ namespace Tameenk.Services.QuotationNew.Components
             output.Products = response.Products;
             var products = new List<Product>();
             DateTime beforeHandlingProducts = DateTime.Now;
-            var allBenefitst = _benefitRepository.Table.ToList();
+            //var allBenefitst = _benefitRepository.ToList();
             var allPriceTypes = _priceTypeRepository.Table.ToList();
             foreach (var p in response.Products)
             {
@@ -705,7 +697,7 @@ namespace Tameenk.Services.QuotationNew.Components
                 {
                     foreach (var pb in product.Product_Benefits)
                     {
-                        pb.Benefit = allBenefitst.FirstOrDefault(bf => pb.BenefitId.HasValue && bf.Code == pb.BenefitId.Value);
+                       // pb.Benefit = allBenefitst.FirstOrDefault(bf => pb.BenefitId.HasValue && bf.Code == pb.BenefitId.Value);
                         if (pb.BenefitId == 0)
                         {
                             var serviceBenfitInfo = p.Benefits.Where(a => a.BenefitId == pb.BenefitExternalId).FirstOrDefault();
@@ -753,19 +745,19 @@ namespace Tameenk.Services.QuotationNew.Components
             output.QuotationResponse.Products = ExcludeProductOrBenefitWithZeroPrice(output.QuotationResponse.Products).ToList();
             if (insuranceTypeCode == 1 && insuranceCompany.InsuranceCompanyID != 14 && insuranceCompany.InsuranceCompanyID != 17 && insuranceCompany.InsuranceCompanyID != 9)
             {
-                var tplbenefit = allBenefitst.Where(a => a.Code == 14).FirstOrDefault();
-                if (tplbenefit != null)
-                {
-                    Product_Benefit prodBenefit = new Product_Benefit();
-                    prodBenefit.Benefit = tplbenefit;
-                    prodBenefit.BenefitNameAr = tplbenefit.ArabicDescription;
-                    prodBenefit.BenefitNameEn = tplbenefit.EnglishDescription;
-                    prodBenefit.BenefitId = tplbenefit.Code;
-                    prodBenefit.BenefitExternalId = tplbenefit.Code.ToString();
-                    prodBenefit.IsSelected = true;
-                    prodBenefit.IsReadOnly = true;
-                    output.QuotationResponse.Products.FirstOrDefault()?.Product_Benefits?.Add(prodBenefit);
-                }
+                //var tplbenefit = allBenefitst.Where(a => a.Code == 14).FirstOrDefault();
+                //if (tplbenefit != null)
+                //{
+                //    Product_Benefit prodBenefit = new Product_Benefit();
+                //    prodBenefit.Benefit = tplbenefit;
+                //    prodBenefit.BenefitNameAr = tplbenefit.ArabicDescription;
+                //    prodBenefit.BenefitNameEn = tplbenefit.EnglishDescription;
+                //    prodBenefit.BenefitId = tplbenefit.Code;
+                //    prodBenefit.BenefitExternalId = tplbenefit.Code.ToString();
+                //    prodBenefit.IsSelected = true;
+                //    prodBenefit.IsReadOnly = true;
+                //    output.QuotationResponse.Products.FirstOrDefault()?.Product_Benefits?.Add(prodBenefit);
+                //}
 
             }
 
@@ -796,63 +788,40 @@ namespace Tameenk.Services.QuotationNew.Components
         private string getNewReferenceId()
         {
             string referenceId = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 15);
-            if (_quotationResponseRepository.TableNoTracking.Any(a => a.ReferenceId == referenceId))
+            //if (_quotationResponseRepository.GetAllAsync.Any(a => a.ReferenceId == referenceId))
+            //    return getNewReferenceId();
+            //return referenceId;
+            if (_quotationService.IsQuotationResponseExist(referenceId))
                 return getNewReferenceId();
             return referenceId;
         }
 
-        private async Task<QuotationNewRequestDetails> GetQuotationRequestDetailsByExternalId(string externalId)
-        {
-            //QuotationNewRequestDetails requests = await _redisCacheManager.GetAsync<QuotationNewRequestDetails>($"{quotationRequestDetailsCach_Base_KEY}_{externalId}");
-            //if (requests != null)
-            //    return requests;
+        //////private async Task<QuotationNewRequestDetails> GetQuotationRequestDetailsByExternalId(string externalId)
+        //////{
+        //////    //exception = string.Empty;
+        //////    try
+        //////    {
+        //////        var result =// dbContext.Database.ra("GetQuotationRequestDetailsWithRelatedData", new { ExternalId = externalId }, commandType: CommandType.StoredProcedure);
+        //////            dbContext.Set<QuotationRequestInfoModel>()
+        //////    .FromSqlInterpolated($"EXEC GetQuotationRequestDetailsByExternalId {externalId}")
+        //////    .Include(q => q.AdditionalDrivers)
+        //////    .Include(q => q.MainDriverViolation)
+        //////    .Include(q => q.MainDriverLicenses)
+        //////    //.Select(d=> new QuotationNewRequestDetails
+        //////    //{
+        //////    //    AdditionalDrivers = d.AdditionalDrivers
+        //////    //})
+        //////    .FirstOrDefault();
+               
 
-            //var scope = EngineContext.Current.ContainerManager.Scope();
-            //var providerType = Type.GetType("TameenkObjectContext, Tameenk.Data");
-            //IDbContext _dbContext = EngineContext.Current.ContainerManager.ResolveUnregistered(providerType, scope) as IDbContext;
-            //var scheduleTaskService = EngineContext.Current.ContainerManager.Resolve<IDbContext>("", scope);
-
-            IDbContext dbContext = _serviceProvider.GetRequiredService<IDbContext>(); //EngineContext.Current.Resolve<IDbContext>();
-            try
-            {
-                dbContext.DatabaseInstance.CommandTimeout = 90;
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetQuotationRequestDetailsByExternalId";
-                command.CommandType = CommandType.StoredProcedure;
-                SqlParameter nationalIDParameter = new SqlParameter() { ParameterName = "externalId", Value = externalId };
-                command.Parameters.Add(nationalIDParameter);
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-
-                QuotationNewRequestDetails requests = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<QuotationNewRequestDetails>(reader).FirstOrDefault();
-                if (requests != null)
-                {
-                    requests.AdditionalDrivers = new List<Driver>();
-                    requests.MainDriverViolation = new List<DriverViolation>();
-                    requests.MainDriverLicenses = new List<DriverLicense>();
-                    reader.NextResult();
-                    requests.AdditionalDrivers = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<Driver>(reader).ToList();
-                    reader.NextResult();
-                    requests.MainDriverViolation = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<DriverViolation>(reader).ToList();
-                    reader.NextResult();
-                    requests.MainDriverLicenses = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<DriverLicense>(reader).ToList();
-                }
-
-                //RedisCacheManager redisCacheManager = RedisCacheManager.Instance;
-                await RedisCacheManager.Instance.SetAsync($"{quotationRequestDetailsCach_Base_KEY}_{externalId}", requests, quotationResponseCach_TiMe);
-                return requests;
-            }
-            catch (Exception exp)
-            {
-                File.WriteAllText(@"C:\inetpub\WataniyaLog\GetQuotationRequestDetailsByExternalId_exception_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss_mms") + ".txt", " Exception is:" + exp.ToString());
-                return null;
-            }
-            finally
-            {
-                if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
-                    dbContext.DatabaseInstance.Connection.Close();
-            }
-        }
+        //////        return null;
+        //////    }
+        //////    catch (Exception exp)
+        //////    {
+        //////        //exception = exp.ToString();
+        //////        return null;
+        //////    }
+        //////}
 
         private QuotationServiceRequest GetQuotationRequestMessage(QuotationNewRequestDetails quotationRequest, QuotationResponse quotationResponse, int insuranceTypeCode, bool vehicleAgencyRepair, string userId, int? deductibleValue, out string promotionProgramCode, out int promotionProgramId)
         {
@@ -1964,24 +1933,17 @@ namespace Tameenk.Services.QuotationNew.Components
         private Address GetAddressesByNin(string driverNin)
         {
             Address address = null;
-            IDbContext idbContext = _serviceProvider.GetRequiredService<IDbContext>(); //EngineContext.Current.Resolve<IDbContext>();
             try
             {
-                idbContext.DatabaseInstance.CommandTimeout = new int?(60);
-                var command = idbContext.DatabaseInstance.Connection.CreateCommand();
-                command.CommandText = "GetAddress";
-                command.CommandType = CommandType.StoredProcedure;
-                SqlParameter driverNinParam = new SqlParameter() { ParameterName = "@driverNin", Value = driverNin };
-                command.Parameters.Add(driverNinParam);
-                idbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                address = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<Address>(reader).FirstOrDefault();
-                idbContext.DatabaseInstance.Connection.Close();
+                var addresses = dbContext.Set<Address>()
+                    .FromSqlRaw("EXEC GetAddress @driverNin", new SqlParameter("@driverNin", driverNin))
+                    .ToList();
+                address = addresses.FirstOrDefault();
                 return address;
             }
             catch (Exception ex)
             {
-                idbContext.DatabaseInstance.Connection.Close();
+                dbContext.Database.GetDbConnection().Close();
                 return null;
             }
         }
@@ -2006,43 +1968,94 @@ namespace Tameenk.Services.QuotationNew.Components
             return drivers;
         }
 
+        //public PromotionProgramUserModel GetUserPromotionCodeInfo(string userId, string nationalId, int insuranceCompanyId, int insuranceTypeCode)
+        //{
+        //    //IDbContext dbContext = _serviceProvider.GetRequiredService<IDbContext>(); //EngineContext.Current.Resolve<IDbContext>();
+
+        //    try
+        //    {
+        //        if (insuranceCompanyId < 1)
+        //            throw new TameenkArgumentNullException(nameof(insuranceCompanyId), "Insurance company id can't be less than 1.");
+        //        PromotionProgramUserModel promotionProgramUserInfo = null;
+        //        var command = dbContext.Database.GetDbConnection().CreateCommand();
+        //        command.CommandText = "GetUserPromotionProgramInfo";
+        //        command.CommandType = CommandType.StoredProcedure;
+
+        //        if (!string.IsNullOrEmpty(userId) && userId != Guid.Empty.ToString())
+        //        {
+        //            SqlParameter userIdParam = new SqlParameter() { ParameterName = "userId", Value = userId };
+        //            command.Parameters.Add(userIdParam);
+        //        }
+        //        SqlParameter nationalIdParam = new SqlParameter() { ParameterName = "nationalId", Value = nationalId };
+        //        command.Parameters.Add(nationalIdParam);
+
+        //        SqlParameter insuranceCompanyIdParam = new SqlParameter() { ParameterName = "insuranceCompanyId", Value = insuranceCompanyId };
+        //        SqlParameter insuranceTypeCodeParam = new SqlParameter() { ParameterName = "insuranceTypeCode", Value = insuranceTypeCode };
+
+        //        command.Parameters.Add(insuranceCompanyIdParam);
+        //        command.Parameters.Add(insuranceTypeCodeParam);
+
+        //        dbContext.Database.GetDbConnection().Open();
+        //        var reader = command.ExecuteReader();
+        //        promotionProgramUserInfo = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<PromotionProgramUserModel>(reader).FirstOrDefault();
+        //        if (promotionProgramUserInfo == null)
+        //        {
+        //            reader.NextResult();
+        //            promotionProgramUserInfo = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<PromotionProgramUserModel>(reader).FirstOrDefault();
+
+        //        }
+
+        //        return promotionProgramUserInfo;
+        //    }
+        //    catch
+        //    {
+        //        return null;
+        //    }
+        //    finally
+        //    {
+        //        if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
+        //            dbContext.Database.GetDbConnection().Close();
+        //    }
+        //}
+
         public PromotionProgramUserModel GetUserPromotionCodeInfo(string userId, string nationalId, int insuranceCompanyId, int insuranceTypeCode)
         {
-            IDbContext dbContext = _serviceProvider.GetRequiredService<IDbContext>(); //EngineContext.Current.Resolve<IDbContext>();
-
             try
             {
                 if (insuranceCompanyId < 1)
                     throw new TameenkArgumentNullException(nameof(insuranceCompanyId), "Insurance company id can't be less than 1.");
+
                 PromotionProgramUserModel promotionProgramUserInfo = null;
-                dbContext.DatabaseInstance.CommandTimeout = 60;
-                var command = dbContext.DatabaseInstance.Connection.CreateCommand();
+                dbContext.Database.SetCommandTimeout(60);
+
+                using var command = dbContext.Database.GetDbConnection().CreateCommand();
                 command.CommandText = "GetUserPromotionProgramInfo";
                 command.CommandType = CommandType.StoredProcedure;
 
                 if (!string.IsNullOrEmpty(userId) && userId != Guid.Empty.ToString())
                 {
-                    SqlParameter userIdParam = new SqlParameter() { ParameterName = "userId", Value = userId };
+                    var userIdParam = new SqlParameter("@userId", userId);
                     command.Parameters.Add(userIdParam);
                 }
-                SqlParameter nationalIdParam = new SqlParameter() { ParameterName = "nationalId", Value = nationalId };
+
+                var nationalIdParam = new SqlParameter("@nationalId", nationalId);
+                var insuranceCompanyIdParam = new SqlParameter("@insuranceCompanyId", insuranceCompanyId);
+                var insuranceTypeCodeParam = new SqlParameter("@insuranceTypeCode", insuranceTypeCode);
+
                 command.Parameters.Add(nationalIdParam);
-
-                SqlParameter insuranceCompanyIdParam = new SqlParameter() { ParameterName = "insuranceCompanyId", Value = insuranceCompanyId };
-                SqlParameter insuranceTypeCodeParam = new SqlParameter() { ParameterName = "insuranceTypeCode", Value = insuranceTypeCode };
-
                 command.Parameters.Add(insuranceCompanyIdParam);
                 command.Parameters.Add(insuranceTypeCodeParam);
 
-                dbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                promotionProgramUserInfo = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<PromotionProgramUserModel>(reader).FirstOrDefault();
-                if (promotionProgramUserInfo == null)
-                {
-                    reader.NextResult();
-                    promotionProgramUserInfo = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<PromotionProgramUserModel>(reader).FirstOrDefault();
-                }
+                dbContext.Database.OpenConnection();
 
+                using var reader = command.ExecuteReader();
+               // promotionProgramUserInfo = dbContext.Set<PromotionProgramUserModel>()
+               //     .FromSqlRaw("EXEC GetUserPromotionProgramInfo @userId, @nationalId, @insuranceCompanyId, @insuranceTypeCode",
+               //     new SqlParameter("@userId", userId),
+               //     new SqlParameter("@nationalId", nationalId),
+               //     new SqlParameter("@insuranceCompanyId", insuranceCompanyId),
+               //     new SqlParameter("@insuranceTypeCode", insuranceTypeCode))
+               //     .FirstOrDefault();
                 return promotionProgramUserInfo;
             }
             catch
@@ -2051,10 +2064,13 @@ namespace Tameenk.Services.QuotationNew.Components
             }
             finally
             {
-                if (dbContext.DatabaseInstance.Connection.State == ConnectionState.Open)
-                    dbContext.DatabaseInstance.Connection.Close();
+                if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
+                    dbContext.Database.CloseConnection();
             }
         }
+
+
+
 
         public VehicleInsurance.VehicleModel GetVehicleModelByMakerCodeAndModelCode(short vehicleMakerId, long vehicleModelId)
         {

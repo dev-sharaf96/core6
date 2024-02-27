@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Data;
 using Tameenk.Services.Core;
 
 namespace Tameenk.Services.Implementation
@@ -105,7 +99,7 @@ namespace Tameenk.Services.Implementation
                 if (account.Id == 0)
                     _corporateAccountRepository.Insert(account);
                 else
-                    _corporateAccountRepository.Update(account);
+                    _corporateAccountRepository.UpdateAsync(account);
             }
             catch (Exception exp)
             {
@@ -138,7 +132,7 @@ namespace Tameenk.Services.Implementation
                 corporateAccount.Balance -= addBalanceModel.Amount;
             corporateAccount.ModifiedBy = addBalanceModel.BalanceAddedBy;
             corporateAccount.ModifiedDate = DateTime.Now;
-            _corporateAccountRepository.Update(corporateAccount);
+            _corporateAccountRepository.UpdateAsync(corporateAccount);
 
             CorporateWalletHistory corporateWalletHistory = new CorporateWalletHistory();
             corporateWalletHistory.CorporateAccountId = corporateAccount.Id;

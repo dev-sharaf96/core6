@@ -1,11 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.Linq;
-using Tameenk.Common.Utilities;
 using Tameenk.Core;
 using Tameenk.Core.Caching;
 using Tameenk.Core.Data;
@@ -14,11 +11,13 @@ using Tameenk.Core.Domain.Entities.Quotations;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Core.Domain.Enums;
 using Tameenk.Core.Exceptions;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Data;
+using Tameenk.Loggin.DAL;
 using Tameenk.Loggin.DAL.Dtos;
 using Tameenk.Services.Core.Vehicles;
 using Tameenk.Services.Implementation.Policies;
+using Microsoft.Data.SqlClient;
+using static TameenkDAL.YourDbContext;
+using TameenkDAL;
 
 namespace Tameenk.Services.Implementation.Vehicles
 {
@@ -41,7 +40,7 @@ namespace Tameenk.Services.Implementation.Vehicles
         private readonly IRepository<BreakingSystem> _breakingSystemRepository;
         private readonly IRepository<Sensor> _sensorRepository;
         private readonly IRepository<CameraType> _cameraTypeRepository;
-        private readonly IRepository<AutoleasingBenefit> _benefitRepository;
+       
         private readonly IRepository<VehiclePlateText> _vehiclePlateTextRepository;
         private readonly IRepository<VehicleUsage> _vehicleUsageRepository;
 
@@ -51,6 +50,7 @@ namespace Tameenk.Services.Implementation.Vehicles
         private const string VEHICLE_Model_ALL = "tameenk.vehiclMaker.all.{0}.{1}.{2}";
         private const string VEHICLE_BODY_TYPE_ALL = "tameenk.vehiclBodyType.all.{0}.{1}";
         private const string VEHICLE_USAGE_ALL = "tameenk.vehicleUsage.all.{0}.{1}";
+        private readonly YourDbContext dbContext;
 
         #endregion
 
@@ -68,9 +68,8 @@ namespace Tameenk.Services.Implementation.Vehicles
             IRepository<BreakingSystem> breakingSystemRepository,
             IRepository<Sensor> sensorRepository,
             IRepository<CameraType> cameraTypeRepository
-            , IRepository<AutoleasingBenefit> benefitRepository,
-            IRepository<VehiclePlateText> vehiclePlateTextRepository,
-            IRepository<VehicleUsage> vehicleUsageRepository
+            ,IRepository<VehiclePlateText> vehiclePlateTextRepository,
+            IRepository<VehicleUsage> vehicleUsageRepository, YourDbContext dbContext
             )
         {
             _cacheManager = cacheManager ?? throw new TameenkArgumentNullException(nameof(ICacheManager));
@@ -86,9 +85,9 @@ namespace Tameenk.Services.Implementation.Vehicles
             _breakingSystemRepository = breakingSystemRepository ?? throw new TameenkArgumentNullException(nameof(IRepository<BreakingSystem>));
             _sensorRepository = sensorRepository ?? throw new TameenkArgumentNullException(nameof(IRepository<Sensor>));
             _cameraTypeRepository = cameraTypeRepository ?? throw new TameenkArgumentNullException(nameof(IRepository<CameraType>));
-            _benefitRepository = benefitRepository ?? throw new TameenkArgumentNullException(nameof(IRepository<AutoleasingBenefit>));
             _vehiclePlateTextRepository = vehiclePlateTextRepository ?? throw new TameenkArgumentNullException(nameof(IRepository<VehiclePlateText>));
             _vehicleUsageRepository = vehicleUsageRepository ?? throw new TameenkArgumentNullException(nameof(IRepository<VehicleUsage>));
+            this.dbContext = dbContext;
         }
 
         #endregion
@@ -138,7 +137,7 @@ namespace Tameenk.Services.Implementation.Vehicles
             entity.CameraTypeId = vehicle.CameraTypeId;
             entity.MajorColor = vehicle.MajorColor;
 
-            _vehicleRepository.Update(entity);
+            _vehicleRepository.UpdateAsync(entity);
 
             return entity;
         }
@@ -263,7 +262,7 @@ namespace Tameenk.Services.Implementation.Vehicles
         {
             vehicle.IsDeleted = true;
 
-            _vehicleRepository.Update(vehicle);
+            _vehicleRepository.UpdateAsync(vehicle);
 
         }
 
@@ -319,7 +318,7 @@ namespace Tameenk.Services.Implementation.Vehicles
             {
                 throw new ArgumentNullException(nameof(vehicle));
             }
-            _vehicleRepository.Update(vehicle);
+            _vehicleRepository.UpdateAsync(vehicle);
         }
 
         public Vehicle AddVehicle(Vehicle vehicle)
@@ -487,7 +486,7 @@ namespace Tameenk.Services.Implementation.Vehicles
                 return false;
             }
 
-            _vehicleRequests.Delete(vehicleRequests);
+            _vehicleRequests.DeleteAsync(vehicleRequests);
             return true;
         }
 
@@ -504,7 +503,7 @@ namespace Tameenk.Services.Implementation.Vehicles
             if (dateTimeDiff > TimeSpan.FromDays(2))
             {
                 vehicle.IsDeleted = true;
-                _vehicleRepository.Update(vehicle);
+                _vehicleRepository.UpdateAsync(vehicle);
                 return false;
             }
 
@@ -679,7 +678,7 @@ namespace Tameenk.Services.Implementation.Vehicles
                     modelData.EnglishDescription = model.EnglishDescription;
                     modelData.ArabicDescription = model.ArabicDescription;
 
-                    _vehicleModelRepository.Update(modelData);
+                    _vehicleModelRepository.UpdateAsync(modelData);
                 }
 
                 outPut.ErrorCode = 1;
@@ -857,14 +856,14 @@ namespace Tameenk.Services.Implementation.Vehicles
         //    }
         //}
 
-        public List<AutoleasingBenefit> GetBenifit()
-        {
+        //public List<AutoleasingBenefit> GetBenifit()
+        //{
 
-            return _cacheManager.Get(string.Format("autoleasinG_benifitS_cashE"), () =>
-            {
-                return new PagedList<AutoleasingBenefit>(_benefitRepository.TableNoTracking.ToList(), 0, 1000);
-            });
-        }
+        //    return _cacheManager.Get(string.Format("autoleasinG_benifitS_cashE"), () =>
+        //    {
+        //        return new PagedList<AutoleasingBenefit>(_benefitRepository.TableNoTracking.ToList(), 0, 1000);
+        //    });
+        //}
 
         public List<VehicleMaker> GetVehicleMakers(string lang = "")
         {
@@ -877,33 +876,61 @@ namespace Tameenk.Services.Implementation.Vehicles
             var vehicleModel = _vehicleModelRepository.TableNoTracking.Where(a => a.VehicleMakerCode == vehicleMakerId && a.Code == vehicleModelId).FirstOrDefault();
             return vehicleModel;
         }
-       // IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
-        public List<VehicleInfo> GetVehicleInfoByNin(string Nin, out string exception, Data.IDbContext idbContext)
+        // IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
+        //public List<VehicleInfo> GetVehicleInfoByNin(string Nin, out string exception)
+        //{
+        //  //IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
+        //    exception = string.Empty;
+        //    try
+        //    {
+
+        //        var command = dbContext.Database.GetDbConnection().CreateCommand();
+        //        command.CommandText = "GetVehiclesByNin";
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        SqlParameter VehicleIdParam = new SqlParameter() { ParameterName = "Nin", Value = Nin };
+        //        command.Parameters.Add(VehicleIdParam);
+        //        dbContext.Database.GetDbConnection().Open();
+        //        var reader = command.ExecuteReader();
+        //        var vehicles = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<VehicleInfo>(reader).ToList();
+        //        dbContext.Database.GetDbConnection().Close();
+        //        return vehicles;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        dbContext.Database.GetDbConnection().Close();
+        //        throw ex;
+
+        //    }
+        //}
+
+        public List<VehicleInfo> GetVehicleInfoByNin(string Nin, out string exception)
         {
-          //IDbContext idbContext = (IDbContext)EngineContext.Current.Resolve<IDbContext>();
             exception = string.Empty;
             try
             {
-                idbContext.DatabaseInstance.CommandTimeout = 240;
-                var command = idbContext.DatabaseInstance.Connection.CreateCommand();
+                var command = dbContext.Database.GetDbConnection().CreateCommand();
                 command.CommandText = "GetVehiclesByNin";
                 command.CommandType = CommandType.StoredProcedure;
-                command.CommandTimeout = 600;
-                SqlParameter VehicleIdParam = new SqlParameter() { ParameterName = "Nin", Value = Nin };
+                SqlParameter VehicleIdParam = new SqlParameter() { ParameterName = "@Nin", Value = Nin };
                 command.Parameters.Add(VehicleIdParam);
-                idbContext.DatabaseInstance.Connection.Open();
-                var reader = command.ExecuteReader();
-                var vehicles = ((IObjectContextAdapter)idbContext).ObjectContext.Translate<VehicleInfo>(reader).ToList();
-                idbContext.DatabaseInstance.Connection.Close();
-                return vehicles;
+
+                dbContext.Database.OpenConnection();
+                using (var reader = command.ExecuteReader())
+                {
+                    var vehicles = dbContext.Set<VehicleInfo>().FromSqlRaw("EXEC GetVehiclesByNin @Nin", VehicleIdParam).ToList();
+                    return vehicles;
+                }
             }
             catch (Exception ex)
             {
-                idbContext.DatabaseInstance.Connection.Close();
                 throw ex;
-                
+            }
+            finally
+            {
+                dbContext.Database.CloseConnection();
             }
         }
+
 
         public int GetWataiyaPlateLetterId(string letter)
         {
@@ -1031,9 +1058,6 @@ namespace Tameenk.Services.Implementation.Vehicles
         //    }
         //}
 
-        public List<VehicleInfo> GetVehicleInfoByNin(string Nin, out string exception)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }

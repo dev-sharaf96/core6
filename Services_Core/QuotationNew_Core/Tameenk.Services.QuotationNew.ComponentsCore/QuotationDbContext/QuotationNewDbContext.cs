@@ -14,7 +14,15 @@ namespace Tameenk.Services.QuotationNew.Components.QuotationDbContext
 
         public QuotationNewDbContext(DbContextOptions<QuotationNewDbContext> options) : base(options)
         {
+
         }
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    modelBuilder.Entity<CheckoutCarImage>()
+        //        .HasMany(ci => ci.CheckoutDetails)
+        //        .WithOne(cd => cd.CheckoutCarImage)
+        //        .HasForeignKey(cd => cd.CheckoutCarImageId);
+        //}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

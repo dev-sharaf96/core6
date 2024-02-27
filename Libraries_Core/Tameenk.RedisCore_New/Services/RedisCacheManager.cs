@@ -25,7 +25,7 @@ namespace Tameenk.Redis
             {
                 if (_instance == null)
                 {
-                    System.IO.File.WriteAllText(@"C:\inetpub\WataniyaLog\newInstance_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss_mms") + ".txt", "");
+                    //System.IO.File.WriteAllText(@"C:\inetpub\WataniyaLog\newInstance_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss_mms") + ".txt", "");
                     _instance = new RedisCacheManager();
                 }
 

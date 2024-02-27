@@ -221,10 +221,6 @@
       <Project>{B4E3E35F-360A-4430-BFCD-A2DC4373D7CF}</Project>
       <Name>Tameenk.Services.Notifications</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\TameenkDAL\TameenkDAL.csproj">
-      <Project>{6EBBE2E6-D90A-4287-A92F-F0341DF48186}</Project>
-      <Name>TameenkDAL</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Tamkeen.bll\Tamkeen.bll.csproj">
       <Project>{f0344826-89df-484d-8b72-a31d51c77790}</Project>
       <Name>Tamkeen.bll</Name>

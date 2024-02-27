@@ -1,35 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Globalization;
 using System.Linq;
 using Tameenk.Core.Configuration;
 using Tameenk.Core.Data;
-//using Tameenk.Core.Domain.Dtos;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Entities.PromotionPrograms;
 using Tameenk.Core.Domain.Entities.Quotations;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
-using Tameenk.Core.Domain.Enums;
-using Tameenk.Core.Domain.Enums.Quotations;
-using Tameenk.Core.Domain.Enums.Vehicles;
 using Tameenk.Core.Exceptions;
-using Tameenk.Integration.Dto.Providers;
 using Tameenk.Services.Core.Addresses;
-//using Tameenk.Integration.Dto.Providers;
 using Tameenk.Services.Core.Quotations;
 using Tameenk.Services.Core.Vehicles;
-using Tameenk.Services.Extensions;
-using Tameenk.Common.Utilities;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Data;
 using System.Data;
-using System.Data.SqlClient;
-using System.Data.Entity.Infrastructure;
 using Tameenk.Core.Caching;
-//using Tameenk.Core;
-using Tameenk.Services.Core.BlockNins;
-using Tameenk.Services.Implementation.Policies;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+using Tameenk.Loggin.DAL;
+using static TameenkDAL.YourDbContext;
+using TameenkDAL;
 
 namespace Tameenk.Services.Implementation.Quotations
 {
@@ -44,7 +31,6 @@ namespace Tameenk.Services.Implementation.Quotations
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<InsuranceCompany> _insuranceCompanyRepository;
         private readonly IAddressService _addressService;
-        private readonly TameenkConfig _config;
         private readonly IRepository<Driver> _driverRepository;
         private readonly IRepository<PromotionProgramUser> _promotionProgramUSerRepository;
         private readonly IVehicleService _vehicleService;
@@ -57,6 +43,7 @@ namespace Tameenk.Services.Implementation.Quotations
         private readonly IRepository<QuotationShares> _quotationSharesRepository;
         private readonly ICacheManager _cacheManger;
         private readonly IRepository<QuotationBlockedNins> _quotationBlockedNins;
+        private readonly YourDbContext dbContext;
 
         #endregion
 
@@ -69,7 +56,7 @@ namespace Tameenk.Services.Implementation.Quotations
             IRepository<CheckoutDetail> checkoutDetailRepository,
             IRepository<InsuranceCompany> insuranceCompanyRepository,
             IAddressService addressService,
-            TameenkConfig config,
+            /*TameenkConfig config,*/
             IRepository<Driver> driverRepository,
             IRepository<PromotionProgramUser> promotionProgramUSerRepository,
             IVehicleService vehicleService, IRepository<QuotationResponseCache> quotationResponseCache,
@@ -79,7 +66,8 @@ namespace Tameenk.Services.Implementation.Quotations
            IRepository<WataniyaMotorPolicyInfo> wataniyaMotorPolicyInfoRepository,
            IRepository<QuotationShares> quotationSharesRepository,
           IRepository<QuotationBlockedNins> quotationBlockedNins
-           , ICacheManager cacheManger)
+           , ICacheManager cacheManger,
+          YourDbContext dbContext)
         {
             _quotationResponseRepository = quotationResponseRepository;
             _quotationRequestRepository = quotationRequestRepository;
@@ -89,7 +77,6 @@ namespace Tameenk.Services.Implementation.Quotations
             _checkoutDetailRepository = checkoutDetailRepository;
             _insuranceCompanyRepository = insuranceCompanyRepository;
             _addressService = addressService;
-            _config = config;
             _driverRepository = driverRepository;
             _promotionProgramUSerRepository = promotionProgramUSerRepository;
             _vehicleService = vehicleService;
@@ -102,6 +89,7 @@ namespace Tameenk.Services.Implementation.Quotations
             _quotationSharesRepository = quotationSharesRepository;
             _quotationBlockedNins = quotationBlockedNins;
             _cacheManger = cacheManger ?? throw new ArgumentNullException(nameof(ICacheManager));
+            this.dbContext = dbContext;
         }
 
         #endregion
@@ -1417,34 +1405,67 @@ namespace Tameenk.Services.Implementation.Quotations
         //    }
         //}
 
-        //public bool IsQuotationResponseExist(string referenceId)
-        //{
-        //    string value = null;
-        //    IDbContext dbContext = EngineContext.Current.Resolve<IDbContext>();
+        public bool IsQuotationResponseExist(string referenceId)//? I want ask if i remove 1423 lin is true or must replace it with new one  
+        {
+            //    string value = null;
 
-        //    try
-        //    {
-        //        dbContext.DatabaseInstance.CommandTimeout = 60;
-        //        var command = dbContext.DatabaseInstance.Connection.CreateCommand();
-        //        command.CommandText = "GetFromQuotationResponse";
-        //        command.CommandType = CommandType.StoredProcedure;
-        //        SqlParameter referenceIdParam = new SqlParameter() { ParameterName = "ReferenceId", Value = referenceId };
-        //        command.Parameters.Add(referenceIdParam);
-        //        dbContext.DatabaseInstance.Connection.Open();
-        //        var reader = command.ExecuteReader();
-        //        value = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<string>(reader).FirstOrDefault();
-        //        dbContext.DatabaseInstance.Connection.Close();
-        //        if (!string.IsNullOrEmpty(value))
-        //        {
-        //            return true;
-        //        }
-        //        return false;
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return false;
-        //    }
-        //}
+
+            //    try
+            //    {
+
+            //        var command = dbContext.Database.GetDbConnection().CreateCommand();
+            //        command.CommandText = "GetFromQuotationResponse";
+            //        command.CommandType = CommandType.StoredProcedure;
+            //        SqlParameter referenceIdParam = new SqlParameter() { ParameterName = "ReferenceId", Value = referenceId };
+            //        command.Parameters.Add(referenceIdParam);
+            //        dbContext.Database.GetDbConnection().Open();
+            //        var reader = command.ExecuteReader();
+            //        value = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<string>(reader).FirstOrDefault();
+            //        dbContext.Database.GetDbConnection().Close();
+            //        if (!string.IsNullOrEmpty(value))
+            //        {
+            //            return true;
+            //        }
+            //        return false;
+            //    }
+            //    catch (Exception)
+            //    {
+            //        return false;
+            //    }
+            //}
+            string value = null;
+
+            try
+            {
+                var command = dbContext.Database.GetDbConnection().CreateCommand();
+                command.CommandText = "EXEC GetFromQuotationResponse @ReferenceId";
+                command.CommandType = CommandType.Text; // Use CommandType.Text for raw SQL queries
+
+                SqlParameter referenceIdParam = new SqlParameter("@ReferenceId", referenceId);
+                command.Parameters.Add(referenceIdParam);
+
+                dbContext.Database.GetDbConnection().Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read()) // Check if there are any rows
+                    {
+                        value = reader.GetString(0); // Adjust the index based on the column order in the result set
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            finally
+            {
+                dbContext.Database.GetDbConnection().Close();
+            }
+
+            return !string.IsNullOrEmpty(value);
+        } 
+
         //public QuotationResponse GetInvoiceDataFromQuotationResponseByReferenceId(string referenceId)
         //{
         //    return _quotationResponseRepository.TableNoTracking.Include(q => q.QuotationRequest)
@@ -1963,7 +1984,7 @@ namespace Tameenk.Services.Implementation.Quotations
             try
             {
                 if (initialPolicyInfo.Id > 0)
-                    _wataniyaMotorPolicyInfoRepository.Update(initialPolicyInfo);
+                    _wataniyaMotorPolicyInfoRepository.UpdateAsync(initialPolicyInfo);
                 else
                     _wataniyaMotorPolicyInfoRepository.Insert(initialPolicyInfo);
             }

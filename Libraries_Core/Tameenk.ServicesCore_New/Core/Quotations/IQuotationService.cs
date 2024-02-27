@@ -92,7 +92,7 @@ namespace Tameenk.Services.Core.Quotations
         //CheckoutDetail GetQuotationRequestByExternal(string externalId, out string exception);
         //QuotationRequest GetQuotationRequestDriversByExternalAndRef(string qtRqstExtrnlId, string referenceId);
         //int UpdateQuotationResponseToBeCheckedout(long quotationResponseId, Guid productid);
-        //bool IsQuotationResponseExist(string referenceId);
+        bool IsQuotationResponseExist(string referenceId);
         //QuotationResponse GetInvoiceDataFromQuotationResponseByReferenceId(string referenceId);
         //QuotationResponse GetQuotationByReference(string referenceId);
         //bool GetAutoleaseQuotationResponseCacheAndDelete(int insuranceCompanyId, string externalId, string initialExternalId, out string exception);

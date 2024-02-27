@@ -1,23 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Data.Entity;
-using Tameenk.Core;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Entities.Policies;
-using Tameenk.Core.Domain.Enums.Policies;
 using Tameenk.Services.Core.Policies;
-using Tameenk.Services.Logging;
-using Tameenk.Core.Domain.Entities.Quotations;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Data;
-using System.Data.SqlClient;
-using System.Data.Entity.Infrastructure;
 using System.Data;
-using Tameenk.Loggin.DAL;
-using Tameenk.Common.Utilities;
 
 namespace Tameenk.Services.Implementation.Policies
 {
@@ -82,7 +69,7 @@ namespace Tameenk.Services.Implementation.Policies
                     processQueue.ServiceResponse = policy.ServiceResponse;
                 }
                 processQueue.PolicyStatusId=policy.PolicyStatusId;
-                _customCardQueueRepository.Update(processQueue);
+                _customCardQueueRepository.UpdateAsync(processQueue);
                 return true;
             }
             catch (Exception exp)
@@ -94,7 +81,7 @@ namespace Tameenk.Services.Implementation.Policies
                     processQueue.ModifiedDate = DateTime.Now;
                     processQueue.IsLocked = false;
                     processQueue.ProcessingTries = processQueue.ProcessingTries.HasValue ? processQueue.ProcessingTries.Value + 1 : 1;
-                    _customCardQueueRepository.Update(processQueue);
+                    _customCardQueueRepository.UpdateAsync(processQueue);
                 }
                 return false;
             }

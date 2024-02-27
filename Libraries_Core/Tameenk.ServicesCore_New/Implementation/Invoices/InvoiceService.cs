@@ -7,14 +7,9 @@ using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Data;
 using Tameenk.Core.Exceptions;
 using Tameenk.Core.Domain.Dtos;
-using System.Data.Entity;
 using Tameenk.Core.Domain.Enums;
-using Tameenk.Autoleasing.AdminApi;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Data;
 using System.Data;
-using System.Data.SqlClient;
-using System.Data.Entity.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tameenk.Services.Implementation.Invoices
 {
@@ -276,7 +271,7 @@ namespace Tameenk.Services.Implementation.Invoices
             oldcommission.PaymentMethodId = commission.PaymentMethodId;
             oldcommission.Percentage = commission.Percentage;
             oldcommission.Key = commission.Key;
-            _commissionsAndFeesRepository.Update(oldcommission);
+            _commissionsAndFeesRepository.UpdateAsync(oldcommission);
             return "success";
         }
 

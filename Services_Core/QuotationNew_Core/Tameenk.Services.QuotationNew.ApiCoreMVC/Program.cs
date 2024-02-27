@@ -2,12 +2,14 @@
 using log4net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NLog;
 using System;
+using Tameenk.Loggin.DAL;
 using Tameenk.Services.QuotationNew.ApiCore.DependancyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,7 +25,7 @@ var configuration = new ConfigurationBuilder()
 builder.Services.AddCustomServicesInjection(configuration);
 
 builder.Services.AddSystemWebAdapters();
-builder.Services.AddHttpForwarder();
+//////builder.Services.AddHttpForwarder();
 
 // Add services to the container.
 
@@ -35,6 +37,11 @@ builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
+
+
+//builder.Services.AddDbContext<TameenkLog>(options =>
+//options.UseSqlServer(
+//    builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 // Configure the HTTP request pipeline.

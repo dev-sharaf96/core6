@@ -37,7 +37,7 @@ namespace Tameenk.Services.Implementation.Najm
         public void DeleteNajmResponse(NajmResponseEntity najmResponseEntity)
         {
             najmResponseEntity.IsDeleted = true;
-            _najmRepository.Update(najmResponseEntity);
+            _najmRepository.UpdateAsync(najmResponseEntity);
         }
 
         public IPagedList<NajmResponseEntity> GetAllNajmResponsesBasedOnFilter(IQueryable<NajmResponseEntity> query, int pageIndex = 0, int pageSize = int.MaxValue, string sortField = "Id", bool sortOrder = false)
@@ -67,8 +67,20 @@ namespace Tameenk.Services.Implementation.Najm
 
         public bool UpdateNajmResponse(NajmResponseEntity najmResponseEntity, out string exception)
         {
-            exception = string.Empty;            if (najmResponseEntity == null)                return false;            try            {                _najmRepository.Update(najmResponseEntity);
-                return true;            }            catch (Exception ex)            {                exception = ex.Message;                return false;            }
+            exception = string.Empty;
+            if (najmResponseEntity == null)
+                return false;
+
+            try
+            {
+                _najmRepository.UpdateAsync(najmResponseEntity);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                exception = ex.Message;
+                return false;
+            }
         }
         #endregion
 

@@ -13,7 +13,7 @@ namespace TameenkDAL.UoW
         GenericRepository<Invoice, int> InvoiceRepository { get; }
         GenericRepository<InsuranceCompany, int> InsuranceCompanyRepository { get; }
         PayfortPaymentRepository PayfortPaymentRepository { get; }
-        PolicyRepository PolicyRepository { get; }
+        //PolicyRepository PolicyRepository { get; }
         AdditionalInfoRepository AdditionalInfoRepository { get; }
         TawuniyaRepository TawuniyaRepository { get; }
         void Save();

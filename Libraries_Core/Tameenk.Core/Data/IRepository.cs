@@ -1,61 +1,30 @@
-﻿using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
+﻿//using System.Collections.Generic;
+//using System.Linq;
+//using System.Threading.Tasks;
+//using Tameenk.Core.Domain.Entities;
 
-namespace Tameenk.Core.Data
-{
+//namespace Tameenk.Core.Data
+//{
 
-    /// <summary>
-    /// Repository
-    /// </summary>
-    public interface IRepository<T> //where T : BaseEntity
-    {
-        /// <summary>
-        /// Insert entity
-        /// </summary>
-        /// <param name="entity">Entity</param>
-        void Insert(T entity);
+//    /// <summary>
+//    /// Repository
+//    /// </summary>
 
-        /// <summary>
-        /// Insert entities
-        /// </summary>
-        /// <param name="entities">Entities</param>
-        void Insert(IEnumerable<T> entities);
 
-        /// <summary>
-        /// Update entity
-        /// </summary>
-        /// <param name="entity">Entity</param>
-        void Update(T entity);
+//    public interface IRepository<TEntity> where TEntity : BaseEntity
+//    {
+//        Task<List<TEntity>> GetAllAsync();
+//        Task<TEntity> GetByIdAsync(int id);
+//        Task<TEntity> AddAsync(TEntity entity);
+//        Task UpdateAsync(TEntity entity);
+//        Task DeleteAsync(TEntity entity);
+//        Task Insert(TEntity entity);
+//        IQueryable<TEntity> Table { get; }
+//        IQueryable<TEntity> TableNoTracking { get; }
+//        Task InsertAsync(IEnumerable<TEntity> entity);
+//        Task DeleteAsync(IEnumerable<TEntity> entity);
+//        Task UpdateAsync(IEnumerable<TEntity> entity);
 
-        /// <summary>
-        /// Update entities
-        /// </summary>
-        /// <param name="entities">Entities</param>
-        void Update(IEnumerable<T> entities);
+//    }
 
-        /// <summary>
-        /// Delete entity
-        /// </summary>
-        /// <param name="entity">Entity</param>
-        void Delete(T entity);
-
-        /// <summary>
-        /// Delete entities
-        /// </summary>
-        /// <param name="entities">Entities</param>
-        void Delete(IEnumerable<T> entities);
-
-        /// <summary>
-        /// Gets a table
-        /// </summary>
-        IQueryable<T> Table { get; }
-
-        /// <summary>
-        /// Gets a table with "no tracking" enabled (EF feature) Use it only when you load record(s) only for read-only operations
-        /// </summary>
-        IQueryable<T> TableNoTracking { get; }
-
-        
-    }
-}
+//}

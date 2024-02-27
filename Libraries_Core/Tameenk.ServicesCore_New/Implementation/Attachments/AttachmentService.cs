@@ -64,7 +64,7 @@ namespace Tameenk.Services.Implementation.Attachments
             {
                 throw new ArgumentNullException(nameof(attachment));
             }
-            _attachmentRepository.Update(attachment);
+            _attachmentRepository.UpdateAsync(attachment);
         }
 
 
@@ -102,7 +102,7 @@ namespace Tameenk.Services.Implementation.Attachments
             {
                 attachment.Guid = Guid.NewGuid();
             }
-            _attachmentRepository.Insert(attachments);
+            _attachmentRepository.InsertAsync(attachments);
             //return guid of created attachments
             return attachments;
         }
@@ -116,7 +116,7 @@ namespace Tameenk.Services.Implementation.Attachments
             if (attachment == null)
                 throw new ArgumentNullException("attachment");
 
-            _attachmentRepository.Delete(attachment);
+            _attachmentRepository.DeleteAsync(attachment);
         }
         #endregion
     }

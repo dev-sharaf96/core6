@@ -1,18 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Entities.Orders;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Data;
 //using Tameenk.Core.Domain.Enums.Benefits;
 using Tameenk.Services.Orders;
 
@@ -108,21 +102,21 @@ namespace Tameenk.Services.Implementation.Orders
                         {
                             if (item.ShoppingCartItemBenefits == null)
                                 continue;
-                            _shoppingCartItemBenefitRepository.Delete(item.ShoppingCartItemBenefits);
+                            _shoppingCartItemBenefitRepository.DeleteAsync(item.ShoppingCartItemBenefits);
                         }
                     }
                     catch
                     {
 
                     }
-                   _shopingCartItemRepository.Delete(shoppingCartItems);
+                   _shopingCartItemRepository.DeleteAsync(shoppingCartItems);
                 }
                 else
                 {
                     shoppingCartItems = _shopingCartItemRepository.Table.Where(sci => sci.UserId == userId && sci.ReferenceId == referenceId ).ToList();
                     if (shoppingCartItems != null)
                     {
-                        _shopingCartItemRepository.Delete(shoppingCartItems);
+                        _shopingCartItemRepository.DeleteAsync(shoppingCartItems);
                     }
                 }
             }
@@ -154,7 +148,7 @@ namespace Tameenk.Services.Implementation.Orders
                 sci.UserId = newUserId;
             }
 
-            _shopingCartItemRepository.Update(shoppingCartItems);
+            _shopingCartItemRepository.UpdateAsync(shoppingCartItems);
         }
 
 
@@ -437,18 +431,18 @@ namespace Tameenk.Services.Implementation.Orders
                     foreach (var item in shoppingCartItems)
                     {
                         if (item.ShoppingCartItemBenefits != null && item.ShoppingCartItemBenefits.Count > 0)
-                            _shoppingCartItemBenefitRepository.Delete(item.ShoppingCartItemBenefits);
+                            _shoppingCartItemBenefitRepository.DeleteAsync(item.ShoppingCartItemBenefits);
 
                         if (item.ShoppingCartItemDrivers != null && item.ShoppingCartItemDrivers.Count > 0)
-                            _shoppingCartItemDriverRepository.Delete(item.ShoppingCartItemDrivers);
+                            _shoppingCartItemDriverRepository.DeleteAsync(item.ShoppingCartItemDrivers);
                     }
-                    _shopingCartItemRepository.Delete(shoppingCartItems);
+                    _shopingCartItemRepository.DeleteAsync(shoppingCartItems);
                 }
                 else
                 {
                     shoppingCartItems = _shopingCartItemRepository.Table.Where(sci => sci.UserId == userId && sci.ReferenceId == referenceId).ToList();
                     if (shoppingCartItems != null)
-                        _shopingCartItemRepository.Delete(shoppingCartItems);
+                        _shopingCartItemRepository.DeleteAsync(shoppingCartItems);
                 }
             }
             catch (Exception ex)

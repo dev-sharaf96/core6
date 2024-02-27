@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tameenk.Core.Domain.Entities;
+﻿using Tameenk.Core.Domain.Entities;
+using static TameenkDAL.YourDbContext;
 
 namespace TameenkDAL.Store
 {
     public class AdditionalInfoRepository : GenericRepository<AdditionalInfo, string>
     {
-        public AdditionalInfoRepository(TameenkDbContext context)
+        public AdditionalInfoRepository(YourDbContext context)
            : base(context)
         {
         }

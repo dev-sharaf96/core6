@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.SqlServer;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Tameenk.Core.Domain.Entities;
-using Tameenk.Data;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace TameenkDAL.Models
 {
@@ -29,16 +19,16 @@ namespace TameenkDAL.Models
         //}
     }
     
-    [DbConfigurationType(typeof(EfDbConfiguration))]
-    public class ApplicationDbContext : IdentityDbContext<AspNetUser>
-    {
-        public ApplicationDbContext()
-            : base("TameenkDbContext", throwIfV1Schema: false)
-        {
-        }
-        public static ApplicationDbContext Create()
-        {
-            return new ApplicationDbContext();
-        }
-    }
+    //[DbConfigurationType(typeof(EfDbConfiguration))]
+    //public class ApplicationDbContext : IdentityDbContext<AspNetUser>
+    //{
+    //    public ApplicationDbContext()
+    //        : base("TameenkDbContext", throwIfV1Schema: false)
+    //    {
+    //    }
+    //    public static ApplicationDbContext Create()
+    //    {
+    //        return new ApplicationDbContext();
+    //    }
+    //}
 }

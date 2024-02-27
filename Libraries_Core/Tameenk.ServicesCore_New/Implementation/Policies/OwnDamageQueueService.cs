@@ -1,21 +1,12 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity.Infrastructure;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Data;
 using Tameenk.Services.Core.Policies;
 
 namespace Tameenk.Services.Implementation.Policies
 {
- public   class OwnDamageQueueService: IOwnDamageQueueService
+    public   class OwnDamageQueueService: IOwnDamageQueueService
     {
 
         private readonly IRepository<OwnDamageQueue> _OwnDamageQueueRepository;
@@ -44,7 +35,7 @@ namespace Tameenk.Services.Implementation.Policies
                     queueList.Add(OwnDamage);
                 }
 
-                _OwnDamageQueueRepository.Insert(queueList);
+                _OwnDamageQueueRepository.InsertAsync(queueList);
             }
             catch (Exception ex)
             {

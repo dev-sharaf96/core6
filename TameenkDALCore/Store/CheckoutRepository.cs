@@ -1,12 +1,11 @@
-﻿using System.Linq;
-using System.Data.Entity;
-using Tameenk.Core.Domain.Entities;
+﻿using Tameenk.Core.Domain.Entities;
+using static TameenkDAL.YourDbContext;
 
 namespace TameenkDAL.Store
 {
     public class CheckoutRepository : GenericRepository<CheckoutDetail, string>
     {
-        public CheckoutRepository(TameenkDbContext context)
+        public CheckoutRepository(YourDbContext context)
             : base(context)
         {
         }

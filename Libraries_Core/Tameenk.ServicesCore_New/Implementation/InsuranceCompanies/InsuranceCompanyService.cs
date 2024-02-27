@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.Linq;
 using Tameenk.Core;
 using Tameenk.Core.Caching;
@@ -11,8 +10,6 @@ using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Enums;
 using Tameenk.Core.Exceptions;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Data;
 using Tameenk.Services.Core.InsuranceCompanies;
 
 namespace Tameenk.Services.Implementation.InsuranceCompanies
@@ -138,7 +135,7 @@ namespace Tameenk.Services.Implementation.InsuranceCompanies
 
                 if (!result)
                 {
-                    _insuranceCompanyRepository.Update(newInsuranceCompany);
+                    _insuranceCompanyRepository.UpdateAsync(newInsuranceCompany);
                     _cacheManager.RemoveByPattern(INSURANCE_COMPANIES_PATTERN);
                 }
                 else
@@ -171,7 +168,7 @@ namespace Tameenk.Services.Implementation.InsuranceCompanies
 
 
             insuranceCompany.IsActive = isActive;
-            _insuranceCompanyRepository.Update(insuranceCompany);
+            _insuranceCompanyRepository.UpdateAsync(insuranceCompany);
             _cacheManager.RemoveByPattern(INSURANCE_COMPANIES_PATTERN);
             insuranceCompany = _insuranceCompanyRepository.Table.FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);
             return insuranceCompany;
@@ -202,7 +199,8 @@ namespace Tameenk.Services.Implementation.InsuranceCompanies
         {
             var query = _insuranceCompanyRepository.Table
                 .Include(e => e.Address)
-                .Include(e => e.Contact);
+                .Include(e => e.Contact)
+                .AsQueryable();
             if (!showInActive)
             {
                 query = query.Where(ic => ic.IsActive != showInActive);
@@ -266,13 +264,13 @@ namespace Tameenk.Services.Implementation.InsuranceCompanies
                 insuranceCompany.IsActiveComprehensive = isActive;
             }
 
-            _insuranceCompanyRepository.Update(insuranceCompany);
+            _insuranceCompanyRepository.UpdateAsync(insuranceCompany);
             _cacheManager.RemoveByPattern(INSURANCE_COMPANIES_PATTERN);
             insuranceCompany = _insuranceCompanyRepository.Table.FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);
             return insuranceCompany;
         }
 
-        /// <summary>        /// Change state of company address validation (Active / inactive)        /// </summary>        /// <param name="isActive">is Active</param>        /// <param name="insuranceCompanyId">Insurance Company identifier</param>        /// <returns></returns>        public InsuranceCompany ToggleCompanyAddressValidationActivation(bool isActive, int insuranceCompanyId)        {            var insuranceCompany = _insuranceCompanyRepository.Table.FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);            if (insuranceCompany == null)                throw new TameenkArgumentException("The insurance company not found in DB", "insuranceCompanyId");            insuranceCompany.IsAddressValidationEnabled = isActive;            _insuranceCompanyRepository.Update(insuranceCompany);            _cacheManager.RemoveByPattern(INSURANCE_COMPANIES_PATTERN);            insuranceCompany = _insuranceCompanyRepository.Table.FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);            return insuranceCompany;        }
+        /// <summary>        /// Change state of company address validation (Active / inactive)        /// </summary>        /// <param name="isActive">is Active</param>        /// <param name="insuranceCompanyId">Insurance Company identifier</param>        /// <returns></returns>        public InsuranceCompany ToggleCompanyAddressValidationActivation(bool isActive, int insuranceCompanyId)        {            var insuranceCompany = _insuranceCompanyRepository.Table.FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);            if (insuranceCompany == null)                throw new TameenkArgumentException("The insurance company not found in DB", "insuranceCompanyId");            insuranceCompany.IsAddressValidationEnabled = isActive;            _insuranceCompanyRepository.UpdateAsync(insuranceCompany);            _cacheManager.RemoveByPattern(INSURANCE_COMPANIES_PATTERN);            insuranceCompany = _insuranceCompanyRepository.Table.FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);            return insuranceCompany;        }
 
 
         //public List<InsuranceCompany> GetInsuranceCompaniesByUserId(string userId, out int totalCount, out string exception)
@@ -312,7 +310,7 @@ namespace Tameenk.Services.Implementation.InsuranceCompanies
 
         public InsuranceCompany ToggleCompanyActivationTabby(bool isActive, int insuranceCompanyId, int insuranceType)        {            var insuranceCompany = _insuranceCompanyRepository.Table.FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);            if (insuranceCompany == null)                throw new TameenkArgumentException("The insurance company not found in DB", "insuranceCompanyId");            if (insuranceType == 1) // TPL
             {                insuranceCompany.ActiveTabbyTPL = isActive;            }            else if (insuranceType == 2) // Comprehensive
-            {                insuranceCompany.ActiveTabbyComp = isActive;            }            _insuranceCompanyRepository.Update(insuranceCompany);            _cacheManager.RemoveByPattern(INSURANCE_COMPANIES_PATTERN);            insuranceCompany = _insuranceCompanyRepository.Table.FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);            return insuranceCompany;        }
+            {                insuranceCompany.ActiveTabbyComp = isActive;            }            _insuranceCompanyRepository.UpdateAsync(insuranceCompany);            _cacheManager.RemoveByPattern(INSURANCE_COMPANIES_PATTERN);            insuranceCompany = _insuranceCompanyRepository.Table.FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);            return insuranceCompany;        }
         #endregion
 
 

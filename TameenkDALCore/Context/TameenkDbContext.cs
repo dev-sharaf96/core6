@@ -1,5 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Tameenk.Core.Domain.Entities;
+using Tameenk.Core.Domain.Entities.Payments;
+using Tameenk.Core.Domain.Entities.PromotionPrograms;
+using Tameenk.Core.Domain.Entities.Quotations;
+using Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Data;
 
 namespace TameenkDAL
@@ -9,6 +14,73 @@ namespace TameenkDAL
         public YourDbContext(DbContextOptions<YourDbContext> options) : base(options)
         {
         }
+        public virtual DbSet<Address> Addresses { get; set; }
+        public virtual DbSet<Attachment> Attachments { get; set; }
+        public virtual DbSet<BankCode> BankCodes { get; set; }
+        public virtual DbSet<Benefit> Benefits { get; set; }
+        public virtual DbSet<CheckoutAdditionalDriver> CheckoutAdditionalDrivers { get; set; }
+        public virtual DbSet<CheckoutCarImage> CheckoutCarImages { get; set; }
+        public virtual DbSet<CheckoutDetail> CheckoutDetails { get; set; }
+        public virtual DbSet<City> Cities { get; set; }
+        public virtual DbSet<Contact> Contacts { get; set; }
+        public virtual DbSet<Country> Countries { get; set; }
+        public virtual DbSet<Deductible> Deductibles { get; set; }
+        public virtual DbSet<Driver> Drivers { get; set; }
+        public virtual DbSet<DriverLicense> DriverLicenses { get; set; }
+        public virtual DbSet<DriverType> DriverTypes { get; set; }
+        public virtual DbSet<ErrorCode> ErrorCodes { get; set; }
+        public virtual DbSet<InsuaranceCompanyBenefit> InsuaranceCompanyBenefits { get; set; }
+        public virtual DbSet<InsuranceCompany> InsuranceCompanies { get; set; }
+        public virtual DbSet<InsuranceCompanyProductTypeConfig> InsuranceCompanyProductTypeConfigs { get; set; }
+        public virtual DbSet<Invoice> Invoices { get; set; }
+        public virtual DbSet<Invoice_Benefit> Invoice_Benefit { get; set; }
+        public virtual DbSet<InvoiceFile> InvoiceFiles { get; set; }
+        public virtual DbSet<Language> Languages { get; set; }
+        public virtual DbSet<LicenseType> LicenseTypes { get; set; }
+        public virtual DbSet<NajmStatusHistory> NajmStatusHistories { get; set; }
+        public virtual DbSet<NCDFreeYear> NCDFreeYears { get; set; }
+        public virtual DbSet<PayfortPaymentRequest> PayfortPaymentRequests { get; set; }
+        public virtual DbSet<PayfortPaymentResponse> PayfortPaymentResponses { get; set; }
+        public virtual DbSet<Payment> Payments { get; set; }
+        public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
+        public virtual DbSet<Policy> Policies { get; set; }
+        public virtual DbSet<PolicyDetail> PolicyDetails { get; set; }
+        public virtual DbSet<PolicyFile> PolicyFiles { get; set; }
+        public virtual DbSet<PolicyStatus> PolicyStatus { get; set; }
+        public virtual DbSet<PriceDetail> PriceDetails { get; set; }
+        public virtual DbSet<PriceType> PriceTypes { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<Product_Benefit> Product_Benefit { get; set; }
+        public virtual DbSet<ProductType> ProductTypes { get; set; }
+        public virtual DbSet<QuotationRequest> QuotationRequests { get; set; }
+        public virtual DbSet<QuotationResponse> QuotationResponses { get; set; }
+        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<RoleType> RoleTypes { get; set; }
+
+        public virtual DbSet<VehicleBodyType> VehicleBodyTypes { get; set; }
+        public virtual DbSet<VehicleColor> VehicleColors { get; set; }
+        public virtual DbSet<VehicleIDType> VehicleIDTypes { get; set; }
+        public virtual DbSet<VehicleMaker> VehicleMakers { get; set; }
+        public virtual DbSet<VehicleModel> VehicleModels { get; set; }
+        public virtual DbSet<VehiclePlateText> VehiclePlateTexts { get; set; }
+        public virtual DbSet<VehiclePlateType> VehiclePlateTypes { get; set; }
+        public virtual DbSet<Vehicle> Vehicles { get; set; }
+        public virtual DbSet<BreakingSystem> BreakingSystems { get; set; }
+        public virtual DbSet<SpeedStabilizer> SpeedStabilizers { get; set; }
+        public virtual DbSet<Sensor> Sensors { get; set; }
+        public virtual DbSet<DistanceRange> DistanceRanges { get; set; }
+        public virtual DbSet<CameraType> CameraTypes { get; set; }
+        public virtual DbSet<ParkingPlace> ParkingPlaces { get; set; }
+        public virtual DbSet<VehicleTransmissionType> VehicleTransmissionTypes { get; set; }
+        public virtual DbSet<AdditionalInfo> AdditionalInfos { get; set; }
+        public virtual DbSet<DrivingLicenceYear> DrivingLicenceYears { get; set; }
+        public virtual DbSet<DriverMedicalCondition> DriverMedicalConditions { get; set; }
+        public virtual DbSet<VehicleUsagePercentage> VehicleUsagePercentages { get; set; }
+
+        public virtual DbSet<UserPurchasedPromotionPrograms> UserPurchasedPromotionPrograms { get; set; }
+        public virtual DbSet<Setting> Setting { get; set; }
+
+        public virtual DbSet<MobileAppVersions> MobileAppVersions { get; set; }
 
 
 
@@ -98,11 +170,11 @@ namespace TameenkDAL
                 return _context.Set<TEntity>() as DbSet<TEntity>;
             }
 
-            public DbEntityEntry Entry(object entity)
+            public EntityEntry Entry(object entity)
             {
                 return _context.Entry(entity);
             }
-            public DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class
+            public EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class
             {
                 return _context.Entry(entity);
             }

@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using Tameenk.Core;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
-using Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Core.Exceptions;
 using Tameenk.Services.Core;
-using Tameenk.Services.Core.Drivers;
 
 namespace Tameenk.Services.Implementation
 {
@@ -46,7 +41,7 @@ namespace Tameenk.Services.Implementation
                     bankNins.Add(bank);
 
                 }
-                _bankNinRepository.Insert(bankNins);
+                _bankNinRepository.InsertAsync(bankNins);
 
                 return true;
             }
@@ -67,7 +62,7 @@ namespace Tameenk.Services.Implementation
                     Nins.Add(bankNin);
 
                 }
-                _bankNinRepository.Delete(Nins);
+                _bankNinRepository.DeleteAsync(Nins);
                 return true;
             }
             catch (Exception)

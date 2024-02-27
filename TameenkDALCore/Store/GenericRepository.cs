@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Core.Objects.DataClasses;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Tameenk.Core.Domain.Entities;
+using static TameenkDAL.YourDbContext;
 
 namespace TameenkDAL.Store
 {
     public class GenericRepository<TEntity, TKey>
         where TEntity : BaseEntity
     {
-        internal readonly TameenkDbContext Context;
+        internal readonly YourDbContext Context;
         internal readonly DbSet<TEntity> DbSet;
 
-        public GenericRepository(TameenkDbContext context)
+        public GenericRepository(YourDbContext context)
         {
             this.Context = context;
             this.DbSet = context.Set<TEntity>();

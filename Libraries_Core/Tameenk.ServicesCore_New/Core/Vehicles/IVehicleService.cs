@@ -158,7 +158,7 @@ namespace Tameenk.Services.Core.Vehicles
         IList<CameraType> GetCameraTypes();
         VehicleColor GetVehicleColor(string vehicleMajorColor);
         //VehiclePolicyInformation GetVehiclePolicy(string vehicleId, out string exception);
-        List<AutoleasingBenefit> GetBenifit();
+        //List<AutoleasingBenefit> GetBenifit();
         List<VehicleMaker> GetVehicleMakers(string lang = "");
         VehicleModel GetVehicleModelByMakerCodeAndModelCode(short vehicleMakerId, long vehicleModelId);
         //List<Vehicle> GetAllVehicleBasedOnFilter(string vehicleId, int pageIndex, int pageSize, out int totalCount, out string exception);

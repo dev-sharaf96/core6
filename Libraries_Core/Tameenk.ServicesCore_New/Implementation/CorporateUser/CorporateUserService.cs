@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Data;
 using Tameenk.Services.Core;
 
 namespace Tameenk.Services.Implementation
@@ -103,7 +97,7 @@ namespace Tameenk.Services.Implementation
             try
             {
                 if (users != null && users.Count > 0)
-                    _corporateUsersRepository.Update(users);
+                    _corporateUsersRepository.UpdateAsync(users);
             }
             catch (Exception exp)
             {
@@ -118,7 +112,7 @@ namespace Tameenk.Services.Implementation
                     exception = "can not corporate user ";                    return false;
                 }
                 corporateUsers.NotificationDate = DateTime.Now;
-                _corporateUsersRepository.Update(corporateUsers);
+                _corporateUsersRepository.UpdateAsync(corporateUsers);
                 return true;
             }            catch (Exception exp)            {                exception = exp.ToString();                return false;            }
         }

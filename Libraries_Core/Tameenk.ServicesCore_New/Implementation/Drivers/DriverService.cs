@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.Linq;
 using Tameenk.Core;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Core.Exceptions;
-using Tameenk.Core.Infrastructure;
-using Tameenk.Data;
 using Tameenk.Services.Core.Drivers;
 
 namespace Tameenk.Services.Implementation.Drivers
@@ -44,7 +38,7 @@ namespace Tameenk.Services.Implementation.Drivers
             {
                 throw new ArgumentNullException(nameof(driver));
             }
-            _driverRepository.Update(driver);
+            _driverRepository.UpdateAsync(driver);
         }
 
 
@@ -68,7 +62,7 @@ namespace Tameenk.Services.Implementation.Drivers
        public void DeleteDriver(Driver driver)
         {
             driver.IsDeleted = true;
-            _driverRepository.Update(driver);
+            _driverRepository.UpdateAsync(driver);
         }
 
         //public Driver GetDriverByNin(string driverNin)
@@ -181,7 +175,7 @@ namespace Tameenk.Services.Implementation.Drivers
                     driver.IsDeleted = true;
                 }
 
-                _driverRepository.Update(driverRows);
+                _driverRepository.UpdateAsync(driverRows);
                 return true;
             }
             catch (Exception ex)

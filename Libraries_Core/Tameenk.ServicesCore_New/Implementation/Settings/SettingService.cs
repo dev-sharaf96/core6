@@ -38,7 +38,7 @@ namespace Tameenk.Services.Implementation.Settings
                 var data = GetSetting();
                 data.MaxNumberOfPolicies = entity.MaxNumberOfPolicies;
                 data.MaxNumberOfPromotionCode = entity.MaxNumberOfPromotionCode;
-                repository.Update(data);
+                repository.UpdateAsync(data);
             }
                
         }
