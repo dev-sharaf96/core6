@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-     class SensorMap: EntityTypeConfiguration<Sensor>
+    public class SensorMap:IEntityTypeConfiguration<Sensor>
     {   
         public SensorMap()
         {
-            ToTable("Sensor");
-            HasKey(e => e.Id);
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+ }
+
+        public void Configure(EntityTypeBuilder<Sensor> builder)
+        {
+            builder.ToTable("Sensor");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();
+
         }
     }
 }

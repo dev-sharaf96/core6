@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 
 namespace Tameenk.Data.Mapping.VehicleInsurance
 {
-    public class VehiclePlateTextMap : EntityTypeConfiguration<VehiclePlateText>
+    public class VehiclePlateTextMap :IEntityTypeConfiguration<VehiclePlateText>
     {
-        public VehiclePlateTextMap()
+        public void Configure(EntityTypeBuilder<VehiclePlateText> builder)
         {
-            ToTable("VehiclePlateText");
-            HasKey(e => e.Code);
-            Property(e => e.Code).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            Property(e => e.EnglishDescription).HasMaxLength(50);
-            Property(e => e.ArabicDescription).HasMaxLength(50);
+            builder.ToTable("VehiclePlateText");
+            builder.HasKey(e => e.Code);
+            builder.Property(e => e.Code).ValueGeneratedOnAdd();//.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            builder.Property(e => e.EnglishDescription).HasMaxLength(50);
+            builder.Property(e => e.ArabicDescription).HasMaxLength(50);
         }
     }
 }

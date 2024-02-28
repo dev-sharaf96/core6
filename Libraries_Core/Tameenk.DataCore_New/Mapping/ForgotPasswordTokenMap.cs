@@ -1,14 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class ForgotPasswordTokenMap : EntityTypeConfiguration<ForgotPasswordToken>
+    public class ForgotPasswordTokenMap : IEntityTypeConfiguration<ForgotPasswordToken>
     {
-        public ForgotPasswordTokenMap()
+        public void Configure(EntityTypeBuilder<ForgotPasswordToken> builder)
         {
-            ToTable("ForgotPasswordToken");
-            HasKey(e => e.Id);
+            builder.ToTable("ForgotPasswordToken");
+            builder.HasKey(e => e.Id);
         }
     }
 }

@@ -1,16 +1,19 @@
-using System.Data.Entity.ModelConfiguration;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public partial class ScheduleTaskMap : EntityTypeConfiguration<ScheduleTask>
+    public partial class ScheduleTaskMap : IEntityTypeConfiguration<ScheduleTask>
     {
-        public ScheduleTaskMap()
+        public void Configure(EntityTypeBuilder<ScheduleTask> builder)
         {
-            this.ToTable("ScheduleTask");
-            this.HasKey(t => t.Id);
-            this.Property(t => t.Name).IsRequired();
-            this.Property(t => t.Type).IsRequired();
+            builder.ToTable("ScheduleTask");
+            builder.HasKey(t => t.Id);
+            builder.Property(t => t.Name).IsRequired();
+            builder.Property(t => t.Type).IsRequired();
+
+
         }
     }
 }

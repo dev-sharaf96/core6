@@ -54,6 +54,7 @@ namespace Tameenk.Core.Domain.Entities
         public int PromotionCodeCount { get; set; } = 0;
         public string Channel { get; set; }
 
+
         public bool? IsAutoLeasing { get; set; }
         public int? AutoLeasingBankId { get; set; }
         public bool? IsAutoLeasingSuperAdmin { get; set; }

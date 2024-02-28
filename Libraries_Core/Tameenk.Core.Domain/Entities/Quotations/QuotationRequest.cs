@@ -9,7 +9,7 @@ namespace Tameenk.Core.Domain.Entities.Quotations
         public QuotationRequest()
         {
             QuotationResponses = new HashSet<QuotationResponse>();
-            Drivers = new HashSet<Driver>();
+           Drivers = new HashSet<Driver>();
         }
 
         public int ID { get; set; }

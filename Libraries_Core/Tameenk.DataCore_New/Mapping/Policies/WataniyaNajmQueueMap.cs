@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities.Policies;
 
 namespace Tameenk.Data.Mapping.Policies
 {
-    public class WataniyaNajmQueueMap : EntityTypeConfiguration<WataniyaNajmQueue>
+    public class WataniyaNajmQueueMap :IEntityTypeConfiguration<WataniyaNajmQueue>
 
     {
-        public WataniyaNajmQueueMap()
+
+
+        public void Configure(EntityTypeBuilder<WataniyaNajmQueue> builder)
         {
-            ToTable("WataniyaNajmQueue");
-            HasKey(e => e.Id);
+            builder.ToTable("WataniyaNajmQueue");
+            builder.HasKey(e => e.Id);
         }
     }
 }

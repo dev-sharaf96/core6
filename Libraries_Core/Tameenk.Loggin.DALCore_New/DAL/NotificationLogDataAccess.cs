@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-
-
-namespace Tameenk.Loggin.DAL
+﻿namespace Tameenk.Loggin.DAL
 {
     public class NotificationLogDataAccess
     {

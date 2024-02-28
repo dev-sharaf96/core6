@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Validation;
 using Tameenk.Common.Utilities;
 
 
@@ -10,26 +9,12 @@ namespace Tameenk.Loggin.DAL
     {
         public static bool AddToPolicyFailedTransactions(PolicyFailedTransaction toSaveLog)
         {
-            try
+            using (TameenkLog context = new TameenkLog())
             {
-                using (TameenkLog context = new TameenkLog())
-                {
-                    toSaveLog.CreatedDate = DateTime.Now;
-                    toSaveLog.ModifiedDate = DateTime.Now;
-                    //context.PolicyFailedTransactions.Add(toSaveLog);
-                    return true;
-                }
-            }
-            catch (DbEntityValidationException dbEx)
-            {
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-
-                    }
-                }
-                return false;
+                toSaveLog.CreatedDate = DateTime.Now;
+                toSaveLog.ModifiedDate = DateTime.Now;
+                //context.PolicyFailedTransactions.Add(toSaveLog);
+                return true;
             }
         }
 

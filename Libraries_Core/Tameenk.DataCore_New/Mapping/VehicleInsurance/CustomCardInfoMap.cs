@@ -1,15 +1,16 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
-using Tameenk.Core.Domain.Entities.VehicleInsurance;
 
 namespace Tameenk.Data.Mapping.VehicleInsurance
 {
-    public class CustomCardInfoMap : EntityTypeConfiguration<CustomCardInfo>
+    public class CustomCardInfoMap :IEntityTypeConfiguration<CustomCardInfo>
     {
-        public CustomCardInfoMap()
+
+        public void Configure(EntityTypeBuilder<CustomCardInfo> builder)
         {
-            ToTable("CustomCardInfo");
-            HasKey(e => e.Id);
+            builder.ToTable("CustomCardInfo");
+            builder.HasKey(e => e.Id);
         }
     }
 }

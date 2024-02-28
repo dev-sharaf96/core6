@@ -16,7 +16,7 @@ namespace Tameenk.Data
         public EfRepository(YourDbContext context)
         {
             _context = context;
-            //_dbSet = context.Set<TEntity>();
+            _dbSet = context.Set<TEntity>();
         }
 
         public async Task<List<TEntity>> GetAllAsync()
@@ -59,7 +59,7 @@ namespace Tameenk.Data
 
         IQueryable<TEntity> IRepository<TEntity>.Table => throw new System.NotImplementedException();
 
-        IQueryable<TEntity> IRepository<TEntity>.TableNoTracking => throw new System.NotImplementedException();
+        IQueryable<TEntity> IRepository<TEntity>.TableNoTracking => _dbSet.AsNoTracking();
         public async Task InsertAsync(IEnumerable<TEntity> entity)
         {
             _dbSet.AddRange(entity);

@@ -1,7 +1,4 @@
-﻿using System;
-
-
-namespace Tameenk.Loggin.DAL
+﻿namespace Tameenk.Loggin.DAL
 {
     public class AddressRequestLogDataAccess
     {

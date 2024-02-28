@@ -1,14 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    class InsuranceCompanyGradeMap : EntityTypeConfiguration<InsuranceCompanyGrade>
+    public class InsuranceCompanyGradeMap :IEntityTypeConfiguration<InsuranceCompanyGrade>
         {
-            public InsuranceCompanyGradeMap()
-            {
-                ToTable("InsuranceCompanyGrade");
-                HasKey(e => e.Id);
-            }
+        public void Configure(EntityTypeBuilder<InsuranceCompanyGrade> builder)
+        {
+            builder.ToTable("InsuranceCompanyGrade");
+            builder.HasKey(e => e.Id);
         }
+    }
 }

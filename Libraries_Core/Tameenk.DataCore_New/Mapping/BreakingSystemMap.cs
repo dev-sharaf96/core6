@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    class BreakingSystemMap: EntityTypeConfiguration<BreakingSystem>
+    public class BreakingSystemMap : IEntityTypeConfiguration<BreakingSystem>
     {
-        public BreakingSystemMap()
+        public void Configure(EntityTypeBuilder<BreakingSystem> builder)
         {
-            ToTable("BreakingSystem");
-            HasKey(e => e.Id);
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            builder.ToTable("BreakingSystem");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();//.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
         }
     }
 }

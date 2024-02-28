@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity.Validation;
 
 namespace Tameenk.Loggin.DAL
 {
@@ -17,15 +16,8 @@ namespace Tameenk.Loggin.DAL
                     return true;
                 }
             }
-            catch (DbEntityValidationException dbEx)
+            catch (Exception)
             {
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-
-                    }
-                }
                 return false;
             }
         }

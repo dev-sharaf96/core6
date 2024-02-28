@@ -1,20 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tameenk.Core.Domain.Entities.Payments;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Tameenk.Core.Domain.Entities
 {
 
-    public class CommissionsAndFeesMap : EntityTypeConfiguration<CommissionsAndFees>
+    public class CommissionsAndFeesMap :IEntityTypeConfiguration<CommissionsAndFees>
     {
         public CommissionsAndFeesMap()
         {
-            ToTable("CommissionsAndFees");
-            HasKey(e => e.Id);
+
+        }
+
+        public void Configure(EntityTypeBuilder<CommissionsAndFees> builder)
+        {
+            builder.ToTable("CommissionsAndFees");
+            builder.HasKey(e => e.Id);
         }
     }
 }

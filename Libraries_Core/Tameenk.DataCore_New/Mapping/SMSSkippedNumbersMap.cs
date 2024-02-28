@@ -1,14 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class SMSSkippedNumbersMap : EntityTypeConfiguration<SMSSkippedNumbers>
+    public class SMSSkippedNumbersMap :IEntityTypeConfiguration<SMSSkippedNumbers>
     {
-        public SMSSkippedNumbersMap()
+        public void Configure(EntityTypeBuilder<SMSSkippedNumbers> builder)
         {
-            ToTable("SMSSkippedNumbers");
-            HasKey(e => e.Id);
+            builder.ToTable("SMSSkippedNumbers");
+            builder.HasKey(e => e.Id);
         }
     }
 }

@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class CareerMap : EntityTypeConfiguration<Career>
+    public class CareerMap :IEntityTypeConfiguration<Career>
     {
-        public CareerMap()
+
+        public void Configure(EntityTypeBuilder<Career> builder)
         {
-            ToTable("Career");
-            HasKey(e => e.Id);
+            builder.ToTable("Career");
+            builder.HasKey(e => e.Id);
         }
     }
 }

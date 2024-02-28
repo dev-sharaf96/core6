@@ -1,37 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class BenefitMap : EntityTypeConfiguration<Benefit>
+    public class BenefitMap : IEntityTypeConfiguration<Benefit>
     {
-        public BenefitMap()
+        public void Configure(EntityTypeBuilder<Benefit> builder)
         {
-            ToTable("Benefit");
-            HasKey(e => e.Code);
-            Property(e => e.EnglishDescription).HasMaxLength(200);
-            Property(e => e.ArabicDescription).HasMaxLength(200);
+            builder.ToTable("Benefit");
+            builder.HasKey(e => e.Code);
+            builder.Property(e => e.EnglishDescription).HasMaxLength(200);
+            builder.Property(e => e.ArabicDescription).HasMaxLength(200);
 
-            HasMany(e => e.InsuaranceCompanyBenefits)
-                .WithRequired(e => e.Benefit)
+            builder.HasMany(e => e.InsuaranceCompanyBenefits)
+                .WithOne(e => e.Benefit)
                 .HasForeignKey(e => e.BenifitCode)
-                .WillCascadeOnDelete(false);
+                .OnDelete(DeleteBehavior.Restrict);
 
-            HasMany(e => e.Invoice_Benefits)
-                .WithOptional(e => e.Benefit)
+            builder.HasMany(e => e.Invoice_Benefits)
+                .WithOne(e => e.Benefit)
                 .HasForeignKey(e => e.BenefitId);
 
-            HasMany(e => e.Product_Benefits)
-                .WithOptional(e => e.Benefit)
+            builder.HasMany(e => e.Product_Benefits)
+                .WithOne(e => e.Benefit)
                 .HasForeignKey(e => e.BenefitId);
 
-            HasMany(e => e.Quotation_Product_Benefits)
-                .WithOptional(e => e.Benefit)
+            builder.HasMany(e => e.Quotation_Product_Benefits)
+                .WithOne(e => e.Benefit)
                 .HasForeignKey(e => e.BenefitId);
         }
     }

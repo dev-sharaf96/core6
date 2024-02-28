@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tameenk.Core.Domain.Entities.Policies;
 using Tameenk.Resources.WebResources;
 
@@ -54,6 +55,7 @@ namespace Tameenk.Core.Domain.Entities
         
         public PolicyFile PolicyFile { get; set; }
 
+        [NotMapped]
         public PolicyDetail PolicyDetail { get; set; }
 
         public virtual ICollection<PolicyUpdateRequest> PolicyUpdateRequests { get; set; }

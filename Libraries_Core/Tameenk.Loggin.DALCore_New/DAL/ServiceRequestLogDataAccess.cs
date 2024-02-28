@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Transactions;
-using Tameenk.Loggin.DAL.Entities.ServiceRequestLogs;
 
 namespace Tameenk.Loggin.DAL
 {

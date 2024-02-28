@@ -1,13 +1,16 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class ProfileNotificationMap : EntityTypeConfiguration<ProfileNotification>
+    public class ProfileNotificationMap :IEntityTypeConfiguration<ProfileNotification>
     {
-        public ProfileNotificationMap() {
-            ToTable("ProfileNotification");
-            HasKey(c => c.Id);
+
+        public void Configure(EntityTypeBuilder<ProfileNotification> builder)
+        {
+            builder.ToTable("ProfileNotification");
+            builder.HasKey(c => c.Id);
         }
     }
 }

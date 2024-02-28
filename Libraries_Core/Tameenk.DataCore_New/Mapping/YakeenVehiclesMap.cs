@@ -1,14 +1,13 @@
-﻿using System.Data.Entity.ModelConfiguration;
-using Tameenk.Core.Domain.Entities;
+﻿//using Tameenk.Core.Domain.Entities;
 
-namespace Tameenk.Data.Mapping
-{
-    public class YakeenVehiclesMap : EntityTypeConfiguration<YakeenVehicles>
-    {
-        public YakeenVehiclesMap()
-        {
-            ToTable("YakeenVehicles");
-            HasKey(c => c.ID);
-        }
-    }
-}
+//namespace Tameenk.Data.Mapping
+//{
+//    public class YakeenVehiclesMap :IEntityTypeConfiguration<YakeenVehicles>
+//    {
+//        public YakeenVehiclesMap()
+//        {
+//            ToTable("YakeenVehicles");
+//            HasKey(c => c.ID);
+//        }
+//    }
+//}

@@ -1,14 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping.Payments.Edaat
 {
-    public class ProfileUpdatePhoneHistoryMap : EntityTypeConfiguration<ProfileUpdatePhoneHistory>
+    public class ProfileUpdatePhoneHistoryMap :IEntityTypeConfiguration<ProfileUpdatePhoneHistory>
     {
-        public ProfileUpdatePhoneHistoryMap()
+        public void Configure(EntityTypeBuilder<ProfileUpdatePhoneHistory> builder)
         {
-            ToTable("ProfileUpdatePhoneHistory");
-            HasKey(e => e.Id); 
+            builder.ToTable("ProfileUpdatePhoneHistory");
+            builder.HasKey(e => e.Id);
         }
     }
 }

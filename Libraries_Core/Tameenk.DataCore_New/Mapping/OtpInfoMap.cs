@@ -1,14 +1,20 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class OtpInfoMap : EntityTypeConfiguration<OtpInfo>
+    public class OtpInfoMap :IEntityTypeConfiguration<OtpInfo>
     {
         public OtpInfoMap()
         {
-            ToTable("OtpInfo");
-            HasKey(c => c.Id);
+            
+        }
+
+        public void Configure(EntityTypeBuilder<OtpInfo> builder)
+        {
+            builder.ToTable("OtpInfo");
+            builder.HasKey(c => c.Id);
         }
     }
 }

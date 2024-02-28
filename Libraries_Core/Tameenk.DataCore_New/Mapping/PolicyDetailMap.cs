@@ -1,14 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class PolicyDetailMap : EntityTypeConfiguration<PolicyDetail>
+    public class PolicyDetailMap :IEntityTypeConfiguration<PolicyDetail>
     {
-        public PolicyDetailMap()
+        public void Configure(EntityTypeBuilder<PolicyDetail> builder)
         {
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();
         }
     }
 }

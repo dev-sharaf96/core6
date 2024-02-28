@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping.Quotations
 {
-    class QuotationBlockedNinsMap : EntityTypeConfiguration<QuotationBlockedNins>
+    public class QuotationBlockedNinsMap :IEntityTypeConfiguration<QuotationBlockedNins>
     {
-        public QuotationBlockedNinsMap()
+        public void Configure(EntityTypeBuilder<QuotationBlockedNins> builder)
         {
-            ToTable("QuotationBlockedNins");
-            HasKey(e => e.Id);
+            builder.ToTable("QuotationBlockedNins");
+            builder.HasKey(e => e.Id);
         }
-      
     }
 }

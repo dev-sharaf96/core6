@@ -1,14 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping.Payments.Edaat
 {
-    public class UpdateProfileInfoOtpMap : EntityTypeConfiguration<UpdateProfileInfoOtp>
+    public class UpdateProfileInfoOtpMap :IEntityTypeConfiguration<UpdateProfileInfoOtp>
     {
-        public UpdateProfileInfoOtpMap()
+        public void Configure(EntityTypeBuilder<UpdateProfileInfoOtp> builder)
         {
-            ToTable("UpdateProfileInfoOtp");
-            HasKey(e => e.Id); 
+            builder.ToTable("UpdateProfileInfoOtp");
+            builder.HasKey(e => e.Id);
         }
     }
 }

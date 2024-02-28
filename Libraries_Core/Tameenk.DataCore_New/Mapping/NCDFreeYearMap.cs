@@ -1,16 +1,17 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class NCDFreeYearMap : EntityTypeConfiguration<NCDFreeYear>
+    public class NCDFreeYearMap : IEntityTypeConfiguration<NCDFreeYear>
     {
-        public NCDFreeYearMap()
+        public void Configure(EntityTypeBuilder<NCDFreeYear> builder)
         {
-            ToTable("NCDFreeYear");
-            HasKey(e => e.Code);
-            Property(e => e.EnglishDescription).HasMaxLength(200);
-            Property(e => e.ArabicDescription).HasMaxLength(200);
+            builder.ToTable("NCDFreeYear");
+            builder.HasKey(e => e.Code);
+            builder.Property(e => e.EnglishDescription).HasMaxLength(200);
+            builder.Property(e => e.ArabicDescription).HasMaxLength(200);
         }
     }
 }

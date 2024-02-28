@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tameenk.Core.Domain.Entities.Policies;
+﻿//using Tameenk.Core.Domain.Entities.Policies;
 
-namespace Tameenk.Data.Mapping.Policies
-{
-    public class MissingPolicyPolicyProcessingQueueMap : EntityTypeConfiguration<MissingPolicyPolicyProcessingQueue>
+//namespace Tameenk.Data.Mapping.Policies
+//{
+//    public class MissingPolicyPolicyProcessingQueueMap :IEntityTypeConfiguration<MissingPolicyPolicyProcessingQueue>
 
-    {
-        public MissingPolicyPolicyProcessingQueueMap()
-        {
-            ToTable("MissingPolicyPolicyProcessingQueue");
-            HasKey(e => e.Id);
-        }
-    }
-}
+//    {
+//        public MissingPolicyPolicyProcessingQueueMap()
+//        {
+//            ToTable("MissingPolicyPolicyProcessingQueue");
+//            HasKey(e => e.Id);
+//        }
+//    }
+//}

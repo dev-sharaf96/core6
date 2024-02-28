@@ -1,14 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Services.QuotationApi.Data.Mapping
 {
-    public class Quotation_Product_BenefitMap : EntityTypeConfiguration<Quotation_Product_Benefit>
+    public class Quotation_Product_BenefitMap :IEntityTypeConfiguration<Quotation_Product_Benefit>
     {
-        public Quotation_Product_BenefitMap() {
-
-            Property(e => e.BenefitPrice).HasPrecision(19, 4);
-            Property(p => p.BenefitExternalId).HasMaxLength(50);
+        public void Configure(EntityTypeBuilder<Quotation_Product_Benefit> builder)
+        {
+            builder.Property(e => e.BenefitPrice).HasPrecision(19, 4);
+            builder.Property(p => p.BenefitExternalId).HasMaxLength(50);
         }
     }
 }

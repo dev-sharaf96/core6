@@ -1,13 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class CityCenterMap : EntityTypeConfiguration<CityCenter>
+    public class CityCenterMap :IEntityTypeConfiguration<CityCenter>
     {
-        public CityCenterMap() {
-            ToTable("CityCenter");
-            HasKey(c => c.Id);
+        public void Configure(EntityTypeBuilder<CityCenter> builder)
+        {
+            builder.ToTable("CityCenter");
+            builder.HasKey(c => c.Id);
         }
     }
 }

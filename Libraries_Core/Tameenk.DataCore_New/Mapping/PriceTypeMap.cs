@@ -1,24 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class PriceTypeMap : EntityTypeConfiguration<PriceType>
+    public class PriceTypeMap :IEntityTypeConfiguration<PriceType>
     {
         public PriceTypeMap()
         {
-            ToTable("PriceType");
-            HasKey(e => e.Code);
-            Property(e => e.Code).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            Property(e => e.EnglishDescription).HasMaxLength(200);
-            Property(e => e.ArabicDescription).HasMaxLength(200);
-            HasMany(e => e.PriceDetails).WithRequired(e => e.PriceType).WillCascadeOnDelete(false);
 
-            HasMany(e => e.PriceDetails)
-                .WithRequired(e => e.PriceType)
-                .WillCascadeOnDelete(false);
 
+        }
+
+        public void Configure(EntityTypeBuilder<PriceType> builder)
+        {
+            builder.ToTable("PriceType");
+            builder.HasKey(e => e.Code);
+            builder.Property(e => e.Code).ValueGeneratedOnAdd();
+            builder.Property(e => e.EnglishDescription).HasMaxLength(200);
+            builder.Property(e => e.ArabicDescription).HasMaxLength(200);
+            builder.HasMany(e => e.PriceDetails).WithOne(e => e.PriceType).OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(e => e.PriceDetails)
+                .WithOne(e => e.PriceType)
+               .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -1,26 +1,25 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class ProductMap : EntityTypeConfiguration<Product>
+    public class ProductMap :IEntityTypeConfiguration<Product>
     {
-
-        public ProductMap()
+        public void Configure(EntityTypeBuilder<Product> builder)
         {
-            ToTable("Product");
-            HasKey(e => e.Id);
-            Property(p => p.ProductPrice).HasPrecision(19, 4);
-            Property(p => p.ExternalProductId).HasMaxLength(100);
-            Property(p => p.QuotaionNo).IsRequired().HasMaxLength(50);
-            Property(p => p.ProductImage).HasMaxLength(250);
+            builder.ToTable("Product");
+            builder.HasKey(e => e.Id);
+            builder.Property(p => p.ProductPrice).HasPrecision(19, 4);
+            builder.Property(p => p.ExternalProductId).HasMaxLength(100);
+            builder.Property(p => p.QuotaionNo).IsRequired().HasMaxLength(50);
+            builder.Property(p => p.ProductImage).HasMaxLength(250);
 
-            Property(p => p.ProductImage).IsUnicode(false);
-            HasRequired(p => p.QuotationResponse).WithMany(qr => qr.Products).HasForeignKey(p => p.QuotationResponseId);
-            HasMany(e => e.PriceDetails).WithRequired(e => e.Product).WillCascadeOnDelete(false);
+            builder.Property(p => p.ProductImage).IsUnicode(false);
+            builder.HasOne(p => p.QuotationResponse).WithMany(qr => qr.Products).HasForeignKey(p => p.QuotationResponseId);
+            builder.HasMany(e => e.PriceDetails).WithOne(e => e.Product).OnDelete(DeleteBehavior.Restrict);
 
-            HasOptional(e => e.InsuranceCompany).WithMany(e => e.Products).HasForeignKey(e => e.ProviderId);
-            
+            builder.HasOne(e => e.InsuranceCompany).WithMany(e => e.Products).HasForeignKey(e => e.ProviderId);
         }
     }
 }

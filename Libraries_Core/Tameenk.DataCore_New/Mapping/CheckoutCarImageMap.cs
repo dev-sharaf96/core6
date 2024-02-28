@@ -1,38 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class CheckoutCarImageMap : EntityTypeConfiguration<CheckoutCarImage>
+    public class CheckoutCarImageMap : IEntityTypeConfiguration<CheckoutCarImage>
     {
-        public CheckoutCarImageMap()
+        public void Configure(EntityTypeBuilder<CheckoutCarImage> builder)
         {
-            Property(e => e.ImageData).HasColumnType("image");
+            builder.HasMany(e => e.CheckoutDetails4)
+                .WithOne(e => e.ImageRight).IsRequired(false)
+                .HasForeignKey(e => e.ImageRightId);
+            builder.Property(e => e.ImageData).HasColumnType("image");
 
-            HasMany(e => e.CheckoutDetails)
-                .WithOptional(e => e.ImageBack)
+            builder.HasMany(e => e.CheckoutDetails)
+                .WithOne(e => e.ImageBack).IsRequired(false)
                 .HasForeignKey(e => e.ImageBackId);
 
-            HasMany(e => e.CheckoutDetails1)
-                .WithOptional(e => e.ImageBody)
+            builder.HasMany(e => e.CheckoutDetails1)
+                .WithOne(e => e.ImageBody).IsRequired(false)
                 .HasForeignKey(e => e.ImageBodyId);
 
-            HasMany(e => e.CheckoutDetails2)
-                .WithOptional(e => e.ImageFront)
+            builder.HasMany(e => e.CheckoutDetails2)
+                .WithOne(e => e.ImageFront).IsRequired(false)
                 .HasForeignKey(e => e.ImageFrontId);
 
-            HasMany(e => e.CheckoutDetails3)
-                .WithOptional(e => e.ImageLeft)
+            builder.HasMany(e => e.CheckoutDetails3)
+                .WithOne(e => e.ImageLeft).IsRequired(false)
                 .HasForeignKey(e => e.ImageLeftId);
 
-            HasMany(e => e.CheckoutDetails4)
-                .WithOptional(e => e.ImageRight)
-                .HasForeignKey(e => e.ImageRightId);
+            builder.HasMany(e => e.CheckoutDetails4)
+               .WithOne(e => e.ImageRight).IsRequired(false)
+               .HasForeignKey(e => e.ImageRightId);
         }
     }
 }

@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class CheckoutAdditionalDriverMap : EntityTypeConfiguration<CheckoutAdditionalDriver>
+    public class CheckoutAdditionalDriverMap :IEntityTypeConfiguration<CheckoutAdditionalDriver>
     {
-        public CheckoutAdditionalDriverMap()
+
+        public void Configure(EntityTypeBuilder<CheckoutAdditionalDriver> builder)
         {
-            Property(e => e.CheckoutDetailsId).IsRequired().HasMaxLength(50);
+            builder.Property(e => e.CheckoutDetailsId).IsRequired().HasMaxLength(50);
         }
     }
 }

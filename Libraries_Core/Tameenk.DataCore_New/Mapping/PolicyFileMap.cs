@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class PolicyFileMap : EntityTypeConfiguration<PolicyFile>
+    public class PolicyFileMap :IEntityTypeConfiguration<PolicyFile>
     {
-        public PolicyFileMap()
+        public void Configure(EntityTypeBuilder<PolicyFile> builder)
         {
-            ToTable("PolicyFile");
-            Property(e => e.PolicyFileByte).HasColumnType("image");
+            builder.ToTable("PolicyFile");
+            builder.Property(e => e.PolicyFileByte).HasColumnType("image");
         }
     }
 }

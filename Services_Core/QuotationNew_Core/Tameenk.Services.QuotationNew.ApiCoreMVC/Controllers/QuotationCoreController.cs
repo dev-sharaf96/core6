@@ -469,18 +469,21 @@ namespace Tameenk.Services.QuotationNew.ApiCore.Controllers
             string policyExpiryDate = null, string hashed = null, string channel = "Portal", 
             bool OdQuotation = false*/)
         {
-            int insuranceCompanyId = 9;
-            string qtRqstExtrnlId = "0163b121a9564b8";
-            Guid parentRequestId = Guid.NewGuid();
-            int insuranceTypeCode = 1;
+            int insuranceCompanyId = 4;
+            string qtRqstExtrnlId = "f22a3302854d4d4";
+            Guid parentRequestId = new Guid("2c176652-6792-4434-956c-94b933ed40e8");
+            int insuranceTypeCode = 2;
             string channel = "Portal";
             bool vehicleAgencyRepair = false;
-            int deductibleValue = 5000;
+            int deductibleValue = 1000;
             string policyNo = null;
             string policyExpiryDate = null;
             string hashed = null;
             bool OdQuotation = false;
-
+            //insuranceCompanyId=4&qtRqstExtrnlId=f22a3302854d4d4&
+            ////parentRequestId=2c176652-6792-4434-956c-94b933ed40e8&insuranceTypeCode=2&vehicleAgencyRepair=false&
+            /////deductibleValue=1000&policyNo=undefined&policyExpiryDate=undefined&hashed=undefined&channel=
+            /////portal&OdQuotation=false
 
             DateTime excutionStartDate = DateTime.Now;
             if (channel.ToLower() == "android".ToLower() && insuranceTypeCode == 2 && insuranceCompanyId == 6)

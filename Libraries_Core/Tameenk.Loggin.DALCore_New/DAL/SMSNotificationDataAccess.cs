@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Validation;
 using Tameenk.Common.Utilities;
 
 namespace Tameenk.Loggin.DAL
@@ -9,26 +8,12 @@ namespace Tameenk.Loggin.DAL
     {
         public static bool AddToSMSNotification(SMSNotification toSaveLog)
         {
-            try
+            using (TameenkLog context = new TameenkLog())
             {
-                using (TameenkLog context = new TameenkLog())
-                {
-                    //toSaveLog.CreatedDate = DateTime.Now;
-                    //context.SMSNotifications.Add(toSaveLog);
-                    //context.SaveChanges();
-                    return true;
-                }
-            }
-            catch (DbEntityValidationException dbEx)
-            {
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-
-                    }
-                }
-                return false;
+                //toSaveLog.CreatedDate = DateTime.Now;
+                //context.SMSNotifications.Add(toSaveLog);
+                //context.SaveChanges();
+                return true;
             }
         }
         public static List<SMSNotification> GetFromMSNotification(string mobileNumber,string vehicleId, int notificationNo,string ReferenceId)

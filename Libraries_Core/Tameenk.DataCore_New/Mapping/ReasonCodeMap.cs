@@ -1,15 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class ReasonCodeMap : EntityTypeConfiguration<ReasonCode>
+    public class ReasonCodeMap :IEntityTypeConfiguration<ReasonCode>
     {
-        public ReasonCodeMap()
+        public void Configure(EntityTypeBuilder<ReasonCode> builder)
         {
-            ToTable("ReasonCode");
-            HasKey(e => e.Id);
-            
+            builder.ToTable("ReasonCode");
+            builder.HasKey(e => e.Id);
         }
     }
 }

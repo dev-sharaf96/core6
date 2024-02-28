@@ -1,15 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tameenk.Core.Domain.Entities.Quotations;
 
 namespace Tameenk.Data.Mapping.Quotations
 {
-    public class TawuniyaProposalMap : EntityTypeConfiguration<TawuniyaProposal>
+    public class TawuniyaProposalMap :IEntityTypeConfiguration<TawuniyaProposal>
     {
-        public TawuniyaProposalMap()
+        public void Configure(EntityTypeBuilder<TawuniyaProposal> builder)
         {
-            ToTable("TawuniyaProposal");
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            builder.ToTable("TawuniyaProposal");
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();
         }
     }
 }

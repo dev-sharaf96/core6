@@ -1,14 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class CheckoutInsuredMappingTempMap : EntityTypeConfiguration<CheckoutInsuredMappingTemp>
+    public class CheckoutInsuredMappingTempMap :IEntityTypeConfiguration<CheckoutInsuredMappingTemp>
     {
-        public CheckoutInsuredMappingTempMap()
+        public void Configure(EntityTypeBuilder<CheckoutInsuredMappingTemp> builder)
         {
-            ToTable("CheckoutInsuredMappingTemp");
-            HasKey(e => e.Id);
+            builder.ToTable("CheckoutInsuredMappingTemp");
+            builder.HasKey(e => e.Id);
         }
     }
 }

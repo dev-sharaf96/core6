@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class InsuredAddressesCountMap : EntityTypeConfiguration<InsuredAddressesCount>
+    public class InsuredAddressesCountMap :IEntityTypeConfiguration<InsuredAddressesCount>
     {
-        public InsuredAddressesCountMap()
+        public void Configure(EntityTypeBuilder<InsuredAddressesCount> builder)
         {
-            ToTable("InsuredAddressesCount");
-            HasKey(e => e.Id);
+            builder.ToTable("InsuredAddressesCount");
+            builder.HasKey(e => e.Id);
         }
     }
 }

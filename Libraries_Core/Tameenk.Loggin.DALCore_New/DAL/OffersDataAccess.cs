@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Validation;
 //using System.Data.Entity.Validation;
-using System.Linq;
 using Tameenk.Loggin.DAL.Entities;
 
 namespace Tameenk.Loggin.DAL
@@ -11,72 +9,30 @@ namespace Tameenk.Loggin.DAL
     {
         public static bool AddOffer(Offer offer)
         {
-            try
+            using (TameenkLog context = new TameenkLog())
             {
-                using (TameenkLog context = new TameenkLog())
-                {
-                    offer.CreatedDate = DateTime.Now;
-                    offer.LastModifiedDate = DateTime.Now;
-                    //context.Offers.Add(offer);
-                    context.SaveChanges();
-                    return true;
-                }
-            }
-            catch (DbEntityValidationException dbEx)
-            {
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-
-                    }
-                }
-                return false;
+                offer.CreatedDate = DateTime.Now;
+                offer.LastModifiedDate = DateTime.Now;
+                //context.Offers.Add(offer);
+                context.SaveChanges();
+                return true;
             }
         }
 
         public static List<Offer> Offers()
         {
-            try
+            using (TameenkLog context = new TameenkLog())
             {
-                using (TameenkLog context = new TameenkLog())
-                {
-                    // return  context.Offers.ToList();
-                    return null;
-                }
-            }
-            catch (DbEntityValidationException dbEx)
-            {
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-
-                    }
-                }
+                // return  context.Offers.ToList();
                 return null;
             }
         }
 
         public static List<Offer> Offers(bool isActive)
         {
-            try
+            using (TameenkLog context = new TameenkLog())
             {
-                using (TameenkLog context = new TameenkLog())
-                {
-                    //return context.Offers.Where(x=>x.IsActive == isActive).ToList();
-                    return null;
-                }
-            }
-            catch (DbEntityValidationException dbEx)
-            {
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-
-                    }
-                }
+                //return context.Offers.Where(x=>x.IsActive == isActive).ToList();
                 return null;
             }
         }

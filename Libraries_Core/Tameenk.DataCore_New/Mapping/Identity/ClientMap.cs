@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities.Identity;
 
 namespace Tameenk.Data.Mapping.Identity
 {
-    public class ClientMap : EntityTypeConfiguration<Client>
+    public class ClientMap :IEntityTypeConfiguration<Client>
     {
-        public ClientMap()
+        public void Configure(EntityTypeBuilder<Client> builder)
         {
-            ToTable("Clients");
-            HasKey(e => e.Id);
-            Property(e => e.Secret).IsRequired();
-            Property(e => e.Name).IsRequired().HasMaxLength(100);
-            Property(e => e.AllowedOrigin).HasMaxLength(100);
-            Property(e => e.AuthServerUrl).HasMaxLength(100);
-            Property(e => e.RedirectUrl).HasMaxLength(100);
+            builder.ToTable("Clients");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Secret).IsRequired();
+            builder.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            builder.Property(e => e.AllowedOrigin).HasMaxLength(100);
+            builder.Property(e => e.AuthServerUrl).HasMaxLength(100);
+            builder.Property(e => e.RedirectUrl).HasMaxLength(100);
         }
     }
 }

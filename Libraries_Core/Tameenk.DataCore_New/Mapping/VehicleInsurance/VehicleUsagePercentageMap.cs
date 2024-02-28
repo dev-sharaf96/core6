@@ -1,16 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 
 namespace Tameenk.Data.Mapping.VehicleInsurance
 {
-    class VehicleUsagePercentageMap : EntityTypeConfiguration<VehicleUsagePercentage>
+    public class VehicleUsagePercentageMap :IEntityTypeConfiguration<VehicleUsagePercentage>
     {
         public VehicleUsagePercentageMap()
         {
-            ToTable("VehicleUsagePercentage");
-            HasKey(e => e.Id);
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+        }
+
+        public void Configure(EntityTypeBuilder<VehicleUsagePercentage> builder)
+        {
+            builder.ToTable("VehicleUsagePercentage");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();//.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
         }
     }
 }

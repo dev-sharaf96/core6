@@ -203,7 +203,7 @@ namespace Tameenk.Core.Domain.Entities.VehicleInsurance
 
         public ICollection<DriverLicense> DriverLicenses { get; set; }
 
-        public ICollection<QuotationRequest> AdditionalDriverQuotationRequests { get; set; }
+       public ICollection<QuotationRequest> AdditionalDriverQuotationRequests { get; set; }
 
         public ICollection<QuotationRequest> QuotationRequests { get; set; }
 

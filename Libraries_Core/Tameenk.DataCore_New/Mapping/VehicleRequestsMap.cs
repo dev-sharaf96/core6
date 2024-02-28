@@ -1,14 +1,16 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class VehicleRequestsMap : EntityTypeConfiguration<VehicleRequests>
+    public class VehicleRequestsMap :IEntityTypeConfiguration<VehicleRequests>
     {
-        public VehicleRequestsMap()
+
+        public void Configure(EntityTypeBuilder<VehicleRequests> builder)
         {
-            ToTable("VehicleRequests");
-            HasKey(c => c.ID);
+            builder.ToTable("VehicleRequests");
+            builder.HasKey(c => c.ID);
         }
     }
 }

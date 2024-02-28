@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
-using Tameenk.Core.Domain.Entities.Identity;
 
 namespace Tameenk.Data.Mapping.Identity
 {
-    public class CorporateVerifyUsersMap : EntityTypeConfiguration<CorporateVerifyUsers>
+    public class CorporateVerifyUsersMap : IEntityTypeConfiguration<CorporateVerifyUsers>
     {
-        public CorporateVerifyUsersMap()
+        public void Configure(EntityTypeBuilder<CorporateVerifyUsers> builder)
         {
-            ToTable("CorporateVerifyUsers");
-            HasKey(e => e.Id);
+            builder.ToTable("CorporateVerifyUsers");
+            builder.HasKey(e => e.Id);
         }
     }
 }

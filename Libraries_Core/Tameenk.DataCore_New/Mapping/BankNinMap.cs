@@ -1,17 +1,17 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class BankNinMap : EntityTypeConfiguration<BankNins>
+    public class BankNinMap :IEntityTypeConfiguration<BankNins>
     {
-        public BankNinMap()
+        public void Configure(EntityTypeBuilder<BankNins> builder)
         {
-            ToTable("BankNins");
-            HasKey(e => e.Id);
-
-            Property(e => e.NIN).HasMaxLength(500);
-            Property(e => e.BankId);
+            builder.ToTable("BankNins");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.NIN).HasMaxLength(500);
+            builder.Property(e => e.BankId);
         }
     }
 }

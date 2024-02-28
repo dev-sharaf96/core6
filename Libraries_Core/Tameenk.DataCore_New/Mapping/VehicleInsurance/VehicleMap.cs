@@ -1,48 +1,50 @@
-﻿using System.Data.Entity.ModelConfiguration;
-using Tameenk.Core.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 
 namespace Tameenk.Data.Mapping.VehicleInsurance
 {
-    public class VehicleMap : EntityTypeConfiguration<Vehicle>
+    public class VehicleMap :IEntityTypeConfiguration<Vehicle>
     {
-        public VehicleMap()
+        public void Configure(EntityTypeBuilder<Vehicle> builder)
         {
-            HasMany(v => v.QuotationRequests).WithRequired(v => v.Vehicle).HasForeignKey(v => v.VehicleId).WillCascadeOnDelete(false);
-            Property(v => v.SequenceNumber).HasMaxLength(30);
-            Property(v => v.CustomCardNumber).HasMaxLength(30);
-            Property(v => v.LicenseExpiryDate).HasMaxLength(20);
-            Property(v => v.MajorColor).HasMaxLength(20);
-            Property(v => v.MinorColor).HasMaxLength(20);
-            Property(v => v.RegisterationPlace).HasMaxLength(20);
-            Property(v => v.VehicleMaker).HasMaxLength(50);
-            Property(v => v.VehicleModel).IsRequired().HasMaxLength(30);
-            Property(v => v.ChassisNumber).HasMaxLength(30);
-            Property(v => v.CarPlateText1).HasMaxLength(1);
-            Property(v => v.CarPlateText2).HasMaxLength(1);
-            Property(v => v.CarPlateText3).HasMaxLength(1);
-            Property(v => v.ModificationDetails).HasMaxLength(200);
+            builder.HasMany(v => v.QuotationRequests).WithOne(v => v.Vehicle)
+                .HasForeignKey(v => v.VehicleId).OnDelete(DeleteBehavior.Restrict);
+            builder.Property(v => v.SequenceNumber).HasMaxLength(30);
+            builder.Property(v => v.CustomCardNumber).HasMaxLength(30);
+            builder.Property(v => v.LicenseExpiryDate).HasMaxLength(20);
+            builder.Property(v => v.MajorColor).HasMaxLength(20);
+            builder.Property(v => v.MinorColor).HasMaxLength(20);
+            builder.Property(v => v.RegisterationPlace).HasMaxLength(20);
+            builder.Property(v => v.VehicleMaker).HasMaxLength(50);
+            builder.Property(v => v.VehicleModel).IsRequired().HasMaxLength(30);
+            builder.Property(v => v.ChassisNumber).HasMaxLength(30);
+            builder.Property(v => v.CarPlateText1).HasMaxLength(1);
+            builder.Property(v => v.CarPlateText2).HasMaxLength(1);
+            builder.Property(v => v.CarPlateText3).HasMaxLength(1);
+            builder.Property(v => v.ModificationDetails).HasMaxLength(200);
 
-            Ignore(e => e.EngineSize);
-            Ignore(e => e.VehicleUse);
-            Ignore(e => e.TransmissionType);
-            Ignore(e => e.AxlesWeight);
-            Ignore(e => e.ParkingLocation);
-            Ignore(e => e.MileageExpectedAnnual);
-            Ignore(e => e.VehicleIdType);
+            builder.Ignore(e => e.EngineSize);
+            builder.Ignore(e => e.VehicleUse);
+            builder.Ignore(e => e.TransmissionType);
+            builder.Ignore(e => e.AxlesWeight);
+            builder.Ignore(e => e.ParkingLocation);
+            builder.Ignore(e => e.MileageExpectedAnnual);
+            builder.Ignore(e => e.VehicleIdType);
 
-            HasMany(e => e.CheckoutDetails)
-                .WithRequired(e => e.Vehicle)
-                .WillCascadeOnDelete(false);
+            builder.HasMany(e => e.CheckoutDetails)
+                .WithOne(e => e.Vehicle)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            HasMany(e => e.QuotationRequests)
-                .WithRequired(e => e.Vehicle)
-                .WillCascadeOnDelete(false);
-            HasMany(e => e.VehicleSpecifications).WithMany(e => e.Vehicles)
-                .Map(vs => vs.MapLeftKey("VehicleId")
-                    .MapRightKey("VehicleSpecificationId")
-                    .ToTable("Vehicle_VehicleSpecification")
-                );
+            builder.HasMany(e => e.QuotationRequests)
+                .WithOne(e => e.Vehicle)
+                .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasMany(e => e.VehicleSpecifications).WithMany(e => e.Vehicles)
+            //    .Map(vs => vs.MapLeftKey("VehicleId")
+            //        .MapRightKey("VehicleSpecificationId")
+            //        .ToTable("Vehicle_VehicleSpecification")
+            //  );
+
         }
     }
 }

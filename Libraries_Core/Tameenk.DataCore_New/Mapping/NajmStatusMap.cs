@@ -1,32 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-   public class NajmStatusMap : EntityTypeConfiguration<NajmStatus>
+    public class NajmStatusMap :IEntityTypeConfiguration<NajmStatus>
     {
-        public NajmStatusMap() 
+
+        public void Configure(EntityTypeBuilder<NajmStatus> builder)
         {
-            ToTable("NajmStatus");
-            HasKey(e => e.Id);
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            Property(e => e.NameAr).IsRequired().HasMaxLength(200);
-            Property(e => e.NameEn).IsRequired().HasMaxLength(200);
-            Property(e => e.Code).IsRequired().HasMaxLength(50);
+            builder.ToTable("NajmStatus");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();
+            builder.Property(e => e.NameAr).IsRequired().HasMaxLength(200);
+            builder.Property(e => e.NameEn).IsRequired().HasMaxLength(200);
+            builder.Property(e => e.Code).IsRequired().HasMaxLength(50);
 
 
 
-            HasMany<Policy>(g => g.Policies).WithRequired(s => s.NajmStatusObj).HasForeignKey<int>(s => s.NajmStatusId);
-           
-
+            builder.HasMany<Policy>(g => g.Policies)
+                .WithOne(s => s.NajmStatusObj).HasForeignKey(s => s.NajmStatusId);
         }
-
     }
 
 

@@ -1,16 +1,21 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class MobileAppVersionsMap : EntityTypeConfiguration<MobileAppVersions>
+    public class MobileAppVersionsMap :IEntityTypeConfiguration<MobileAppVersions>
     {
         public MobileAppVersionsMap() {
-            ToTable("MobileAppVersions");
-            HasKey(c => c.Id);
-            Property(c => c.Version).HasMaxLength(20);
+              
             
-            
+        }
+
+        void IEntityTypeConfiguration<MobileAppVersions>.Configure(EntityTypeBuilder<MobileAppVersions> builder)
+        {
+            builder.ToTable("MobileAppVersions");
+            builder.HasKey(c => c.Id);
+            builder.Property(c => c.Version).HasMaxLength(20);
         }
     }
 }

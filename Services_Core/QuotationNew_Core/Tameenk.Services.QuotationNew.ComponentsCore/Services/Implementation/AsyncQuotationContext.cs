@@ -102,7 +102,7 @@ namespace Tameenk.Services.QuotationNew.Components
             _priceTypeRepository = priceTypeRepository;
             _quotationResponseCache = quotationResponseCache;
             _serviceProvider = serviceProvider;
-            quotationService = _quotationService;
+            _quotationService = quotationService;
             this.dbContext = dbContext;
         }
 
@@ -141,13 +141,10 @@ namespace Tameenk.Services.QuotationNew.Components
 
         public async Task<QuotationNewOutput> HandleGetQuote(int insuranceCompanyId, string qtRqstExtrnlId, string channel, Guid userId, string userName, QuotationRequestLog log, DateTime excutionStartDate, Guid? parentRequestId = null, int insuranceTypeCode = 1, bool vehicleAgencyRepair = false, int? deductibleValue = null, string policyNo = null, string policyExpiryDate = null, string hashed = null, bool OdQuotation = false)
         {
-            var task = Task.Run(() =>
-            {
-                return GetQuote(insuranceCompanyId, qtRqstExtrnlId, channel, userId, userName, log, excutionStartDate, parentRequestId
+                return await GetQuote(insuranceCompanyId, qtRqstExtrnlId, channel, userId, userName, log, excutionStartDate, parentRequestId
                             , insuranceTypeCode, vehicleAgencyRepair, deductibleValue, policyNo, policyExpiryDate, hashed, OdQuotation);
-            });
+           
 
-            return task.Result;
         }
 
         //public async void InsertQuotationResponseIntoInmemoryCache(int insuranceCompanyId, int insuranceTypeCode, string externalId, bool vehicleAgencyRepair, int? deductibleValue, Guid userId, string jsonResponse)
@@ -375,14 +372,14 @@ namespace Tameenk.Services.QuotationNew.Components
                 }
                 else
                 {
-                    //requestDetails = await GetQuotationRequestDetailsByExternalId(qtRqstExtrnlId);
-                    //if (requestDetails == null)
-                    //{
-                    //    output.ErrorCode = QuotationNewOutput.ErrorCodes.ServiceDown;
-                    //    output.ErrorDescription = WebResources.SerivceIsCurrentlyDown;
-                    //    output.LogDescription = "failed to get Quotation Request from DB, please check the log file";
-                    //    return output;
-                    //}By Atheer
+                    requestDetails = await GetQuotationRequestDetailsByExternalId(qtRqstExtrnlId);
+                    if (requestDetails == null)
+                    {
+                        output.ErrorCode = QuotationNewOutput.ErrorCodes.ServiceDown;
+                        output.ErrorDescription = WebResources.SerivceIsCurrentlyDown;
+                        output.LogDescription = "failed to get Quotation Request from DB, please check the log file";
+                        return output;
+                    }
                 }
 
                 output = GetQuotationResponseDetails(requestDetails, insuranceCompany, qtRqstExtrnlId, predefinedLogInfo, log, insuranceTypeCode, vehicleAgencyRepair, deductibleValue, policyNo: policyNo, policyExpiryDate: policyExpiryDate, OdQuotation: OdQuotation);
@@ -796,32 +793,34 @@ namespace Tameenk.Services.QuotationNew.Components
             return referenceId;
         }
 
-        //////private async Task<QuotationNewRequestDetails> GetQuotationRequestDetailsByExternalId(string externalId)
-        //////{
-        //////    //exception = string.Empty;
-        //////    try
-        //////    {
-        //////        var result =// dbContext.Database.ra("GetQuotationRequestDetailsWithRelatedData", new { ExternalId = externalId }, commandType: CommandType.StoredProcedure);
-        //////            dbContext.Set<QuotationRequestInfoModel>()
-        //////    .FromSqlInterpolated($"EXEC GetQuotationRequestDetailsByExternalId {externalId}")
-        //////    .Include(q => q.AdditionalDrivers)
-        //////    .Include(q => q.MainDriverViolation)
-        //////    .Include(q => q.MainDriverLicenses)
-        //////    //.Select(d=> new QuotationNewRequestDetails
-        //////    //{
-        //////    //    AdditionalDrivers = d.AdditionalDrivers
-        //////    //})
-        //////    .FirstOrDefault();
-               
+        private async Task<QuotationNewRequestDetails> GetQuotationRequestDetailsByExternalId(string externalId)
+        {
+            //exception = string.Empty;
+            try
+            {
+                var result =// dbContext.Database.ra("GetQuotationRequestDetailsWithRelatedData", new { ExternalId = externalId }, commandType: CommandType.StoredProcedure);
+                    dbContext.Set<QuotationRequestInfoModel>()
+            .FromSqlInterpolated($"EXEC GetQuotationRequestDetailsByExternalId {externalId}")
+            .Include(q => q.AdditionalDrivers)
+            .Include(q => q.MainDriverViolation)
+            .Include(q => q.MainDriverLicenses)
+            .Select(d => new QuotationNewRequestDetails
+            {
+                AdditionalDrivers = d.AdditionalDrivers,
+                MainDriverViolation = d.MainDriverViolation,
+                MainDriverLicenses = d.MainDriverLicenses,
+            })
+            .FirstOrDefault();
 
-        //////        return null;
-        //////    }
-        //////    catch (Exception exp)
-        //////    {
-        //////        //exception = exp.ToString();
-        //////        return null;
-        //////    }
-        //////}
+
+                return result;
+            }
+            catch (Exception exp)
+            {
+                //exception = exp.ToString();
+                return null;
+            }
+        }
 
         private QuotationServiceRequest GetQuotationRequestMessage(QuotationNewRequestDetails quotationRequest, QuotationResponse quotationResponse, int insuranceTypeCode, bool vehicleAgencyRepair, string userId, int? deductibleValue, out string promotionProgramCode, out int promotionProgramId)
         {

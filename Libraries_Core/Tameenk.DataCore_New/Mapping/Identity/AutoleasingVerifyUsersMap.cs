@@ -1,15 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities.Identity;
 
 namespace Tameenk.Data.Mapping.Identity
 {
-    public class AutoleasingVerifyUsersMap : EntityTypeConfiguration<AutoleasingVerifyUsers>
+    public class AutoleasingVerifyUsersMap :IEntityTypeConfiguration<AutoleasingVerifyUsers>
     {
-
-        public AutoleasingVerifyUsersMap()
+        public void Configure(EntityTypeBuilder<AutoleasingVerifyUsers> builder)
         {
-            ToTable("AutoleasingVerifyUsers");
-            HasKey(e => e.Id);
+            builder.ToTable("AutoleasingVerifyUsers");
+            builder.HasKey(e => e.Id);
         }
     }
 }

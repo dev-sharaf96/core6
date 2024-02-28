@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Data.SqlClient;
 using Tameenk.Loggin.DAL.Entities;
 using Tameenk.Loggin.DAL.Entities.ServiceRequestLogs;
 

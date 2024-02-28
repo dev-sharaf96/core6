@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tameenk.Core.Domain.Entities.PromotionPrograms;
+﻿//using Microsoft.EntityFrameworkCore;
+//using Microsoft.EntityFrameworkCore.Metadata.Builders;
+//using Tameenk.Core.Domain.Entities.PromotionPrograms;
 
-namespace Tameenk.Data.Mapping.PromotionPrograms
-{
-    public class PromotionProgramAttachmentsMap : EntityTypeConfiguration<PromotionProgramAttachments>
-    {
-        public PromotionProgramAttachmentsMap()
-        {
-            ToTable("PromotionProgramAttachments");
-            HasKey(e => e.Id);
-        }
-    }
-}
+//namespace Tameenk.Data.Mapping.PromotionPrograms
+//{
+//    public class PromotionProgramAttachmentsMap :IEntityTypeConfiguration<PromotionProgramAttachments>
+//    {
+//        public PromotionProgramAttachmentsMap()
+//        {
+
+//        }
+
+//        public void Configure(EntityTypeBuilder<PromotionProgramAttachments> builder)
+//        {
+//            builder.ToTable("PromotionProgramAttachments");
+//            builder.HasKey(e => e.Id);
+//        }
+//    }
+//}

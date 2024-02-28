@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class CheckoutMobileVerificationMap : EntityTypeConfiguration<CheckoutMobileVerification>
+    public class CheckoutMobileVerificationMap : IEntityTypeConfiguration<CheckoutMobileVerification>
     {
-        public CheckoutMobileVerificationMap()
+        public void Configure(EntityTypeBuilder<CheckoutMobileVerification> builder)
         {
-            ToTable("CheckoutMobileVerification");
-            HasKey(e => e.Id);
+            builder.ToTable("CheckoutMobileVerification");
+            builder.HasKey(e => e.Id);
         }
     }
 }

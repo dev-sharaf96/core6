@@ -1,16 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class InvoiceFileMap : EntityTypeConfiguration<InvoiceFile>
+    public class InvoiceFileMap :IEntityTypeConfiguration<InvoiceFile>
     {
-        public InvoiceFileMap()
+        public void Configure(EntityTypeBuilder<InvoiceFile> builder)
         {
-            ToTable("InvoiceFile");
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
-            Property(e => e.InvoiceData).HasColumnType("image");
+            builder.ToTable("InvoiceFile");
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();
+            builder.Property(e => e.InvoiceData).HasColumnType("image");
         }
     }
 }

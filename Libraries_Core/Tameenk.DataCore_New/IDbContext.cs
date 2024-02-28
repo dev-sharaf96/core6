@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using Tameenk.Core.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-
-
-namespace Tameenk.Data
+﻿namespace Tameenk.Data
 {
     //public interface IDbContext
     //{

@@ -1,14 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
-using Tameenk.Core.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities.PromotionPrograms;
 
 namespace Tameenk.Data.Mapping
 {
-    public class DeservingDiscountMap : EntityTypeConfiguration<DeservingDiscount>
+    public class DeservingDiscountMap :IEntityTypeConfiguration<DeservingDiscount>
     {
-        public DeservingDiscountMap() {
-            ToTable("DeservingDiscount");
-            HasKey(c => c.Id);
+        public void Configure(EntityTypeBuilder<DeservingDiscount> builder)
+        {
+            builder.ToTable("DeservingDiscount");
+            builder.HasKey(c => c.Id);
         }
     }
 }

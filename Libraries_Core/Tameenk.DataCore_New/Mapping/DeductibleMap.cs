@@ -1,17 +1,18 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class DeductibleMap : EntityTypeConfiguration<Deductible>
+    public class DeductibleMap :IEntityTypeConfiguration<Deductible>
     {
-        public DeductibleMap()
+        public void Configure(EntityTypeBuilder<Deductible> builder)
         {
-            ToTable("Deductible");
-            HasKey(e => e.ID);
-            Property(e => e.Name).HasPrecision(8, 2);
+            builder.ToTable("Deductible");
+            builder.HasKey(e => e.ID);
+            builder.Property(e => e.Name).HasPrecision(8, 2);
 
-            HasRequired(e => e.InsuranceCompany).WithMany(e => e.Deductibles).HasForeignKey(e => e.InsuranceCompanyID);
+            builder.HasOne(e => e.InsuranceCompany).WithMany(e => e.Deductibles).HasForeignKey(e => e.InsuranceCompanyID);
         }
     }
 }

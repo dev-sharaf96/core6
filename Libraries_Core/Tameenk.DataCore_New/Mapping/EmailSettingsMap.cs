@@ -1,14 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class EmailSettingsMap : EntityTypeConfiguration<EmailSettings>
+    public class EmailSettingsMap : IEntityTypeConfiguration<EmailSettings>
     {
-        public EmailSettingsMap()
+        public void Configure(EntityTypeBuilder<EmailSettings> builder)
         {
-            ToTable("EmailSettings");
-            HasKey(e => e.Id);
+            builder.ToTable("EmailSettings");
+            builder.HasKey(e => e.Id);
         }
     }
 }

@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class VehicleDiscountsMap : EntityTypeConfiguration<VehicleDiscounts>
+    public class VehicleDiscountsMap :IEntityTypeConfiguration<VehicleDiscounts>
     {
-        public VehicleDiscountsMap()
+
+        public void Configure(EntityTypeBuilder<VehicleDiscounts> builder)
         {
-            ToTable("VehicleDiscounts");
-            HasKey(e => e.Id);
+            builder.ToTable("VehicleDiscounts");
+            builder.HasKey(e => e.Id);
         }
     }
 }

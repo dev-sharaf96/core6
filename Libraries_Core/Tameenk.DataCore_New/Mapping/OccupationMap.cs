@@ -1,23 +1,22 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Entities.Quotations;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 
 namespace Tameenk.Data.Mapping
 {
-    public class OccupationMap : EntityTypeConfiguration<Occupation>
+    public class OccupationMap :IEntityTypeConfiguration<Occupation>
     {
-        public OccupationMap()
+        public void Configure(EntityTypeBuilder<Occupation> builder)
         {
-            ToTable("Occupation");
-            HasKey(e => e.ID);
-            Property(e => e.NameAr).HasMaxLength(200);
-            Property(e => e.NameEn).HasMaxLength(200);
-            Property(e => e.Code).HasMaxLength(50);
-
-            HasMany<Insured>(g => g.Insureds).WithOptional(s => s.Occupation).HasForeignKey<int?>(s => s.OccupationId);
-            HasMany<Driver>(g => g.Drivers).WithOptional(s => s.Occupation).HasForeignKey<int?>(s => s.OccupationId);
-
+            builder.ToTable("Occupation");
+            builder.HasKey(e => e.ID);
+            builder.Property(e => e.NameAr).HasMaxLength(200);
+            builder.Property(e => e.NameEn).HasMaxLength(200);
+            builder.Property(e => e.Code).HasMaxLength(50);
+            builder.HasMany<Insured>(g => g.Insureds).WithOne(s => s.Occupation).HasForeignKey(s => s.OccupationId);
+            builder.HasMany<Driver>(g => g.Drivers).WithOne(s => s.Occupation).HasForeignKey(s => s.OccupationId);
         }
     }
 }

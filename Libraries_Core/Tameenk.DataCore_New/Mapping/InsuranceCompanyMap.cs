@@ -1,39 +1,41 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class InsuranceCompanyMap : EntityTypeConfiguration<InsuranceCompany>
+    public class InsuranceCompanyMap :IEntityTypeConfiguration<InsuranceCompany>
     {
-        public InsuranceCompanyMap()
+        public void Configure(EntityTypeBuilder<InsuranceCompany> builder)
         {
-            ToTable("InsuranceCompany");
 
-            HasKey(e => e.InsuranceCompanyID);
-            Property(e => e.InsuranceCompanyID).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            Property(e => e.NameAR).IsRequired().HasMaxLength(50);
-            Property(e => e.NameEN).IsRequired().HasMaxLength(50);
-            Property(e => e.Key).IsRequired().HasMaxLength(50);
-            Property(e => e.DescAR).HasMaxLength(1000);
-            Property(e => e.DescEN).HasMaxLength(1000);
-            
-            HasMany(e => e.Deductibles)
-                .WithRequired(e => e.InsuranceCompany)
-                .WillCascadeOnDelete(false);
+            builder.ToTable("InsuranceCompany");
 
-            HasMany(e => e.InsuaranceCompanyBenefits)
-                            .WithRequired(e => e.InsuranceCompany)
+            builder.HasKey(e => e.InsuranceCompanyID);
+            builder.Property(e => e.InsuranceCompanyID).ValueGeneratedOnAdd();// HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            builder.Property(e => e.NameAR).IsRequired().HasMaxLength(50);
+            builder.Property(e => e.NameEN).IsRequired().HasMaxLength(50);
+            builder.Property(e => e.Key).IsRequired().HasMaxLength(50);
+            builder.Property(e => e.DescAR).HasMaxLength(1000);
+            builder.Property(e => e.DescEN).HasMaxLength(1000);
+
+            builder.HasMany(e => e.Deductibles)
+                .WithOne(e => e.InsuranceCompany)
+               .OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(e => e.InsuaranceCompanyBenefits)
+                            .WithOne(e => e.InsuranceCompany)
                             .HasForeignKey(e => e.InsurnaceCompanyID)
-                            .WillCascadeOnDelete(false);
+                            .OnDelete(DeleteBehavior.Restrict);
 
-            HasMany(e => e.Products)
-                .WithOptional(e => e.InsuranceCompany)
+            builder.HasMany(e => e.Products)
+                .WithOne(e => e.InsuranceCompany)
                 .HasForeignKey(e => e.ProviderId);
 
-            HasOptional(e => e.Address).WithMany(e => e.InsuranceCompanies).HasForeignKey(e => e.AddressId);
-            HasOptional(e => e.Contact).WithMany(e => e.InsuranceCompanies).HasForeignKey(e => e.ContactId);
+            builder.HasOne(e => e.Address).WithMany(e => e.InsuranceCompanies).HasForeignKey(e => e.AddressId);
+            builder.HasOne(e => e.Contact).WithMany(e => e.InsuranceCompanies).HasForeignKey(e => e.ContactId);
 
+       
         }
     }
 }

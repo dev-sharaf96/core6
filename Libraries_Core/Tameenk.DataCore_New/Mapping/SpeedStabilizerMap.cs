@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    class SpeedStabilizerMap: EntityTypeConfiguration<SpeedStabilizer>
+    public class SpeedStabilizerMap:IEntityTypeConfiguration<SpeedStabilizer>
     {
-        public SpeedStabilizerMap()
+        public void Configure(EntityTypeBuilder<SpeedStabilizer> builder)
         {
-            ToTable("SpeedStabilizer");
-            HasKey(e => e.Id);
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            builder.ToTable("SpeedStabilizer");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();
         }
     }
 }

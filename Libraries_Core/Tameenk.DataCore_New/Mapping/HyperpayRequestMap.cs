@@ -1,44 +1,35 @@
 ﻿using Tameenk.Core.Domain.Entities.Payments.RiyadBank;
 
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Tameenk.Data.Mapping
 {
-    public class HyperpayRequestMap : EntityTypeConfiguration<HyperpayRequest>
+    public class HyperpayRequestMap :IEntityTypeConfiguration<HyperpayRequest>
     {
-        public HyperpayRequestMap()
+        public void Configure(EntityTypeBuilder<HyperpayRequest> builder)
         {
-            ToTable("HyperpayRequest");
-            HasKey(e => e.Id);
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-
-            Property(e => e.Amount)
+            builder.ToTable("HyperpayRequest");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();//.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+   
+            builder.Property(e => e.Amount)
                 .HasPrecision(10, 4);
-
-            //HasMany(e => e.HyperpayResponses)
-            //    .WithRequired(e => e.Id)
-            //    .HasForeignKey(e => e.HyperpayRequestId)
-            //    .WillCascadeOnDelete(false);
         }
     }
 
 
-    public class HyperpayResponseMap : EntityTypeConfiguration<HyperpayResponse>
+    public class HyperpayResponseMap :IEntityTypeConfiguration<HyperpayResponse>
     {
-        public HyperpayResponseMap()
+     
+        public void Configure(EntityTypeBuilder<HyperpayResponse> builder)
         {
-            ToTable("HyperpayResponse");
-            HasKey(e => e.Id);
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-
-            Property(e => e.Amount)
+            builder.ToTable("HyperpayResponse");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();//.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            builder.Property(e => e.Amount)
                 .HasPrecision(10, 4);
-
-            //HasMany(e => e.HyperpayResponses)
-            //    .WithRequired(e => e.Id)
-            //    .HasForeignKey(e => e.HyperpayRequestId)
-            //    .WillCascadeOnDelete(false);
         }
     }
 }

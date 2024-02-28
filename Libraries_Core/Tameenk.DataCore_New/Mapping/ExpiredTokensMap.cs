@@ -1,14 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class ExpiredTokensMap : EntityTypeConfiguration<ExpiredTokens>
+    public class ExpiredTokensMap : IEntityTypeConfiguration<ExpiredTokens>
     {
-        public ExpiredTokensMap() {
-            ToTable("ExpiredTokens");
-            HasKey(c => c.Id);
-          
+        public void Configure(EntityTypeBuilder<ExpiredTokens> builder)
+        {
+            builder.ToTable("ExpiredTokens");
+            builder.HasKey(c => c.Id);
         }
     }
 }

@@ -1,33 +1,31 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class ProductTypeMap : EntityTypeConfiguration<ProductType>
+    public class ProductTypeMap :IEntityTypeConfiguration<ProductType>
     {
-        public ProductTypeMap()
+
+        public void Configure(EntityTypeBuilder<ProductType> builder)
         {
-            ToTable("ProductType");
-            HasKey(p => p.Code);
-            Property(p => p.Code).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
-            HasMany(p => p.QuotationResponses).WithOptional(p => p.ProductType).HasForeignKey(p => p.InsuranceTypeCode);
-            Property(p => p.EnglishDescription).HasMaxLength(200);
-            Property(p => p.ArabicDescription).HasMaxLength(200);
-            HasMany(e => e.CheckoutDetails)
-                .WithOptional(e => e.ProductType)
+            builder.ToTable("ProductType");
+            builder.HasKey(p => p.Code);
+            builder.Property(p => p.Code).ValueGeneratedOnAdd();//.HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+            builder.HasMany(p => p.QuotationResponses).WithOne(p => p.ProductType).HasForeignKey(p => p.InsuranceTypeCode);
+            builder.Property(p => p.EnglishDescription).HasMaxLength(200);
+            builder.Property(p => p.ArabicDescription).HasMaxLength(200);
+            builder.HasMany(e => e.CheckoutDetails)
+                .WithOne(e => e.ProductType)
                 .HasForeignKey(e => e.SelectedInsuranceTypeCode);
+            builder.HasMany(e => e.InsuranceCompanyProductTypeConfigs)
+                .WithOne(e => e.ProductType)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            HasMany(e => e.InsuranceCompanyProductTypeConfigs)
-                .WithRequired(e => e.ProductType)
-                .WillCascadeOnDelete(false);
-
-            HasMany(e => e.Invoices)
-                .WithOptional(e => e.ProductType)
+            builder.HasMany(e => e.Invoices)
+                .WithOne(e => e.ProductType)
                 .HasForeignKey(e => e.InsuranceTypeCode);
-
-
-            
         }
     }
 }

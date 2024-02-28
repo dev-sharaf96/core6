@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Validation;
-using System.Linq;
 using Tameenk.Common.Utilities;
 
 namespace Tameenk.Loggin.DAL
@@ -10,25 +8,11 @@ namespace Tameenk.Loggin.DAL
     {
         public static bool AddtoPolicyRequestLogs(PolicyRequestLog toSaveLog)
         {
-            try
+            using (TameenkLog context = new TameenkLog())
             {
-                using (TameenkLog context = new TameenkLog())
-                {
-                    toSaveLog.CreatedDate = DateTime.Now;
-                    //context.PolicyRequestLogs.Add(toSaveLog);
-                    return true;
-                }
-            }
-            catch (DbEntityValidationException dbEx)
-            {
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-
-                    }
-                }
-                return false;
+                toSaveLog.CreatedDate = DateTime.Now;
+                //context.PolicyRequestLogs.Add(toSaveLog);
+                return true;
             }
         }
 

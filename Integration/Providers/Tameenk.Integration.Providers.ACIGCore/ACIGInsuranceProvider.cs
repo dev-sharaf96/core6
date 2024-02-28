@@ -25,10 +25,10 @@ namespace Tameenk.Integration.Providers.ACIG
         private readonly string AutoleasingBenefitServiceAccessToken = "6460662E217C7A9F899208DD70A2C28ABDEA42F128666A9B78E6C0C064846493";
         private readonly IServiceProvider _serviceProvider;
 
-        public ACIGInsuranceProvider(TameenkConfig tameenkConfig,IServiceProvider serviceProvider,  ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+        public ACIGInsuranceProvider(TameenkConfig tameenkConfig, IServiceProvider serviceProvider, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
              : base(tameenkConfig, new RestfulConfiguration
              {
-                 GenerateQuotationUrl = "https://eservices.acig.com.sa/BcareLive/Api/MotorService/Quote",
+                 GenerateQuotationUrl = "https://localhost:7267//BcareLive/Api/MotorService/Quote",// "https://eservices.acig.com.sa/BcareLive/Api/MotorService/Quote",
                  GeneratePolicyUrl = "https://eservices.acig.com.sa/BcareLive/Api/MotorService/TPLPolicy",
                  AccessToken = "AcigBcare:AcigBcareLive@2018",
                  GenerateAutoleasingQuotationUrl = "https://leasing.acig.com.sa/AcigRetail/api/quotation",

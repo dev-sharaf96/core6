@@ -1,15 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class InvoiceFileTemplatesMap : EntityTypeConfiguration<InvoiceFileTemplates>
+    public class InvoiceFileTemplatesMap :IEntityTypeConfiguration<InvoiceFileTemplates>
     {
-        public InvoiceFileTemplatesMap()
+        public void Configure(EntityTypeBuilder<InvoiceFileTemplates> builder)
         {
-            ToTable("InvoiceFileTemplates");
-            HasKey(e => e.Id);
+            builder.ToTable("InvoiceFileTemplates");
+            builder.HasKey(e => e.Id);
         }
     }
 }

@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tameenk.Core.Domain.Entities;
+﻿//using Tameenk.Core.Domain.Entities;
 
-namespace Tameenk.Data.Mapping.Wathq
-{
-   public class WathqInfoMap : EntityTypeConfiguration<WathqInfo>
-    {
-        public WathqInfoMap()
-        {
-            ToTable("WathqInfos");
-            HasKey(c => c.Id);
-        }
-    }
-}
+//namespace Tameenk.Data.Mapping.Wathq
+//{
+//    public class WathqInfoMap :IEntityTypeConfiguration<WathqInfo>
+//    {
+//        public WathqInfoMap()
+//        {
+//            ToTable("WathqInfos");
+//            HasKey(c => c.Id);
+//        }
+//    }
+//}

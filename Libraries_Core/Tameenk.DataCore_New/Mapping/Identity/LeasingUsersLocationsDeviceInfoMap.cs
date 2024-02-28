@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class LeasingUsersLocationsDeviceInfoMap : EntityTypeConfiguration<LeasingUsersLocationsDeviceInfo>
+    public class LeasingUsersLocationsDeviceInfoMap :IEntityTypeConfiguration<LeasingUsersLocationsDeviceInfo>
     {
-
-        public LeasingUsersLocationsDeviceInfoMap()
+        public void Configure(EntityTypeBuilder<LeasingUsersLocationsDeviceInfo> builder)
         {
-            ToTable("LeasingUsersLocationsDeviceInfo");
-            HasKey(e => e.Id);
+            builder.ToTable("LeasingUsersLocationsDeviceInfo");
+            builder.HasKey(e => e.Id);
         }
     }
 }

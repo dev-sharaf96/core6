@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
 using Tameenk.Core.Domain.Entities.PromotionPrograms;
 
 namespace Tameenk.Data.Mapping
 {
-    public class UserPurchasedPromotionProgramsMap : EntityTypeConfiguration<UserPurchasedPromotionPrograms>
+    public class UserPurchasedPromotionProgramsMap :IEntityTypeConfiguration<UserPurchasedPromotionPrograms>
     {
-        public UserPurchasedPromotionProgramsMap()
+
+
+        public void Configure(EntityTypeBuilder<UserPurchasedPromotionPrograms> builder)
         {
-            ToTable("UserPurchasedPromotionPrograms");
-            HasKey(e => e.Id);
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            //Property(e => e.MaxNumberOfPolicies).(256);
-            //Property(e => e.ArabicDescription).HasMaxLength(256);
+            builder.ToTable("UserPurchasedPromotionPrograms");
+            builder.HasKey(e => e.Id);
+            //builder.HasKey(e => e.Id);//.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();
         }
     }
 }

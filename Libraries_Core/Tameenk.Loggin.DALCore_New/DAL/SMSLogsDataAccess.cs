@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.Validation;
 using Tameenk.Common.Utilities;
 using Tameenk.Loggin.DAL.Dtos;
 
@@ -12,26 +9,12 @@ namespace Tameenk.Loggin.DAL
     {
         public static bool AddToSMSLogsDataAccess(SMSLog toSaveLog)
         {
-            try
+            using (TameenkLog context = new TameenkLog())
             {
-                using (TameenkLog context = new TameenkLog())
-                {
-                    toSaveLog.CreatedDate = DateTime.Now;
-                    //context.SMSLogs.Add(toSaveLog);
-                    context.SaveChanges();
-                    return true;
-                }
-            }
-            catch (DbEntityValidationException dbEx)
-            {
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-
-                    }
-                }
-                return false;
+                toSaveLog.CreatedDate = DateTime.Now;
+                //context.SMSLogs.Add(toSaveLog);
+                context.SaveChanges();
+                return true;
             }
         }
 

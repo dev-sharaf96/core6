@@ -1,17 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using Tameenk.Core.Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class IbanHistoryMap :EntityTypeConfiguration<IbanHistory>
+    public class IbanHistoryMap :IEntityTypeConfiguration<IbanHistory>
     {
-        public IbanHistoryMap()
+        public void Configure(EntityTypeBuilder<IbanHistory> builder)
         {
-            ToTable("IbanHistory");
-            HasKey(e => e.Id);
+            builder.ToTable("IbanHistory");
+            builder.HasKey(e => e.Id);
         }
     }
 }

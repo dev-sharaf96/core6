@@ -1,14 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class QuotationResponseCacheMap : EntityTypeConfiguration<QuotationResponseCache>
+    public class QuotationResponseCacheMap :IEntityTypeConfiguration<QuotationResponseCache>
     {
-        public QuotationResponseCacheMap()
+        public void Configure(EntityTypeBuilder<QuotationResponseCache> builder)
         {
-            ToTable("QuotationResponseCache");
-            HasKey(c => c.ID);
+            builder.ToTable("QuotationResponseCache");
+            builder.HasKey(c => c.ID);
         }
     }
 }

@@ -1,13 +1,16 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class NajmAccidentResponseMap : EntityTypeConfiguration<NajmAccidentResponse>
+    public class NajmAccidentResponseMap :IEntityTypeConfiguration<NajmAccidentResponse>
     {
-        public NajmAccidentResponseMap() {
-            ToTable("NajmAccidentResponse");
-            HasKey(c => c.Id);
+
+        public void Configure(EntityTypeBuilder<NajmAccidentResponse> builder)
+        {
+            builder.ToTable("NajmAccidentResponse");
+            builder.HasKey(c => c.Id);
         }
     }
 }

@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities.Payments.RiyadBank;
 
 namespace Tameenk.Data.Mapping.Payments.RiyadBank
 {
-    public class RiyadBankMigsResponseMap : EntityTypeConfiguration<RiyadBankMigsResponse>
+    public class RiyadBankMigsResponseMap :IEntityTypeConfiguration<RiyadBankMigsResponse>
     {
-        public RiyadBankMigsResponseMap()
+        public void Configure(EntityTypeBuilder<RiyadBankMigsResponse> builder)
         {
-            ToTable("RiyadBankMigsResponse");
-            HasKey(e => e.Id);
-
-            Property(e => e.Amount).HasPrecision(19, 4);
-
-            HasRequired(e => e.RiyadBankMigsRequest).WithMany(e => e.RiyadBankMigsResponses).HasForeignKey(e => e.RiyadBankMigsRequestId);
+            builder.ToTable("RiyadBankMigsResponse");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Amount).HasPrecision(19, 4);
+            builder.HasOne(e => e.RiyadBankMigsRequest).WithMany(e => e.RiyadBankMigsResponses).HasForeignKey(e => e.RiyadBankMigsRequestId);
+            builder.Property(e => e.RiyadBankMigsRequestId).IsRequired();
         }
     }
 }

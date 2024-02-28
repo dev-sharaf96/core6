@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities.Orders;
 
 namespace Tameenk.Data.Mapping.Orders
 {
-    public class ShoppingCartItemMap : EntityTypeConfiguration<ShoppingCartItem>
+    public class ShoppingCartItemMap :IEntityTypeConfiguration<ShoppingCartItem>
     {
-        public ShoppingCartItemMap()
+        public void Configure(EntityTypeBuilder<ShoppingCartItem> builder)
         {
-            ToTable("ShoppingCartItem");
-            HasKey(e => e.Id);
-
-            HasRequired(e => e.Product).WithMany().HasForeignKey(e => e.ProductId);
-            HasRequired(e => e.User).WithMany().HasForeignKey(e => e.UserId);
+            builder.ToTable("ShoppingCartItem");
+            builder.HasKey(e => e.Id);
+            builder.HasOne(e => e.Product).WithMany().HasForeignKey(e => e.ProductId);
+            builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
         }
     }
 }

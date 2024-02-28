@@ -1,17 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 
 namespace Tameenk.Data.Mapping.VehicleInsurance
 {
-    public class DriverViolationMap : EntityTypeConfiguration<DriverViolation>
+    public class DriverViolationMap :IEntityTypeConfiguration<DriverViolation>
     {
-        public DriverViolationMap()
+        public void Configure(EntityTypeBuilder<DriverViolation> builder)
         {
-            ToTable("DriverViolation");
-            HasKey(e => e.Id);
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            HasRequired(e => e.Driver).WithMany(e => e.DriverViolations).HasForeignKey(e => e.DriverId);
+            builder.ToTable("DriverViolation");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();//.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            builder.HasOne(e => e.Driver).WithMany(e => e.DriverViolations).HasForeignKey(e => e.DriverId);
         }
     }
 }

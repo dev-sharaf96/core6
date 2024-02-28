@@ -1,57 +1,59 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 
 namespace Tameenk.Data.Mapping.VehicleInsurance
 {
-    public class DriverMap : EntityTypeConfiguration<Driver>
+    public class DriverMap :IEntityTypeConfiguration<Driver>
     {
-        public DriverMap()
-        {
-            ToTable("Driver");
-            HasKey(d => d.DriverId);
 
-            Property(d => d.DateOfBirthH).HasMaxLength(100);
-            Property(d => d.IdIssuePlace).HasMaxLength(50);
-            Property(d => d.IdExpiryDate).HasMaxLength(50);
+
+        public void Configure(EntityTypeBuilder<Driver> builder)
+        {
+            builder.ToTable("Driver");
+            builder.HasKey(d => d.DriverId);
+
+            builder.Property(d => d.DateOfBirthH).HasMaxLength(100);
+            builder.Property(d => d.IdIssuePlace).HasMaxLength(50);
+            builder.Property(d => d.IdExpiryDate).HasMaxLength(50);
 
             //Ignore(d => d.Occupation);
-            Ignore(d => d.SocialStatus);
-            Ignore(d => d.Education);
-            Ignore(d => d.MedicalCondition);
-            Ignore(d => d.Gender);
+            builder.Ignore(d => d.SocialStatus);
+            builder.Ignore(d => d.Education);
+            builder.Ignore(d => d.MedicalCondition);
+            builder.Ignore(d => d.Gender);
 
-            HasMany(e => e.DriverLicenses)
-                .WithRequired(e => e.Driver)
-                .WillCascadeOnDelete(false);
+            builder.HasMany(e => e.DriverLicenses)
+                .WithOne(e => e.Driver)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            HasMany(e => e.QuotationRequests)
-                .WithRequired(e => e.Driver)
+            builder.HasMany(e => e.QuotationRequests)
+                .WithOne(e => e.Driver)
                 .HasForeignKey(e => e.MainDriverId)
-                .WillCascadeOnDelete(false);
+                .OnDelete(DeleteBehavior.Restrict);
 
-            HasMany(e => e.AdditionalDriverQuotationRequests)
-                .WithMany(e => e.Drivers)
-                .Map(m => m.ToTable("QuotationRequestAdditionalDrivers").MapLeftKey("AdditionalDriverId").MapRightKey("QuotationRequestId"));
+            //builder.HasMany(e => e.AdditionalDriverQuotationRequests)
+            //    .WithMany(e => e.Drivers)
+            //    .Map(m => m.ToTable("QuotationRequestAdditionalDrivers").MapLeftKey("AdditionalDriverId").MapRightKey("QuotationRequestId"));
 
-            HasMany(e => e.CheckoutAdditionalDrivers)
-                .WithRequired(e => e.Driver)
-                .WillCascadeOnDelete(false);
-
-            HasMany(e => e.CheckoutDetails)
-                 .WithOptional(e => e.Driver)
+            builder.HasMany(e => e.CheckoutAdditionalDrivers)
+                .WithOne(e => e.Driver)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(e => e.CheckoutDetails)
+                 .WithOne(e => e.Driver)
                  .HasForeignKey(e => e.MainDriverId);
-
-            HasMany(e => e.Addresses)
-                 .WithOptional(e => e.Driver)
+            builder.HasMany(e => e.Addresses)
+                 .WithOne(e => e.Driver)
                  .HasForeignKey(e => e.DriverId);
-
-            HasMany(e => e.DriverViolations)
-             .WithRequired(e => e.Driver)
+            builder.HasMany(e => e.DriverViolations)
+             .WithOne(e => e.Driver)
              .HasForeignKey(e => e.DriverId);
 
-            HasOptional(e => e.City).WithMany().HasForeignKey(e => e.CityId);
-            HasOptional(e => e.WorkCity).WithMany().HasForeignKey(e => e.WorkCityId);
+            builder.HasOne(e => e.City).WithMany().HasForeignKey(e => e.CityId);
+            builder.HasOne(e => e.WorkCity).WithMany().HasForeignKey(e => e.WorkCityId);
             //HasOptional<Occupation>(e => e.Occupation).WithMany(x => x.Drivers).HasForeignKey<int?>(e => e.OccupationId);
+
         }
     }
 }

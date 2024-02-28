@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities.Payments;
 
 namespace Tameenk.Data.Mapping.Payments
 {
-    public class PaymentMethodMap : EntityTypeConfiguration<PaymentMethod>
+    public class PaymentMethodMap :IEntityTypeConfiguration<PaymentMethod>
     {
         public PaymentMethodMap()
         {
-            ToTable("PaymentMethod");
-            HasKey(e => e.Id);
-            Ignore(e => e.PaymentMethodCode);
+
+        }
+
+        public void Configure(EntityTypeBuilder<PaymentMethod> builder)
+        {
+            builder.ToTable("PaymentMethod");
+            builder.HasKey(e => e.Id);
+            builder.Ignore(e => e.PaymentMethodCode);
         }
     }
 }

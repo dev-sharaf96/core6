@@ -1,8 +1,6 @@
 ﻿using Tameenk.Loggin.DAL.Dtos;
 using Tameenk.Common.Utilities;
-using System.Data;
 using System;
-using System.Data.Entity.Validation;
 using System.Collections.Generic;
 
 
@@ -19,32 +17,13 @@ namespace Tameenk.Loggin.DAL
         /// <returns></returns>   
         public static bool AddQuotationRequestLog(QuotationRequestLog quotationRequestLog)
         {
-            try
+            using (TameenkLog context = new TameenkLog())
             {
-                using (TameenkLog context = new TameenkLog())
-                {
 
-                    quotationRequestLog.CreatedDate = DateTime.Now;
-                    //context.QuotationRequestLogs.Add(quotationRequestLog);
-                    //context.SaveChanges();
-                    return true;
-                }
-            }
-            //catch (Exception ex)
-            //{
-            //    //System.IO.File.WriteAllText(@"C:\inetpub\wwwroot\StagingQuotationApi\logs\log1.txt", ex.ToString());
-            //    return false;
-            //}
-            catch (DbEntityValidationException ex)
-            {
-                foreach (var validationErrors in ex.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-                        System.IO.File.WriteAllText(@"C:\inetpub\wwwroot\StagingQuotationApi\logs\log1.txt", ex.ToString());
-                    }
-                }
-                return false;
+                quotationRequestLog.CreatedDate = DateTime.Now;
+                //context.QuotationRequestLogs.Add(quotationRequestLog);
+                //context.SaveChanges();
+                return true;
             }
 
         }

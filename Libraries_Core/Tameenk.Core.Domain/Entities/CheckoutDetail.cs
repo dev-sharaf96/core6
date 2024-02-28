@@ -7,6 +7,8 @@ using Tameenk.Core.Domain.Entities.Payments.RiyadBank;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Core.Domain.Enums;
 using Tameenk.Core.Domain.Entities.Quotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Tameenk.Core.Domain.Entities
 {
     public class CheckoutDetail : BaseEntity
@@ -99,6 +101,7 @@ namespace Tameenk.Core.Domain.Entities
         public ICollection<HyperpayRequest> HyperpayRequests { get; set; }
 
         public ICollection<Policy> Policies { get; set; }
+        [NotMapped]
         public AdditionalInfo AdditionalInfo { get; set; }
 
         public BankCode BankCode { get; set; }

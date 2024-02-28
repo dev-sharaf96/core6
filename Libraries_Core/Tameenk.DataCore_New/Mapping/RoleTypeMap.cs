@@ -1,19 +1,19 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class RoleTypeMap : EntityTypeConfiguration<RoleType>
+    public class RoleTypeMap :IEntityTypeConfiguration<RoleType>
     {
-        public RoleTypeMap()
+        public void Configure(EntityTypeBuilder<RoleType> builder)
         {
-            ToTable("RoleType");
-            Property(e => e.TypeNameEN).IsRequired().HasMaxLength(50);
-            Property(e => e.TypeNameAR).IsRequired().HasMaxLength(50);
-
-            HasMany(e => e.Roles)
-                .WithRequired(e => e.RoleType)
-                .WillCascadeOnDelete(false);
+            builder.ToTable("RoleType");
+            builder.Property(e => e.TypeNameEN).IsRequired().HasMaxLength(50);
+            builder.Property(e => e.TypeNameAR).IsRequired().HasMaxLength(50);
+            builder.HasMany(e => e.Roles)
+                .WithOne(e => e.RoleType)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

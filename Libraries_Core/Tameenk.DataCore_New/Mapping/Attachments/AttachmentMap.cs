@@ -1,22 +1,25 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping.Attachments
 {
-    public class AttachmentMap : EntityTypeConfiguration<Attachment>
+    public class AttachmentMap :IEntityTypeConfiguration<Attachment>
     {
-        public AttachmentMap()
+
+
+        public void Configure(EntityTypeBuilder<Attachment> builder)
         {
-            ToTable("Attachment");
-            HasKey(e => e.Id);
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            Property(e => e.AttachmentFile).IsRequired();
-            Property(e => e.AttachmentType).IsRequired();
-            Property(e => e.AttachmentName).IsRequired();
-            Property(e => e.Guid).IsRequired();
-            HasMany(e => e.PolicyUpdateRequestAttachments);
-            
+            builder.ToTable("Attachment");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();
+               
+            builder.Property(e => e.AttachmentFile).IsRequired();
+            builder.Property(e => e.AttachmentType).IsRequired();
+            builder.Property(e => e.AttachmentName).IsRequired();
+            builder.Property(e => e.Guid).IsRequired();
+            builder.HasMany(e => e.PolicyUpdateRequestAttachments); 
         }
     }
 }

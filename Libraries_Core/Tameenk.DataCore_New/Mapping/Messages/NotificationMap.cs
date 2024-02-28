@@ -1,6 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities.Messages;
 
 namespace Tameenk.Data.Mapping
@@ -8,19 +7,20 @@ namespace Tameenk.Data.Mapping
     /// <summary>
     /// Represent the EF mapping for notification entity
     /// </summary>
-    public class NotificationMap : EntityTypeConfiguration<Notification>
+    public class NotificationMap :IEntityTypeConfiguration<Notification>
     {
 
-        public NotificationMap()
+
+        public void Configure(EntityTypeBuilder<Notification> builder)
         {
-            ToTable("Notification");
-            HasKey(e => e.Id);
-            Property(e => e.Group).HasMaxLength(256).IsRequired();
-            Property(e => e.GroupReferenceId).HasMaxLength(256).IsRequired();
-            Property(e => e.TypeId).IsRequired();
-            Property(e => e.StatusId).IsRequired();
-            Ignore(e => e.Status);
-            Ignore(e => e.Type);
+            builder.ToTable("Notification");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Group).HasMaxLength(256).IsRequired();
+            builder.Property(e => e.GroupReferenceId).HasMaxLength(256).IsRequired();
+            builder.Property(e => e.TypeId).IsRequired();
+            builder.Property(e => e.StatusId).IsRequired();
+            builder.Ignore(e => e.Status);
+            builder.Ignore(e => e.Type);
         }
     }
 }

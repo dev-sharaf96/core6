@@ -1,17 +1,17 @@
-﻿using System.Data.Entity.ModelConfiguration;
-using Tameenk.Core.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 
 namespace Tameenk.Data.Mapping.VehicleInsurance
 {
-    public class VehicleColorMap : EntityTypeConfiguration<VehicleColor>
+    public class VehicleColorMap :IEntityTypeConfiguration<VehicleColor>
     {
-        public VehicleColorMap()
+        public void Configure(EntityTypeBuilder<VehicleColor> builder)
         {
-            ToTable("VehicleColor");
-            HasKey(vc => vc.Code);
-            Property(vc => vc.EnglishDescription).HasMaxLength(200);
-            Property(vc => vc.ArabicDescription).HasMaxLength(200);
+            builder.ToTable("VehicleColor");
+            builder.HasKey(vc => vc.Code);
+            builder.Property(vc => vc.EnglishDescription).HasMaxLength(200);
+            builder.Property(vc => vc.ArabicDescription).HasMaxLength(200);
         }
     }
 }

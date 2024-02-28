@@ -1,17 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 
 namespace Tameenk.Data.Mapping.VehicleInsurance
 {
-    class DriverExtraLicenseMap : EntityTypeConfiguration<DriverExtraLicense>
+    public class DriverExtraLicenseMap :IEntityTypeConfiguration<DriverExtraLicense>
     {
-        public DriverExtraLicenseMap()
+        public void Configure(EntityTypeBuilder<DriverExtraLicense> builder)
         {
-            ToTable("DriverExtraLicense");
-            HasKey(d => d.Id);
-            Property(e => e.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            HasRequired(e => e.Driver)
+            builder.ToTable("DriverExtraLicense");
+            builder.HasKey(d => d.Id);
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();
+            builder.HasOne(e => e.Driver)
                 .WithMany(e => e.DriverExtraLicenses)
                 .HasForeignKey(e => e.DriverId);
         }

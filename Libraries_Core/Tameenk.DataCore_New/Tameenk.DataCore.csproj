@@ -13,9 +13,4 @@
     <ProjectReference Include="..\Tameenk.Core.Domain\Tameenk.Core.Domain.csproj" />
     <ProjectReference Include="..\Tameenk.Core\Tameenk.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\..\Tameenk.Reports\Tameenk.Reports.Policy\bin\Debug\EntityFramework.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>

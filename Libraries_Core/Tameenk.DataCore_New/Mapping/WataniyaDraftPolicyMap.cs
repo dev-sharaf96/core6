@@ -1,14 +1,16 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class WataniyaDraftPolicyMap : EntityTypeConfiguration<WataniyaDraftPolicy>
+    public class WataniyaDraftPolicyMap :IEntityTypeConfiguration<WataniyaDraftPolicy>
     {
-        public WataniyaDraftPolicyMap()
+
+        public void Configure(EntityTypeBuilder<WataniyaDraftPolicy> builder)
         {
-            ToTable("WataniyaDraftPolicy");
-            HasKey(e => e.Id);
+            builder.ToTable("WataniyaDraftPolicy");
+            builder.HasKey(e => e.Id);
         }
     }
 }

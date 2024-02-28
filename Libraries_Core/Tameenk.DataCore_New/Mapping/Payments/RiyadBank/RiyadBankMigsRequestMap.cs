@@ -1,32 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities.Payments.RiyadBank;
 
 namespace Tameenk.Data.Mapping.Payments.RiyadBank
 {
-    public class RiyadBankMigsRequestMap : EntityTypeConfiguration<RiyadBankMigsRequest>
+    public class RiyadBankMigsRequestMap :IEntityTypeConfiguration<RiyadBankMigsRequest>
     {
-        public RiyadBankMigsRequestMap()
+
+        void IEntityTypeConfiguration<RiyadBankMigsRequest>.Configure(EntityTypeBuilder<RiyadBankMigsRequest> builder)
         {
-            ToTable("RiyadBankMigsRequest");
-            HasKey(e => e.Id);
-
-            Property(e => e.Amount).HasPrecision(19, 4);
-
-
-            HasMany(e => e.RiyadBankMigsResponses)
-                .WithRequired(e => e.RiyadBankMigsRequest)
+            builder.ToTable("RiyadBankMigsRequest");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Amount).HasPrecision(19, 4);
+            builder.HasMany(e => e.RiyadBankMigsResponses)
+                .WithOne(e => e.RiyadBankMigsRequest)
                 .HasForeignKey(e => e.RiyadBankMigsRequestId)
-                .WillCascadeOnDelete(false);
+                .OnDelete(DeleteBehavior.Restrict);
 
 
-            HasMany(e => e.CheckoutDetails)
-               .WithMany()
-               .Map(m => m.ToTable("Checkout_RiyadBankMigsRequest").MapLeftKey("RiyadBankMigsRequestId").MapRightKey("CheckoutdetailsId"));
+            //builder.HasMany(e => e.CheckoutDetails)
+            //   .WithMany()
+            //   .Map(m => m.ToTable("Checkout_RiyadBankMigsRequest")
+            //   .MapLeftKey("RiyadBankMigsRequestId")
+            //   .MapRightKey("CheckoutdetailsId"));
         }
     }
 }

@@ -1,31 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tameenk.Core.Domain.Entities;
 
 namespace Tameenk.Data.Mapping
 {
-    public class PolicyMap : EntityTypeConfiguration<Policy>
+    public class PolicyMap : IEntityTypeConfiguration<Policy>
     {
         public PolicyMap()
         {
-            ToTable("Policy");
-            HasKey(e => e.Id);
+        }
 
-            Property(e => e.PolicyNo).IsRequired().HasMaxLength(36);
-            Property(e => e.CheckOutDetailsId).IsRequired().HasMaxLength(50);
-
-
-            Property(e => e.NajmStatusId).IsRequired();
-
-
-            HasOptional(e => e.PolicyDetail)
-                .WithRequired(e => e.Policy);
-
-            HasOptional(e => e.InsuranceCompany).WithMany(e => e.Policies).HasForeignKey(e => e.InsuranceCompanyID);
+        public void Configure(EntityTypeBuilder<Policy> builder)
+        {
+            builder.ToTable("Policy");
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.PolicyNo).IsRequired().HasMaxLength(36);
+            builder.Property(e => e.CheckOutDetailsId).IsRequired().HasMaxLength(50);
+            builder.Property(e => e.NajmStatusId).IsRequired();
+            //builder.HasOne(e => e.PolicyDetail)
+            //    .WithOne(e => e.Policy).HasForeignKey<PolicyDetail>(d=> d.Id);
+            builder.HasOne(e => e.InsuranceCompany).WithMany(e => e.Policies).HasForeignKey(e => e.InsuranceCompanyID);
         }
     }
 }
