@@ -16,20 +16,23 @@ using Tameenk.Services.Logging;
 using System.Linq;
 using System.Net.Http.Headers;
 using Tameenk.Services.Core.Http;
+using Tameenk.Services;
+using DocumentFormat.OpenXml.Office2021.DocumentTasks;
+using System.Threading.Tasks;
 
 namespace Tameenk.Integration.Providers.TUIC
 {
     public class TUICInsuranceProvider : RestfulInsuranceProvider
     {
         private readonly RestfulConfiguration _restfulConfiguration;
-        private readonly TameenkConfig _tameenkConfig;
         private readonly IHttpClient _httpClient;
         private readonly string _accessTokenBase64;
+        private readonly IQuotationConfig _quotationConfig;
 
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
 
-        public TUICInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-            : base(tameenkConfig, new RestfulConfiguration()
+        public TUICInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+            : base(quotationConfig, new RestfulConfiguration()
         {
             ProviderName = "TUIC",
             GenerateQuotationUrl = "https://asasagg.aletihad.sa/LimraBcareLive/API/MotorService/Quote",
@@ -37,23 +40,23 @@ namespace Tameenk.Integration.Providers.TUIC
             GeneratePolicyUrl = "https://asasagg.aletihad.sa/LimraBcareLive/API/MotorService/TPLPolicy",
             GenerateClaimRegistrationUrl = "",
             GenerateClaimNotificationUrl = "",
-        }, logger, policyProcessingQueueRepository)
+        },policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
-            _tameenkConfig = tameenkConfig;
             _accessTokenBase64 = _restfulConfiguration.AccessToken;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
+            _quotationConfig = quotationConfig;
         }
 
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task< object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
-            ServiceOutput output = SubmitQuotationRequest(quotation, predefinedLogInfo);
+            ServiceOutput output = await SubmitQuotationRequest(quotation, predefinedLogInfo);
             if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
                 return null;
             return output.Output;
         }
 
-        protected override ServiceOutput SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        protected override async Task<ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
         {
             ServiceOutput output = new ServiceOutput();
             log.ReferenceId = quotation.ReferenceId;
@@ -75,7 +78,7 @@ namespace Tameenk.Integration.Providers.TUIC
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.quotationTestData.json";
@@ -228,7 +231,7 @@ namespace Tameenk.Integration.Providers.TUIC
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode; //_tameenkConfig.Policy.TestMode; by Atheer 
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -259,7 +262,7 @@ namespace Tameenk.Integration.Providers.TUIC
                     if (request != null)
                     {
                         request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service return null";
@@ -275,7 +278,7 @@ namespace Tameenk.Integration.Providers.TUIC
                     if (request != null)
                     {
                         request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -291,7 +294,7 @@ namespace Tameenk.Integration.Providers.TUIC
                     if (request != null)
                     {
                         request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -325,7 +328,7 @@ namespace Tameenk.Integration.Providers.TUIC
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
                     return output;
@@ -342,7 +345,7 @@ namespace Tameenk.Integration.Providers.TUIC
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -358,7 +361,7 @@ namespace Tameenk.Integration.Providers.TUIC
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -373,7 +376,7 @@ namespace Tameenk.Integration.Providers.TUIC
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
@@ -388,7 +391,7 @@ namespace Tameenk.Integration.Providers.TUIC
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 return output;
             }

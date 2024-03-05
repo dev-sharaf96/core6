@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DocumentFormat.OpenXml.Office2021.DocumentTasks;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Tameenk.Core.Configuration;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
@@ -16,6 +18,7 @@ using Tameenk.Integration.Dto.Providers;
 using Tameenk.Integration.Providers.Wala.Resources;
 using Tameenk.Loggin.DAL;
 using Tameenk.Resources.Quotations;
+using Tameenk.Services;
 using Tameenk.Services.Core.Addresses;
 using Tameenk.Services.Core.InsuranceCompanies;
 using Tameenk.Services.Core.Quotations;
@@ -26,24 +29,22 @@ namespace Tameenk.Integration.Providers.Wala
     public class WalaInsuranceProvider : RestfulInsuranceProvider
     {
         #region Fields
-        private readonly TameenkConfig _tameenkConfig;
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
-        private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
         //private const string QUOTATION_TPL_URL = "https://online.walaa.com/bcaremotor/Walaa/TPL/QuotationRequest";
         //private const string POLICY_TPL_URL = "https://online.walaa.com/bcaremotor/Walaa/TPL/PolicyRequest";
         private const string QUOTATION_TPL_URL = "https://bcaresvc01.walaa.com:8083/Walaa/TPL/QuotationRequest";
         private const string POLICY_TPL_URL = "https://bcaresvc01.walaa.com:8083/Walaa/TPL/PolicyRequest";
-
+        private readonly IQuotationConfig _quotationConfig;
         //private const string QUOTATION_COMPREHENSIVE_URL = "https://online.walaa.com/BCareMotor/Walaa/CMP/QuotationRequest";
         //private const string POLICY_COMPREHENSIVE_URL = "https://online.walaa.com/BCareMotor/Walaa/CMP/PolicyRequest";
         private const string QUOTATION_COMPREHENSIVE_URL = "https://bcaresvc01.walaa.com:8083/Walaa/CMP/QuotationRequest";
         private const string POLICY_COMPREHENSIVE_URL = "https://bcaresvc01.walaa.com:8083/Walaa/CMP/PolicyRequest";
         #endregion
-        public WalaInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger,IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
-            : base(tameenkConfig, new RestfulConfiguration
+        public WalaInsuranceProvider(IQuotationConfig quotationConfig, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
+            : base(quotationConfig, new RestfulConfiguration
             {
 
                 GenerateQuotationUrl = "",
@@ -63,14 +64,13 @@ namespace Tameenk.Integration.Providers.Wala
                 AddBenifitUrl= "https://online.walaa.com/Motorbcarelease/Walaa/CMP/AddBenefitService",
                 PurchaseBenifitUrl= "https://online.walaa.com/Motorbcarelease/Walaa/CMP/PurchaseBenefitService",
                 CancelPolicyAccessTokenAutoLeasing = "BcareLease:PRBcare@Motor",
-            },  logger , policyProcessingQueueRepository)
+            } , policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
-            _tameenkConfig = tameenkConfig;
-            _logger = logger;
             _checkoutDetail = checkoutDetail;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _serviceProvider = serviceProvider;
+
         }
 
         public override bool ValidateQuotationBeforeCheckout(QuotationRequest quotationRequest, out List<string> errors)
@@ -138,7 +138,7 @@ namespace Tameenk.Integration.Providers.Wala
 
             return responseValue;
         }
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             var configuration = Configuration as RestfulConfiguration;
             //change the quotation url to tpl in case product type code = 1

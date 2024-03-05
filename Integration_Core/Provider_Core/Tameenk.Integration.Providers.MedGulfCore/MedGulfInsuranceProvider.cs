@@ -1,5 +1,4 @@
-﻿using MedGulfService;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,16 +11,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Tameenk.Common.Utilities;
 using Tameenk.Core;
-using Tameenk.Core.Configuration;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities.Policies;
 using Tameenk.Core.Domain.Entities.Quotations;
-using Tameenk.Core.Infrastructure;
 using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
 using Tameenk.Loggin.DAL;
 using Tameenk.Resources.Quotations;
+using Tameenk.Services;
 using Tameenk.Services.Core.Addresses;
 using Tameenk.Services.Logging;
 using static MedGulfService.TameenkSoapClient;
@@ -31,8 +29,7 @@ namespace Tameenk.Integration.Providers.MedGulf
     public class MedGulfInsuranceProvider : InsuranceProvider
     {
         #region Fields
-        private readonly ILogger _logger;
-        private readonly TameenkConfig _tameenkConfig;
+        private readonly IQuotationConfig _quotationConfig;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private const string _userName = "4491";
         private const string _password = "4491@TKZUPZ";
@@ -42,13 +39,13 @@ namespace Tameenk.Integration.Providers.MedGulf
         #endregion
 
         #region ctor
-        public MedGulfInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-             : base(new ProviderConfiguration() { ProviderName = "Med Gulf" }, logger)
+        public MedGulfInsuranceProvider(IQuotationConfig quotationConfig, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+             : base(new ProviderConfiguration() { ProviderName = "Med Gulf" })
         {
-            _logger = logger;
-            _tameenkConfig = tameenkConfig;
+ 
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _serviceProvider = serviceProvider;
+            _quotationConfig = quotationConfig;
         }
         #endregion
 
@@ -91,7 +88,7 @@ namespace Tameenk.Integration.Providers.MedGulf
         }
 
 
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
 
             var result = SubmitQuotationRequest(quotation, predefinedLogInfo);
@@ -122,7 +119,7 @@ namespace Tameenk.Integration.Providers.MedGulf
             log.VehicleModelYear = quotation?.VehicleModelYear;
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.quotationTestData.json";
@@ -300,7 +297,7 @@ namespace Tameenk.Integration.Providers.MedGulf
 
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -342,7 +339,7 @@ namespace Tameenk.Integration.Providers.MedGulf
                         if (request != null)
                         {
                             request.ErrorDescription = output.ErrorDescription;
-                            _policyProcessingQueueRepository.Update(request);
+                            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                         }
 
                         return output;
@@ -374,7 +371,7 @@ namespace Tameenk.Integration.Providers.MedGulf
                         if (request != null)
                         {
                             request.ErrorDescription = output.ErrorDescription;
-                            _policyProcessingQueueRepository.Update(request);
+                            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                         }
                         return output;
                     }
@@ -390,7 +387,7 @@ namespace Tameenk.Integration.Providers.MedGulf
                         if (request != null)
                         {
                             request.ErrorDescription = output.ErrorDescription;
-                            _policyProcessingQueueRepository.Update(request);
+                            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                         }
                         return output;
                     }
@@ -411,7 +408,7 @@ namespace Tameenk.Integration.Providers.MedGulf
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -426,7 +423,7 @@ namespace Tameenk.Integration.Providers.MedGulf
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 return output;
             }
@@ -464,7 +461,7 @@ namespace Tameenk.Integration.Providers.MedGulf
             }
             catch (Exception ex)
             {
-                _logger.Log($"MedGulfInsuranceProvider -> GetPolicyResponseObject", ex, LogLevel.Error);
+                //
             }
             finally
             {
@@ -555,7 +552,7 @@ namespace Tameenk.Integration.Providers.MedGulf
             log.VehicleModelYear = quotation?.VehicleModelYear;
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.quotationTestData.json";
@@ -639,15 +636,15 @@ namespace Tameenk.Integration.Providers.MedGulf
             }
         }
 
-        protected override object ExecuteAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
-        {
-            var result = SubmitAutoleasingPolicyRequest(policy, predefinedLogInfo);
-            if (result.ErrorCode != PolicyOutput.ErrorCodes.Success)
-            {
-                return null;
-            }
-            return result.Output;
-        }
+        //protected override object ExecuteAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
+        //{
+        //    var result = SubmitAutoleasingPolicyRequest(policy, predefinedLogInfo);
+        //    if (result.ErrorCode != PolicyOutput.ErrorCodes.Success)
+        //    {
+        //        return null;
+        //    }
+        //    return result.Output;
+        //}
 
         protected PolicyOutput SubmitAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog log)
         {
@@ -673,7 +670,7 @@ namespace Tameenk.Integration.Providers.MedGulf
 
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -715,7 +712,7 @@ namespace Tameenk.Integration.Providers.MedGulf
                         if (request != null)
                         {
                             request.ErrorDescription = output.ErrorDescription;
-                            _policyProcessingQueueRepository.Update(request);
+                            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                         }
 
                         return output;
@@ -746,7 +743,7 @@ namespace Tameenk.Integration.Providers.MedGulf
                         if (request != null)
                         {
                             request.ErrorDescription = output.ErrorDescription;
-                            _policyProcessingQueueRepository.Update(request);
+                            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                         }
                         return output;
                     }
@@ -762,7 +759,7 @@ namespace Tameenk.Integration.Providers.MedGulf
                         if (request != null)
                         {
                             request.ErrorDescription = output.ErrorDescription;
-                            _policyProcessingQueueRepository.Update(request);
+                            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                         }
                         return output;
                     }
@@ -783,7 +780,7 @@ namespace Tameenk.Integration.Providers.MedGulf
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -798,7 +795,7 @@ namespace Tameenk.Integration.Providers.MedGulf
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 return output;
             }
@@ -830,7 +827,7 @@ namespace Tameenk.Integration.Providers.MedGulf
             }
             catch (Exception ex)
             {
-                _logger.Log($"MedGulfInsuranceProvider -> GetPolicyResponseObject", ex, LogLevel.Error);
+                //_logger.Log($"MedGulfInsuranceProvider -> GetPolicyResponseObject", ex, LogLevel.Error);
             }
             return null;
         }

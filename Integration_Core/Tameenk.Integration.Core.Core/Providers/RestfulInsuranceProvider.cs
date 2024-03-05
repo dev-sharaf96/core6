@@ -7,50 +7,48 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using Tameenk.Core;
-using Tameenk.Core.Configuration;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities.Policies;
 using Tameenk.Core.Domain.Entities.Quotations;
-using Tameenk.Core.Exceptions;
-using Tameenk.Core.Infrastructure;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
 using Tameenk.Loggin.DAL;
-using Tameenk.Services.Core.Http;
-using Tameenk.Services.Logging;
 using System.Linq;
 using Tameenk.Core.Domain.Dtos;
 using Tameenk.Core.Domain.Entities;
 using System.Globalization;
+using Tameenk.Services;
+using System.Threading.Tasks;
+using Tameenk.Core.Configuration;
+using Tameenk.Services.Core.Http;
 
 namespace Tameenk.Integration.Core.Providers
 {
     public class RestfulInsuranceProvider : InsuranceProvider
     {
-        #region fields
 
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly string _accessTokenBase64;
-        private readonly ILogger _logger;
-        private readonly TameenkConfig _tameenkConfig;
-        private readonly IHttpClient _httpClient;
+        //private readonly ILogger _logger;
+        //private readonly TameenkConfig _tameenkConfig;
+        private readonly HttpClient _httpClient;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly string _autoleasingAccessTokenBase64;
         private readonly string _accessTokenBase64ForCancelPolicyAutoLease;
-        #endregion
-
-        #region ctor
-
-        public RestfulInsuranceProvider(TameenkConfig tameenkConfig, RestfulConfiguration restfulConfiguration, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-             : base(restfulConfiguration, logger)
+        private readonly IQuotationConfig _quotationConfig;
+        public RestfulInsuranceProvider(IQuotationConfig quotationConfig, RestfulConfiguration restfulConfiguration,
+            IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+            : base(restfulConfiguration)
         {
             _restfulConfiguration = restfulConfiguration;
-            _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ? null :
+            _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
+                null :
                 Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));
-            _logger = logger ?? throw new TameenkArgumentNullException(nameof(logger));
-            _tameenkConfig = tameenkConfig ?? throw new TameenkArgumentNullException(nameof(tameenkConfig));
-            // By Atheer For Tameenk.ServicesCore
-            // _httpClient = EngineContext.Current.Resolve<IHttpClient>();
+            //_logger = logger ?? throw new TameenkArgumentNullException(nameof(logger));
+            //_tameenkConfig = tameenkConfig ?? throw new TameenkArgumentNullException(nameof(tameenkConfig));
+            //_httpClient = EngineContext.Current.Resolve<IHttpClient>();
+            _httpClient = new HttpClient();
+            _quotationConfig = quotationConfig;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _autoleasingAccessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AutoleasingAccessToken) ?
                null :
@@ -59,9 +57,6 @@ namespace Tameenk.Integration.Core.Providers
                _accessTokenBase64 :
                Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.CancelPolicyAccessTokenAutoLeasing));
         }
-
-        #endregion
-
         #region Methods
 
 
@@ -110,7 +105,7 @@ namespace Tameenk.Integration.Core.Providers
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -557,9 +552,9 @@ namespace Tameenk.Integration.Core.Providers
         #region Quotation Methods
 
 
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
-            ServiceOutput output =  SubmitQuotationRequest(quotation, predefinedLogInfo);
+            ServiceOutput output = await SubmitQuotationRequest(quotation, predefinedLogInfo);
             if(output.ErrorCode != ServiceOutput.ErrorCodes.Success)
             {
                 return null;
@@ -571,163 +566,69 @@ namespace Tameenk.Integration.Core.Providers
 
 
 
-        protected override ServiceOutput SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        protected override async Task<ServiceOutput>  SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
         {
             ServiceOutput output = new ServiceOutput();
-            log.ReferenceId = quotation.ReferenceId;
-            if(string.IsNullOrEmpty(log.Channel))
-                log.Channel = "Portal";
-            //log.UserName = "";
-            log.ServiceURL = _restfulConfiguration.GenerateQuotationUrl;
-            log.ServerIP = ServicesUtilities.GetServerIP();
-            log.Method = "Quotation";
-            //log.CompanyID = insur;
-            log.CompanyName = _restfulConfiguration.ProviderName;
-
-            log.VehicleMaker = quotation?.VehicleMaker;
-            log.VehicleMakerCode = quotation?.VehicleMakerCode;
-            log.VehicleModel = quotation?.VehicleModel;
-            log.VehicleModelCode = quotation?.VehicleModelCode;
-            log.VehicleModelYear = quotation?.VehicleModelYear;
             DateTime dtBeforeCalling = DateTime.Now;
-            var stringPayload = string.Empty;
-            HttpResponseMessage response = new HttpResponseMessage();
+
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
-                if (testMode)
-                {
-                    const string nameOfFile = ".TestData.quotationTestData.json";
-                    string responseData = ReadResource(GetType().Namespace, nameOfFile);
-                    HttpResponseMessage message = new HttpResponseMessage();
-                    message.Content = new StringContent(responseData);
-                    message.StatusCode = System.Net.HttpStatusCode.OK;
-
-                    output.Output = message;
-                    output.ErrorCode = ServiceOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
-
-                    return output;
-                }
-
                 if (quotation.ProductTypeCode != 2)
                     quotation.DeductibleValue = null;
 
-                log.ServiceRequest = JsonConvert.SerializeObject(quotation);
                 dtBeforeCalling = DateTime.Now;
-                //By Atheer 
-                //var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, quotation, _accessTokenBase64, authorizationMethod: "Basic");
-                //postTask.Wait();
-                //response = postTask.Result;
+               
+                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "BCareMotor:A!CC&BC@re");
+
+                var response = await _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);
+
                 DateTime dtAfterCalling = DateTime.Now;
-                log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
-                if (response == null)
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                //if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                //{
-                //    output.ErrorCode = ServiceOutput.ErrorCodes.HttpStatusCodeNotOk;
-                //    output.ErrorDescription = "Http Status Code is Not Ok";
-                //    log.ErrorCode = (int)output.ErrorCode;
-                //    log.ErrorDescription = output.ErrorDescription;
-                //    log.ServiceErrorCode = log.ErrorCode.ToString();
-                //    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                //    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                //    return output;
-                //}
-                if (response.Content == null)
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content result return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
 
-                //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+                if (response == null || response.Content == null || string.IsNullOrEmpty(await response.Content.ReadAsStringAsync()))
+                {
+                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+                    output.ErrorDescription = "Service returned null or empty response.";
+                    return output;
+                }
 
-                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Content.ReadAsStringAsync().Result);
+                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(await response.Content.ReadAsStringAsync());
+
                 if (quotationServiceResponse != null && quotationServiceResponse.Products == null && quotationServiceResponse.Errors != null)
                 {
-                    StringBuilder servcieErrors = new StringBuilder();
-                    StringBuilder servcieErrorsCodes = new StringBuilder();
+                    var serviceErrors = new StringBuilder();
+                    var serviceErrorCodes = new StringBuilder();
 
                     foreach (var error in quotationServiceResponse.Errors)
                     {
-                        servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
-                        servcieErrorsCodes.AppendLine(error.Code);
-
+                        serviceErrors.AppendLine($"Error Code: {error.Code} and the error message: {error.Message}");
+                        serviceErrorCodes.AppendLine(error.Code);
                     }
 
                     output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "Quotation Service response error is : " + servcieErrors.ToString();
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = servcieErrorsCodes.ToString();
-                    log.ServiceErrorDescription = servcieErrors.ToString();
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    output.ErrorDescription = $"Quotation Service response error is: {serviceErrors}";
                     return output;
                 }
 
                 output.Output = response;
                 output.ErrorCode = ServiceOutput.ErrorCodes.Success;
                 output.ErrorDescription = "Success";
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                log.ServiceErrorCode = log.ErrorCode.ToString();
-                log.ServiceErrorDescription = log.ServiceErrorDescription;
-                //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                  ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
-
-                //return response;
             }
             catch (Exception ex)
             {
-                // _logger.Log($"RestfulInsuranceProvider -> ExecuteQuotationRequest - (Provider name: {Configuration.ProviderName})", ex, LogLevel.Error);
                 output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
                 output.ErrorDescription = ex.ToString();
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                log.ServiceResponseTimeInSeconds = DateTime.Now.Subtract(dtBeforeCalling).TotalSeconds;
-                  ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
-
-
             }
-
-            //  return null;
         }
 
 
 
 
-        #endregion
+    #endregion
 
-        protected override ProviderInfoDto GetProviderInfo()
+    protected override ProviderInfoDto GetProviderInfo()
         {
             var providerInfo = new ProviderInfoDto
             {
@@ -797,7 +698,7 @@ namespace Tameenk.Integration.Core.Providers
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -924,7 +825,7 @@ namespace Tameenk.Integration.Core.Providers
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -1060,7 +961,7 @@ namespace Tameenk.Integration.Core.Providers
             var stringPayload = string.Empty;
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.quotationTestData.json";
@@ -1214,419 +1115,419 @@ namespace Tameenk.Integration.Core.Providers
 
         #endregion
 
-        #region Autoleasing Quotation Methods
+        //#region Autoleasing Quotation Methods
 
-        protected override ServiceOutput SubmitAutoleasingQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
-        {
-            ServiceOutput output = new ServiceOutput();
-            log.ReferenceId = quotation.ReferenceId;
-            log.Channel = "autoleasing";
-            //log.UserName = "";
-            log.ServiceURL = _restfulConfiguration.GenerateAutoleasingQuotationUrl;
-            log.ServerIP = ServicesUtilities.GetServerIP();
-            log.Method = "AutoleasingQuotation";
-            //log.CompanyID = insur;
-            log.CompanyName = _restfulConfiguration.ProviderName;
+        //protected override ServiceOutput SubmitAutoleasingQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        //{
+        //    ServiceOutput output = new ServiceOutput();
+        //    log.ReferenceId = quotation.ReferenceId;
+        //    log.Channel = "autoleasing";
+        //    //log.UserName = "";
+        //    log.ServiceURL = _restfulConfiguration.GenerateAutoleasingQuotationUrl;
+        //    log.ServerIP = ServicesUtilities.GetServerIP();
+        //    log.Method = "AutoleasingQuotation";
+        //    //log.CompanyID = insur;
+        //    log.CompanyName = _restfulConfiguration.ProviderName;
 
-            log.VehicleMaker = quotation?.VehicleMaker;
-            log.VehicleMakerCode = quotation?.VehicleMakerCode;
-            log.VehicleModel = quotation?.VehicleModel;
-            log.VehicleModelCode = quotation?.VehicleModelCode;
-            log.VehicleModelYear = quotation?.VehicleModelYear;
+        //    log.VehicleMaker = quotation?.VehicleMaker;
+        //    log.VehicleMakerCode = quotation?.VehicleMakerCode;
+        //    log.VehicleModel = quotation?.VehicleModel;
+        //    log.VehicleModelCode = quotation?.VehicleModelCode;
+        //    log.VehicleModelYear = quotation?.VehicleModelYear;
 
-            var stringPayload = string.Empty;
-            HttpResponseMessage response = new HttpResponseMessage();
-            try
-            {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
-                if (testMode)
-                {
-                    const string nameOfFile = ".TestData.quotationTestData.json";
-                    string responseData = ReadResource(GetType().Namespace, nameOfFile);
-                    HttpResponseMessage message = new HttpResponseMessage();
-                    message.Content = new StringContent(responseData);
-                    message.StatusCode = System.Net.HttpStatusCode.OK;
+        //    var stringPayload = string.Empty;
+        //    HttpResponseMessage response = new HttpResponseMessage();
+        //    try
+        //    {
+        //        var testMode = _tameenkConfig.Quotatoin.TestMode;
+        //        if (testMode)
+        //        {
+        //            const string nameOfFile = ".TestData.quotationTestData.json";
+        //            string responseData = ReadResource(GetType().Namespace, nameOfFile);
+        //            HttpResponseMessage message = new HttpResponseMessage();
+        //            message.Content = new StringContent(responseData);
+        //            message.StatusCode = System.Net.HttpStatusCode.OK;
 
-                    output.Output = message;
-                    output.ErrorCode = ServiceOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
+        //            output.Output = message;
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.Success;
+        //            output.ErrorDescription = "Success";
 
-                    return output;
-                }
+        //            return output;
+        //        }
 
-                if (quotation.ProductTypeCode != 2)
-                    quotation.DeductibleValue = null;
+        //        if (quotation.ProductTypeCode != 2)
+        //            quotation.DeductibleValue = null;
 
-                log.ServiceRequest = JsonConvert.SerializeObject(quotation);
-                DateTime dtBeforeCalling = DateTime.Now;
-                //By Atheer
-                //var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateAutoleasingQuotationUrl, quotation, _autoleasingAccessTokenBase64, authorizationMethod: "Basic");
-                //postTask.Wait();
-                //response = postTask.Result;
-                DateTime dtAfterCalling = DateTime.Now;
-                log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
-                if (response == null)
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                //if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                //{
-                //    output.ErrorCode = ServiceOutput.ErrorCodes.HttpStatusCodeNotOk;
-                //    output.ErrorDescription = "Http Status Code is Not Ok";
-                //    log.ErrorCode = (int)output.ErrorCode;
-                //    log.ErrorDescription = output.ErrorDescription;
-                //    log.ServiceErrorCode = log.ErrorCode.ToString();
-                //    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                //    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                //    return output;
-                //}
-                if (response.Content == null)
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content result return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+        //        log.ServiceRequest = JsonConvert.SerializeObject(quotation);
+        //        DateTime dtBeforeCalling = DateTime.Now;
+        //        //By Atheer
+        //        //var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateAutoleasingQuotationUrl, quotation, _autoleasingAccessTokenBase64, authorizationMethod: "Basic");
+        //        //postTask.Wait();
+        //        //response = postTask.Result;
+        //        DateTime dtAfterCalling = DateTime.Now;
+        //        log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
+        //        if (response == null)
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //              ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        //if (response.StatusCode != System.Net.HttpStatusCode.OK)
+        //        //{
+        //        //    output.ErrorCode = ServiceOutput.ErrorCodes.HttpStatusCodeNotOk;
+        //        //    output.ErrorDescription = "Http Status Code is Not Ok";
+        //        //    log.ErrorCode = (int)output.ErrorCode;
+        //        //    log.ErrorDescription = output.ErrorDescription;
+        //        //    log.ServiceErrorCode = log.ErrorCode.ToString();
+        //        //    log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //        //    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        //    return output;
+        //        //}
+        //        if (response.Content == null)
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //              ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content result return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //              ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
 
-                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Content.ReadAsStringAsync().Result);
-                if (quotationServiceResponse != null && quotationServiceResponse.Products == null && quotationServiceResponse.Errors != null)
-                {
-                    StringBuilder servcieErrors = new StringBuilder();
-                    StringBuilder servcieErrorsCodes = new StringBuilder();
+        //        var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Content.ReadAsStringAsync().Result);
+        //        if (quotationServiceResponse != null && quotationServiceResponse.Products == null && quotationServiceResponse.Errors != null)
+        //        {
+        //            StringBuilder servcieErrors = new StringBuilder();
+        //            StringBuilder servcieErrorsCodes = new StringBuilder();
 
-                    foreach (var error in quotationServiceResponse.Errors)
-                    {
-                        servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
-                        servcieErrorsCodes.AppendLine(error.Code);
+        //            foreach (var error in quotationServiceResponse.Errors)
+        //            {
+        //                servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
+        //                servcieErrorsCodes.AppendLine(error.Code);
 
-                    }
+        //            }
 
-                    output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "Quotation Service response error is : " + servcieErrors.ToString();
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = servcieErrorsCodes.ToString();
-                    log.ServiceErrorDescription = servcieErrors.ToString();
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "Quotation Service response error is : " + servcieErrors.ToString();
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = servcieErrorsCodes.ToString();
+        //            log.ServiceErrorDescription = servcieErrors.ToString();
+        //              ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
 
-                output.Output = response;
-                output.ErrorCode = ServiceOutput.ErrorCodes.Success;
-                output.ErrorDescription = "Success";
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                log.ServiceErrorCode = log.ErrorCode.ToString();
-                log.ServiceErrorDescription = log.ServiceErrorDescription;
-                //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                  ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-            catch (Exception ex)
-            {
-                output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
-                output.ErrorDescription = ex.ToString();
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
+        //        output.Output = response;
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.Success;
+        //        output.ErrorDescription = "Success";
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        log.ServiceErrorCode = log.ErrorCode.ToString();
+        //        log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //        //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+        //          ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
+        //        output.ErrorDescription = ex.ToString();
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
 
-                  ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-        }
+        //          ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //}
 
-        #endregion
+        //#endregion
 
-        #region Autoleasing Policy Methods
+        //#region Autoleasing Policy Methods
 
-        protected override object ExecuteAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
-        {
-            ServiceOutput output = SubmitAutoleasingPolicyRequest(policy, predefinedLogInfo);
-            if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
-            {
-                return null;
-            }
+        //protected override object ExecuteAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
+        //{
+        //    ServiceOutput output = SubmitAutoleasingPolicyRequest(policy, predefinedLogInfo);
+        //    if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
+        //    {
+        //        return null;
+        //    }
 
-            return output.Output;
-        }
+        //    return output.Output;
+        //}
 
-        protected override ServiceOutput SubmitAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog log)
-        {
+        //protected override ServiceOutput SubmitAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog log)
+        //{
 
-            ServiceOutput output = new ServiceOutput();
+        //    ServiceOutput output = new ServiceOutput();
 
-            log.ReferenceId = policy.ReferenceId;
-            log.Channel = "autoleasing";
-            //log.UserName = "";
-            log.ServiceURL = _restfulConfiguration.GenerateAutoleasingPolicyUrl;
-            log.ServiceRequest = JsonConvert.SerializeObject(policy);
-            log.ServerIP = ServicesUtilities.GetServerIP();
-            log.Method = "AutoleasingPolicy";
-            //log.CompanyID = insur;
-            log.CompanyName = _restfulConfiguration.ProviderName;
-            var stringPayload = string.Empty;
+        //    log.ReferenceId = policy.ReferenceId;
+        //    log.Channel = "autoleasing";
+        //    //log.UserName = "";
+        //    log.ServiceURL = _restfulConfiguration.GenerateAutoleasingPolicyUrl;
+        //    log.ServiceRequest = JsonConvert.SerializeObject(policy);
+        //    log.ServerIP = ServicesUtilities.GetServerIP();
+        //    log.Method = "AutoleasingPolicy";
+        //    //log.CompanyID = insur;
+        //    log.CompanyName = _restfulConfiguration.ProviderName;
+        //    var stringPayload = string.Empty;
 
-            var request = _policyProcessingQueueRepository.Table.Where(a => a.ReferenceId == policy.ReferenceId).FirstOrDefault();
-            if (request != null)
-            {
-                request.RequestID = log.RequestId;
-                request.CompanyName = log.CompanyName;
-                request.CompanyID = log.CompanyID;
-                request.InsuranceTypeCode = log.InsuranceTypeCode;
-                request.DriverNin = log.DriverNin;
-                request.VehicleId = log.VehicleId;
-                request.ServiceRequest = log.ServiceRequest;
-            }
-            HttpResponseMessage response = new HttpResponseMessage();
-            try
-            {
-                var testMode = _tameenkConfig.Policy.TestMode;
-                if (testMode)
-                {
-                    const string nameOfFile = ".TestData.policyTestData.json";
+        //    var request = _policyProcessingQueueRepository.Table.Where(a => a.ReferenceId == policy.ReferenceId).FirstOrDefault();
+        //    if (request != null)
+        //    {
+        //        request.RequestID = log.RequestId;
+        //        request.CompanyName = log.CompanyName;
+        //        request.CompanyID = log.CompanyID;
+        //        request.InsuranceTypeCode = log.InsuranceTypeCode;
+        //        request.DriverNin = log.DriverNin;
+        //        request.VehicleId = log.VehicleId;
+        //        request.ServiceRequest = log.ServiceRequest;
+        //    }
+        //    HttpResponseMessage response = new HttpResponseMessage();
+        //    try
+        //    {
+        //        var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer
+        //        if (testMode)
+        //        {
+        //            const string nameOfFile = ".TestData.policyTestData.json";
 
-                    string responseData = ReadResource(GetType().Namespace, nameOfFile);
-                    HttpResponseMessage message = new HttpResponseMessage();
-                    message.Content = new StringContent(responseData);
-                    message.StatusCode = System.Net.HttpStatusCode.OK;
-                    output.Output = message;
-                    output.ErrorCode = ServiceOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
+        //            string responseData = ReadResource(GetType().Namespace, nameOfFile);
+        //            HttpResponseMessage message = new HttpResponseMessage();
+        //            message.Content = new StringContent(responseData);
+        //            message.StatusCode = System.Net.HttpStatusCode.OK;
+        //            output.Output = message;
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.Success;
+        //            output.ErrorDescription = "Success";
 
-                    return output;
-                }
+        //            return output;
+        //        }
 
-                stringPayload = JsonConvert.SerializeObject(policy);
-                var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-
-
-                DateTime dtBeforeCalling = DateTime.Now;
-                var client = new HttpClient();
-                client.Timeout = TimeSpan.FromMinutes(4);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _autoleasingAccessTokenBase64);
-                var postTask = client.PostAsync(_restfulConfiguration.GenerateAutoleasingPolicyUrl, httpContent);
-                postTask.Wait();
-
-                response = postTask.Result;
-                DateTime dtAfterCalling = DateTime.Now;
-                log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
-                if (response == null)
-                {
-                    //update policyProcessingQueue Table;
-                    if (request != null)
-                    {
-                        request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.UpdateAsync(request);
-                    }
+        //        stringPayload = JsonConvert.SerializeObject(policy);
+        //        var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
 
 
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (response.Content == null)
-                {
-                    if (request != null)
-                    {
-                        request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.UpdateAsync(request);
-                    }
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
-                {
-                    if (request != null)
-                    {
-                        request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.UpdateAsync(request);
-                    }
-                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content result return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                request.ServiceResponse = log.ServiceResponse;
-                var policyServiceResponse = JsonConvert.DeserializeObject<PolicyResponse>(response.Content.ReadAsStringAsync().Result);
-                if (policyServiceResponse != null && policyServiceResponse.Errors != null && policyServiceResponse.Errors.Count > 0)
-                {
-                    StringBuilder servcieErrors = new StringBuilder();
-                    StringBuilder servcieErrorsCodes = new StringBuilder();
+        //        DateTime dtBeforeCalling = DateTime.Now;
+        //        var client = new HttpClient();
+        //        client.Timeout = TimeSpan.FromMinutes(4);
+        //        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _autoleasingAccessTokenBase64);
+        //        var postTask = client.PostAsync(_restfulConfiguration.GenerateAutoleasingPolicyUrl, httpContent);
+        //        postTask.Wait();
 
-                    foreach (var error in policyServiceResponse.Errors)
-                    {
-                        servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
-                        servcieErrorsCodes.AppendLine(error.Code);
-                    }
-
-                    output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "Policy Service response error is : " + servcieErrors.ToString();
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = servcieErrorsCodes.ToString();
-                    log.ServiceErrorDescription = servcieErrors.ToString();
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    if (request != null)
-                    {
-                        request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.UpdateAsync(request);
-                    }
-
-                    return output;
-                }
-                if (string.IsNullOrEmpty(policyServiceResponse.PolicyNo))
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "No  PolicyNo returned from company";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    if (request != null)
-                    {
-                        request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.UpdateAsync(request);
-                    }
-                    return output;
-                }
-                if (policyServiceResponse.PolicyNo.ToLower() == "null")
-                {
-                    output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "PolicyNo returned from company as null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                      ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    if (request != null)
-                    {
-                        request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.UpdateAsync(request);
-                    }
-                    return output;
-                }
-                output.Output = response;
-                output.ErrorCode = ServiceOutput.ErrorCodes.Success;
-                output.ErrorDescription = "Success";
-                log.PolicyNo = policyServiceResponse.PolicyNo;
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                log.ServiceErrorCode = log.ErrorCode.ToString();
-                log.ServiceErrorDescription = log.ServiceErrorDescription;
-                if (request != null)
-                {
-                    request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.UpdateAsync(request);
-                }
-                  ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-
-                //return response;
-            }
-            catch (Exception ex)
-            {
-                // _logger.Log($"RestfulInsuranceProvider -> ExecuteQuotationRequest - (Provider name: {Configuration.ProviderName})", ex, LogLevel.Error);
-                output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
-                output.ErrorDescription = ex.GetBaseException().ToString();
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-
-                  ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-
-                if (request != null)
-                {
-                    request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.UpdateAsync(request);
-                }
-
-                return output;
+        //        response = postTask.Result;
+        //        DateTime dtAfterCalling = DateTime.Now;
+        //        log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
+        //        if (response == null)
+        //        {
+        //            //update policyProcessingQueue Table;
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = " service Return null";
+        //                _policyProcessingQueueRepository.UpdateAsync(request);
+        //            }
 
 
-            }
-        }
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //              ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (response.Content == null)
+        //        {
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = " service response content return null";
+        //                _policyProcessingQueueRepository.UpdateAsync(request);
+        //            }
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //              ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+        //        {
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = " Service response content result return null";
+        //                _policyProcessingQueueRepository.UpdateAsync(request);
+        //            }
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content result return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //              ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+        //        request.ServiceResponse = log.ServiceResponse;
+        //        var policyServiceResponse = JsonConvert.DeserializeObject<PolicyResponse>(response.Content.ReadAsStringAsync().Result);
+        //        if (policyServiceResponse != null && policyServiceResponse.Errors != null && policyServiceResponse.Errors.Count > 0)
+        //        {
+        //            StringBuilder servcieErrors = new StringBuilder();
+        //            StringBuilder servcieErrorsCodes = new StringBuilder();
 
-        protected virtual PolicyResponse HandleAutoleasingPolicyResoponseObjectMapping(PolicyResponse policyResponse)
-        {
-            return policyResponse;
-        }
+        //            foreach (var error in policyServiceResponse.Errors)
+        //            {
+        //                servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
+        //                servcieErrorsCodes.AppendLine(error.Code);
+        //            }
 
-        protected override PolicyResponse GetAutoleasingPolicyResponseObject(object response, PolicyRequest request = null)
-        {
-            PolicyResponse policyResponseMessage = null;
-            string stringPayload = string.Empty;
-            string resultString = string.Empty;
-            try
-            {
-                var httpResponse = (response as HttpResponseMessage);
-                stringPayload = JsonConvert.SerializeObject(request);
-                if (httpResponse != null && httpResponse.IsSuccessStatusCode)
-                {
-                    resultString = httpResponse.Content.ReadAsStringAsync().Result;
-                    policyResponseMessage = JsonConvert.DeserializeObject<PolicyResponse>(resultString);
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "Policy Service response error is : " + servcieErrors.ToString();
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = servcieErrorsCodes.ToString();
+        //            log.ServiceErrorDescription = servcieErrors.ToString();
+        //              ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = output.ErrorDescription;
+        //                _policyProcessingQueueRepository.UpdateAsync(request);
+        //            }
 
-                    policyResponseMessage = HandleAutoleasingPolicyResoponseObjectMapping(policyResponseMessage);
+        //            return output;
+        //        }
+        //        if (string.IsNullOrEmpty(policyServiceResponse.PolicyNo))
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "No  PolicyNo returned from company";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //              ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = output.ErrorDescription;
+        //                _policyProcessingQueueRepository.UpdateAsync(request);
+        //            }
+        //            return output;
+        //        }
+        //        if (policyServiceResponse.PolicyNo.ToLower() == "null")
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "PolicyNo returned from company as null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //              ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = output.ErrorDescription;
+        //                _policyProcessingQueueRepository.UpdateAsync(request);
+        //            }
+        //            return output;
+        //        }
+        //        output.Output = response;
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.Success;
+        //        output.ErrorDescription = "Success";
+        //        log.PolicyNo = policyServiceResponse.PolicyNo;
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        log.ServiceErrorCode = log.ErrorCode.ToString();
+        //        log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //        if (request != null)
+        //        {
+        //            request.ErrorDescription = output.ErrorDescription;
+        //            _policyProcessingQueueRepository.UpdateAsync(request);
+        //        }
+        //          ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+
+        //        //return response;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // _logger.Log($"RestfulInsuranceProvider -> ExecuteQuotationRequest - (Provider name: {Configuration.ProviderName})", ex, LogLevel.Error);
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
+        //        output.ErrorDescription = ex.GetBaseException().ToString();
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+
+        //          ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+
+        //        if (request != null)
+        //        {
+        //            request.ErrorDescription = output.ErrorDescription;
+        //            _policyProcessingQueueRepository.UpdateAsync(request);
+        //        }
+
+        //        return output;
+
+
+        //    }
+        //}
+
+        //protected virtual PolicyResponse HandleAutoleasingPolicyResoponseObjectMapping(PolicyResponse policyResponse)
+        //{
+        //    return policyResponse;
+        //}
+
+        //protected override PolicyResponse GetAutoleasingPolicyResponseObject(object response, PolicyRequest request = null)
+        //{
+        //    PolicyResponse policyResponseMessage = null;
+        //    string stringPayload = string.Empty;
+        //    string resultString = string.Empty;
+        //    try
+        //    {
+        //        var httpResponse = (response as HttpResponseMessage);
+        //        stringPayload = JsonConvert.SerializeObject(request);
+        //        if (httpResponse != null && httpResponse.IsSuccessStatusCode)
+        //        {
+        //            resultString = httpResponse.Content.ReadAsStringAsync().Result;
+        //            policyResponseMessage = JsonConvert.DeserializeObject<PolicyResponse>(resultString);
+
+        //            policyResponseMessage = HandleAutoleasingPolicyResoponseObjectMapping(policyResponseMessage);
 
 
 
-                    //in case there is error and the company didnt return Policy# then we add the result string to errors
-                    if (string.IsNullOrWhiteSpace(policyResponseMessage.PolicyNo))
-                    {
-                        if (policyResponseMessage.Errors == null)
-                        {
-                            policyResponseMessage.Errors = new System.Collections.Generic.List<Error>();
-                        }
-                        policyResponseMessage.Errors.Add(new Error { Message = resultString });
-                    }
+        //            //in case there is error and the company didnt return Policy# then we add the result string to errors
+        //            if (string.IsNullOrWhiteSpace(policyResponseMessage.PolicyNo))
+        //            {
+        //                if (policyResponseMessage.Errors == null)
+        //                {
+        //                    policyResponseMessage.Errors = new System.Collections.Generic.List<Error>();
+        //                }
+        //                policyResponseMessage.Errors.Add(new Error { Message = resultString });
+        //            }
 
-                    return policyResponseMessage;
-                }
-            }
-            catch (Exception ex)
-            {
-                //_logger.Log($"RestfulInsuranceProvider -> GetPolicyResponseObject - {Configuration.ProviderName}", ex, LogLevel.Error);
-            }
-            return null;
-        }
-        #endregion
+        //            return policyResponseMessage;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //_logger.Log($"RestfulInsuranceProvider -> GetPolicyResponseObject - {Configuration.ProviderName}", ex, LogLevel.Error);
+        //    }
+        //    return null;
+        //}
+        //#endregion
 
         public override ServiceOutput GetWataniyaAutoleasingDraftpolicy(QuotationServiceRequest quotationServiceRequest, Product selectedProduct, ServiceRequestLog log)        {            return base.GetWataniyaAutoleasingDraftpolicy(quotationServiceRequest, selectedProduct, log);        }
 
@@ -1887,7 +1788,7 @@ namespace Tameenk.Integration.Core.Providers
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.addDriverTestData.json";
@@ -2008,7 +1909,7 @@ namespace Tameenk.Integration.Core.Providers
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.purchaseDriverTestData.json";
@@ -2343,7 +2244,7 @@ namespace Tameenk.Integration.Core.Providers
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -2470,7 +2371,7 @@ namespace Tameenk.Integration.Core.Providers
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -2833,7 +2734,7 @@ namespace Tameenk.Integration.Core.Providers
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.purchaseDriverTestData.json";

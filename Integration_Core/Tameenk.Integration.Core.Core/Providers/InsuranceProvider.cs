@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Dtos;
 using Tameenk.Core.Domain.Entities;
@@ -23,24 +24,20 @@ namespace Tameenk.Integration.Core.Providers
     {
         #region Fields
 
-        private readonly ILogger _logger;
         private readonly ProviderConfiguration _configuration;
         //private readonly IRepository<AutomatedTestIntegrationTransaction> _automatedTestIntegrationTransactionRepository;
-
         #endregion
 
         #region Ctor
 
-        public InsuranceProvider(
-            ProviderConfiguration configuration
-, ILogger logger
-            //ILogger logger
+        public InsuranceProvider(ProviderConfiguration configuration
             )
         {
             _configuration = configuration;
+        }
             //_logger = logger;
             //_automatedTestIntegrationTransactionRepository = EngineContext.Current.Resolve<IRepository<AutomatedTestIntegrationTransaction>>();
-        }
+       // }
 
         #endregion
 
@@ -219,9 +216,9 @@ namespace Tameenk.Integration.Core.Providers
 
         protected abstract ProviderInfoDto GetProviderInfo();
 
-        protected abstract object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo);
+        protected abstract Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo);
 
-        protected virtual ServiceOutput SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected virtual async Task<ServiceOutput>  SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             return null;
         }
@@ -480,15 +477,15 @@ namespace Tameenk.Integration.Core.Providers
             return quotationServiceResponse;
         }
 
-        public virtual PolicyResponse GetAutoleasingPolicy(PolicyRequest policy, ServiceRequestLog predefinedLogInfo, bool automatedTest)
-        {
-            var modifiedPolicy = HandleAutoleasingPolicyRequestObjectMapping(policy);
-            var response = ExecuteAutoleasingPolicyRequest(policy, predefinedLogInfo);
-            // get provider info
-            var providerInfo = GetProviderInfo();
-            PolicyResponse result = GetAutoleasingPolicyResponseObject(response, policy);
-            return result;
-        }
+        //public virtual PolicyResponse GetAutoleasingPolicy(PolicyRequest policy, ServiceRequestLog predefinedLogInfo, bool automatedTest)
+        //{
+        //    var modifiedPolicy = HandleAutoleasingPolicyRequestObjectMapping(policy);
+        //    var response = ExecuteAutoleasingPolicyRequest(policy, predefinedLogInfo);
+        //    // get provider info
+        //    var providerInfo = GetProviderInfo();
+        //    PolicyResponse result = GetAutoleasingPolicyResponseObject(response, policy);
+        //    return result;
+        //}
 
         protected virtual PolicyResponse GetAutoleasingPolicyResponseObject(object response, PolicyRequest request = null)
         {
@@ -506,7 +503,7 @@ namespace Tameenk.Integration.Core.Providers
             return policyResponse;
         }
 
-        protected abstract object ExecuteAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo);
+        //protected abstract object ExecuteAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo);
         protected virtual ServiceOutput SubmitAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
         {
             return null;

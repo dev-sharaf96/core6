@@ -9,13 +9,15 @@ using System.Net.Http;
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Tameenk.Services;
 
 namespace Tameenk.Integration.Providers.AXA
 {
     public class AXAInsuranceProvider : RestfulInsuranceProvider
     {
-        public AXAInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-             : base(tameenkConfig, new RestfulConfiguration
+        private readonly IQuotationConfig _quotationConfig;
+        public AXAInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+             : base(quotationConfig,new RestfulConfiguration
              {
                  //GenerateQuotationUrl = "https://axa-leasing-uat.axa-cic.com/gateway/axaAggregators/1.0/tameenkservice/api/Tameenk/Quotation",
                  //GeneratePolicyUrl = "https://axa-leasing-uat.axa-cic.com/gateway/axaAggregators/1.0/tameenkservice/api/Tameenk/Policy",
@@ -23,7 +25,7 @@ namespace Tameenk.Integration.Providers.AXA
                  GeneratePolicyUrl = "https://integration.gig.sa/gateway/motorAggregator/2.0/tameenkservice/api/Tameenk/Policy",
                  AccessToken = "gig_agg_tam:ueix6m1l22bn_",
                  ProviderName = "AXA"
-             }, logger, policyProcessingQueueRepository)
+             }, policyProcessingQueueRepository)
         {
         }
 

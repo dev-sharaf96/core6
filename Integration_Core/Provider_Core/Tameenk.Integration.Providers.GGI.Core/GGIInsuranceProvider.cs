@@ -23,6 +23,8 @@ using System.Dynamic;
 using Tameenk.Services.Core.Http;
 using Tameenk.Core.Infrastructure;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Tameenk.Services;
 
 namespace Tameenk.Integration.Providers.GGI
 {
@@ -31,15 +33,15 @@ namespace Tameenk.Integration.Providers.GGI
     {
 
         #region Fields
-        private readonly TameenkConfig _tameenkConfig;
+        //private readonly TameenkConfig _tameenkConfig;
         private readonly IHttpClient _httpClient;
-        private readonly ILogger _logger;
         private readonly string _accessTokenBase64;
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
         private readonly IAddressService _addressService;
         private readonly int[] Weights = new int[5] { 21, 22, 23, 24, 25 };
+        private readonly IQuotationConfig _quotationConfig;
 
         private const string QUOTATION_TPL_URL = "https://bcarel.ggi-sa.com/GGIBcareLive/API/MotorService/Quote";
         private const string QUOTATION_COMPREHENSIVE_URL = "https://bcarel.ggi-sa.com/GGIBcareLive/API/MotorService/Quote";
@@ -50,9 +52,9 @@ namespace Tameenk.Integration.Providers.GGI
         #endregion
 
         #region Ctor
-        public GGIInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
+        public GGIInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
             , IAddressService addressService,IRepository<CheckoutDetail> checkoutDetail)
-             : base(tameenkConfig, new RestfulConfiguration
+             : base(quotationConfig,new RestfulConfiguration
              {
                  GenerateQuotationUrl = "",
                  GeneratePolicyUrl = "",
@@ -61,11 +63,9 @@ namespace Tameenk.Integration.Providers.GGI
                  GenerateAutoleasingQuotationUrl = "https://bcarel.ggi-sa.com/GGIBcareLive/API/Leasing/Quote",
                  GenerateAutoleasingPolicyUrl = "https://bcarel.ggi-sa.com/GGIBcareLive/Api/Leasing/Policy",
                  AutoleasingAccessToken = "GGCIBcareLive:@GGCIBcarePa$$w0rdLive"
-             }, logger, policyProcessingQueueRepository)
+             }, policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
-            _tameenkConfig = tameenkConfig;
-            _logger = logger;
             _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
                null : Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
@@ -82,7 +82,7 @@ namespace Tameenk.Integration.Providers.GGI
         {
             return ExecuteQuotationRequest(quotation, log);
         }
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             var configuration = Configuration as RestfulConfiguration;
             //change the quotation url to tpl in case product type code = 1
@@ -216,16 +216,16 @@ namespace Tameenk.Integration.Providers.GGI
             return output.Output;
         }
 
-        protected override object ExecuteAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
-        {
-            ServiceOutput output = SubmitAutoleasingPolicyRequest(policy, predefinedLogInfo);
-            if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
-            {
-                return null;
-            }
+        //protected override object ExecuteAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
+        //{
+        //    ServiceOutput output = SubmitAutoleasingPolicyRequest(policy, predefinedLogInfo);
+        //    if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
+        //    {
+        //        return null;
+        //    }
 
-            return output.Output;
-        }
+        //    return output.Output;
+        //}
 
     }
 }

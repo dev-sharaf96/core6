@@ -1,14 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 using Tameenk.Common.Utilities;
 using Tameenk.Core;
 using Tameenk.Core.Configuration;
@@ -20,17 +19,15 @@ using Tameenk.Core.Domain.Entities.Quotations;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Core.Domain.Enums.Quotations;
 using Tameenk.Core.Exceptions;
-using Tameenk.Core.Infrastructure;
 using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
 using Tameenk.Integration.Providers.Tawuniya.Dtos;
-using Tameenk.Integration.Providers.Tawuniya.Resources;
 using Tameenk.Loggin.DAL;
 using Tameenk.Resources.Quotations;
+using Tameenk.Services;
 using Tameenk.Services.Core.Addresses;
 using Tameenk.Services.Core.Http;
-using Tameenk.Services.Core.Quotations;
 using Tameenk.Services.Logging;
 using QuotationEntity = Tameenk.Core.Domain.Entities.Quotations;
 
@@ -39,12 +36,11 @@ namespace Tameenk.Integration.Providers.Tawuniya
     public class TawuniyaInsuranceProvider : RestfulInsuranceProvider
     {
         #region Fields
-        private readonly TameenkConfig _tameenkConfig;
+       
         private readonly IHttpClient _httpClient;
-        private readonly ILogger _logger;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly IRepository<QuotationEntity.TawuniyaProposal> _tawuniyaProposalRepository;
-        //private readonly IQuotationService _quotationService;
+        private readonly IQuotationConfig _quotationConfig;
         private readonly IRepository<QuotationEntity.QuotationRequest> _quotationRequestRepository;
         private readonly IRepository<QuotationEntity.QuotationResponse> _quotationResponseRepository;
         private readonly IRepository<Product> _productRepository;
@@ -75,12 +71,11 @@ namespace Tameenk.Integration.Providers.Tawuniya
 
         #region Ctor
 
-        public TawuniyaInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
+        public TawuniyaInsuranceProvider(IQuotationConfig quotationConfig,  IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
             , IRepository<QuotationEntity.QuotationRequest> quotationRequestRepository
             , IRepository<QuotationEntity.TawuniyaProposal> tawuniyaProposalRepository
             , IRepository<QuotationEntity.QuotationResponse> quotationResponseRepository
             , IRepository<Product> productRepository
-            //, IQuotationService quotationService,
              ,IRepository<Insured> _insuredRepo
             , IRepository<Address> _addressRepo
             , IRepository<Bank> _bankRepo
@@ -94,7 +89,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
             , IRepository<ShoppingCartItem> shoppingCartItemRepository
             , IRepository<Product_Benefit> productBenefitRepository)
             
-            : base(tameenkConfig, new RestfulConfiguration()
+            : base(quotationConfig, new RestfulConfiguration()
             {
                 GenerateAutoleasingQuotationUrl = GET_QUOTATION_AutoLease_URL,
                 GenerateAutoleasingPolicyUrl = GET_POLICY_AutoLease_URL,
@@ -102,16 +97,14 @@ namespace Tameenk.Integration.Providers.Tawuniya
                 GeneratePolicyUrl = "https://webapis.tawuniya.com.sa:5556/rest/TawnMotorPolicy/v01/restful/createPolicy",
                 AccessToken = "bCaRe:BcArE",
                 ProviderName = "Tawuniya"
-            }, logger, policyProcessingQueueRepository)
+            }, policyProcessingQueueRepository)
         {
-            _tameenkConfig = tameenkConfig ?? throw new TameenkArgumentNullException(nameof(TameenkConfig));
             _serviceProvider = serviceProvider;
-            _logger = logger;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _quotationRequestRepository = quotationRequestRepository;
             _quotationResponseRepository = quotationResponseRepository;
             _tawuniyaProposalRepository = tawuniyaProposalRepository;
-            //_quotationService = quotationService;
+            _quotationConfig = quotationConfig;
             _productRepository = productRepository;
             insuredRepo = _insuredRepo;
             bankRepo = _bankRepo;
@@ -130,7 +123,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
         #endregion
 
         #region Methods
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             try
             {
@@ -140,7 +133,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
             }
             catch (Exception ex)
             {
-                _logger.Log($"TawuniyaInsuranceProvider -> ExecuteQuotationRequest - (Provider name: {Configuration.ProviderName})", ex, LogLevel.Error);
+               // _logger.Log($"TawuniyaInsuranceProvider -> ExecuteQuotationRequest - (Provider name: {Configuration.ProviderName})", ex, LogLevel.Error);
                 return null;
             }
 
@@ -185,7 +178,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
             };
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;// _tameenkConfig.Policy.TestMode; by Atheer
                 if (testMode)
                 {
                     string nameOfFileJson = ".TestData.policyTestData.json";
@@ -217,7 +210,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                 //            request.ErrorDescription = " quotation service is down " + quotationOutput.ErrorDescription;
                 //            request.ServiceRequest = quotationOutput.ServiceRequest;
                 //            request.ServiceResponse = quotationOutput.ServiceResponse;
-                //            _policyProcessingQueueRepository.Update(request);
+                //            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 //        }
                 //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 //        return output;
@@ -246,7 +239,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     if (request != null)
                     {
                         request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = PolicyOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service return null";
@@ -262,7 +255,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     if (request != null)
                     {
                         request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = PolicyOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -278,7 +271,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     if (request != null)
                     {
                         request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = PolicyOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -317,7 +310,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
                     return output;
@@ -334,7 +327,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -352,7 +345,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
@@ -367,7 +360,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 return output;
             }
@@ -395,1156 +388,1156 @@ namespace Tameenk.Integration.Providers.Tawuniya
             return true;
         }
 
-        #region Autoleasing
-        protected override object ExecuteAutoleasingQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
-        {
-            try
-            {
-                var output = GetAutoLeaseProposalsRequest(quotation, predefinedLogInfo);
-                return output.Output;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log($"TawuniyaInsuranceProvider -> ExecuteAutoleasingQuotationRequest - (Provider name: {Configuration.ProviderName})", ex, LogLevel.Error);
-                return null;
-            }
-        }
-
-        protected override object ExecuteAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
-        {
-            PolicyOutput output = SubmitAutoleasingPolicyRequest(policy, predefinedLogInfo);
-            return output.Output;
-        }
-
-        private QuotationOutput GetAutoLeaseProposalsRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
-        {
-            var configuration = Configuration as RestfulConfiguration;
-            HttpResponseMessage message = new HttpResponseMessage();
-            message.StatusCode = System.Net.HttpStatusCode.OK;
-            QuotationOutput output = new QuotationOutput();
-            log.ReferenceId = quotation.ReferenceId;
-            log.ServiceURL = GET_PROPOSAL_AutoLease_URL;
-            if (string.IsNullOrEmpty(log.Channel))
-                log.Channel = Channel.autoleasing.ToString();
-            log.ServerIP = ServicesUtilities.GetServerIP();
-            log.Method = "AutoleasingProposal";
-            log.CompanyName = "Tawuniya";
-            log.VehicleMaker = quotation?.VehicleMaker;
-            log.VehicleMakerCode = quotation?.VehicleMakerCode;
-            log.VehicleModel = quotation?.VehicleModel;
-            log.VehicleModelCode = quotation?.VehicleModelCode;
-            log.VehicleModelYear = quotation?.VehicleModelYear;
-
-            try
-            {
-                if (_tameenkConfig.Quotatoin.TestMode)
-                {
-                    string nameOfFileJson = ".TestData.quotationTestData.json";
-                    string tawuniyaResponse = ReadResource(GetType().Namespace, nameOfFileJson);
-                    var handledResponse = JsonConvert.SerializeObject(HandleProposalResponse(tawuniyaResponse, quotation));
-                    message.Content = new StringContent(handledResponse);
-                    output.ErrorCode = QuotationOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
-                    return output;
-                }
-
-                AutoLeaseProposalsRequest request = HandleAutoLeaseProposalsRequest(quotation);
-                string stringPayload = JsonConvert.SerializeObject(request);
-                log.ServiceRequest = stringPayload;
-                var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-                //string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(configuration.AutoleasingAccessToken));
-                DateTime dtBeforeCalling = DateTime.Now;
-
-                HttpResponseMessage response = null;
-                using (var httpClient = new HttpClient())
-                {
-                    var requestHeader = new HttpRequestMessage
-                    {
-                        Method = HttpMethod.Post,
-                        RequestUri = new Uri(GET_PROPOSAL_AutoLease_URL),
-                        Content = new StringContent(stringPayload, Encoding.UTF8, "application/json")
-                    };
-                    requestHeader.Headers.Add("Accept", "application/json");
-                    requestHeader.Headers.Add(TAWUNIYA_API_KEY, TAWUNIYA_API_ACCESS_KEY);
-                    httpClient.DefaultRequestHeaders.ExpectContinue = false;
-                    response = httpClient.SendAsync(requestHeader).Result;
-                }
-
-                //Dictionary<string, string> headers = new Dictionary<string, string>
-                //{
-                //    { TAWUNIYA_API_KEY, TAWUNIYA_API_ACCESS_KEY }
-                //};
-                //HttpResponseMessage response = _httpClient.PostAsync(GET_PROPOSAL_AutoLease_URL, httpContent, null, null, "Basic", headers).Result;
-
-                DateTime dtAfterCalling = DateTime.Now;
-                log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
-                if (response == null)
-                {
-                    output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-
-                if (response.Content == null)
-                {
-                    output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
-                {
-                    output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content result return null and response.StatusCode is " + response.StatusCode + " response.Content.ReadAsStringAsync() " + response.Content.ReadAsStringAsync().Status.ToString() + " response.Content.ReadAsStringAsync().Result " + response.Content.ReadAsStringAsync().Result;
-                    log.ServiceResponse = response.ToString();
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-
-                var value = response.Content.ReadAsStringAsync().Result;
-                log.ServiceResponse = value;
-
-                var tawuniyaModifiedResponse = HandleAutoLeaseProposalsResponse(value, quotation.DeductibleValue);
-                var tawuniyaJson = JsonConvert.SerializeObject(tawuniyaModifiedResponse);
-
-                message.Content = new StringContent(tawuniyaJson);
-
-                if (tawuniyaModifiedResponse.StatusCode != 1)
-                {
-                    StringBuilder servcieErrors = new StringBuilder();
-                    StringBuilder servcieErrorsCodes = new StringBuilder();
-
-                    foreach (var error in tawuniyaModifiedResponse.Errors)
-                    {
-                        servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
-                        servcieErrorsCodes.AppendLine(error.Code);
-                    }
-
-                    output.ErrorCode = QuotationOutput.ErrorCodes.ServiceError;
-                    string _ErrorDescription = "Quotation Service response error is : " + servcieErrors.ToString();
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = servcieErrorsCodes.ToString();
-                    log.ServiceErrorDescription = servcieErrors.ToString();
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                output.Output = message;
-                output.ErrorCode = QuotationOutput.ErrorCodes.Success;
-                output.ErrorDescription = "Success";
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                log.ServiceErrorCode = log.ErrorCode.ToString();
-                log.ServiceErrorDescription = log.ServiceErrorDescription;
-                //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-            catch (Exception ex)
-            {
-                output.ErrorCode = QuotationOutput.ErrorCodes.ServiceException;
-                output.ErrorDescription = ex.ToString();
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-        }
-
-        private AutoLeaseProposalsRequest HandleAutoLeaseProposalsRequest(QuotationServiceRequest quotation)
-        {
-            var bank = bankRepo.Table.FirstOrDefault(e => e.Id == quotation.BankId);
-
-            var driver = quotation.Drivers.FirstOrDefault();
-            var insured = insuredRepo.TableNoTracking.OrderByDescending(e => e.NationalId == driver.DriverId.ToString()).FirstOrDefault();
-            var addressService = _serviceProvider.GetRequiredService<IAddressService>();
-            //var address = addressRepo.TableNoTracking.OrderByDescending(e => e.NationalId == driver.DriverId.ToString()).FirstOrDefault();
-            var address = addressService.GetAddressesByNin(driver.DriverId.ToString());
-
-            AutoLeaseProposalsRequest proposalsautoleaserequest = new AutoLeaseProposalsRequest();
-            if (!string.IsNullOrEmpty(quotation.QuotationNo))
-            {
-                proposalsautoleaserequest.RequestReferenceNo = quotation.QuotationNo;
-            }
-            else
-            {
-                proposalsautoleaserequest.RequestReferenceNo = quotation.ReferenceId;
-            }
-            proposalsautoleaserequest.SourceCode = 757701;
-            proposalsautoleaserequest.UserName = "BCA001";
-            proposalsautoleaserequest.SchemeCode = "AGGREGATOR";
-
-            //Lessor data
-            proposalsautoleaserequest.Details = new AutoLeaseProposalRequestDetails();
-            proposalsautoleaserequest.Details.LessorNameEN = bank.NameAr; //"Auto Leasing";//need to get bank name from DB 
-            proposalsautoleaserequest.Details.LessorID = long.Parse(bankNinRepo.Table.FirstOrDefault(e => e.BankId == bank.Id).NIN);
-            proposalsautoleaserequest.Details.LessorBranch = 123; //need to get bank name from DB 
-            proposalsautoleaserequest.Details.LessorNationalAddress = new List<NationalAddress>() // need to get address from bank DB     
-            {
-                 new NationalAddress()
-                 {
-                     BuildingNumber=124,
-                     Street="1",
-                     District="test",
-                     City="Riyadh",
-                     ZipCode=12345,
-                     AdditionalNumber = 7825
-                 }
-            };
-
-            proposalsautoleaserequest.Details.LessorContactPerson = bank.NameAr;
-            proposalsautoleaserequest.Details.LessorContactNumber = bank.PhoneNumber;
-            proposalsautoleaserequest.Details.LessorIBAN = bank.IBAN;
-            proposalsautoleaserequest.Details.BankCode = bank.IBAN.ToLower().Replace("sa", "").Substring(2, 2);
-            proposalsautoleaserequest.Details.IsRenewal = false; // quotation.IsRenewal.HasValue ? quotation.IsRenewal.Value : false; ;//quotation.IsRenewal; // “True”: means Lessee already have an active policy or expired policy (within 30 days)  with Tawuniya “False”: it is Not a renewal
-            proposalsautoleaserequest.Details.NajmCaseDetails = null;  //If IsRenewal:true, then Yes else No
-
-            proposalsautoleaserequest.Details.PurposeofVehicleUseID = byte.Parse(quotation.VehicleUseCode.ToString());
-            proposalsautoleaserequest.Details.Cylinders = quotation.VehicleCylinders.ToString();
-            proposalsautoleaserequest.Details.VehicleMileage = quotation.VehicleMileage;
-            proposalsautoleaserequest.Details.VehicleExpectedMileageYear = null; //quotation.VehicleMileageExpectedAnnualCode;
-            proposalsautoleaserequest.Details.VehicleEngineSizeCC = null; //User Input
-            proposalsautoleaserequest.Details.VehicleTransmission = quotation.VehicleTransmissionTypeCode;
-            proposalsautoleaserequest.Details.VehicleCapacity = quotation.VehicleCapacity;
-            if (quotation.VehicleOvernightParkingLocationCode.HasValue)
-                proposalsautoleaserequest.Details.VehicleNightParking = byte.Parse(quotation.VehicleOvernightParkingLocationCode.Value.ToString());
-            else
-                proposalsautoleaserequest.Details.VehicleNightParking = byte.Parse("1");
-
-            // Will be used after Mapping
-
-            //if (!string.IsNullOrEmpty(quotation.VehicleMakerCode) && !string.IsNullOrEmpty(quotation.VehicleModelCode))
-            //{
-            //    short vehicleMakerCode = -1;
-            //    long vehicleModelCode = -1;
-            //    short.TryParse(quotation.VehicleMakerCode, out vehicleMakerCode);
-            //    long.TryParse(quotation.VehicleModelCode, out vehicleModelCode);
-
-            //    var vehicleModel = GetTawuniyaModelCode(vehicleMakerCode, vehicleModelCode);
-            //    if (vehicleModel != null)
-            //    {
-            //        if (vehicleModel.TawuniyaMakerCode.HasValue && vehicleModel.TawuniyaModelCode.HasValue)
-            //        {
-            //            proposalsautoleaserequest.Details.VehicleMakeCodeNIC = vehicleModel.TawuniyaMakerCode.Value;
-            //            proposalsautoleaserequest.Details.VehicleMakeTextNIC = vehicleModel.VehicleMaker.ArabicDescription;
-            //            proposalsautoleaserequest.Details.VehicleModelCodeNIC = (short)vehicleModel.TawuniyaModelCode.Value;
-            //            proposalsautoleaserequest.Details.VehicleModelTextNIC = vehicleModel.ArabicDescription;
-            //        }
-            //        else
-            //        {
-            //            proposalsautoleaserequest.Details.VehicleMakeCodeNIC = string.IsNullOrEmpty(quotation.VehicleMakerCode) ? (short)0 : short.Parse(quotation.VehicleMakerCode);
-            //            proposalsautoleaserequest.Details.VehicleMakeTextNIC = quotation.VehicleMaker;
-            //            proposalsautoleaserequest.Details.VehicleModelCodeNIC = string.IsNullOrEmpty(quotation.VehicleModelCode) ? (short)0 : short.Parse(quotation.VehicleModelCode);
-            //            proposalsautoleaserequest.Details.VehicleModelTextNIC = quotation.VehicleModel;
-            //        }
-            //    }
-            //}
-
-            proposalsautoleaserequest.Details.VehicleMakeCodeNIC = string.IsNullOrEmpty(quotation.VehicleMakerCode) ? (short)0 : short.Parse(quotation.VehicleMakerCode);
-            proposalsautoleaserequest.Details.VehicleMakeTextNIC = quotation.VehicleMaker;
-            proposalsautoleaserequest.Details.VehicleModelCodeNIC = string.IsNullOrEmpty(quotation.VehicleModelCode) ? (short)0 : short.Parse(quotation.VehicleModelCode);
-            proposalsautoleaserequest.Details.VehicleModelTextNIC = quotation.VehicleModel;
-
-            proposalsautoleaserequest.Details.ManufactureYear = quotation.VehicleModelYear;
-            proposalsautoleaserequest.Details.VehicleColorCode = string.IsNullOrEmpty(quotation.VehicleMajorColorCode) ? (short)1 : short.Parse(quotation.VehicleMajorColorCode);
-            proposalsautoleaserequest.Details.VehicleModifications = quotation.VehicleModificationDetails;
-            proposalsautoleaserequest.Details.VehicleSumInsured = quotation.VehicleValue.Value;
-            proposalsautoleaserequest.Details.RepairMethod = (quotation.VehicleAgencyRepair.HasValue && quotation.VehicleAgencyRepair.Value) ? 1 : 2; //int.Parse(quotation.VehicleAgencyRepair.Value.ToString());
-
-            //Lessee data= main driver data
-            proposalsautoleaserequest.Details.LesseeID = driver.DriverId;
-            proposalsautoleaserequest.Details.FullName = string.Format("{0} {1} {2}", driver.DriverFirstNameAr, driver.DriverMiddleNameAr, driver.DriverLastNameAr);
-            proposalsautoleaserequest.Details.ArabicFirstName = driver.DriverFirstNameAr;
-            proposalsautoleaserequest.Details.ArabicMiddleName = driver.DriverMiddleNameAr;
-            proposalsautoleaserequest.Details.ArabicLastName = driver.DriverLastNameAr;
-            proposalsautoleaserequest.Details.EnglishFirstName = driver.DriverFirstNameEn;
-            proposalsautoleaserequest.Details.EnglishMiddleName = driver.DriverMiddleNameEn;
-            proposalsautoleaserequest.Details.EnglishLastName = driver.DriverLastNameEn;
-            proposalsautoleaserequest.Details.LesseeNationalityID = driver.DriverId.ToString().StartsWith("1") ? (short?)0 : short.Parse(driver.DriverNationalityCode);
-            proposalsautoleaserequest.Details.VehicleUsagePercentage = driver.DriverDrivingPercentage.HasValue ? short.Parse(driver.DriverDrivingPercentage.ToString()) : (short)0;
-            proposalsautoleaserequest.Details.LesseeOccupation = driver.DriverOccupation;
-            proposalsautoleaserequest.Details.LesseeEducation = driver.DriverEducationCode.HasValue ? Enum.GetNames(typeof(EducationAr))[driver.DriverEducationCode.Value - 1] : "";  //((EducationAr)Enum.Parse(typeof(EducationAr),driver.DriverEducationCode.ToString())).ToString();
-            proposalsautoleaserequest.Details.LesseeChildrenBelow16 = quotation.InsuredChildrenBelow16Years.HasValue ? quotation.InsuredChildrenBelow16Years.Value : 0;
-            proposalsautoleaserequest.Details.LesseeWorkCompanyName = null;
-            proposalsautoleaserequest.Details.LesseeWorkCityID = quotation.InsuredWorkCityCode;
-            proposalsautoleaserequest.Details.CountriesValidDrivingLicense = null;//new List<CountriesValidDrivingLicense>() { new CountriesValidDrivingLicense { DriverLicenseYears = 12, DrivingLicenseCountryID = 11 } };
-            proposalsautoleaserequest.Details.LesseeNoOfClaims = driver.DriverNOCLast5Years.HasValue ? driver.DriverNOCLast5Years.Value.ToString() : null;
-            proposalsautoleaserequest.Details.LesseeTrafficViolationsCode = driver.DriverViolations.FirstOrDefault()?.ViolationCode.ToString();
-            proposalsautoleaserequest.Details.LesseeHealthConditionsCode = driver.DriverMedicalConditionCode.HasValue ? driver.DriverMedicalConditionCode.ToString() : null;
-            proposalsautoleaserequest.Details.LesseeDateOfBirthG = driver.DriverId.ToString().StartsWith("1") ? null : driver.DriverBirthDateG.ToString("dd-MM-yyyy", new CultureInfo("en-US"));
-            proposalsautoleaserequest.Details.LesseeDateOfBirthH = driver.DriverId.ToString().StartsWith("1") ? driver.DriverBirthDate : null;
-            proposalsautoleaserequest.Details.LesseeGender = driver.DriverGenderCode == "M" ? byte.Parse("1") : byte.Parse("2");
-            proposalsautoleaserequest.Details.LesseeMaritalStatus = string.IsNullOrEmpty(driver.DriverSocialStatusCode) ? (byte?)null : byte.Parse(driver.DriverSocialStatusCode);
-            proposalsautoleaserequest.Details.LesseeLicenseType = driver.DriverLicenses.Count() != 0 ? byte.Parse(driver.DriverLicenses.FirstOrDefault().DriverLicenseTypeCode) : new byte();
-            proposalsautoleaserequest.Details.LesseeLicenseOwnYears = driver.DriverLicenses.Count() != 0 ? byte.Parse(driver.DriverLicenses.FirstOrDefault().LicenseNumberYears.ToString()) : new byte();
-            proposalsautoleaserequest.Details.LesseeNCDCode = quotation.NCDFreeYears;//driver.DriverNCDFreeYears.HasValue? driver.DriverNCDFreeYears.Value:0;
-            proposalsautoleaserequest.Details.LesseeNCDReference = driver.DriverNCDReference;
-            proposalsautoleaserequest.Details.LesseeNoOfAccidents = quotation.NoOfAccident.HasValue ? quotation.NoOfAccident.Value : 0;
-
-            if (address != null)
-            {
-                var lesseeNationalAddress = new NationalAddress();
-                lesseeNationalAddress.City = address.City;
-                lesseeNationalAddress.BuildingNumber = string.IsNullOrEmpty(address.BuildingNumber) ? (int?)null : int.Parse(address.BuildingNumber);
-                lesseeNationalAddress.ZipCode = string.IsNullOrEmpty(address.PostCode) ? (int?)null : int.Parse(address.PostCode);
-                lesseeNationalAddress.AdditionalNumber = string.IsNullOrEmpty(address.AdditionalNumber) ? (int?)null : int.Parse(address.AdditionalNumber);
-                lesseeNationalAddress.Street = address.Street;
-                lesseeNationalAddress.District = address.District;
-                proposalsautoleaserequest.Details.LesseeNationalAddress = new List<NationalAddress>() { lesseeNationalAddress };
-            }
-            else
-            {
-                proposalsautoleaserequest.Details.LesseeNationalAddress = null;
-            }
-            proposalsautoleaserequest.Details.DriverDetails = quotation.Drivers.Skip(1).Count() != 0 ?
-            quotation.Drivers.Skip(1).Select(e => new DriverDetails
-            {
-                DriverID = e.DriverId,
-                DriverFullName = string.Format("{0} {1} {2}", e.DriverFirstNameAr, e.DriverMiddleNameAr, e.DriverLastNameAr),
-                ArabicFirstName = e.DriverFirstNameAr,
-                ArabicMiddleName = e.DriverMiddleNameAr,
-                ArabicLastName = e.DriverLastNameAr,
-                EnglishFirstName = e.DriverFirstNameEn,
-                EnglishMiddleName = e.DriverMiddleNameEn,
-                EnglishLastName = e.DriverLastNameEn,
-                DriverChildrenBelow16 = e.DriverChildrenBelow16Years is null ? "" : e.DriverChildrenBelow16Years.ToString(),
-                DriverDateOfBirthG = e.DriverId.ToString().StartsWith("1") ? null : e.DriverBirthDateG.ToString("dd-MM-yyyy", new CultureInfo("en-US")),
-                DriverDateOfBirthH = e.DriverId.ToString().StartsWith("1") ? e.DriverBirthDate : null,
-                DriverGender = e.DriverGenderCode == "M" ? byte.Parse("1") : byte.Parse("2"),
-                DriverEducation = e.DriverEducationCode.HasValue ? Enum.GetNames(typeof(EducationAr))[e.DriverEducationCode.Value - 1] : "",
-                DriverMaritalStatus = string.IsNullOrEmpty(e.DriverSocialStatusCode) ? 0 : int.Parse(e.DriverSocialStatusCode),
-                DriverNationalityID = e.DriverId.ToString().StartsWith("1") ? 0 : int.Parse(e.DriverNationalityCode),
-                DriverNoOfClaims = driver.DriverNOCLast5Years.HasValue ? driver.DriverNOCLast5Years.Value.ToString() : null,
-                DriverOccupation = e.DriverOccupation,
-                DriverWorkCompanyName = e.DriverWorkCity,
-                DriverWorkCityID = e.DriverWorkCityCode,
-                CountriesValidDrivingLicense = null,
-                DriverRelation = null,
-                VehicleUsagePercentage = e.DriverDrivingPercentage is null ? 0 : e.DriverDrivingPercentage.Value,
-                DriverHealthConditionsCode = null,
-                DriverHomeAddress = e.DriverHomeAddress,
-                DriverHomeAddressCity = e.DriverHomeCity,
-                DriverLicenseType = e.DriverLicenses.Count() != 0 ? byte.Parse(driver.DriverLicenses.FirstOrDefault()?.DriverLicenseTypeCode) : new byte(),
-                DriverLicenseOwnYears = e.DriverLicenses.FirstOrDefault().LicenseNumberYears,
-                DriverNoOfAccidents = 0
-            }).ToList() : null;
-
-            return proposalsautoleaserequest;
-        }
-
-        private VehicleModel GetTawuniyaModelCode(short elmMakerCode, long elmModelCode)
-        {
-            return _vehicleModelRepository.TableNoTracking.Include(m => m.VehicleMaker).FirstOrDefault(m => m.VehicleMakerCode == elmMakerCode && m.Code == elmModelCode);
-        }
-
-        private QuotationServiceResponse HandleAutoLeaseProposalsResponse(string value, int? deductibleValue)
-        {
-            AutoLeaseProposalsResponse Tawniya_AutoLease_response = JsonConvert.DeserializeObject<AutoLeaseProposalsResponse>(value);
-
-            QuotationServiceResponse response = new QuotationServiceResponse();
-            response.QuotationDate = null;
-            response.Errors = Tawniya_AutoLease_response.Errors;
-            response.StatusCode = Tawniya_AutoLease_response.Status == "true" ? 1 : 2;
-            response.ReferenceId = Tawniya_AutoLease_response.RequestReferenceNo;
-
-            var deductValue = deductibleValue.HasValue ? deductibleValue.Value.ToString() : "2000";
-            if (response.StatusCode == 1)
-            {
-                if (!string.IsNullOrEmpty(Tawniya_AutoLease_response.CompQuotes[0].QuoteReferenceNo.ToString()))
-                    response.QuotationNo = Tawniya_AutoLease_response.CompQuotes[0].QuoteReferenceNo.ToString();
-                else
-                    response.QuotationNo = "";
-
-                List<BenefitDto> list_benefits = new List<BenefitDto>();
-                List<ProductDto> list_products = new List<ProductDto>();
-                List<PriceDto> list_pricedetails = new List<PriceDto>();
-
-                foreach (CompQuotes product in Tawniya_AutoLease_response.CompQuotes)
-                {
-                    Deductibles deduct = product.Deductibles.FirstOrDefault(e => e.DeductibleAmount == deductValue);
-
-                    list_products.Add(new ProductDto
-                    {
-                        ProductId = product.PolicyTitleID,
-                        ProductPrice = Convert.ToDecimal(deduct.PolicyPremium),
-                        DeductibleValue = int.Parse(deduct.DeductibleAmount)
-                    });
-
-                    if (deduct.PremiumBreakdown != null)
-                    {
-                        var priceDetail = deduct.PremiumBreakdown.FirstOrDefault(e => e.BreakdownTypeID == "2");
-                        if (priceDetail != null)
-                            list_pricedetails.Add(new PriceDto
-                            {
-                                PriceValue = Convert.ToDecimal(priceDetail.BreakdownAmount),
-                                PercentageValue = 0,
-                                PriceTypeCode = 7
-                            });
-
-                        priceDetail = deduct.PremiumBreakdown.FirstOrDefault(e => e.BreakdownTypeID == "20");
-                        if (priceDetail != null)
-                            list_pricedetails.Add(new PriceDto
-                            {
-                                PriceValue = Convert.ToDecimal(priceDetail.BreakdownAmount) * 0.15M,
-                                PercentageValue = 15,
-                                PriceTypeCode = 8
-                            });
-
-                        priceDetail = deduct.PremiumBreakdown.FirstOrDefault(e => e.BreakdownTypeID == "3");
-                        if (priceDetail != null)
-                            list_pricedetails.Add(new PriceDto
-                            {
-                                PriceValue = Convert.ToDecimal(priceDetail.BreakdownAmount),
-                                PercentageValue = 15,
-                                PriceTypeCode = 4
-                            });
-
-                        priceDetail = deduct.PremiumBreakdown.FirstOrDefault(e => e.BreakdownTypeID == "1");
-                        if (priceDetail != null)
-                            list_pricedetails.Add(new PriceDto
-                            {
-                                PriceValue = Convert.ToDecimal(priceDetail.BreakdownAmount),
-                                PercentageValue = 0,
-                                PriceTypeCode = 6
-                            });
-                    }
-
-                    if (deduct.Discounts != null)
-                    {
-                        var discount = deduct.Discounts.FirstOrDefault(e => e.DiscountTypeID == "1");
-                        if (discount != null)
-                            list_pricedetails.Add(new PriceDto
-                            {
-                                PriceValue = Convert.ToDecimal(discount.DiscountAmount),
-                                PercentageValue = Convert.ToDecimal(discount.DiscountPercentage),
-                                PriceTypeCode = 3
-                            });
-
-                        discount = deduct.Discounts.FirstOrDefault(e => e.DiscountTypeID == "2");
-                        if (discount != null)
-                            list_pricedetails.Add(new PriceDto
-                            {
-                                PriceValue = Convert.ToDecimal(discount.DiscountAmount),
-                                PercentageValue = Convert.ToDecimal(discount.DiscountPercentage),
-                                PriceTypeCode = 2
-                            });
-
-                        discount = deduct.Discounts.FirstOrDefault(e => e.DiscountTypeID == "5");
-                        if (discount != null)
-                            list_pricedetails.Add(new PriceDto
-                            {
-                                PriceValue = Convert.ToDecimal(discount.DiscountAmount),
-                                PercentageValue = Convert.ToDecimal(discount.DiscountPercentage),
-                                PriceTypeCode = 1
-                            });
-
-                        discount = deduct.Discounts.FirstOrDefault(e => e.DiscountTypeID == "6");
-                        if (discount != null)
-                            list_pricedetails.Add(new PriceDto
-                            {
-                                PriceValue = Convert.ToDecimal(discount.DiscountAmount),
-                                PercentageValue = Convert.ToDecimal(discount.DiscountPercentage),
-                                PriceTypeCode = 11
-                            });
-                    }
-
-                    var benefits = product.PolicyPremiumFeatures;
-                    if (benefits != null)
-                    {
-                        var feature2 = benefits.FirstOrDefault(e => e.FeatureID == "2");
-                        if (feature2 != null)
-                            list_benefits.Add(new BenefitDto
-                            {
-                                BenefitId = "2",
-                                BenefitPrice = Convert.ToDecimal(feature2.FeatureAmount),
-                                BenefitCode = 3,
-                                IsSelected = feature2.FeatureTypeID.Equals("2") ? true : false,
-                                IsReadOnly = feature2.FeatureTypeID.Equals("2") ? true : false
-                            });
-
-                        var feature3 = benefits.FirstOrDefault(e => e.FeatureID == "3");
-                        if (feature3 != null)
-                            list_benefits.Add(new BenefitDto
-                            {
-                                BenefitId = "3",
-                                BenefitPrice = Convert.ToDecimal(feature3.FeatureAmount),
-                                BenefitCode = 4,
-                                IsSelected = feature3.FeatureTypeID.Equals("2") ? true : false,
-                                IsReadOnly = feature3.FeatureTypeID.Equals("2") ? true : false
-                            });
-
-                        var feature4 = benefits.FirstOrDefault(e => e.FeatureID == "4");
-                        if (feature4 != null)
-                            list_benefits.Add(new BenefitDto
-                            {
-                                BenefitId = "4",
-                                BenefitPrice = Convert.ToDecimal(feature4.FeatureAmount),
-                                BenefitCode = 14,
-                                IsSelected = feature4.FeatureTypeID.Equals("2") ? true : false,
-                                IsReadOnly = feature4.FeatureTypeID.Equals("2") ? true : false
-                            });
-
-                        var feature5 = benefits.FirstOrDefault(e => e.FeatureID == "5");
-                        if (feature5 != null)
-                            list_benefits.Add(new BenefitDto
-                            {
-                                BenefitId = "5",
-                                BenefitPrice = Convert.ToDecimal(feature5.FeatureAmount),
-                                BenefitCode = 1,
-                                IsSelected = feature5.FeatureTypeID.Equals("2") ? true : false,
-                                IsReadOnly = feature5.FeatureTypeID.Equals("2") ? true : false
-                            });
-
-                        var feature6 = benefits.FirstOrDefault(e => e.FeatureID == "6");
-                        if (feature6 != null)
-                            list_benefits.Add(new BenefitDto
-                            {
-                                BenefitId = "6",
-                                BenefitPrice = Convert.ToDecimal(feature6.FeatureAmount),
-                                BenefitCode = 2,
-                                IsSelected = feature6.FeatureTypeID.Equals("2") ? true : false,
-                                IsReadOnly = feature6.FeatureTypeID.Equals("2") ? true : false
-                            });
-
-                        var feature7 = benefits.FirstOrDefault(e => e.FeatureID == "7");
-                        if (feature7 != null)
-                            list_benefits.Add(new BenefitDto
-                            {
-                                BenefitId = "7",
-                                BenefitPrice = Convert.ToDecimal(feature7.FeatureAmount),
-                                BenefitCode = 9,
-                                IsSelected = feature7.FeatureTypeID.Equals("2") ? true : false,
-                                IsReadOnly = feature7.FeatureTypeID.Equals("2") ? true : false
-                            });
-
-                        var feature8 = benefits.FirstOrDefault(e => e.FeatureID == "8");
-                        if (feature8 != null)
-                            list_benefits.Add(new BenefitDto
-                            {
-                                BenefitId = "8",
-                                BenefitPrice = Convert.ToDecimal(feature8.FeatureAmount),
-                                BenefitCode = 10,
-                                IsSelected = feature8.FeatureTypeID.Equals("2") ? true : false,
-                                IsReadOnly = feature8.FeatureTypeID.Equals("2") ? true : false
-                            });
-
-                        var feature9 = benefits.FirstOrDefault(e => e.FeatureID == "9");
-                        if (feature9 != null)
-                            list_benefits.Add(new BenefitDto
-                            {
-                                BenefitId = "9",
-                                BenefitPrice = Convert.ToDecimal(feature9.FeatureAmount),
-                                BenefitCode = 12,
-                                IsSelected = feature9.FeatureTypeID.Equals("2") ? true : false,
-                                IsReadOnly = feature9.FeatureTypeID.Equals("2") ? true : false
-                            });
-
-                        var feature10 = benefits.FirstOrDefault(e => e.FeatureID == "10");
-                        if (feature10 != null)
-                            list_benefits.Add(new BenefitDto
-                            {
-                                BenefitId = "10",
-                                BenefitPrice = Convert.ToDecimal(feature10.FeatureAmount),
-                                BenefitCode = 11,
-                                IsSelected = feature10.FeatureTypeID.Equals("2") ? true : false,
-                                IsReadOnly = feature10.FeatureTypeID.Equals("2") ? true : false
-                            });
-                    }
-                    response.Products = list_products;
-                    response.Products[0].PriceDetails = list_pricedetails;
-                    response.Products[0].Benefits = list_benefits;
-                }
-                return response;
-            }
-            return response;
-        }
-
-        protected PolicyOutput SubmitAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog log)
-        {
-
-            PolicyOutput output = new PolicyOutput();
-            var configuration = Configuration as RestfulConfiguration;
-            log.ReferenceId = policy.ReferenceId;
-            log.Channel = "autoleasing";
-            log.ServiceURL = configuration.GeneratePolicyUrl;
-            log.ServerIP = ServicesUtilities.GetServerIP();
-            log.CompanyName = configuration.ProviderName;
-            var stringPayload = string.Empty;
-            var policyRequest = HandleAutoLeasePolicyRequest(policy);
-            log.ServiceRequest = JsonConvert.SerializeObject(policyRequest);
-            var request = _policyProcessingQueueRepository.Table.Where(a => a.ReferenceId == policy.ReferenceId).FirstOrDefault();
-            if (request != null)
-            {
-                request.RequestID = log.RequestId;
-                request.CompanyName = log.CompanyName;
-                request.CompanyID = log.CompanyID;
-                request.InsuranceTypeCode = log.InsuranceTypeCode;
-                request.DriverNin = log.DriverNin;
-                request.VehicleId = log.VehicleId;
-                request.ServiceRequest = log.ServiceRequest;
-            }
-            HttpResponseMessage message = new HttpResponseMessage
-            {
-                StatusCode = System.Net.HttpStatusCode.OK
-            };
-            try
-            {
-                var testMode = _tameenkConfig.Policy.TestMode;
-                if (testMode)
-                {
-                    string nameOfFileJson = ".TestData.policyTestData.json";
-                    string responseDataJson = ReadResource(GetType().Namespace, nameOfFileJson);
-                    var handledResponse = JsonConvert.SerializeObject(HandleTawuniyaPolicyResponse(responseDataJson));
-                    message.Content = new StringContent(handledResponse);
-                    output.Output = message;
-                    output.ErrorCode = PolicyOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
-
-                    return output;
-                }
-
-                policyRequest = HandleAutoLeasePolicyRequest(policy);
-                stringPayload = JsonConvert.SerializeObject(policyRequest);
-                log.ServiceRequest = stringPayload;
-                log.Method = "AutoleasingPolicy";
-                if (request != null)
-                {
-                    request.ServiceRequest = log.ServiceRequest;
-                }
-                var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-                string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(configuration.AccessToken));
-
-                DateTime dtBeforeCalling = DateTime.Now;
-                HttpResponseMessage response = null;
-
-                using (var httpClient = new HttpClient())
-                {
-                    var requestHeader = new HttpRequestMessage
-                    {
-                        Method = HttpMethod.Post,
-                        RequestUri = new Uri(GET_POLICY_AutoLease_URL),
-                        Content = new StringContent(stringPayload, Encoding.UTF8, "application/json")
-                    };
-
-                    requestHeader.Headers.Add("Accept", "application/json");
-                    requestHeader.Headers.Add(TAWUNIYA_API_KEY, TAWUNIYA_API_ACCESS_KEY);
-                    httpClient.DefaultRequestHeaders.ExpectContinue = false;
-
-                    response = httpClient.SendAsync(requestHeader).Result;
-                }
-                DateTime dtAfterCalling = DateTime.Now;
-                log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
-                if (response == null)
-                {
-                    //update policyProcessingQueue Table;
-                    if (request != null)
-                    {
-                        request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.Update(request);
-                    }
-                    output.ErrorCode = PolicyOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (response.Content == null)
-                {
-                    if (request != null)
-                    {
-                        request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
-                    }
-                    output.ErrorCode = PolicyOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
-                {
-                    if (request != null)
-                    {
-                        request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
-                    }
-                    output.ErrorCode = PolicyOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content result return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                PolicyResponse tawuniyaModifiedResponse = HandleAutoLeasePolicyResponse(response, policy);
-                var tawuniyaJson = JsonConvert.SerializeObject(tawuniyaModifiedResponse);
-                message.Content = new StringContent(tawuniyaJson);
-                request.ServiceResponse = log.ServiceResponse;
-
-                if (tawuniyaModifiedResponse.StatusCode != 1)
-                {
-                    StringBuilder servcieErrors = new StringBuilder();
-                    StringBuilder servcieErrorsCodes = new StringBuilder();
-
-                    foreach (var error in tawuniyaModifiedResponse.Errors)
-                    {
-                        servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
-                        servcieErrorsCodes.AppendLine(error.Code);
-                    }
-                    output.ErrorCode = PolicyOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "Policy Service response error is : " + servcieErrors.ToString();
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = servcieErrorsCodes.ToString();
-                    log.ServiceErrorDescription = servcieErrors.ToString();
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    if (request != null)
-                    {
-                        request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
-                    }
-
-                    return output;
-                }
-                if (string.IsNullOrEmpty(tawuniyaModifiedResponse?.PolicyNo))
-                {
-                    output.ErrorCode = PolicyOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = "No PolicyNo returned from company";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    if (request != null)
-                    {
-                        request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
-                    }
-                    return output;
-                }
-
-
-                output.Output = message;
-                output.ErrorCode = PolicyOutput.ErrorCodes.Success;
-                output.ErrorDescription = "Success";
-                log.PolicyNo = tawuniyaModifiedResponse?.PolicyNo;
-
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                log.ServiceErrorCode = log.ErrorCode.ToString();
-                log.ServiceErrorDescription = log.ServiceErrorDescription;
-                if (request != null)
-                {
-                    request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
-                }
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-            catch (Exception ex)
-            {
-                output.ErrorCode = PolicyOutput.ErrorCodes.ServiceException;
-                output.ErrorDescription = ex.ToString();
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                if (request != null)
-                {
-                    request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
-                }
-                return output;
-            }
-        }
-
-        private PolicyResponse HandleAutoLeasePolicyResponse(object response, PolicyRequest request = null)
-        {
-            PolicyResponse policyResponse = null;
-
-            string result = string.Empty;
-            var stringPayload = JsonConvert.SerializeObject(request);
-            try
-            {
-                result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
-                AutoLeasingPolicyResponse responseValue = JsonConvert.DeserializeObject<AutoLeasingPolicyResponse>(result);
-                if (IsValidPolicyResponseAutoleasing(responseValue))
-                {
-                    policyResponse = new PolicyResponse
-                    {
-                        Errors = responseValue.errors,
-                        PolicyNo = responseValue.PolicyNumber,
-                        ReferenceId = request.ReferenceId,
-                        StatusCode = (responseValue.Status.ToLower() == "true") ? 1 : 2,
-                        PolicyEffectiveDate = Utilities.ConvertStringToDateTimeFromAllianz(responseValue.PolicyEffectiveDate + " 00:00:00"),
-                        PolicyExpiryDate = Utilities.ConvertStringToDateTimeFromAllianz(responseValue.PolicyExpiryDate + " 23:59:59"),
-                        PolicyIssuanceDate = DateTime.Now
-                    };
-                }
-
-                return policyResponse;
-            }
-            catch (Exception ex)
-            {
-                return policyResponse;
-            }
-        }
-
-        private AutoLeasingPolicyRequest HandleAutoLeasePolicyRequest(PolicyRequest policy)
-        {
-            var vehicle_id = _quotationRequestRepository.TableNoTracking.Where(e => e.ID == policy.QuotationRequestId).Select(e => e.VehicleId).FirstOrDefault();
-            var vehicle = _vehicleRepository.TableNoTracking.Where(e => e.ID == vehicle_id).FirstOrDefault();
-            var mainDriver = _quotationRequestRepository.TableNoTracking.Include(q => q.Driver).FirstOrDefault(q => q.ID == policy.QuotationRequestId).Driver;
-            AutoLeasingPolicyRequest policyautoleaserequest = new AutoLeasingPolicyRequest();
-
-            policyautoleaserequest.RequestReferenceNo = policy.ReferenceId;
-            policyautoleaserequest.PolicyRequestReferenceNo = policy.ReferenceId;
-            policyautoleaserequest.QuoteReferenceNo = int.Parse(policy.QuotationNo);
-            policyautoleaserequest.SourceCode = 757701;
-            policyautoleaserequest.UserName = "BCA001";
-
-            policyautoleaserequest.Details = new AutoleasingPolicyRequestDetails();
-            policyautoleaserequest.Details.Email = policy.InsuredEmail;
-            policyautoleaserequest.Details.MobileNo = policy.InsuredMobileNumber.TrimStart('0');
-            policyautoleaserequest.Details.LesseeID = long.Parse(mainDriver.NIN);
-            policyautoleaserequest.Details.PolicyEffectiveDate = policy.PolicyEffectiveDate.Value.ToString("yyyy-MM-dd", new CultureInfo("en-US"));
-            policyautoleaserequest.Details.PolicyNumber = string.Empty; //Not Mandatory
-            policyautoleaserequest.Details.PaidAmount = policy.PaymentAmount.ToString();
-            policyautoleaserequest.Details.VehicleUniqueTypeID = vehicle.VehicleIdTypeId.ToString();
-
-            if (vehicle.VehicleIdTypeId == 1)
-            {
-                policyautoleaserequest.Details.VehicleSequenceNumber = vehicle.SequenceNumber;
-                policyautoleaserequest.Details.VehiclePlateTypeID = vehicle.PlateTypeCode.ToString();
-                policyautoleaserequest.Details.VehiclePlateNumber = vehicle.CarPlateNumber.ToString();
-                policyautoleaserequest.Details.FirstPlateLetterID = PlateCharacterMapping(vehicle.CarPlateText1);
-                policyautoleaserequest.Details.SecondPlateLetterID = PlateCharacterMapping(vehicle.CarPlateText2);
-                policyautoleaserequest.Details.ThirdPlateLetterID = PlateCharacterMapping(vehicle.CarPlateText3);
-                policyautoleaserequest.Details.VehicleRegistrationExpiryDate = vehicle.LicenseExpiryDate;
-            }
-            else
-            {
-                policyautoleaserequest.Details.VehicleCustomID = vehicle.CustomCardNumber;
-            }
-
-            policyautoleaserequest.Details.VehicleVIN = vehicle.ChassisNumber;
-            return policyautoleaserequest;
-        }
-
-        private string PlateCharacterMapping(string plateCharacter)
-        {
-            string mappedCharacter = null;
-            if (plateCharacter == "أ" || plateCharacter == "ا" || plateCharacter == "A")
-            {
-                mappedCharacter = "1";
-            }
-            else if (plateCharacter == "ب" || plateCharacter == "B")
-            {
-                mappedCharacter = "2";
-            }
-            else if (plateCharacter == "د" || plateCharacter == "D")
-            {
-                mappedCharacter = "3";
-            }
-            else if (plateCharacter == "ح" || plateCharacter == "J")
-            {
-                mappedCharacter = "4";
-            }
-            else if (plateCharacter == "ه" || plateCharacter == "H")
-            {
-                mappedCharacter = "5";
-            }
-            else if (plateCharacter == "ع" || plateCharacter == "E")
-            {
-                mappedCharacter = "6";
-            }
-            else if (plateCharacter == "ق" || plateCharacter == "G")
-            {
-                mappedCharacter = "7";
-            }
-            else if (plateCharacter == "ص" || plateCharacter == "X")
-            {
-                mappedCharacter = "8";
-            }
-            else if (plateCharacter == "ط" || plateCharacter == "T")
-            {
-                mappedCharacter = "9";
-            }
-            else if (plateCharacter == "ك" || plateCharacter == "K")
-            {
-                mappedCharacter = "10";
-            }
-            else if (plateCharacter == "م" || plateCharacter == "Z")
-            {
-                mappedCharacter = "11";
-            }
-            else if (plateCharacter == "ن" || plateCharacter == "N")
-            {
-                mappedCharacter = "12";
-            }
-            else if (plateCharacter == "ل" || plateCharacter == "L")
-            {
-                mappedCharacter = "13";
-            }
-            else if (plateCharacter == "ى" || plateCharacter == "ي" || plateCharacter == "V")
-            {
-                mappedCharacter = "14";
-            }
-            else if (plateCharacter == "س" || plateCharacter == "S")
-            {
-                mappedCharacter = "15";
-            }
-            else if (plateCharacter == "و" || plateCharacter == "U")
-            {
-                mappedCharacter = "16";
-            }
-            else if (plateCharacter == "ر" || plateCharacter == "R")
-            {
-                mappedCharacter = "17";
-            }
-            return mappedCharacter;
-        }
-
-        private bool IsValidPolicyResponseAutoleasing(AutoLeasingPolicyResponse policyResponse)
-        {
-            if (policyResponse == null) return false;
-            if (policyResponse.Status.ToLower() != "true")
-                return false;
-            if (policyResponse.PolicyNumber == null)
-                return false;
-
-            return true;
-        }
-
-        public override ServiceOutput GetTawuniyaAutoleasingQuotation(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
-        {
-            ServiceOutput serviceOutput = new ServiceOutput();
-            var output = GetAutoLeaseQuotationRequest(quotation, predefinedLogInfo);
-            if (output.ErrorCode == QuotationOutput.ErrorCodes.Success)
-            {
-                serviceOutput.ErrorCode = ServiceOutput.ErrorCodes.Success;
-                serviceOutput.Output = output.ServiceResponse;
-                return serviceOutput;
-            }
-            else
-            {
-                serviceOutput.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                serviceOutput.ErrorDescription = output.ErrorDescription;
-                return serviceOutput;
-            }
-        }
-
-        private QuotationOutput GetAutoLeaseQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
-        {
-            var configuration = Configuration as RestfulConfiguration;
-            HttpResponseMessage message = new HttpResponseMessage();
-            message.StatusCode = System.Net.HttpStatusCode.OK;
-            QuotationOutput output = new QuotationOutput();
-            log.ReferenceId = quotation.ReferenceId;
-            log.ServiceURL = configuration.GenerateAutoleasingQuotationUrl;
-            log.Channel = Channel.autoleasing.ToString();
-            log.ServerIP = ServicesUtilities.GetServerIP();
-            log.Method = "AutoleasingQuotation";
-            log.CompanyName = "Tawuniya";
-            log.VehicleMaker = quotation?.VehicleMaker;
-            log.VehicleMakerCode = quotation?.VehicleMakerCode;
-            log.VehicleModel = quotation?.VehicleModel;
-            log.VehicleModelCode = quotation?.VehicleModelCode;
-            log.VehicleModelYear = quotation?.VehicleModelYear;
-            try
-            {
-                if (_tameenkConfig.Quotatoin.TestMode)
-                {
-                    string nameOfFileJson = ".TestData.quotationTestData.json";
-                    string tawuniyaResponse = ReadResource(GetType().Namespace, nameOfFileJson);
-                    var handledResponse = JsonConvert.SerializeObject(HandleProposalResponse(tawuniyaResponse, quotation));
-                    message.Content = new StringContent(handledResponse);
-                    output.ErrorCode = QuotationOutput.ErrorCodes.Success;
-                    output.ErrorDescription = "Success";
-                    return output;
-                }
-
-                AutoLeaseQuotationRequest request = HandleAutoLeaseQuotationRequest(quotation);
-                string stringPayload = JsonConvert.SerializeObject(request);
-                log.ServiceRequest = stringPayload;
-                var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-                //string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(configuration.AutoleasingAccessToken));
-                DateTime dtBeforeCalling = DateTime.Now;
-
-                HttpResponseMessage response = null;
-                using (var httpClient = new HttpClient())
-                {
-                    var requestHeader = new HttpRequestMessage
-                    {
-                        Method = HttpMethod.Post,
-                        RequestUri = new Uri(GET_QUOTATION_AutoLease_URL),
-                        Content = new StringContent(stringPayload, Encoding.UTF8, "application/json")
-                    };
-
-                    requestHeader.Headers.Add("Accept", "application/json");
-                    requestHeader.Headers.Add(TAWUNIYA_API_KEY, TAWUNIYA_API_ACCESS_KEY);
-                    httpClient.DefaultRequestHeaders.ExpectContinue = false;
-
-                    response = httpClient.SendAsync(requestHeader).Result;
-                }
-
-                DateTime dtAfterCalling = DateTime.Now;
-                log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
-                if (response == null)
-                {
-                    output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-
-                if (response.Content == null)
-                {
-                    output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content return null";
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
-                {
-                    output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
-                    //int _ErrorCode = (int)
-                    output.ErrorDescription = "Service response content result return null and response.StatusCode is " + response.StatusCode + " response.Content.ReadAsStringAsync() " + response.Content.ReadAsStringAsync().Status.ToString() + " response.Content.ReadAsStringAsync().Result " + response.Content.ReadAsStringAsync().Result;
-                    log.ServiceResponse = response.ToString();
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = log.ErrorCode.ToString();
-                    log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-
-                var value = response.Content.ReadAsStringAsync().Result;
-                //QuotationServiceResponse _quotation = new QuotationServiceResponse();
-                var tawuniyaModifiedResponse = HandleAutoLeaseQuotationResponse(value);
-                var tawuniyaJson = JsonConvert.SerializeObject(tawuniyaModifiedResponse);
-                message.Content = new StringContent(tawuniyaJson);
-                log.ServiceResponse = value;
-
-                if (tawuniyaModifiedResponse.StatusCode != 1)
-                {
-                    StringBuilder servcieErrors = new StringBuilder();
-                    StringBuilder servcieErrorsCodes = new StringBuilder();
-
-                    foreach (var error in tawuniyaModifiedResponse.Errors)
-                    {
-                        servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
-                        servcieErrorsCodes.AppendLine(error.Code);
-                    }
-
-                    output.ErrorCode = QuotationOutput.ErrorCodes.ServiceError;
-                    string _ErrorDescription = "Quotation Service response error is : " + servcieErrors.ToString();
-                    log.ErrorCode = (int)output.ErrorCode;
-                    log.ErrorDescription = output.ErrorDescription;
-                    log.ServiceErrorCode = servcieErrorsCodes.ToString();
-                    log.ServiceErrorDescription = servcieErrors.ToString();
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                    return output;
-                }
-                output.Output = message;
-                output.ErrorCode = QuotationOutput.ErrorCodes.Success;
-                output.ErrorDescription = "Success";
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                log.ServiceErrorCode = log.ErrorCode.ToString();
-                log.ServiceErrorDescription = log.ServiceErrorDescription;
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-            catch (Exception ex)
-            {
-                output.ErrorCode = QuotationOutput.ErrorCodes.ServiceException;
-                output.ErrorDescription = ex.ToString();
-                log.ErrorCode = (int)output.ErrorCode;
-                log.ErrorDescription = output.ErrorDescription;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
-                return output;
-            }
-        }
-
-        private AutoLeaseQuotationRequest HandleAutoLeaseQuotationRequest(QuotationServiceRequest quotation)
-        {
-            //get user benifits
-            var shoppingCartItemBenefits = _shoppingCartItemRepository.TableNoTracking
-                .Include(s => s.ShoppingCartItemBenefits)
-                .FirstOrDefault(e => e.ReferenceId == quotation.ReferenceId)?.ShoppingCartItemBenefits;
-
-            List<Product_Benefit> productBenefits = null;
-            if (shoppingCartItemBenefits != null && shoppingCartItemBenefits.Any())
-            {
-                var shoppingCartItemBenefits_ProductBenefitId = shoppingCartItemBenefits.Select(s => s.ProductBenefitId);
-                productBenefits = _productBenefitRepository.TableNoTracking
-                .Where(e => shoppingCartItemBenefits_ProductBenefitId.Contains(e.Id)).ToList();
-            }
-
-            AutoLeaseQuotationRequest request = new AutoLeaseQuotationRequest();
-            request.PolicyRequestReferenceNo = quotation.ReferenceId;
-            request.RequestReferenceNo = quotation.ReferenceId;
-            request.SourceCode = 757701;
-            request.UserName = "BCA001";
-            request.QuoteReferenceNo = int.Parse(quotation.QuotationNo);
-            request.Details = new Details()
-            {
-                DeductibleAmount = quotation.DeductibleValue.ToString(),
-                //DeductibleReferenceNo = null,
-                PolicyPremiumFeatures = productBenefits != null ? productBenefits.Select(e => new PolicyPremiumFeatures()
-                {
-                    FeatureID = e.BenefitExternalId,
-                    FeatureAmount = (e.BenefitPrice * 1.15M).Value.ToString("F0", CultureInfo.InvariantCulture),
-                    FeatureTaxableAmount = (e.BenefitPrice * 1.15M).Value.ToString("F0", CultureInfo.InvariantCulture),
-                    FeatureTypeID = e.BenefitPrice == 0 ? "2" : "1"
-
-                }).ToList() : null
-            };
-            request.CustomizedParameter = null;
-            return request;
-        }
-
-        private QuotationServiceResponse HandleAutoLeaseQuotationResponse(string value)
-        {
-            AutoLeaseQuotationResponse Tawniya_AutoLease_response = JsonConvert.DeserializeObject<AutoLeaseQuotationResponse>(value);
-            QuotationServiceResponse response = new QuotationServiceResponse();
-            response.Errors = Tawniya_AutoLease_response.Errors;
-            response.StatusCode = Tawniya_AutoLease_response.Status == "True" ? 1 : 2;
-            return response;
-        }
-
-        #endregion
+        //#region Autoleasing
+        //protected override object ExecuteAutoleasingQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        //{
+        //    try
+        //    {
+        //        var output = GetAutoLeaseProposalsRequest(quotation, predefinedLogInfo);
+        //        return output.Output;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.Log($"TawuniyaInsuranceProvider -> ExecuteAutoleasingQuotationRequest - (Provider name: {Configuration.ProviderName})", ex, LogLevel.Error);
+        //        return null;
+        //    }
+        //}
+
+        //protected override object ExecuteAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
+        //{
+        //    PolicyOutput output = SubmitAutoleasingPolicyRequest(policy, predefinedLogInfo);
+        //    return output.Output;
+        //}
+
+        //private QuotationOutput GetAutoLeaseProposalsRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        //{
+        //    var configuration = Configuration as RestfulConfiguration;
+        //    HttpResponseMessage message = new HttpResponseMessage();
+        //    message.StatusCode = System.Net.HttpStatusCode.OK;
+        //    QuotationOutput output = new QuotationOutput();
+        //    log.ReferenceId = quotation.ReferenceId;
+        //    log.ServiceURL = GET_PROPOSAL_AutoLease_URL;
+        //    if (string.IsNullOrEmpty(log.Channel))
+        //        log.Channel = Channel.autoleasing.ToString();
+        //    log.ServerIP = ServicesUtilities.GetServerIP();
+        //    log.Method = "AutoleasingProposal";
+        //    log.CompanyName = "Tawuniya";
+        //    log.VehicleMaker = quotation?.VehicleMaker;
+        //    log.VehicleMakerCode = quotation?.VehicleMakerCode;
+        //    log.VehicleModel = quotation?.VehicleModel;
+        //    log.VehicleModelCode = quotation?.VehicleModelCode;
+        //    log.VehicleModelYear = quotation?.VehicleModelYear;
+
+        //    try
+        //    {
+        //        if (_tameenkConfig.Quotatoin.TestMode)
+        //        {
+        //            string nameOfFileJson = ".TestData.quotationTestData.json";
+        //            string tawuniyaResponse = ReadResource(GetType().Namespace, nameOfFileJson);
+        //            var handledResponse = JsonConvert.SerializeObject(HandleProposalResponse(tawuniyaResponse, quotation));
+        //            message.Content = new StringContent(handledResponse);
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.Success;
+        //            output.ErrorDescription = "Success";
+        //            return output;
+        //        }
+
+        //        AutoLeaseProposalsRequest request = HandleAutoLeaseProposalsRequest(quotation);
+        //        string stringPayload = JsonConvert.SerializeObject(request);
+        //        log.ServiceRequest = stringPayload;
+        //        var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+        //        //string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(configuration.AutoleasingAccessToken));
+        //        DateTime dtBeforeCalling = DateTime.Now;
+
+        //        HttpResponseMessage response = null;
+        //        using (var httpClient = new HttpClient())
+        //        {
+        //            var requestHeader = new HttpRequestMessage
+        //            {
+        //                Method = HttpMethod.Post,
+        //                RequestUri = new Uri(GET_PROPOSAL_AutoLease_URL),
+        //                Content = new StringContent(stringPayload, Encoding.UTF8, "application/json")
+        //            };
+        //            requestHeader.Headers.Add("Accept", "application/json");
+        //            requestHeader.Headers.Add(TAWUNIYA_API_KEY, TAWUNIYA_API_ACCESS_KEY);
+        //            httpClient.DefaultRequestHeaders.ExpectContinue = false;
+        //            response = httpClient.SendAsync(requestHeader).Result;
+        //        }
+
+        //        //Dictionary<string, string> headers = new Dictionary<string, string>
+        //        //{
+        //        //    { TAWUNIYA_API_KEY, TAWUNIYA_API_ACCESS_KEY }
+        //        //};
+        //        //HttpResponseMessage response = _httpClient.PostAsync(GET_PROPOSAL_AutoLease_URL, httpContent, null, null, "Basic", headers).Result;
+
+        //        DateTime dtAfterCalling = DateTime.Now;
+        //        log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
+        //        if (response == null)
+        //        {
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+
+        //        if (response.Content == null)
+        //        {
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+        //        {
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content result return null and response.StatusCode is " + response.StatusCode + " response.Content.ReadAsStringAsync() " + response.Content.ReadAsStringAsync().Status.ToString() + " response.Content.ReadAsStringAsync().Result " + response.Content.ReadAsStringAsync().Result;
+        //            log.ServiceResponse = response.ToString();
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+
+        //        var value = response.Content.ReadAsStringAsync().Result;
+        //        log.ServiceResponse = value;
+
+        //        var tawuniyaModifiedResponse = HandleAutoLeaseProposalsResponse(value, quotation.DeductibleValue);
+        //        var tawuniyaJson = JsonConvert.SerializeObject(tawuniyaModifiedResponse);
+
+        //        message.Content = new StringContent(tawuniyaJson);
+
+        //        if (tawuniyaModifiedResponse.StatusCode != 1)
+        //        {
+        //            StringBuilder servcieErrors = new StringBuilder();
+        //            StringBuilder servcieErrorsCodes = new StringBuilder();
+
+        //            foreach (var error in tawuniyaModifiedResponse.Errors)
+        //            {
+        //                servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
+        //                servcieErrorsCodes.AppendLine(error.Code);
+        //            }
+
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.ServiceError;
+        //            string _ErrorDescription = "Quotation Service response error is : " + servcieErrors.ToString();
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = servcieErrorsCodes.ToString();
+        //            log.ServiceErrorDescription = servcieErrors.ToString();
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        output.Output = message;
+        //        output.ErrorCode = QuotationOutput.ErrorCodes.Success;
+        //        output.ErrorDescription = "Success";
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        log.ServiceErrorCode = log.ErrorCode.ToString();
+        //        log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //        //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.ErrorCode = QuotationOutput.ErrorCodes.ServiceException;
+        //        output.ErrorDescription = ex.ToString();
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //}
+
+        //private AutoLeaseProposalsRequest HandleAutoLeaseProposalsRequest(QuotationServiceRequest quotation)
+        //{
+        //    var bank = bankRepo.Table.FirstOrDefault(e => e.Id == quotation.BankId);
+
+        //    var driver = quotation.Drivers.FirstOrDefault();
+        //    var insured = insuredRepo.TableNoTracking.OrderByDescending(e => e.NationalId == driver.DriverId.ToString()).FirstOrDefault();
+        //    var addressService = _serviceProvider.GetRequiredService<IAddressService>();
+        //    //var address = addressRepo.TableNoTracking.OrderByDescending(e => e.NationalId == driver.DriverId.ToString()).FirstOrDefault();
+        //    var address = addressService.GetAddressesByNin(driver.DriverId.ToString());
+
+        //    AutoLeaseProposalsRequest proposalsautoleaserequest = new AutoLeaseProposalsRequest();
+        //    if (!string.IsNullOrEmpty(quotation.QuotationNo))
+        //    {
+        //        proposalsautoleaserequest.RequestReferenceNo = quotation.QuotationNo;
+        //    }
+        //    else
+        //    {
+        //        proposalsautoleaserequest.RequestReferenceNo = quotation.ReferenceId;
+        //    }
+        //    proposalsautoleaserequest.SourceCode = 757701;
+        //    proposalsautoleaserequest.UserName = "BCA001";
+        //    proposalsautoleaserequest.SchemeCode = "AGGREGATOR";
+
+        //    //Lessor data
+        //    proposalsautoleaserequest.Details = new AutoLeaseProposalRequestDetails();
+        //    proposalsautoleaserequest.Details.LessorNameEN = bank.NameAr; //"Auto Leasing";//need to get bank name from DB 
+        //    proposalsautoleaserequest.Details.LessorID = long.Parse(bankNinRepo.Table.FirstOrDefault(e => e.BankId == bank.Id).NIN);
+        //    proposalsautoleaserequest.Details.LessorBranch = 123; //need to get bank name from DB 
+        //    proposalsautoleaserequest.Details.LessorNationalAddress = new List<NationalAddress>() // need to get address from bank DB     
+        //    {
+        //         new NationalAddress()
+        //         {
+        //             BuildingNumber=124,
+        //             Street="1",
+        //             District="test",
+        //             City="Riyadh",
+        //             ZipCode=12345,
+        //             AdditionalNumber = 7825
+        //         }
+        //    };
+
+        //    proposalsautoleaserequest.Details.LessorContactPerson = bank.NameAr;
+        //    proposalsautoleaserequest.Details.LessorContactNumber = bank.PhoneNumber;
+        //    proposalsautoleaserequest.Details.LessorIBAN = bank.IBAN;
+        //    proposalsautoleaserequest.Details.BankCode = bank.IBAN.ToLower().Replace("sa", "").Substring(2, 2);
+        //    proposalsautoleaserequest.Details.IsRenewal = false; // quotation.IsRenewal.HasValue ? quotation.IsRenewal.Value : false; ;//quotation.IsRenewal; // “True”: means Lessee already have an active policy or expired policy (within 30 days)  with Tawuniya “False”: it is Not a renewal
+        //    proposalsautoleaserequest.Details.NajmCaseDetails = null;  //If IsRenewal:true, then Yes else No
+
+        //    proposalsautoleaserequest.Details.PurposeofVehicleUseID = byte.Parse(quotation.VehicleUseCode.ToString());
+        //    proposalsautoleaserequest.Details.Cylinders = quotation.VehicleCylinders.ToString();
+        //    proposalsautoleaserequest.Details.VehicleMileage = quotation.VehicleMileage;
+        //    proposalsautoleaserequest.Details.VehicleExpectedMileageYear = null; //quotation.VehicleMileageExpectedAnnualCode;
+        //    proposalsautoleaserequest.Details.VehicleEngineSizeCC = null; //User Input
+        //    proposalsautoleaserequest.Details.VehicleTransmission = quotation.VehicleTransmissionTypeCode;
+        //    proposalsautoleaserequest.Details.VehicleCapacity = quotation.VehicleCapacity;
+        //    if (quotation.VehicleOvernightParkingLocationCode.HasValue)
+        //        proposalsautoleaserequest.Details.VehicleNightParking = byte.Parse(quotation.VehicleOvernightParkingLocationCode.Value.ToString());
+        //    else
+        //        proposalsautoleaserequest.Details.VehicleNightParking = byte.Parse("1");
+
+        //    // Will be used after Mapping
+
+        //    //if (!string.IsNullOrEmpty(quotation.VehicleMakerCode) && !string.IsNullOrEmpty(quotation.VehicleModelCode))
+        //    //{
+        //    //    short vehicleMakerCode = -1;
+        //    //    long vehicleModelCode = -1;
+        //    //    short.TryParse(quotation.VehicleMakerCode, out vehicleMakerCode);
+        //    //    long.TryParse(quotation.VehicleModelCode, out vehicleModelCode);
+
+        //    //    var vehicleModel = GetTawuniyaModelCode(vehicleMakerCode, vehicleModelCode);
+        //    //    if (vehicleModel != null)
+        //    //    {
+        //    //        if (vehicleModel.TawuniyaMakerCode.HasValue && vehicleModel.TawuniyaModelCode.HasValue)
+        //    //        {
+        //    //            proposalsautoleaserequest.Details.VehicleMakeCodeNIC = vehicleModel.TawuniyaMakerCode.Value;
+        //    //            proposalsautoleaserequest.Details.VehicleMakeTextNIC = vehicleModel.VehicleMaker.ArabicDescription;
+        //    //            proposalsautoleaserequest.Details.VehicleModelCodeNIC = (short)vehicleModel.TawuniyaModelCode.Value;
+        //    //            proposalsautoleaserequest.Details.VehicleModelTextNIC = vehicleModel.ArabicDescription;
+        //    //        }
+        //    //        else
+        //    //        {
+        //    //            proposalsautoleaserequest.Details.VehicleMakeCodeNIC = string.IsNullOrEmpty(quotation.VehicleMakerCode) ? (short)0 : short.Parse(quotation.VehicleMakerCode);
+        //    //            proposalsautoleaserequest.Details.VehicleMakeTextNIC = quotation.VehicleMaker;
+        //    //            proposalsautoleaserequest.Details.VehicleModelCodeNIC = string.IsNullOrEmpty(quotation.VehicleModelCode) ? (short)0 : short.Parse(quotation.VehicleModelCode);
+        //    //            proposalsautoleaserequest.Details.VehicleModelTextNIC = quotation.VehicleModel;
+        //    //        }
+        //    //    }
+        //    //}
+
+        //    proposalsautoleaserequest.Details.VehicleMakeCodeNIC = string.IsNullOrEmpty(quotation.VehicleMakerCode) ? (short)0 : short.Parse(quotation.VehicleMakerCode);
+        //    proposalsautoleaserequest.Details.VehicleMakeTextNIC = quotation.VehicleMaker;
+        //    proposalsautoleaserequest.Details.VehicleModelCodeNIC = string.IsNullOrEmpty(quotation.VehicleModelCode) ? (short)0 : short.Parse(quotation.VehicleModelCode);
+        //    proposalsautoleaserequest.Details.VehicleModelTextNIC = quotation.VehicleModel;
+
+        //    proposalsautoleaserequest.Details.ManufactureYear = quotation.VehicleModelYear;
+        //    proposalsautoleaserequest.Details.VehicleColorCode = string.IsNullOrEmpty(quotation.VehicleMajorColorCode) ? (short)1 : short.Parse(quotation.VehicleMajorColorCode);
+        //    proposalsautoleaserequest.Details.VehicleModifications = quotation.VehicleModificationDetails;
+        //    proposalsautoleaserequest.Details.VehicleSumInsured = quotation.VehicleValue.Value;
+        //    proposalsautoleaserequest.Details.RepairMethod = (quotation.VehicleAgencyRepair.HasValue && quotation.VehicleAgencyRepair.Value) ? 1 : 2; //int.Parse(quotation.VehicleAgencyRepair.Value.ToString());
+
+        //    //Lessee data= main driver data
+        //    proposalsautoleaserequest.Details.LesseeID = driver.DriverId;
+        //    proposalsautoleaserequest.Details.FullName = string.Format("{0} {1} {2}", driver.DriverFirstNameAr, driver.DriverMiddleNameAr, driver.DriverLastNameAr);
+        //    proposalsautoleaserequest.Details.ArabicFirstName = driver.DriverFirstNameAr;
+        //    proposalsautoleaserequest.Details.ArabicMiddleName = driver.DriverMiddleNameAr;
+        //    proposalsautoleaserequest.Details.ArabicLastName = driver.DriverLastNameAr;
+        //    proposalsautoleaserequest.Details.EnglishFirstName = driver.DriverFirstNameEn;
+        //    proposalsautoleaserequest.Details.EnglishMiddleName = driver.DriverMiddleNameEn;
+        //    proposalsautoleaserequest.Details.EnglishLastName = driver.DriverLastNameEn;
+        //    proposalsautoleaserequest.Details.LesseeNationalityID = driver.DriverId.ToString().StartsWith("1") ? (short?)0 : short.Parse(driver.DriverNationalityCode);
+        //    proposalsautoleaserequest.Details.VehicleUsagePercentage = driver.DriverDrivingPercentage.HasValue ? short.Parse(driver.DriverDrivingPercentage.ToString()) : (short)0;
+        //    proposalsautoleaserequest.Details.LesseeOccupation = driver.DriverOccupation;
+        //    proposalsautoleaserequest.Details.LesseeEducation = driver.DriverEducationCode.HasValue ? Enum.GetNames(typeof(EducationAr))[driver.DriverEducationCode.Value - 1] : "";  //((EducationAr)Enum.Parse(typeof(EducationAr),driver.DriverEducationCode.ToString())).ToString();
+        //    proposalsautoleaserequest.Details.LesseeChildrenBelow16 = quotation.InsuredChildrenBelow16Years.HasValue ? quotation.InsuredChildrenBelow16Years.Value : 0;
+        //    proposalsautoleaserequest.Details.LesseeWorkCompanyName = null;
+        //    proposalsautoleaserequest.Details.LesseeWorkCityID = quotation.InsuredWorkCityCode;
+        //    proposalsautoleaserequest.Details.CountriesValidDrivingLicense = null;//new List<CountriesValidDrivingLicense>() { new CountriesValidDrivingLicense { DriverLicenseYears = 12, DrivingLicenseCountryID = 11 } };
+        //    proposalsautoleaserequest.Details.LesseeNoOfClaims = driver.DriverNOCLast5Years.HasValue ? driver.DriverNOCLast5Years.Value.ToString() : null;
+        //    proposalsautoleaserequest.Details.LesseeTrafficViolationsCode = driver.DriverViolations.FirstOrDefault()?.ViolationCode.ToString();
+        //    proposalsautoleaserequest.Details.LesseeHealthConditionsCode = driver.DriverMedicalConditionCode.HasValue ? driver.DriverMedicalConditionCode.ToString() : null;
+        //    proposalsautoleaserequest.Details.LesseeDateOfBirthG = driver.DriverId.ToString().StartsWith("1") ? null : driver.DriverBirthDateG.ToString("dd-MM-yyyy", new CultureInfo("en-US"));
+        //    proposalsautoleaserequest.Details.LesseeDateOfBirthH = driver.DriverId.ToString().StartsWith("1") ? driver.DriverBirthDate : null;
+        //    proposalsautoleaserequest.Details.LesseeGender = driver.DriverGenderCode == "M" ? byte.Parse("1") : byte.Parse("2");
+        //    proposalsautoleaserequest.Details.LesseeMaritalStatus = string.IsNullOrEmpty(driver.DriverSocialStatusCode) ? (byte?)null : byte.Parse(driver.DriverSocialStatusCode);
+        //    proposalsautoleaserequest.Details.LesseeLicenseType = driver.DriverLicenses.Count() != 0 ? byte.Parse(driver.DriverLicenses.FirstOrDefault().DriverLicenseTypeCode) : new byte();
+        //    proposalsautoleaserequest.Details.LesseeLicenseOwnYears = driver.DriverLicenses.Count() != 0 ? byte.Parse(driver.DriverLicenses.FirstOrDefault().LicenseNumberYears.ToString()) : new byte();
+        //    proposalsautoleaserequest.Details.LesseeNCDCode = quotation.NCDFreeYears;//driver.DriverNCDFreeYears.HasValue? driver.DriverNCDFreeYears.Value:0;
+        //    proposalsautoleaserequest.Details.LesseeNCDReference = driver.DriverNCDReference;
+        //    proposalsautoleaserequest.Details.LesseeNoOfAccidents = quotation.NoOfAccident.HasValue ? quotation.NoOfAccident.Value : 0;
+
+        //    if (address != null)
+        //    {
+        //        var lesseeNationalAddress = new NationalAddress();
+        //        lesseeNationalAddress.City = address.City;
+        //        lesseeNationalAddress.BuildingNumber = string.IsNullOrEmpty(address.BuildingNumber) ? (int?)null : int.Parse(address.BuildingNumber);
+        //        lesseeNationalAddress.ZipCode = string.IsNullOrEmpty(address.PostCode) ? (int?)null : int.Parse(address.PostCode);
+        //        lesseeNationalAddress.AdditionalNumber = string.IsNullOrEmpty(address.AdditionalNumber) ? (int?)null : int.Parse(address.AdditionalNumber);
+        //        lesseeNationalAddress.Street = address.Street;
+        //        lesseeNationalAddress.District = address.District;
+        //        proposalsautoleaserequest.Details.LesseeNationalAddress = new List<NationalAddress>() { lesseeNationalAddress };
+        //    }
+        //    else
+        //    {
+        //        proposalsautoleaserequest.Details.LesseeNationalAddress = null;
+        //    }
+        //    proposalsautoleaserequest.Details.DriverDetails = quotation.Drivers.Skip(1).Count() != 0 ?
+        //    quotation.Drivers.Skip(1).Select(e => new DriverDetails
+        //    {
+        //        DriverID = e.DriverId,
+        //        DriverFullName = string.Format("{0} {1} {2}", e.DriverFirstNameAr, e.DriverMiddleNameAr, e.DriverLastNameAr),
+        //        ArabicFirstName = e.DriverFirstNameAr,
+        //        ArabicMiddleName = e.DriverMiddleNameAr,
+        //        ArabicLastName = e.DriverLastNameAr,
+        //        EnglishFirstName = e.DriverFirstNameEn,
+        //        EnglishMiddleName = e.DriverMiddleNameEn,
+        //        EnglishLastName = e.DriverLastNameEn,
+        //        DriverChildrenBelow16 = e.DriverChildrenBelow16Years is null ? "" : e.DriverChildrenBelow16Years.ToString(),
+        //        DriverDateOfBirthG = e.DriverId.ToString().StartsWith("1") ? null : e.DriverBirthDateG.ToString("dd-MM-yyyy", new CultureInfo("en-US")),
+        //        DriverDateOfBirthH = e.DriverId.ToString().StartsWith("1") ? e.DriverBirthDate : null,
+        //        DriverGender = e.DriverGenderCode == "M" ? byte.Parse("1") : byte.Parse("2"),
+        //        DriverEducation = e.DriverEducationCode.HasValue ? Enum.GetNames(typeof(EducationAr))[e.DriverEducationCode.Value - 1] : "",
+        //        DriverMaritalStatus = string.IsNullOrEmpty(e.DriverSocialStatusCode) ? 0 : int.Parse(e.DriverSocialStatusCode),
+        //        DriverNationalityID = e.DriverId.ToString().StartsWith("1") ? 0 : int.Parse(e.DriverNationalityCode),
+        //        DriverNoOfClaims = driver.DriverNOCLast5Years.HasValue ? driver.DriverNOCLast5Years.Value.ToString() : null,
+        //        DriverOccupation = e.DriverOccupation,
+        //        DriverWorkCompanyName = e.DriverWorkCity,
+        //        DriverWorkCityID = e.DriverWorkCityCode,
+        //        CountriesValidDrivingLicense = null,
+        //        DriverRelation = null,
+        //        VehicleUsagePercentage = e.DriverDrivingPercentage is null ? 0 : e.DriverDrivingPercentage.Value,
+        //        DriverHealthConditionsCode = null,
+        //        DriverHomeAddress = e.DriverHomeAddress,
+        //        DriverHomeAddressCity = e.DriverHomeCity,
+        //        DriverLicenseType = e.DriverLicenses.Count() != 0 ? byte.Parse(driver.DriverLicenses.FirstOrDefault()?.DriverLicenseTypeCode) : new byte(),
+        //        DriverLicenseOwnYears = e.DriverLicenses.FirstOrDefault().LicenseNumberYears,
+        //        DriverNoOfAccidents = 0
+        //    }).ToList() : null;
+
+        //    return proposalsautoleaserequest;
+        //}
+
+        //private VehicleModel GetTawuniyaModelCode(short elmMakerCode, long elmModelCode)
+        //{
+        //    return _vehicleModelRepository.TableNoTracking.Include(m => m.VehicleMaker).FirstOrDefault(m => m.VehicleMakerCode == elmMakerCode && m.Code == elmModelCode);
+        //}
+
+        //private QuotationServiceResponse HandleAutoLeaseProposalsResponse(string value, int? deductibleValue)
+        //{
+        //    AutoLeaseProposalsResponse Tawniya_AutoLease_response = JsonConvert.DeserializeObject<AutoLeaseProposalsResponse>(value);
+
+        //    QuotationServiceResponse response = new QuotationServiceResponse();
+        //    response.QuotationDate = null;
+        //    response.Errors = Tawniya_AutoLease_response.Errors;
+        //    response.StatusCode = Tawniya_AutoLease_response.Status == "true" ? 1 : 2;
+        //    response.ReferenceId = Tawniya_AutoLease_response.RequestReferenceNo;
+
+        //    var deductValue = deductibleValue.HasValue ? deductibleValue.Value.ToString() : "2000";
+        //    if (response.StatusCode == 1)
+        //    {
+        //        if (!string.IsNullOrEmpty(Tawniya_AutoLease_response.CompQuotes[0].QuoteReferenceNo.ToString()))
+        //            response.QuotationNo = Tawniya_AutoLease_response.CompQuotes[0].QuoteReferenceNo.ToString();
+        //        else
+        //            response.QuotationNo = "";
+
+        //        List<BenefitDto> list_benefits = new List<BenefitDto>();
+        //        List<ProductDto> list_products = new List<ProductDto>();
+        //        List<PriceDto> list_pricedetails = new List<PriceDto>();
+
+        //        foreach (CompQuotes product in Tawniya_AutoLease_response.CompQuotes)
+        //        {
+        //            Deductibles deduct = product.Deductibles.FirstOrDefault(e => e.DeductibleAmount == deductValue);
+
+        //            list_products.Add(new ProductDto
+        //            {
+        //                ProductId = product.PolicyTitleID,
+        //                ProductPrice = Convert.ToDecimal(deduct.PolicyPremium),
+        //                DeductibleValue = int.Parse(deduct.DeductibleAmount)
+        //            });
+
+        //            if (deduct.PremiumBreakdown != null)
+        //            {
+        //                var priceDetail = deduct.PremiumBreakdown.FirstOrDefault(e => e.BreakdownTypeID == "2");
+        //                if (priceDetail != null)
+        //                    list_pricedetails.Add(new PriceDto
+        //                    {
+        //                        PriceValue = Convert.ToDecimal(priceDetail.BreakdownAmount),
+        //                        PercentageValue = 0,
+        //                        PriceTypeCode = 7
+        //                    });
+
+        //                priceDetail = deduct.PremiumBreakdown.FirstOrDefault(e => e.BreakdownTypeID == "20");
+        //                if (priceDetail != null)
+        //                    list_pricedetails.Add(new PriceDto
+        //                    {
+        //                        PriceValue = Convert.ToDecimal(priceDetail.BreakdownAmount) * 0.15M,
+        //                        PercentageValue = 15,
+        //                        PriceTypeCode = 8
+        //                    });
+
+        //                priceDetail = deduct.PremiumBreakdown.FirstOrDefault(e => e.BreakdownTypeID == "3");
+        //                if (priceDetail != null)
+        //                    list_pricedetails.Add(new PriceDto
+        //                    {
+        //                        PriceValue = Convert.ToDecimal(priceDetail.BreakdownAmount),
+        //                        PercentageValue = 15,
+        //                        PriceTypeCode = 4
+        //                    });
+
+        //                priceDetail = deduct.PremiumBreakdown.FirstOrDefault(e => e.BreakdownTypeID == "1");
+        //                if (priceDetail != null)
+        //                    list_pricedetails.Add(new PriceDto
+        //                    {
+        //                        PriceValue = Convert.ToDecimal(priceDetail.BreakdownAmount),
+        //                        PercentageValue = 0,
+        //                        PriceTypeCode = 6
+        //                    });
+        //            }
+
+        //            if (deduct.Discounts != null)
+        //            {
+        //                var discount = deduct.Discounts.FirstOrDefault(e => e.DiscountTypeID == "1");
+        //                if (discount != null)
+        //                    list_pricedetails.Add(new PriceDto
+        //                    {
+        //                        PriceValue = Convert.ToDecimal(discount.DiscountAmount),
+        //                        PercentageValue = Convert.ToDecimal(discount.DiscountPercentage),
+        //                        PriceTypeCode = 3
+        //                    });
+
+        //                discount = deduct.Discounts.FirstOrDefault(e => e.DiscountTypeID == "2");
+        //                if (discount != null)
+        //                    list_pricedetails.Add(new PriceDto
+        //                    {
+        //                        PriceValue = Convert.ToDecimal(discount.DiscountAmount),
+        //                        PercentageValue = Convert.ToDecimal(discount.DiscountPercentage),
+        //                        PriceTypeCode = 2
+        //                    });
+
+        //                discount = deduct.Discounts.FirstOrDefault(e => e.DiscountTypeID == "5");
+        //                if (discount != null)
+        //                    list_pricedetails.Add(new PriceDto
+        //                    {
+        //                        PriceValue = Convert.ToDecimal(discount.DiscountAmount),
+        //                        PercentageValue = Convert.ToDecimal(discount.DiscountPercentage),
+        //                        PriceTypeCode = 1
+        //                    });
+
+        //                discount = deduct.Discounts.FirstOrDefault(e => e.DiscountTypeID == "6");
+        //                if (discount != null)
+        //                    list_pricedetails.Add(new PriceDto
+        //                    {
+        //                        PriceValue = Convert.ToDecimal(discount.DiscountAmount),
+        //                        PercentageValue = Convert.ToDecimal(discount.DiscountPercentage),
+        //                        PriceTypeCode = 11
+        //                    });
+        //            }
+
+        //            var benefits = product.PolicyPremiumFeatures;
+        //            if (benefits != null)
+        //            {
+        //                var feature2 = benefits.FirstOrDefault(e => e.FeatureID == "2");
+        //                if (feature2 != null)
+        //                    list_benefits.Add(new BenefitDto
+        //                    {
+        //                        BenefitId = "2",
+        //                        BenefitPrice = Convert.ToDecimal(feature2.FeatureAmount),
+        //                        BenefitCode = 3,
+        //                        IsSelected = feature2.FeatureTypeID.Equals("2") ? true : false,
+        //                        IsReadOnly = feature2.FeatureTypeID.Equals("2") ? true : false
+        //                    });
+
+        //                var feature3 = benefits.FirstOrDefault(e => e.FeatureID == "3");
+        //                if (feature3 != null)
+        //                    list_benefits.Add(new BenefitDto
+        //                    {
+        //                        BenefitId = "3",
+        //                        BenefitPrice = Convert.ToDecimal(feature3.FeatureAmount),
+        //                        BenefitCode = 4,
+        //                        IsSelected = feature3.FeatureTypeID.Equals("2") ? true : false,
+        //                        IsReadOnly = feature3.FeatureTypeID.Equals("2") ? true : false
+        //                    });
+
+        //                var feature4 = benefits.FirstOrDefault(e => e.FeatureID == "4");
+        //                if (feature4 != null)
+        //                    list_benefits.Add(new BenefitDto
+        //                    {
+        //                        BenefitId = "4",
+        //                        BenefitPrice = Convert.ToDecimal(feature4.FeatureAmount),
+        //                        BenefitCode = 14,
+        //                        IsSelected = feature4.FeatureTypeID.Equals("2") ? true : false,
+        //                        IsReadOnly = feature4.FeatureTypeID.Equals("2") ? true : false
+        //                    });
+
+        //                var feature5 = benefits.FirstOrDefault(e => e.FeatureID == "5");
+        //                if (feature5 != null)
+        //                    list_benefits.Add(new BenefitDto
+        //                    {
+        //                        BenefitId = "5",
+        //                        BenefitPrice = Convert.ToDecimal(feature5.FeatureAmount),
+        //                        BenefitCode = 1,
+        //                        IsSelected = feature5.FeatureTypeID.Equals("2") ? true : false,
+        //                        IsReadOnly = feature5.FeatureTypeID.Equals("2") ? true : false
+        //                    });
+
+        //                var feature6 = benefits.FirstOrDefault(e => e.FeatureID == "6");
+        //                if (feature6 != null)
+        //                    list_benefits.Add(new BenefitDto
+        //                    {
+        //                        BenefitId = "6",
+        //                        BenefitPrice = Convert.ToDecimal(feature6.FeatureAmount),
+        //                        BenefitCode = 2,
+        //                        IsSelected = feature6.FeatureTypeID.Equals("2") ? true : false,
+        //                        IsReadOnly = feature6.FeatureTypeID.Equals("2") ? true : false
+        //                    });
+
+        //                var feature7 = benefits.FirstOrDefault(e => e.FeatureID == "7");
+        //                if (feature7 != null)
+        //                    list_benefits.Add(new BenefitDto
+        //                    {
+        //                        BenefitId = "7",
+        //                        BenefitPrice = Convert.ToDecimal(feature7.FeatureAmount),
+        //                        BenefitCode = 9,
+        //                        IsSelected = feature7.FeatureTypeID.Equals("2") ? true : false,
+        //                        IsReadOnly = feature7.FeatureTypeID.Equals("2") ? true : false
+        //                    });
+
+        //                var feature8 = benefits.FirstOrDefault(e => e.FeatureID == "8");
+        //                if (feature8 != null)
+        //                    list_benefits.Add(new BenefitDto
+        //                    {
+        //                        BenefitId = "8",
+        //                        BenefitPrice = Convert.ToDecimal(feature8.FeatureAmount),
+        //                        BenefitCode = 10,
+        //                        IsSelected = feature8.FeatureTypeID.Equals("2") ? true : false,
+        //                        IsReadOnly = feature8.FeatureTypeID.Equals("2") ? true : false
+        //                    });
+
+        //                var feature9 = benefits.FirstOrDefault(e => e.FeatureID == "9");
+        //                if (feature9 != null)
+        //                    list_benefits.Add(new BenefitDto
+        //                    {
+        //                        BenefitId = "9",
+        //                        BenefitPrice = Convert.ToDecimal(feature9.FeatureAmount),
+        //                        BenefitCode = 12,
+        //                        IsSelected = feature9.FeatureTypeID.Equals("2") ? true : false,
+        //                        IsReadOnly = feature9.FeatureTypeID.Equals("2") ? true : false
+        //                    });
+
+        //                var feature10 = benefits.FirstOrDefault(e => e.FeatureID == "10");
+        //                if (feature10 != null)
+        //                    list_benefits.Add(new BenefitDto
+        //                    {
+        //                        BenefitId = "10",
+        //                        BenefitPrice = Convert.ToDecimal(feature10.FeatureAmount),
+        //                        BenefitCode = 11,
+        //                        IsSelected = feature10.FeatureTypeID.Equals("2") ? true : false,
+        //                        IsReadOnly = feature10.FeatureTypeID.Equals("2") ? true : false
+        //                    });
+        //            }
+        //            response.Products = list_products;
+        //            response.Products[0].PriceDetails = list_pricedetails;
+        //            response.Products[0].Benefits = list_benefits;
+        //        }
+        //        return response;
+        //    }
+        //    return response;
+        //}
+
+        //protected PolicyOutput SubmitAutoleasingPolicyRequest(PolicyRequest policy, ServiceRequestLog log)
+        //{
+
+        //    PolicyOutput output = new PolicyOutput();
+        //    var configuration = Configuration as RestfulConfiguration;
+        //    log.ReferenceId = policy.ReferenceId;
+        //    log.Channel = "autoleasing";
+        //    log.ServiceURL = configuration.GeneratePolicyUrl;
+        //    log.ServerIP = ServicesUtilities.GetServerIP();
+        //    log.CompanyName = configuration.ProviderName;
+        //    var stringPayload = string.Empty;
+        //    var policyRequest = HandleAutoLeasePolicyRequest(policy);
+        //    log.ServiceRequest = JsonConvert.SerializeObject(policyRequest);
+        //    var request = _policyProcessingQueueRepository.Table.Where(a => a.ReferenceId == policy.ReferenceId).FirstOrDefault();
+        //    if (request != null)
+        //    {
+        //        request.RequestID = log.RequestId;
+        //        request.CompanyName = log.CompanyName;
+        //        request.CompanyID = log.CompanyID;
+        //        request.InsuranceTypeCode = log.InsuranceTypeCode;
+        //        request.DriverNin = log.DriverNin;
+        //        request.VehicleId = log.VehicleId;
+        //        request.ServiceRequest = log.ServiceRequest;
+        //    }
+        //    HttpResponseMessage message = new HttpResponseMessage
+        //    {
+        //        StatusCode = System.Net.HttpStatusCode.OK
+        //    };
+        //    try
+        //    {
+        //        var testMode = _tameenkConfig.Policy.TestMode;
+        //        if (testMode)
+        //        {
+        //            string nameOfFileJson = ".TestData.policyTestData.json";
+        //            string responseDataJson = ReadResource(GetType().Namespace, nameOfFileJson);
+        //            var handledResponse = JsonConvert.SerializeObject(HandleTawuniyaPolicyResponse(responseDataJson));
+        //            message.Content = new StringContent(handledResponse);
+        //            output.Output = message;
+        //            output.ErrorCode = PolicyOutput.ErrorCodes.Success;
+        //            output.ErrorDescription = "Success";
+
+        //            return output;
+        //        }
+
+        //        policyRequest = HandleAutoLeasePolicyRequest(policy);
+        //        stringPayload = JsonConvert.SerializeObject(policyRequest);
+        //        log.ServiceRequest = stringPayload;
+        //        log.Method = "AutoleasingPolicy";
+        //        if (request != null)
+        //        {
+        //            request.ServiceRequest = log.ServiceRequest;
+        //        }
+        //        var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+        //        string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(configuration.AccessToken));
+
+        //        DateTime dtBeforeCalling = DateTime.Now;
+        //        HttpResponseMessage response = null;
+
+        //        using (var httpClient = new HttpClient())
+        //        {
+        //            var requestHeader = new HttpRequestMessage
+        //            {
+        //                Method = HttpMethod.Post,
+        //                RequestUri = new Uri(GET_POLICY_AutoLease_URL),
+        //                Content = new StringContent(stringPayload, Encoding.UTF8, "application/json")
+        //            };
+
+        //            requestHeader.Headers.Add("Accept", "application/json");
+        //            requestHeader.Headers.Add(TAWUNIYA_API_KEY, TAWUNIYA_API_ACCESS_KEY);
+        //            httpClient.DefaultRequestHeaders.ExpectContinue = false;
+
+        //            response = httpClient.SendAsync(requestHeader).Result;
+        //        }
+        //        DateTime dtAfterCalling = DateTime.Now;
+        //        log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
+        //        if (response == null)
+        //        {
+        //            //update policyProcessingQueue Table;
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = " service Return null";
+        //                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
+        //            }
+        //            output.ErrorCode = PolicyOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (response.Content == null)
+        //        {
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = " service response content return null";
+        //                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
+        //            }
+        //            output.ErrorCode = PolicyOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+        //        {
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = " Service response content result return null";
+        //                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
+        //            }
+        //            output.ErrorCode = PolicyOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content result return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+
+        //        log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+        //        PolicyResponse tawuniyaModifiedResponse = HandleAutoLeasePolicyResponse(response, policy);
+        //        var tawuniyaJson = JsonConvert.SerializeObject(tawuniyaModifiedResponse);
+        //        message.Content = new StringContent(tawuniyaJson);
+        //        request.ServiceResponse = log.ServiceResponse;
+
+        //        if (tawuniyaModifiedResponse.StatusCode != 1)
+        //        {
+        //            StringBuilder servcieErrors = new StringBuilder();
+        //            StringBuilder servcieErrorsCodes = new StringBuilder();
+
+        //            foreach (var error in tawuniyaModifiedResponse.Errors)
+        //            {
+        //                servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
+        //                servcieErrorsCodes.AppendLine(error.Code);
+        //            }
+        //            output.ErrorCode = PolicyOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "Policy Service response error is : " + servcieErrors.ToString();
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = servcieErrorsCodes.ToString();
+        //            log.ServiceErrorDescription = servcieErrors.ToString();
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = output.ErrorDescription;
+        //                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
+        //            }
+
+        //            return output;
+        //        }
+        //        if (string.IsNullOrEmpty(tawuniyaModifiedResponse?.PolicyNo))
+        //        {
+        //            output.ErrorCode = PolicyOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = "No PolicyNo returned from company";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            if (request != null)
+        //            {
+        //                request.ErrorDescription = output.ErrorDescription;
+        //                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
+        //            }
+        //            return output;
+        //        }
+
+
+        //        output.Output = message;
+        //        output.ErrorCode = PolicyOutput.ErrorCodes.Success;
+        //        output.ErrorDescription = "Success";
+        //        log.PolicyNo = tawuniyaModifiedResponse?.PolicyNo;
+
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        log.ServiceErrorCode = log.ErrorCode.ToString();
+        //        log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //        if (request != null)
+        //        {
+        //            request.ErrorDescription = output.ErrorDescription;
+        //            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
+        //        }
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.ErrorCode = PolicyOutput.ErrorCodes.ServiceException;
+        //        output.ErrorDescription = ex.ToString();
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        if (request != null)
+        //        {
+        //            request.ErrorDescription = output.ErrorDescription;
+        //            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
+        //        }
+        //        return output;
+        //    }
+        //}
+
+        //private PolicyResponse HandleAutoLeasePolicyResponse(object response, PolicyRequest request = null)
+        //{
+        //    PolicyResponse policyResponse = null;
+
+        //    string result = string.Empty;
+        //    var stringPayload = JsonConvert.SerializeObject(request);
+        //    try
+        //    {
+        //        result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
+        //        AutoLeasingPolicyResponse responseValue = JsonConvert.DeserializeObject<AutoLeasingPolicyResponse>(result);
+        //        if (IsValidPolicyResponseAutoleasing(responseValue))
+        //        {
+        //            policyResponse = new PolicyResponse
+        //            {
+        //                Errors = responseValue.errors,
+        //                PolicyNo = responseValue.PolicyNumber,
+        //                ReferenceId = request.ReferenceId,
+        //                StatusCode = (responseValue.Status.ToLower() == "true") ? 1 : 2,
+        //                PolicyEffectiveDate = Utilities.ConvertStringToDateTimeFromAllianz(responseValue.PolicyEffectiveDate + " 00:00:00"),
+        //                PolicyExpiryDate = Utilities.ConvertStringToDateTimeFromAllianz(responseValue.PolicyExpiryDate + " 23:59:59"),
+        //                PolicyIssuanceDate = DateTime.Now
+        //            };
+        //        }
+
+        //        return policyResponse;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return policyResponse;
+        //    }
+        //}
+
+        //private AutoLeasingPolicyRequest HandleAutoLeasePolicyRequest(PolicyRequest policy)
+        //{
+        //    var vehicle_id = _quotationRequestRepository.TableNoTracking.Where(e => e.ID == policy.QuotationRequestId).Select(e => e.VehicleId).FirstOrDefault();
+        //    var vehicle = _vehicleRepository.TableNoTracking.Where(e => e.ID == vehicle_id).FirstOrDefault();
+        //    var mainDriver = _quotationRequestRepository.TableNoTracking.Include(q => q.Driver).FirstOrDefault(q => q.ID == policy.QuotationRequestId).Driver;
+        //    AutoLeasingPolicyRequest policyautoleaserequest = new AutoLeasingPolicyRequest();
+
+        //    policyautoleaserequest.RequestReferenceNo = policy.ReferenceId;
+        //    policyautoleaserequest.PolicyRequestReferenceNo = policy.ReferenceId;
+        //    policyautoleaserequest.QuoteReferenceNo = int.Parse(policy.QuotationNo);
+        //    policyautoleaserequest.SourceCode = 757701;
+        //    policyautoleaserequest.UserName = "BCA001";
+
+        //    policyautoleaserequest.Details = new AutoleasingPolicyRequestDetails();
+        //    policyautoleaserequest.Details.Email = policy.InsuredEmail;
+        //    policyautoleaserequest.Details.MobileNo = policy.InsuredMobileNumber.TrimStart('0');
+        //    policyautoleaserequest.Details.LesseeID = long.Parse(mainDriver.NIN);
+        //    policyautoleaserequest.Details.PolicyEffectiveDate = policy.PolicyEffectiveDate.Value.ToString("yyyy-MM-dd", new CultureInfo("en-US"));
+        //    policyautoleaserequest.Details.PolicyNumber = string.Empty; //Not Mandatory
+        //    policyautoleaserequest.Details.PaidAmount = policy.PaymentAmount.ToString();
+        //    policyautoleaserequest.Details.VehicleUniqueTypeID = vehicle.VehicleIdTypeId.ToString();
+
+        //    if (vehicle.VehicleIdTypeId == 1)
+        //    {
+        //        policyautoleaserequest.Details.VehicleSequenceNumber = vehicle.SequenceNumber;
+        //        policyautoleaserequest.Details.VehiclePlateTypeID = vehicle.PlateTypeCode.ToString();
+        //        policyautoleaserequest.Details.VehiclePlateNumber = vehicle.CarPlateNumber.ToString();
+        //        policyautoleaserequest.Details.FirstPlateLetterID = PlateCharacterMapping(vehicle.CarPlateText1);
+        //        policyautoleaserequest.Details.SecondPlateLetterID = PlateCharacterMapping(vehicle.CarPlateText2);
+        //        policyautoleaserequest.Details.ThirdPlateLetterID = PlateCharacterMapping(vehicle.CarPlateText3);
+        //        policyautoleaserequest.Details.VehicleRegistrationExpiryDate = vehicle.LicenseExpiryDate;
+        //    }
+        //    else
+        //    {
+        //        policyautoleaserequest.Details.VehicleCustomID = vehicle.CustomCardNumber;
+        //    }
+
+        //    policyautoleaserequest.Details.VehicleVIN = vehicle.ChassisNumber;
+        //    return policyautoleaserequest;
+        //}
+
+        //private string PlateCharacterMapping(string plateCharacter)
+        //{
+        //    string mappedCharacter = null;
+        //    if (plateCharacter == "أ" || plateCharacter == "ا" || plateCharacter == "A")
+        //    {
+        //        mappedCharacter = "1";
+        //    }
+        //    else if (plateCharacter == "ب" || plateCharacter == "B")
+        //    {
+        //        mappedCharacter = "2";
+        //    }
+        //    else if (plateCharacter == "د" || plateCharacter == "D")
+        //    {
+        //        mappedCharacter = "3";
+        //    }
+        //    else if (plateCharacter == "ح" || plateCharacter == "J")
+        //    {
+        //        mappedCharacter = "4";
+        //    }
+        //    else if (plateCharacter == "ه" || plateCharacter == "H")
+        //    {
+        //        mappedCharacter = "5";
+        //    }
+        //    else if (plateCharacter == "ع" || plateCharacter == "E")
+        //    {
+        //        mappedCharacter = "6";
+        //    }
+        //    else if (plateCharacter == "ق" || plateCharacter == "G")
+        //    {
+        //        mappedCharacter = "7";
+        //    }
+        //    else if (plateCharacter == "ص" || plateCharacter == "X")
+        //    {
+        //        mappedCharacter = "8";
+        //    }
+        //    else if (plateCharacter == "ط" || plateCharacter == "T")
+        //    {
+        //        mappedCharacter = "9";
+        //    }
+        //    else if (plateCharacter == "ك" || plateCharacter == "K")
+        //    {
+        //        mappedCharacter = "10";
+        //    }
+        //    else if (plateCharacter == "م" || plateCharacter == "Z")
+        //    {
+        //        mappedCharacter = "11";
+        //    }
+        //    else if (plateCharacter == "ن" || plateCharacter == "N")
+        //    {
+        //        mappedCharacter = "12";
+        //    }
+        //    else if (plateCharacter == "ل" || plateCharacter == "L")
+        //    {
+        //        mappedCharacter = "13";
+        //    }
+        //    else if (plateCharacter == "ى" || plateCharacter == "ي" || plateCharacter == "V")
+        //    {
+        //        mappedCharacter = "14";
+        //    }
+        //    else if (plateCharacter == "س" || plateCharacter == "S")
+        //    {
+        //        mappedCharacter = "15";
+        //    }
+        //    else if (plateCharacter == "و" || plateCharacter == "U")
+        //    {
+        //        mappedCharacter = "16";
+        //    }
+        //    else if (plateCharacter == "ر" || plateCharacter == "R")
+        //    {
+        //        mappedCharacter = "17";
+        //    }
+        //    return mappedCharacter;
+        //}
+
+        //private bool IsValidPolicyResponseAutoleasing(AutoLeasingPolicyResponse policyResponse)
+        //{
+        //    if (policyResponse == null) return false;
+        //    if (policyResponse.Status.ToLower() != "true")
+        //        return false;
+        //    if (policyResponse.PolicyNumber == null)
+        //        return false;
+
+        //    return true;
+        //}
+
+        //public override ServiceOutput GetTawuniyaAutoleasingQuotation(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        //{
+        //    ServiceOutput serviceOutput = new ServiceOutput();
+        //    var output = GetAutoLeaseQuotationRequest(quotation, predefinedLogInfo);
+        //    if (output.ErrorCode == QuotationOutput.ErrorCodes.Success)
+        //    {
+        //        serviceOutput.ErrorCode = ServiceOutput.ErrorCodes.Success;
+        //        serviceOutput.Output = output.ServiceResponse;
+        //        return serviceOutput;
+        //    }
+        //    else
+        //    {
+        //        serviceOutput.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //        serviceOutput.ErrorDescription = output.ErrorDescription;
+        //        return serviceOutput;
+        //    }
+        //}
+
+        //private QuotationOutput GetAutoLeaseQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        //{
+        //    var configuration = Configuration as RestfulConfiguration;
+        //    HttpResponseMessage message = new HttpResponseMessage();
+        //    message.StatusCode = System.Net.HttpStatusCode.OK;
+        //    QuotationOutput output = new QuotationOutput();
+        //    log.ReferenceId = quotation.ReferenceId;
+        //    log.ServiceURL = configuration.GenerateAutoleasingQuotationUrl;
+        //    log.Channel = Channel.autoleasing.ToString();
+        //    log.ServerIP = ServicesUtilities.GetServerIP();
+        //    log.Method = "AutoleasingQuotation";
+        //    log.CompanyName = "Tawuniya";
+        //    log.VehicleMaker = quotation?.VehicleMaker;
+        //    log.VehicleMakerCode = quotation?.VehicleMakerCode;
+        //    log.VehicleModel = quotation?.VehicleModel;
+        //    log.VehicleModelCode = quotation?.VehicleModelCode;
+        //    log.VehicleModelYear = quotation?.VehicleModelYear;
+        //    try
+        //    {
+        //        if (_tameenkConfig.Quotatoin.TestMode)
+        //        {
+        //            string nameOfFileJson = ".TestData.quotationTestData.json";
+        //            string tawuniyaResponse = ReadResource(GetType().Namespace, nameOfFileJson);
+        //            var handledResponse = JsonConvert.SerializeObject(HandleProposalResponse(tawuniyaResponse, quotation));
+        //            message.Content = new StringContent(handledResponse);
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.Success;
+        //            output.ErrorDescription = "Success";
+        //            return output;
+        //        }
+
+        //        AutoLeaseQuotationRequest request = HandleAutoLeaseQuotationRequest(quotation);
+        //        string stringPayload = JsonConvert.SerializeObject(request);
+        //        log.ServiceRequest = stringPayload;
+        //        var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+        //        //string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(configuration.AutoleasingAccessToken));
+        //        DateTime dtBeforeCalling = DateTime.Now;
+
+        //        HttpResponseMessage response = null;
+        //        using (var httpClient = new HttpClient())
+        //        {
+        //            var requestHeader = new HttpRequestMessage
+        //            {
+        //                Method = HttpMethod.Post,
+        //                RequestUri = new Uri(GET_QUOTATION_AutoLease_URL),
+        //                Content = new StringContent(stringPayload, Encoding.UTF8, "application/json")
+        //            };
+
+        //            requestHeader.Headers.Add("Accept", "application/json");
+        //            requestHeader.Headers.Add(TAWUNIYA_API_KEY, TAWUNIYA_API_ACCESS_KEY);
+        //            httpClient.DefaultRequestHeaders.ExpectContinue = false;
+
+        //            response = httpClient.SendAsync(requestHeader).Result;
+        //        }
+
+        //        DateTime dtAfterCalling = DateTime.Now;
+        //        log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
+        //        if (response == null)
+        //        {
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+
+        //        if (response.Content == null)
+        //        {
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service response content return null";
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+        //        {
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
+        //            //int _ErrorCode = (int)
+        //            output.ErrorDescription = "Service response content result return null and response.StatusCode is " + response.StatusCode + " response.Content.ReadAsStringAsync() " + response.Content.ReadAsStringAsync().Status.ToString() + " response.Content.ReadAsStringAsync().Result " + response.Content.ReadAsStringAsync().Result;
+        //            log.ServiceResponse = response.ToString();
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = log.ErrorCode.ToString();
+        //            log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+
+        //        var value = response.Content.ReadAsStringAsync().Result;
+        //        //QuotationServiceResponse _quotation = new QuotationServiceResponse();
+        //        var tawuniyaModifiedResponse = HandleAutoLeaseQuotationResponse(value);
+        //        var tawuniyaJson = JsonConvert.SerializeObject(tawuniyaModifiedResponse);
+        //        message.Content = new StringContent(tawuniyaJson);
+        //        log.ServiceResponse = value;
+
+        //        if (tawuniyaModifiedResponse.StatusCode != 1)
+        //        {
+        //            StringBuilder servcieErrors = new StringBuilder();
+        //            StringBuilder servcieErrorsCodes = new StringBuilder();
+
+        //            foreach (var error in tawuniyaModifiedResponse.Errors)
+        //            {
+        //                servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
+        //                servcieErrorsCodes.AppendLine(error.Code);
+        //            }
+
+        //            output.ErrorCode = QuotationOutput.ErrorCodes.ServiceError;
+        //            string _ErrorDescription = "Quotation Service response error is : " + servcieErrors.ToString();
+        //            log.ErrorCode = (int)output.ErrorCode;
+        //            log.ErrorDescription = output.ErrorDescription;
+        //            log.ServiceErrorCode = servcieErrorsCodes.ToString();
+        //            log.ServiceErrorDescription = servcieErrors.ToString();
+        //            ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //            return output;
+        //        }
+        //        output.Output = message;
+        //        output.ErrorCode = QuotationOutput.ErrorCodes.Success;
+        //        output.ErrorDescription = "Success";
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        log.ServiceErrorCode = log.ErrorCode.ToString();
+        //        log.ServiceErrorDescription = log.ServiceErrorDescription;
+        //        log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.ErrorCode = QuotationOutput.ErrorCodes.ServiceException;
+        //        output.ErrorDescription = ex.ToString();
+        //        log.ErrorCode = (int)output.ErrorCode;
+        //        log.ErrorDescription = output.ErrorDescription;
+        //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+        //        return output;
+        //    }
+        //}
+
+        //private AutoLeaseQuotationRequest HandleAutoLeaseQuotationRequest(QuotationServiceRequest quotation)
+        //{
+        //    //get user benifits
+        //    var shoppingCartItemBenefits = _shoppingCartItemRepository.TableNoTracking
+        //        .Include(s => s.ShoppingCartItemBenefits)
+        //        .FirstOrDefault(e => e.ReferenceId == quotation.ReferenceId)?.ShoppingCartItemBenefits;
+
+        //    List<Product_Benefit> productBenefits = null;
+        //    if (shoppingCartItemBenefits != null && shoppingCartItemBenefits.Any())
+        //    {
+        //        var shoppingCartItemBenefits_ProductBenefitId = shoppingCartItemBenefits.Select(s => s.ProductBenefitId);
+        //        productBenefits = _productBenefitRepository.TableNoTracking
+        //        .Where(e => shoppingCartItemBenefits_ProductBenefitId.Contains(e.Id)).ToList();
+        //    }
+
+        //    AutoLeaseQuotationRequest request = new AutoLeaseQuotationRequest();
+        //    request.PolicyRequestReferenceNo = quotation.ReferenceId;
+        //    request.RequestReferenceNo = quotation.ReferenceId;
+        //    request.SourceCode = 757701;
+        //    request.UserName = "BCA001";
+        //    request.QuoteReferenceNo = int.Parse(quotation.QuotationNo);
+        //    request.Details = new Details()
+        //    {
+        //        DeductibleAmount = quotation.DeductibleValue.ToString(),
+        //        //DeductibleReferenceNo = null,
+        //        PolicyPremiumFeatures = productBenefits != null ? productBenefits.Select(e => new PolicyPremiumFeatures()
+        //        {
+        //            FeatureID = e.BenefitExternalId,
+        //            FeatureAmount = (e.BenefitPrice * 1.15M).Value.ToString("F0", CultureInfo.InvariantCulture),
+        //            FeatureTaxableAmount = (e.BenefitPrice * 1.15M).Value.ToString("F0", CultureInfo.InvariantCulture),
+        //            FeatureTypeID = e.BenefitPrice == 0 ? "2" : "1"
+
+        //        }).ToList() : null
+        //    };
+        //    request.CustomizedParameter = null;
+        //    return request;
+        //}
+
+        //private QuotationServiceResponse HandleAutoLeaseQuotationResponse(string value)
+        //{
+        //    AutoLeaseQuotationResponse Tawniya_AutoLease_response = JsonConvert.DeserializeObject<AutoLeaseQuotationResponse>(value);
+        //    QuotationServiceResponse response = new QuotationServiceResponse();
+        //    response.Errors = Tawniya_AutoLease_response.Errors;
+        //    response.StatusCode = Tawniya_AutoLease_response.Status == "True" ? 1 : 2;
+        //    return response;
+        //}
+
+        //#endregion
 
         #region Private Methods
 
@@ -1601,7 +1594,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
             //HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                if (_tameenkConfig.Quotatoin.TestMode)
+                if (_quotationConfig.TestMode)
                 {
                     string nameOfFileJson = ".TestData.quotationTestData.json";
                     string tawuniyaResponse = ReadResource(GetType().Namespace, nameOfFileJson);
@@ -1731,7 +1724,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
             log.VehicleModelYear = quotation?.VehicleModelYear;
             try
             {
-                if (_tameenkConfig.Quotatoin.TestMode)
+                if (_quotationConfig.TestMode)
                 {
                     string nameOfFileJson = ".TestData.quotationTestData.json";
                     string tawuniyaResponse = ReadResource(GetType().Namespace, nameOfFileJson);
@@ -2600,7 +2593,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
             if (p == null)
                 throw new TameenkArgumentException("No product found with this id");
             p.QuotaionNo = quotationNo;
-            _productRepository.Update(p);
+            _productRepository.UpdateAsync(p).Wait();
         }
 
         #endregion

@@ -57,7 +57,7 @@ namespace Tameenk.Data
 
         IQueryable<TEntity> TableNoTracking { get; }
 
-        IQueryable<TEntity> IRepository<TEntity>.Table => throw new System.NotImplementedException();
+        IQueryable<TEntity> IRepository<TEntity>.Table => _dbSet.AsNoTracking();//throw new System.NotImplementedException();
 
         IQueryable<TEntity> IRepository<TEntity>.TableNoTracking => _dbSet.AsNoTracking();
         public async Task InsertAsync(IEnumerable<TEntity> entity)

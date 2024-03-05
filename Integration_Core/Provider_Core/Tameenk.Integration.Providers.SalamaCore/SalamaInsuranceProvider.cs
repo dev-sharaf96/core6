@@ -16,6 +16,9 @@ using Tameenk.Loggin.DAL;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
+using DocumentFormat.OpenXml.Office2021.DocumentTasks;
+using System.Threading.Tasks;
+using Tameenk.Services;
 
 namespace Tameenk.Integration.Providers.Salama
 {
@@ -25,14 +28,14 @@ namespace Tameenk.Integration.Providers.Salama
         private const string POLICY_COMPREHENSIVE_URL = "http://37.99.174.44:6800/api/CompPolicy/RequestPolicy";
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
         private readonly ServiceProvider _serviceProvider;
-        public SalamaInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger,IServiceCollection serviceCollection, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
-             : base(tameenkConfig, new RestfulConfiguration
+        public SalamaInsuranceProvider(IQuotationConfig quotationConfig, IServiceCollection serviceCollection, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
+             : base(quotationConfig, new RestfulConfiguration
              {
                  GenerateQuotationUrl = "http://37.99.174.44:6800/api/Quotation/RequestQuotation",
                  GeneratePolicyUrl = "http://37.99.174.44:6800/api/Policy/RequestPolicy",
                  AccessToken = "",
                  ProviderName = "Salama"
-             }, logger, policyProcessingQueueRepository)
+             }, policyProcessingQueueRepository)
         {
             _checkoutDetail = checkoutDetail;
             _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -81,7 +84,7 @@ namespace Tameenk.Integration.Providers.Salama
             }
             return true;
         }
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             var configuration = Configuration as RestfulConfiguration;
             //change the quotation url to tpl in case product type code = 1

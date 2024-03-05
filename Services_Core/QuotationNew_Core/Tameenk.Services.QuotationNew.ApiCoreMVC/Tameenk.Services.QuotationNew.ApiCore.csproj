@@ -28,6 +28,27 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Integration\Providers\Tameenk.Integration.Providers.ACIGCore\Tameenk.Integration.Providers.ACIG.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.AICC.Core\Tameenk.Integration.Providers.AICC.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.AlalamiyaCore\Tameenk.Integration.Providers.AlalamiyaCore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.AllianzCore\Tameenk.Integration.Providers.AllianzCore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.AlRajhiCore\Tameenk.Integration.Providers.AlRajhiCore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.AmanaCore\Tameenk.Integration.Providers.AmanaCore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.ArabianShieldCore\Tameenk.Integration.Providers.ArabianShieldCore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.AXACore\Tameenk.Integration.Providers.AXACore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.BCARECore\Tameenk.Integration.Providers.BCARECore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.BurujCore\Tameenk.Integration.Providers.BurujCore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.GGI.Core\Tameenk.Integration.Providers.GGI.Core.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.MalathCore\Tameenk.Integration.Providers.MalathCore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.MedGulfCore\Tameenk.Integration.Providers.MedGulfCore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.SAICO.Core\Tameenk.Integration.Providers.SAICO.Core.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.SalamaCore\Tameenk.Integration.Providers.SalamaCore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.SolidarityCore\Tameenk.Integration.Providers.SolidarityCore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.TawuniyaCore\Tameenk.Integration.Providers.TawuniyaCore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.TUIC.Core\Tameenk.Integration.Providers.TUIC.Core.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.UCACore\Tameenk.Integration.Providers.UCACore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.WalaCore\Tameenk.Integration.Providers.WalaCore.csproj" />
+    <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.WataniyaCore\Tameenk.Integration.Providers.WataniyaCore.csproj" />
     <ProjectReference Include="..\..\..\Integration_Core\Tameenk.Integration.Core.Core\Tameenk.Integration.Core.Core.csproj" />
     <ProjectReference Include="..\..\..\Integration_Core\Tameenk.Integration.DtoCore\Tameenk.Integration.DtoCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.Common.UtilitiesCore_New\Tameenk.Common.UtilitiesCore.csproj" />

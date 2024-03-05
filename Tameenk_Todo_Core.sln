@@ -162,7 +162,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Integration.Core.Co
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers_Core", "Providers_Core", "{418FDDF0-DC36-408B-B8B0-4F1CB5A7BC87}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Integration.Providers.AICC.Core", "Integration_Core\Provider_Core\Tameenk.Integration.Providers.AICC.Core\Tameenk.Integration.Providers.AICC.Core.csproj", "{197CB88E-86F6-417B-B5D9-9B7BB88986FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Integration.Providers.AICC", "Integration_Core\Provider_Core\Tameenk.Integration.Providers.AICC.Core\Tameenk.Integration.Providers.AICC.csproj", "{197CB88E-86F6-417B-B5D9-9B7BB88986FC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Integration.Providers.AlalamiyaCore", "Integration_Core\Provider_Core\Tameenk.Integration.Providers.AlalamiyaCore\Tameenk.Integration.Providers.AlalamiyaCore.csproj", "{8C04BAE3-453D-42A8-A794-97D1D2C2EB70}"
 EndProject
@@ -288,7 +288,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Core", "Libraries_C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Core.Domain", "Libraries_Core\Tameenk.Core.Domain\Tameenk.Core.Domain.csproj", "{C9EED8AD-62CD-4D5D-9355-FBBF169DA298}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Integration.Providers.ACIGCore", "Integration\Providers\Tameenk.Integration.Providers.ACIGCore\Tameenk.Integration.Providers.ACIGCore.csproj", "{ED5D471D-DF03-4FAA-B21A-C0F0FF9F8E52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Integration.Providers.ACIG", "Integration\Providers\Tameenk.Integration.Providers.ACIGCore\Tameenk.Integration.Providers.ACIG.csproj", "{ED5D471D-DF03-4FAA-B21A-C0F0FF9F8E52}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.Integration.Providers.AhliaCore", "Integration\Providers\Tameenk.Integration.Providers.AhliaCore\Tameenk.Integration.Providers.AhliaCore.csproj", "{CB0F3AA9-E9B8-4C60-9794-ED137E2F2B0A}"
 EndProject

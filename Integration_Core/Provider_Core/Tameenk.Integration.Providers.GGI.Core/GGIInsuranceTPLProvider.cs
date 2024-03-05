@@ -416,7 +416,7 @@
 //                        if (request != null)
 //                        {
 //                            request.ErrorDescription = output.ErrorDescription;
-//                            _policyProcessingQueueRepository.Update(request);
+//                            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
 //                        }
 //                        return output;
 //                    }
@@ -433,7 +433,7 @@
 //                        if (request != null)
 //                        {
 //                            request.ErrorDescription = output.ErrorDescription;
-//                            _policyProcessingQueueRepository.Update(request);
+//                            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
 //                        }
 //                        return output;
 //                    }
@@ -467,7 +467,7 @@
 //                        if (request != null)
 //                        {
 //                            request.ErrorDescription = output.ErrorDescription;
-//                            _policyProcessingQueueRepository.Update(request);
+//                            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
 //                        }
 //                        return output;
 //                    }
@@ -483,7 +483,7 @@
 //                        if (request != null)
 //                        {
 //                            request.ErrorDescription = output.ErrorDescription;
-//                            _policyProcessingQueueRepository.Update(request);
+//                            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
 //                        }
 //                        return output;
 //                    }
@@ -500,7 +500,7 @@
 //                    if (request != null)
 //                    {
 //                        request.ErrorDescription = output.ErrorDescription;
-//                        _policyProcessingQueueRepository.Update(request);
+//                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
 //                    }
 //                    return output;
 //                }
@@ -515,7 +515,7 @@
 //                if (request != null)
 //                {
 //                    request.ErrorDescription = output.ErrorDescription;
-//                    _policyProcessingQueueRepository.Update(request);
+//                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
 //                }
 //                return output;
 //            }

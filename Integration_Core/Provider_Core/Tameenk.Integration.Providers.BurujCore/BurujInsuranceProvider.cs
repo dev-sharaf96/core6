@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -13,11 +12,11 @@ using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Entities.Policies;
 using Tameenk.Core.Exceptions;
-using Tameenk.Core.Infrastructure;
 using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
 using Tameenk.Loggin.DAL;
+using Tameenk.Services;
 using Tameenk.Services.Core.Http;
 using Tameenk.Services.Logging;
 
@@ -27,7 +26,6 @@ namespace Tameenk.Integration.Providers.Buruj
     {
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
-        private readonly TameenkConfig _tameenkConfig;
         private string _accessTokenBase64;
         private readonly IHttpClient _httpClient;
         //private const string QUOTATION_TPL_URL = "https://portal.burujinsurance.com:1442/api/Quotation";
@@ -37,8 +35,9 @@ namespace Tameenk.Integration.Providers.Buruj
         private const string QUOTATION_COMPREHENSIVE_URL = "https://88.85.240.35:9991/api/Quotes";
         private const string POLICY_COMPREHENSIVE_URL = "https://88.85.240.35:9991/api/PurchaseNotifications";
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
-        public BurujInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
-             : base(tameenkConfig, new RestfulConfiguration
+        private readonly IQuotationConfig _quotationConfig;
+        public BurujInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
+             : base(quotationConfig, new RestfulConfiguration
              {
                  GenerateQuotationUrl = "https://portal.burujinsurance.com:1442/api/Quotation",
                  GeneratePolicyUrl = "https://portal.burujinsurance.com:1442/api/Policy",
@@ -47,21 +46,20 @@ namespace Tameenk.Integration.Providers.Buruj
                  GenerateAutoleasingQuotationUrl = "https://burujbc.burujinsurance.com:9992/api/Quotes",
                  GenerateAutoleasingPolicyUrl = "https://burujbc.burujinsurance.com:9992/api/PurchaseNotifications",
                  AutoleasingAccessToken = "BurujLease:BurujP@ssw0rdLease01",
-             }, logger, policyProcessingQueueRepository)
+             }, policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
-            _tameenkConfig = tameenkConfig ?? throw new TameenkArgumentNullException(nameof(tameenkConfig));
-            _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
-                null :
+            _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ? null :
                 Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));
             _checkoutDetail = checkoutDetail;
+            _quotationConfig = quotationConfig;
 
         }
 
         
  
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             if (quotation.ProductTypeCode == 1)
             {
@@ -75,7 +73,7 @@ namespace Tameenk.Integration.Providers.Buruj
                 _restfulConfiguration.AccessToken = "BurujBCareCMP:P@ssw0rd!Buruj&CMP1";
                 _accessTokenBase64 = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));
             }
-            ServiceOutput output = SubmitQuotationRequest(quotation, predefinedLogInfo);
+            ServiceOutput output =await SubmitQuotationRequest(quotation, predefinedLogInfo);
             if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
             {
                 return null;
@@ -84,7 +82,7 @@ namespace Tameenk.Integration.Providers.Buruj
         }
       
 
-        protected override ServiceOutput SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        protected override async Task<ServiceOutput>  SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
         {
             ServiceOutput output = new ServiceOutput();
             log.ReferenceId = quotation.ReferenceId;
@@ -104,7 +102,7 @@ namespace Tameenk.Integration.Providers.Buruj
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.quotationTestData.json";
@@ -300,7 +298,7 @@ namespace Tameenk.Integration.Providers.Buruj
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;// _tameenkConfig.Policy.TestMode; BY Atheer
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -330,7 +328,7 @@ namespace Tameenk.Integration.Providers.Buruj
                             if (request != null)
                             {
                                 request.ErrorDescription = output.ErrorDescription;
-                                _policyProcessingQueueRepository.Update(request);
+                                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                             }
                             return output;
                         }
@@ -354,11 +352,11 @@ namespace Tameenk.Integration.Providers.Buruj
                 log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
                 if (response == null)
                 {
-                    //update policyProcessingQueue Table;
+                    //.UpdateAsync(request).Wait(); policyProcessingQueue Table;
                     if (request != null)
                     {
                         request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
 
@@ -376,7 +374,7 @@ namespace Tameenk.Integration.Providers.Buruj
                     if (request != null)
                     {
                         request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -392,7 +390,7 @@ namespace Tameenk.Integration.Providers.Buruj
                     if (request != null)
                     {
                         request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -427,7 +425,7 @@ namespace Tameenk.Integration.Providers.Buruj
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
                     return output;
@@ -444,7 +442,7 @@ namespace Tameenk.Integration.Providers.Buruj
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -460,7 +458,7 @@ namespace Tameenk.Integration.Providers.Buruj
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -475,7 +473,7 @@ namespace Tameenk.Integration.Providers.Buruj
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
@@ -495,7 +493,7 @@ namespace Tameenk.Integration.Providers.Buruj
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
 
                 return output;
@@ -522,8 +520,11 @@ namespace Tameenk.Integration.Providers.Buruj
             {
                 // Insert row in the integration transaction table to track the input/output for this company, 
                 // this will be helpful in case of integration testing phase
-                if (!_tameenkConfig.Policy.TestMode)
-                {
+
+
+               // if (!_tameenkConfig.Policy.TestMode)by Atheer
+                if (!_quotationConfig.TestMode)
+                    {
                     LogIntegrationTransaction($"inurance company policy test with reference id : {request.ReferenceId}",
                         JsonConvert.SerializeObject(request), policyResponse, responseValue != null ? responseValue.StatusCode : 2);
                 }

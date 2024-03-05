@@ -2,26 +2,21 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using Tameenk.Common.Utilities;
 using Tameenk.Core;
 using Tameenk.Core.Configuration;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Dtos;
 using Tameenk.Core.Domain.Entities.Policies;
 using Tameenk.Core.Domain.Entities.Quotations;
-using Tameenk.Core.Infrastructure;
 using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
 using Tameenk.Loggin.DAL;
 using Tameenk.Resources.Quotations;
+using Tameenk.Services;
 using Tameenk.Services.Core.Addresses;
 using Tameenk.Services.Core.Http;
 using Tameenk.Services.Logging;
@@ -36,8 +31,8 @@ namespace Tameenk.Integration.Providers.SAICO
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly IServiceProvider _serviceProvider;
 
-        public SAICOInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-          : base(tameenkConfig, new RestfulConfiguration
+        public SAICOInsuranceProvider(IQuotationConfig quotationConfig, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+          : base(quotationConfig, new RestfulConfiguration
           {
               GenerateQuotationUrl = "https://tmk.saico.com.sa:8074/TameenK/quotes",
               GeneratePolicyUrl = "https://tmk.saico.com.sa:8074/TameenK/policy",
@@ -47,7 +42,7 @@ namespace Tameenk.Integration.Providers.SAICO
               GenerateAutoleasingPolicyUrl = "https://tmkmals.saico.com.sa:8065/TameenK/policy",
               AutoleasingAccessToken = "TameenK:SAic0@12~I",
               ProviderName = "SAICO"
-          }, logger, policyProcessingQueueRepository)
+          }, policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
            
@@ -207,7 +202,7 @@ namespace Tameenk.Integration.Providers.SAICO
                     if (policyProcessingQueueRequest != null)
                     {
                         policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                        _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                     }
 
                     log.ErrorCode = (int)output.ErrorCode;
@@ -222,7 +217,7 @@ namespace Tameenk.Integration.Providers.SAICO
                     if (policyProcessingQueueRequest != null)
                     {
                         policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                        _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                     }
 
                     log.ErrorCode = (int)output.ErrorCode;
@@ -237,7 +232,7 @@ namespace Tameenk.Integration.Providers.SAICO
                     if (policyProcessingQueueRequest != null)
                     {
                         policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                        _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                     }
 
                     log.ErrorCode = (int)output.ErrorCode;
@@ -252,7 +247,7 @@ namespace Tameenk.Integration.Providers.SAICO
                     if (policyProcessingQueueRequest != null)
                     {
                         policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                        _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                     }
 
                     log.ErrorCode = (int)output.ErrorCode;
@@ -277,7 +272,7 @@ namespace Tameenk.Integration.Providers.SAICO
                     if (policyProcessingQueueRequest != null)
                     {
                         policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                        _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                     }
 
                     log.ErrorCode = (int)output.ErrorCode;
@@ -292,7 +287,7 @@ namespace Tameenk.Integration.Providers.SAICO
                     if (policyProcessingQueueRequest != null)
                     {
                         policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                        _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                     }
 
                     log.ErrorCode = (int)output.ErrorCode;
@@ -307,7 +302,7 @@ namespace Tameenk.Integration.Providers.SAICO
                     if (policyProcessingQueueRequest != null)
                     {
                         policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                        _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                     }
 
                     log.ErrorCode = (int)output.ErrorCode;
@@ -322,7 +317,7 @@ namespace Tameenk.Integration.Providers.SAICO
                     if (policyProcessingQueueRequest != null)
                     {
                         policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                        _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                     }
 
                     log.ErrorCode = (int)output.ErrorCode;
@@ -358,7 +353,7 @@ namespace Tameenk.Integration.Providers.SAICO
                     if (policyProcessingQueueRequest != null)
                     {
                         policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                        _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                     }
 
                     log.ErrorCode = (int)output.ErrorCode;
@@ -382,7 +377,7 @@ namespace Tameenk.Integration.Providers.SAICO
                     if (policyProcessingQueueRequest != null)
                     {
                         policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                        _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                     }
 
                     log.ErrorCode = (int)output.ErrorCode;
@@ -407,7 +402,7 @@ namespace Tameenk.Integration.Providers.SAICO
                     if (policyProcessingQueueRequest != null)
                     {
                         policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                        _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                     }
 
                     log.ErrorCode = (int)output.ErrorCode;
@@ -424,7 +419,7 @@ namespace Tameenk.Integration.Providers.SAICO
                     if (policyProcessingQueueRequest != null)
                     {
                         policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                        _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                     }
 
                     log.ErrorCode = (int)output.ErrorCode;
@@ -438,7 +433,7 @@ namespace Tameenk.Integration.Providers.SAICO
                 if (policyProcessingQueueRequest != null)
                 {
                     policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                    _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                 }
 
                 log.ErrorCode = (int)output.ErrorCode;
@@ -456,7 +451,7 @@ namespace Tameenk.Integration.Providers.SAICO
                 if (policyProcessingQueueRequest != null)
                 {
                     policyProcessingQueueRequest.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(policyProcessingQueueRequest);
+                    _policyProcessingQueueRepository.UpdateAsync(policyProcessingQueueRequest).Wait();
                 }
 
                 log.ErrorCode = (int)output.ErrorCode;

@@ -7,6 +7,9 @@ using Tameenk.Core.Caching;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Data;
+using Tameenk.Integration.Core.Providers.Configuration;
+using Tameenk.Integration.DtoCore.ServiceLocator;
+using Tameenk.Integration.Providers.AICC;
 using Tameenk.Loggin.DAL;
 using Tameenk.Services.Core.Addresses;
 using Tameenk.Services.Core.Quotations;
@@ -26,11 +29,15 @@ namespace Tameenk.Services.QuotationNew.ApiCore.DependancyInjection
             #region Read AppSetting Configuraion
 
             services.Configure<QuotatoinConfig>(configuration.GetSection("Quotation"));
+            services.Configure<BcareInsuranceCompanyConfig>(configuration.GetSection("BcareInsuranceCompany"));
+
             //services.Configure<ConnectionString>(configuration.GetSection("ConnectionStrings"));
             var BD_ConnactionSetting = services.Configure<ConnectionString>(configuration.GetSection("ConnectionStrings"));
 
 
+          
 
+            services.AddSingleton<IBcareInsuranceCompanyConfig>(provider => provider.GetRequiredService<IOptions<BcareInsuranceCompanyConfig>>().Value);
             services.AddSingleton<IQuotationConfig>(provider => provider.GetRequiredService<IOptions<QuotatoinConfig>>().Value);
             services.AddSingleton<IConnectionString>(provider => provider.GetRequiredService<IOptions<ConnectionString>>().Value);
 
@@ -42,12 +49,14 @@ namespace Tameenk.Services.QuotationNew.ApiCore.DependancyInjection
             #endregion
 
             #region Scope
-
+            services.AddScoped<RestfulConfiguration>();
             services.AddScoped<ICacheManager, MemoryCacheManager>();
             services.AddScoped<IQuotationService, QuotationService>();
             services.AddScoped<IAsyncQuotationContext, AsyncQuotationContext>();
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<IVehicleService, VehicleService>();
+            services.AddScoped<IProvidersServiceLocator, ProvidersServiceLocator>();
+            services.AddScoped<AICCInsuranceProvider, AICCInsuranceProvider>();
             //services.AddScoped<DbContext, YourDbContext>();
             //services.AddScoped<YourDbContext>();
             //services.AddScoped<TameenkLog>();

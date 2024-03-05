@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using Tameenk.Common.Utilities;
 using Tameenk.Core;
 using Tameenk.Core.Configuration;
@@ -16,6 +17,7 @@ using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
 using Tameenk.Loggin.DAL;
+using Tameenk.Services;
 using Tameenk.Services.Core.Addresses;
 using Tameenk.Services.Core.Http;
 using Tameenk.Services.Logging;
@@ -36,21 +38,20 @@ namespace Tameenk.Integration.Providers.Alalamiya
         private const string QUOTATION_COMPREHENSIVE_URL = "https://tameenkcomp.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorQuote.do";
         private const string POLICY_COMPREHENSIVE_URL = "https://tameenkcomp.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorPolicy.do";
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
+        private readonly IQuotationConfig _quotationConfig;
         #region Ctor
-        public AlalamiyaInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
+        public AlalamiyaInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
             , IAddressService addressService, IRepository<CheckoutDetail> checkoutDetail)
-             : base(tameenkConfig, new RestfulConfiguration
+             : base(quotationConfig,new RestfulConfiguration
              {
                  GenerateQuotationUrl = "https://tameenk.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorQuote.do",
                  GeneratePolicyUrl = "https://tameenk.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorPolicy.do",
                  UpdateCustomCardUrl= "https://tameenk.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorNilEndtPolicy.do",
                  AccessToken = "VEFNRUVOS19VU0VSOlczQHIzYjM1dCE=",
                  ProviderName = "Alalamiya"
-             }, logger, policyProcessingQueueRepository)
+             }, policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
-            _tameenkConfig = tameenkConfig;
-            _logger = logger;
             _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
                null : Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
@@ -124,7 +125,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
         }
 
         //For Alalamiya we override execute quotation so that we add params in request headers
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             //in case test mode execute the code from the base.
             if (_tameenkConfig.Quotatoin.TestMode)
@@ -133,7 +134,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
             { 
                 _restfulConfiguration.GenerateQuotationUrl = QUOTATION_COMPREHENSIVE_URL;
             }
-            ServiceOutput output = SubmitQuotationRequest(quotation, predefinedLogInfo);
+            ServiceOutput output = await SubmitQuotationRequest(quotation, predefinedLogInfo);
             if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
             {
                 return null;
@@ -216,7 +217,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
                     if (request != null)
                     {
                         request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
 
@@ -234,7 +235,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
                     if (request != null)
                     {
                         request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -250,7 +251,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
                     if (request != null)
                     {
                         request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -287,7 +288,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
                     return output;
@@ -304,7 +305,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -319,7 +320,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
@@ -339,7 +340,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
 
                 return output;
@@ -475,7 +476,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
             }
             return output.Output;
         }
-        protected override ServiceOutput SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        protected override async Task<ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
         {
             ServiceOutput output = new ServiceOutput();
             log.ReferenceId = quotation.ReferenceId;

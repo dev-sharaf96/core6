@@ -16,6 +16,9 @@ using System.Net.Http.Headers;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Services.Core.Http;
 using System.Net;
+using Tameenk.Services;
+using DocumentFormat.OpenXml.Office2021.DocumentTasks;
+using System.Threading.Tasks;
 
 namespace Tameenk.Integration.Providers.Solidarity
 {
@@ -24,8 +27,7 @@ namespace Tameenk.Integration.Providers.Solidarity
 
         #region Fields
 
-        private readonly ILogger _logger;
-        private readonly TameenkConfig _tameenkConfig;
+        private readonly IQuotationConfig _quotationConfig;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly RestfulConfiguration _restfulConfiguration;
         private string _accessTokenBase64;
@@ -36,25 +38,24 @@ namespace Tameenk.Integration.Providers.Solidarity
 
         #endregion
 
-        public SolidarityInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger
+        public SolidarityInsuranceProvider( IQuotationConfig quotationConfig
             , IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
             , IRepository<CheckoutDetail> checkoutDetail)
-            : base(tameenkConfig, new RestfulConfiguration
+            : base(quotationConfig, new RestfulConfiguration
             {
                 GenerateQuotationUrl = "",
                 GeneratePolicyUrl = "https://bcare.solidaritytakaful.com/BcareMotorApi/Policy",
                 AccessToken = "URNM1JqWnBhVFJFUVc4OU9qRTNWekZITDBGT1oyMDVUR1ZPWm5oNmQwbGxVSGM5UFE9PQ==",
                 ProviderName = "Solidarity"
-            },  logger, policyProcessingQueueRepository)
+            },policyProcessingQueueRepository)
         {
-            _logger = logger;
             _restfulConfiguration = Configuration as RestfulConfiguration;
-            _tameenkConfig = tameenkConfig;
             _accessTokenBase64 = _restfulConfiguration.AccessToken;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _checkoutDetail = checkoutDetail;
+            _quotationConfig = quotationConfig;
         }
-        protected override ServiceOutput SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)        {            ServiceOutput output = new ServiceOutput();            log.ReferenceId = quotation.ReferenceId;            if (string.IsNullOrEmpty(log.Channel))                log.Channel = "Portal";            log.ServiceURL = _restfulConfiguration.GenerateQuotationUrl;            log.ServerIP = ServicesUtilities.GetServerIP();            log.Method = "Quotation";            log.CompanyName = _restfulConfiguration.ProviderName;            log.VehicleMaker = quotation?.VehicleMaker;            log.VehicleMakerCode = quotation?.VehicleMakerCode;            log.VehicleModel = quotation?.VehicleModel;            log.VehicleModelCode = quotation?.VehicleModelCode;            log.VehicleModelYear = quotation?.VehicleModelYear;            log.CompanyName = "Solidarity";            var stringPayload = string.Empty;
+        protected override async Task<ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)        {            ServiceOutput output = new ServiceOutput();            log.ReferenceId = quotation.ReferenceId;            if (string.IsNullOrEmpty(log.Channel))                log.Channel = "Portal";            log.ServiceURL = _restfulConfiguration.GenerateQuotationUrl;            log.ServerIP = ServicesUtilities.GetServerIP();            log.Method = "Quotation";            log.CompanyName = _restfulConfiguration.ProviderName;            log.VehicleMaker = quotation?.VehicleMaker;            log.VehicleMakerCode = quotation?.VehicleMakerCode;            log.VehicleModel = quotation?.VehicleModel;            log.VehicleModelCode = quotation?.VehicleModelCode;            log.VehicleModelYear = quotation?.VehicleModelYear;            log.CompanyName = "Solidarity";            var stringPayload = string.Empty;
             DateTime dtBeforeCalling = DateTime.Now;            HttpResponseMessage response = new HttpResponseMessage();            try            {                log.ServiceRequest = JsonConvert.SerializeObject(quotation);                dtBeforeCalling = DateTime.Now;                if (quotation.ProductTypeCode == 1)                {                    _restfulConfiguration.GenerateQuotationUrl = QUOTATION_TPL_URL;                }                else                {                    _restfulConfiguration.GenerateQuotationUrl = QUOTATION_COMPREHENSIVE_URL;                }                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
                 ServicePointManager.ServerCertificateValidationCallback = (snder, cert, chain, error) => true;
@@ -90,7 +91,7 @@ namespace Tameenk.Integration.Providers.Solidarity
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -129,7 +130,7 @@ namespace Tameenk.Integration.Providers.Solidarity
                     if (request != null)
                     {
                         request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
 
@@ -147,7 +148,7 @@ namespace Tameenk.Integration.Providers.Solidarity
                     if (request != null)
                     {
                         request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -163,7 +164,7 @@ namespace Tameenk.Integration.Providers.Solidarity
                     if (request != null)
                     {
                         request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -198,7 +199,7 @@ namespace Tameenk.Integration.Providers.Solidarity
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
                     return output;
@@ -215,7 +216,7 @@ namespace Tameenk.Integration.Providers.Solidarity
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -231,7 +232,7 @@ namespace Tameenk.Integration.Providers.Solidarity
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -246,7 +247,7 @@ namespace Tameenk.Integration.Providers.Solidarity
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
@@ -266,7 +267,7 @@ namespace Tameenk.Integration.Providers.Solidarity
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
 
                 return output;

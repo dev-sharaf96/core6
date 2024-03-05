@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DocumentFormat.OpenXml.Office2021.DocumentTasks;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -6,20 +7,15 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Tameenk.Common.Utilities;
 using Tameenk.Core;
 using Tameenk.Core.Configuration;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Entities.Policies;
 using Tameenk.Core.Domain.Entities.Quotations;
-using Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Core.Domain.Enums.Quotations;
-using Tameenk.Core.Domain.Enums.Vehicles;
-using Tameenk.Core.Infrastructure;
 using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
@@ -27,15 +23,13 @@ using Tameenk.Integration.Providers.Wataniya.Dtos;
 using Tameenk.Integration.Providers.Wataniya.Dtos.Autolease;
 using Tameenk.Integration.Providers.Wataniya.MappingResources;
 using Tameenk.Loggin.DAL;
-using Tameenk.Resources.WebResources;
+using Tameenk.Services;
 using Tameenk.Services.Core.Addresses;
 //using Tameenk.Services.Core.Checkouts;
 using Tameenk.Services.Core.Http;
 using Tameenk.Services.Core.Policies;
 using Tameenk.Services.Core.Quotations;
 using Tameenk.Services.Core.Vehicles;
-using Tameenk.Services.Extensions;
-using Tameenk.Services.Implementation.Policies;
 using Tameenk.Services.Logging;
 
 namespace Tameenk.Integration.Providers.Wataniya
@@ -43,7 +37,6 @@ namespace Tameenk.Integration.Providers.Wataniya
     public class WataniyaInsuranceProvider : RestfulInsuranceProvider
     {
         private readonly RestfulConfiguration _restfulConfiguration;
-        private readonly TameenkConfig _tameenkConfig;
         private readonly IHttpClient _httpClient;
         private readonly string _accessTokenBase64;
         private readonly IRepository<QuotationResponse> _quotationResponseRepository;
@@ -52,6 +45,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         private readonly IRepository<WataniyaMotorPolicyInfo> _wataniyaMotorPolicyInfoRepository;
         private readonly IQuotationService _quotationService;
         private readonly IRepository<BankNins> _bankNinsRepository;
+        private readonly IQuotationConfig _quotationConfig;
 
         private readonly HashSet<int> CentralRegions = new HashSet<int> { 1, 4 };
         private readonly HashSet<int> WesternRegions = new HashSet<int> { 2, 3 };
@@ -106,11 +100,11 @@ namespace Tameenk.Integration.Providers.Wataniya
         private const string CERTIFCATE_PASSWORD = "rZ7dzXq60L3lf3E";
         private readonly IServiceProvider _serviceProvider;
 
-        public WataniyaInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger,IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository,
+        public WataniyaInsuranceProvider(IQuotationConfig quotationConfig,IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository,
             IRepository<QuotationResponse> quotationResponseRepository, IRepository<WataniyaDraftPolicy> wataniyaDraftPolicyRepository,
             IQuotationService quotationService, IRepository<WataniyaMotorPolicyInfo> wataniyaMotorPolicyInfoRepository
             , IRepository<BankNins> bankNinsRepository, IWataniyaNajmQueueService wataniyaNajmQueueService)
-             : base(tameenkConfig, new RestfulConfiguration
+             : base(quotationConfig, new RestfulConfiguration
              {
                  //GenerateQuotationUrl = "https://ncd.wataniya.com.sa:2021/api/Quotation/RequestQuotation",
                  //GeneratePolicyUrl = "https://ncd.wataniya.com.sa:2021/api/Policy/RequestPolicy",
@@ -125,10 +119,9 @@ namespace Tameenk.Integration.Providers.Wataniya
                  AutoleasingAccessToken = "Yusr.BacreAutolease:Yusr@123",
                  AccessToken = "Tameenk:Tameenk@123",
                  ProviderName = "Wataniya"
-             }, logger, policyProcessingQueueRepository)
+             }, policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
-            _tameenkConfig = tameenkConfig;
             _serviceProvider = serviceProvider;
             _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
                 null :
@@ -140,18 +133,19 @@ namespace Tameenk.Integration.Providers.Wataniya
             _wataniyaMotorPolicyInfoRepository = wataniyaMotorPolicyInfoRepository;
             _bankNinsRepository = bankNinsRepository;
             _wataniyaNajmQueueService = wataniyaNajmQueueService;
+            _quotationConfig = quotationConfig;
 
         }
 
         #region Quotation
 
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             //in case test mode execute the code from the base.
-            if (_tameenkConfig.Quotatoin.TestMode)
-                return base.ExecuteQuotationRequest(quotation, predefinedLogInfo);
+            if (_quotationConfig.TestMode)
+                return await base.ExecuteQuotationRequest(quotation, predefinedLogInfo);
 
-            ServiceOutput output = SubmitQuotationRequest(quotation, predefinedLogInfo);
+            ServiceOutput output = await SubmitQuotationRequest(quotation, predefinedLogInfo);
             if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
             {
                 return null;
@@ -173,7 +167,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         //    return output.Output;
         //}
 
-        protected override ServiceOutput SubmitQuotationRequest(QuotationServiceRequest quoteModel, ServiceRequestLog log)
+        protected override async Task< ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quoteModel, ServiceRequestLog log)
         {
             ServiceOutput output = new ServiceOutput();
             if (string.IsNullOrEmpty(log.Channel))
@@ -192,7 +186,7 @@ namespace Tameenk.Integration.Providers.Wataniya
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.quotationTestData.json";
@@ -1577,7 +1571,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         protected override object ExecutePolicyRequest(Dto.Providers.PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
         {
             //in case test mode execute the code from the base.
-            if (_tameenkConfig.Quotatoin.TestMode)
+            if (_quotationConfig.TestMode)
                 return base.ExecutePolicyRequest(policy, predefinedLogInfo);
 
             //ServiceOutput output = SubmitPolicyRequest(policy, predefinedLogInfo);
@@ -1682,7 +1676,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                         if (request != null)
                         {
                             request.ErrorDescription = output.ErrorDescription;
-                            _policyProcessingQueueRepository.Update(request);
+                            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                         }
                         return output;
                     }
@@ -1698,7 +1692,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -1720,7 +1714,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 return output;
             }
@@ -1738,7 +1732,7 @@ namespace Tameenk.Integration.Providers.Wataniya
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -1783,7 +1777,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     if (request != null)
                     {
                         request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service return null";
@@ -1799,7 +1793,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     if (request != null)
                     {
                         request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -1815,7 +1809,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     if (request != null)
                     {
                         request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -1851,7 +1845,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
                     return output;
@@ -1868,7 +1862,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -1903,7 +1897,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
@@ -1921,7 +1915,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
 
                 return output;
@@ -1985,7 +1979,7 @@ namespace Tameenk.Integration.Providers.Wataniya
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -2181,7 +2175,7 @@ namespace Tameenk.Integration.Providers.Wataniya
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer 
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -2230,7 +2224,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     if (request != null)
                     {
                         request.ErrorDescription = " Issue Policy service Return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = " Issue Policy Service return null";
@@ -2246,7 +2240,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     if (request != null)
                     {
                         request.ErrorDescription = "  Issue Policy service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = " Issue Policy Service response content return null";
@@ -2262,7 +2256,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     if (request != null)
                     {
                         request.ErrorDescription = "  Issue Policy Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = " Issue Policy Service response content result return null";
@@ -2298,7 +2292,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
                     return output;
@@ -2315,7 +2309,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -2350,7 +2344,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
@@ -2368,7 +2362,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
 
                 return output;
@@ -3499,7 +3493,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         //            if (request != null)
         //            {
         //                request.ErrorDescription = " service Return null";
-        //                _policyProcessingQueueRepository.Update(request);
+        //                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //            }
         //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
         //            output.ErrorDescription = "Service return null";
@@ -3515,7 +3509,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         //            if (request != null)
         //            {
         //                request.ErrorDescription = " service response content return null";
-        //                _policyProcessingQueueRepository.Update(request);
+        //                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //            }
         //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
         //            output.ErrorDescription = "Service response content return null";
@@ -3531,7 +3525,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         //            if (request != null)
         //            {
         //                request.ErrorDescription = " Service response content result return null";
-        //                _policyProcessingQueueRepository.Update(request);
+        //                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //            }
         //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
         //            output.ErrorDescription = "Service response content result return null";
@@ -3567,7 +3561,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         //            if (request != null)
         //            {
         //                request.ErrorDescription = output.ErrorDescription;
-        //                _policyProcessingQueueRepository.Update(request);
+        //                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //            }
 
         //            return output;
@@ -3584,7 +3578,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         //            if (request != null)
         //            {
         //                request.ErrorDescription = output.ErrorDescription;
-        //                _policyProcessingQueueRepository.Update(request);
+        //                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //            }
         //            return output;
         //        }
@@ -3600,7 +3594,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         //        if (request != null)
         //        {
         //            request.ErrorDescription = output.ErrorDescription;
-        //            _policyProcessingQueueRepository.Update(request);
+        //            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //        }
 
         //        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
@@ -3618,7 +3612,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         //        if (request != null)
         //        {
         //            request.ErrorDescription = output.ErrorDescription;
-        //            _policyProcessingQueueRepository.Update(request);
+        //            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //        }
 
         //        return output;

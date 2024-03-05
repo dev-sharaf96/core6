@@ -11,6 +11,7 @@ using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
 using Tameenk.Loggin.DAL;
 using Tameenk.Resources.Quotations;
+using Tameenk.Services;
 using Tameenk.Services.Core.Addresses;
 using Tameenk.Services.Core.Http;
 using Tameenk.Services.Logging;
@@ -21,12 +22,12 @@ namespace Tameenk.Integration.Providers.ACIG
     {
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly IHttpClient _httpClient;
-
+        private readonly IQuotationConfig _quotationConfig;
         private readonly string AutoleasingBenefitServiceAccessToken = "6460662E217C7A9F899208DD70A2C28ABDEA42F128666A9B78E6C0C064846493";
         private readonly IServiceProvider _serviceProvider;
 
-        public ACIGInsuranceProvider(TameenkConfig tameenkConfig, IServiceProvider serviceProvider, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-             : base(tameenkConfig, new RestfulConfiguration
+        public ACIGInsuranceProvider(IQuotationConfig quotationConfig,IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+             : base(quotationConfig,new RestfulConfiguration
              {
                  GenerateQuotationUrl = "https://localhost:7267//BcareLive/Api/MotorService/Quote",// "https://eservices.acig.com.sa/BcareLive/Api/MotorService/Quote",
                  GeneratePolicyUrl = "https://eservices.acig.com.sa/BcareLive/Api/MotorService/TPLPolicy",
@@ -42,7 +43,7 @@ namespace Tameenk.Integration.Providers.ACIG
                  AutoleasingAddDriverUrl = "",
                  AutoleasingPurchaseDriverUrl = "",
                  ProviderName = "ACIG"
-             },  logger, policyProcessingQueueRepository)
+             }, policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
             _serviceProvider = serviceProvider;

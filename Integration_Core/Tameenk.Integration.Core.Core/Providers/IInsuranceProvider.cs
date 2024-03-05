@@ -48,7 +48,7 @@ namespace Tameenk.Integration.Core.Providers
 
         QuotationServiceResponse GetQuotationAutoleasing(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo);
 
-        PolicyResponse GetAutoleasingPolicy(PolicyRequest policy, ServiceRequestLog predefinedLogInfo, bool automatedTest = false);
+        //PolicyResponse GetAutoleasingPolicy(PolicyRequest policy, ServiceRequestLog predefinedLogInfo, bool automatedTest = false);
         ServiceOutput GetTawuniyaAutoleasingQuotation(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo);
         ServiceOutput GetWataniyaAutoleasingDraftpolicy(QuotationServiceRequest quotation, Product selectedProduct, ServiceRequestLog predefinedLogInfo);
         ServiceOutput GetWataniyaMotorDraftpolicy(PolicyRequest policy, ServiceRequestLog predefinedLogInfo);

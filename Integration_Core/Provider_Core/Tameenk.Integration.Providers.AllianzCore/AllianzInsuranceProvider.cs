@@ -16,14 +16,15 @@ using System.Text;
 using System.Net.Http.Headers;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Services.Core.Http;
+using Tameenk.Services;
+using DocumentFormat.OpenXml.Office2021.DocumentTasks;
+using System.Threading.Tasks;
 
 namespace Tameenk.Integration.Providers.Allianz
 {
     public class AllianzInsuranceProvider : RestfulInsuranceProvider
     {
         #region Fields
-        private readonly ILogger _logger;
-        private readonly TameenkConfig _tameenkConfig;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly RestfulConfiguration _restfulConfiguration;
         private string _accessTokenBase64;
@@ -33,13 +34,13 @@ namespace Tameenk.Integration.Providers.Allianz
         private const string POLICY_COMPREHENSIVE_URL = "https://asfwsex.allianzsf.com.sa/ApiGateway/Comprehensive/Policy";
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
         private readonly IHttpClient _httpClient;
+        private readonly IQuotationConfig _quotationConfig;
 
         #endregion 
 
-        public AllianzInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger
-            , IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
+        public AllianzInsuranceProvider(IQuotationConfig quotationConfig,IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
             , IRepository<CheckoutDetail> checkoutDetail)
-             : base(tameenkConfig, new RestfulConfiguration
+             : base(quotationConfig,new RestfulConfiguration
              {
                  GenerateQuotationUrl = "https://asfwsex.allianzsf.com.sa/ImsApi/bcare/api/Quotation",
                  GeneratePolicyUrl = "https://asfwsex.allianzsf.com.sa/ImsApi/bcare/api/Policy",
@@ -49,16 +50,15 @@ namespace Tameenk.Integration.Providers.Allianz
                  AccessToken = "BCARE:ASFVhhRE^#rAS",
                  AutoleasingAccessToken = "BCARE:BCare@CompIHC_15$26",
                  ProviderName = "Allianz"
-             }, logger, policyProcessingQueueRepository)
+             },policyProcessingQueueRepository)
         {
-            _logger = logger;
             _restfulConfiguration = Configuration as RestfulConfiguration;
-            _tameenkConfig = tameenkConfig;
             _accessTokenBase64 = _restfulConfiguration.AccessToken;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _checkoutDetail = checkoutDetail;
+            _quotationConfig = quotationConfig;
         }
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             var configuration = Configuration as RestfulConfiguration;
             //change the quotation url to tpl in case product type code = 1
@@ -74,14 +74,14 @@ namespace Tameenk.Integration.Providers.Allianz
                 configuration.AccessToken = "BCARE:BCare@CompIHC_15$26";
                 _accessTokenBase64 = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(configuration.AccessToken));
             }
-            ServiceOutput output = SubmitQuotationRequest(quotation, predefinedLogInfo);
+            ServiceOutput output = await SubmitQuotationRequest(quotation, predefinedLogInfo);
             if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
             {
                 return null;
             }
             return output.Output;
         }
-        protected override ServiceOutput SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        protected override async Task<ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
         {
             ServiceOutput output = new ServiceOutput();
             log.ReferenceId = quotation.ReferenceId;
@@ -104,7 +104,7 @@ namespace Tameenk.Integration.Providers.Allianz
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.quotationTestData.json";
@@ -250,7 +250,7 @@ namespace Tameenk.Integration.Providers.Allianz
             }
             catch (Exception ex)
             {
-                _logger.Log($"AllianzInsuranceProvider -> GetPolicyResponseObject", ex, LogLevel.Error);
+                //_logger.Log($"AllianzInsuranceProvider -> GetPolicyResponseObject", ex, LogLevel.Error);
             }
             finally
             {
@@ -312,7 +312,7 @@ namespace Tameenk.Integration.Providers.Allianz
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;//_tameenkConfig.Policy.TestMode; Byte Atheer
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -348,7 +348,7 @@ namespace Tameenk.Integration.Providers.Allianz
                     if (request != null)
                     {
                         request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
 
@@ -366,7 +366,7 @@ namespace Tameenk.Integration.Providers.Allianz
                     if (request != null)
                     {
                         request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -382,7 +382,7 @@ namespace Tameenk.Integration.Providers.Allianz
                     if (request != null)
                     {
                         request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -417,7 +417,7 @@ namespace Tameenk.Integration.Providers.Allianz
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
                     return output;
@@ -434,7 +434,7 @@ namespace Tameenk.Integration.Providers.Allianz
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -450,7 +450,7 @@ namespace Tameenk.Integration.Providers.Allianz
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -465,7 +465,7 @@ namespace Tameenk.Integration.Providers.Allianz
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
@@ -485,7 +485,7 @@ namespace Tameenk.Integration.Providers.Allianz
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
 
                 return output;

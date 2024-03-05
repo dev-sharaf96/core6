@@ -470,9 +470,9 @@ namespace Tameenk.Services.QuotationNew.ApiCore.Controllers
             bool OdQuotation = false*/)
         {
             int insuranceCompanyId = 4;
-            string qtRqstExtrnlId = "f22a3302854d4d4";
+            string qtRqstExtrnlId = "165a361ee51548f";
             Guid parentRequestId = new Guid("2c176652-6792-4434-956c-94b933ed40e8");
-            int insuranceTypeCode = 2;
+            int insuranceTypeCode = 1;
             string channel = "Portal";
             bool vehicleAgencyRepair = false;
             int deductibleValue = 1000;

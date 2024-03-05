@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using Tameenk.Core.Configuration;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
@@ -12,6 +13,7 @@ using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
 using Tameenk.Loggin.DAL;
+using Tameenk.Services;
 using Tameenk.Services.Core.Http;
 using Tameenk.Services.Logging;
 
@@ -19,11 +21,10 @@ namespace Tameenk.Integration.Providers.Amana
 {
     public class AmanaInsuranceProvider : RestfulInsuranceProvider
     {
-        #region Fields
-        private readonly TameenkConfig _tameenkConfig;
+        #region Fields 
         private readonly IHttpClient _httpClient;
-        private readonly ILogger _logger;
         private readonly string _accessTokenBase64;
+        private readonly IQuotationConfig _quotationConfig;
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private const string QUOTATION_TPL_URL = "https://prodbcare.amana-coop.com.sa:443/api/Quotes";
@@ -32,8 +33,8 @@ namespace Tameenk.Integration.Providers.Amana
         private const string POLICY_COMPREHENSIVE_URL = "https://prodbcare.amana-coop.com.sa:444/api/PurchaseNotifications";
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
         #endregion
-        public AmanaInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
-          : base(tameenkConfig, new RestfulConfiguration
+        public AmanaInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
+          : base(quotationConfig, new RestfulConfiguration
           {
               GenerateQuotationUrl = "https://prodbcare.amana-coop.com.sa/api/Quotes",
               GeneratePolicyUrl= "https://prodbcare.amana-coop.com.sa/api/PurchaseNotifications",
@@ -43,7 +44,7 @@ namespace Tameenk.Integration.Providers.Amana
               AutoleasingAccessToken = "prod:P@ssw0rd",
               ProviderName = "Amana"
             
-          }, logger, policyProcessingQueueRepository)
+          }, policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
             _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
@@ -82,7 +83,7 @@ namespace Tameenk.Integration.Providers.Amana
             return responseValue;
         }
 
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             var configuration = Configuration as RestfulConfiguration;
             if (quotation.ProductTypeCode == 1)

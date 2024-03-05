@@ -1325,7 +1325,7 @@
 
 //        public void UpdatePolicyUpdateRequest(PolicyUpdateRequest request)
 //        {
-//            _policyUpdReqRepository.Update(request);
+//            _policyUpdReqRepository.UpdateAsync(request).Wait();
 //        }
 //        public void UpdatePolicyUpdateRequests(List<PolicyUpdateRequest> requests)
 //        {

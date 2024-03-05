@@ -15,6 +15,7 @@ using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
 using Tameenk.Loggin.DAL;
+using Tameenk.Services;
 using Tameenk.Services.Core.Http;
 using Tameenk.Services.Logging;
 
@@ -24,9 +25,8 @@ namespace Tameenk.Integration.Providers.UCA
     {
 
         #region Fields
-        private readonly TameenkConfig _tameenkConfig;
+        private readonly IQuotationConfig _quotationConfig;
         private readonly IHttpClient _httpClient;
-        private readonly ILogger _logger;
         private readonly string _accessTokenBase64;
         private readonly RestfulConfiguration _restfulConfiguration;
         private const string QUOTATION_TPL_URL = "http://5.149.133.237:8081/tameenk/v1/api/Quotation";
@@ -34,8 +34,8 @@ namespace Tameenk.Integration.Providers.UCA
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private string _accessTokenForQuotePolicy = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(@"M2MTameenkAppian:TY8xuA_\{((3H(bv~8%/?,Ad"));
         #endregion
-        public UCAInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-             : base(tameenkConfig, new RestfulConfiguration
+        public UCAInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+             : base(quotationConfig, new RestfulConfiguration
              {
                  GenerateQuotationUrl = "",
                  GeneratePolicyUrl = "http://5.149.133.237:8081/tameenk/v1/api/Policy",
@@ -45,17 +45,16 @@ namespace Tameenk.Integration.Providers.UCA
                  CancelPolicyUrl = "",
                  AccessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlNWRlMTc0NS1kOTY3LTQ0MTEtOGM0MC0wNzc3MDEwMTgwYjAifQ.Tw8eSlcw67dsM9u-udP3cZvxhoGPnhxSzGPiGCSQyNE",
                  ProviderName = "UCA"
-             }, logger, policyProcessingQueueRepository)
+             }, policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
-            _tameenkConfig = tameenkConfig;
-            _logger = logger;
             _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
                   null : _restfulConfiguration.AccessToken;
+            _quotationConfig = quotationConfig;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
 
         }
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             var configuration = Configuration as RestfulConfiguration;
             //change the quotation url to tpl in case product type code = 1
@@ -78,7 +77,7 @@ namespace Tameenk.Integration.Providers.UCA
 
             return quotation;
         }
-        protected override ServiceOutput SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        protected override async Task< ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
         {
             ServiceOutput output = new ServiceOutput();
             log.ReferenceId = quotation.ReferenceId;
@@ -99,7 +98,7 @@ namespace Tameenk.Integration.Providers.UCA
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.quotationTestData.json";
@@ -237,7 +236,7 @@ namespace Tameenk.Integration.Providers.UCA
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode; //_tameenkConfig.Policy.TestMode; by Atheer 
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -275,7 +274,7 @@ namespace Tameenk.Integration.Providers.UCA
                     if (request != null)
                     {
                         request.ErrorDescription = " service Return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service return null";
@@ -291,7 +290,7 @@ namespace Tameenk.Integration.Providers.UCA
                     if (request != null)
                     {
                         request.ErrorDescription = " service response content return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -307,7 +306,7 @@ namespace Tameenk.Integration.Providers.UCA
                     if (request != null)
                     {
                         request.ErrorDescription = " Service response content result return null";
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -342,7 +341,7 @@ namespace Tameenk.Integration.Providers.UCA
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
 
                     return output;
@@ -359,7 +358,7 @@ namespace Tameenk.Integration.Providers.UCA
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -375,7 +374,7 @@ namespace Tameenk.Integration.Providers.UCA
                     if (request != null)
                     {
                         request.ErrorDescription = output.ErrorDescription;
-                        _policyProcessingQueueRepository.Update(request);
+                        _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                     }
                     return output;
                 }
@@ -390,7 +389,7 @@ namespace Tameenk.Integration.Providers.UCA
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
                 ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
@@ -408,7 +407,7 @@ namespace Tameenk.Integration.Providers.UCA
                 if (request != null)
                 {
                     request.ErrorDescription = output.ErrorDescription;
-                    _policyProcessingQueueRepository.Update(request);
+                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
                 }
 
                 return output;

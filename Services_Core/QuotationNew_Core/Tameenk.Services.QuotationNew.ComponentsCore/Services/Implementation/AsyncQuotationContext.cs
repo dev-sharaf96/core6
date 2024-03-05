@@ -23,13 +23,13 @@ using Tameenk.Core.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using Tameenk.Services.Core.Quotations;
-using Tameenk.Data;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Tameenk.Core.Domain.Entities.Quotations;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
 using Tameenk.Core.Domain.Entities.PromotionPrograms;
 using Address = Tameenk.Core.Domain.Entities.Address;
 using TameenkDAL;
+using Tameenk.Integration.DtoCore.ServiceLocator;
+using Tameenk.Core.Configuration;
 
 namespace Tameenk.Services.QuotationNew.Components
 {
@@ -59,6 +59,8 @@ namespace Tameenk.Services.QuotationNew.Components
         private readonly IRepository<QuotationResponseCache> _quotationResponseCache;
         private readonly IServiceProvider _serviceProvider;
         private readonly IQuotationService _quotationService;
+        private readonly IProvidersServiceLocator _providersServiceLocator;
+
         //private readonly TameenkLog dbContext;
         private readonly YourDbContext dbContext;
 
@@ -81,7 +83,7 @@ namespace Tameenk.Services.QuotationNew.Components
             , IRepository<VehicleInsurance.VehicleMaker> vehicleMakerRepository, IRepository<VehicleInsurance.VehicleModel> vehicleModelRepository, IRepository<LicenseType> licenseTypeRepository
             , IRepository<InsuredExtraLicenses> insuredExtraLicenses, IRepository<Driver> driverRepository, IRepository<DriverViolation> _driverViolationRepository
             , IRepository<VehiclePlateText> vehiclePlateTextRepository, IRepository<Benefit> benefitRepository, IRepository<PriceType> priceTypeRepository, IRepository<QuotationResponseCache> quotationResponseCache
-            , IServiceProvider serviceProvider, YourDbContext dbContext, IQuotationService quotationService
+            , IServiceProvider serviceProvider, YourDbContext dbContext, IQuotationService quotationService, IProvidersServiceLocator providersServiceLocator
             )
         {
             _quotationConfig = quotationConfig;
@@ -103,6 +105,7 @@ namespace Tameenk.Services.QuotationNew.Components
             _quotationResponseCache = quotationResponseCache;
             _serviceProvider = serviceProvider;
             _quotationService = quotationService;
+            _providersServiceLocator = providersServiceLocator;
             this.dbContext = dbContext;
         }
 
@@ -141,9 +144,9 @@ namespace Tameenk.Services.QuotationNew.Components
 
         public async Task<QuotationNewOutput> HandleGetQuote(int insuranceCompanyId, string qtRqstExtrnlId, string channel, Guid userId, string userName, QuotationRequestLog log, DateTime excutionStartDate, Guid? parentRequestId = null, int insuranceTypeCode = 1, bool vehicleAgencyRepair = false, int? deductibleValue = null, string policyNo = null, string policyExpiryDate = null, string hashed = null, bool OdQuotation = false)
         {
-                return await GetQuote(insuranceCompanyId, qtRqstExtrnlId, channel, userId, userName, log, excutionStartDate, parentRequestId
-                            , insuranceTypeCode, vehicleAgencyRepair, deductibleValue, policyNo, policyExpiryDate, hashed, OdQuotation);
-           
+            return await GetQuote(insuranceCompanyId, qtRqstExtrnlId, channel, userId, userName, log, excutionStartDate, parentRequestId
+                        , insuranceTypeCode, vehicleAgencyRepair, deductibleValue, policyNo, policyExpiryDate, hashed, OdQuotation);
+
 
         }
 
@@ -520,6 +523,7 @@ namespace Tameenk.Services.QuotationNew.Components
 
             ////
             /// validate for quotation expiration as per Khaled@27-11-2023 2:30 PM
+            quoteRequest.QuotationCreatedDate = DateTime.Now;//for test
             if (DateTime.Now.AddHours(-16) > quoteRequest.QuotationCreatedDate)
             {
                 output.ErrorCode = QuotationNewOutput.ErrorCodes.QuotationExpired;
@@ -587,17 +591,19 @@ namespace Tameenk.Services.QuotationNew.Components
                 output.LogDescription = "Success as no Quote for 700 for AXA";
                 return output;
             }
-            if (quoteRequest.RequestPolicyEffectiveDate.HasValue && quoteRequest.RequestPolicyEffectiveDate.Value <= DateTime.Now.Date)
-            {
-                DateTime effectiveDate = DateTime.Now.AddDays(1);
-                quoteRequest.RequestPolicyEffectiveDate = new DateTime(effectiveDate.Year, effectiveDate.Month, effectiveDate.Day, effectiveDate.Hour, effectiveDate.Minute, effectiveDate.Second);
-                var quoteRequestInfo = _quotationRequestRepository.Table.Where(a => a.ExternalId == qtRqstExtrnlId).FirstOrDefault();
-                if (quoteRequestInfo != null)
-                {
-                    quoteRequestInfo.RequestPolicyEffectiveDate = quoteRequest.RequestPolicyEffectiveDate;
-                    _quotationRequestRepository.UpdateAsync(quoteRequestInfo);
-                }
-            }
+            //if (quoteRequest.RequestPolicyEffectiveDate.HasValue && quoteRequest.RequestPolicyEffectiveDate.Value <= DateTime.Now.Date)
+            //{
+            //    DateTime effectiveDate = DateTime.Now.AddDays(1);
+            //    quoteRequest.RequestPolicyEffectiveDate = new DateTime(effectiveDate.Year, effectiveDate.Month, effectiveDate.Day, effectiveDate.Hour, effectiveDate.Minute, effectiveDate.Second);
+            //    var quoteRequestInfo = _quotationRequestRepository.Table.Where(a => a.ExternalId == qtRqstExtrnlId).FirstOrDefault();
+            //    if (quoteRequestInfo != null)
+            //    {
+            //        quoteRequestInfo.RequestPolicyEffectiveDate = quoteRequest.RequestPolicyEffectiveDate;
+            //        _quotationRequestRepository.UpdateAsync(quoteRequestInfo);
+            //    }
+            //}
+            ////By Atheer
+            ///
 
             output.QuotationResponse = new QuotationResponse()
             {
@@ -683,7 +689,7 @@ namespace Tameenk.Services.QuotationNew.Components
             foreach (var p in response.Products)
             {
                 var product = p.ToEntity();
-                if (requestMessage != null && !string.IsNullOrEmpty(requestMessage.PromoCode) 
+                if (requestMessage != null && !string.IsNullOrEmpty(requestMessage.PromoCode)
                     && (insuranceCompaniesExcluedFromSchemesQuotations != null && !insuranceCompaniesExcluedFromSchemesQuotations.Contains(insuranceCompany.InsuranceCompanyID)))
                     product.IsPromoted = true;
                 product.ProviderId = insuranceCompany.InsuranceCompanyID;
@@ -694,7 +700,7 @@ namespace Tameenk.Services.QuotationNew.Components
                 {
                     foreach (var pb in product.Product_Benefits)
                     {
-                       // pb.Benefit = allBenefitst.FirstOrDefault(bf => pb.BenefitId.HasValue && bf.Code == pb.BenefitId.Value);
+                        // pb.Benefit = allBenefitst.FirstOrDefault(bf => pb.BenefitId.HasValue && bf.Code == pb.BenefitId.Value);
                         if (pb.BenefitId == 0)
                         {
                             var serviceBenfitInfo = p.Benefits.Where(a => a.BenefitId == pb.BenefitExternalId).FirstOrDefault();
@@ -795,25 +801,12 @@ namespace Tameenk.Services.QuotationNew.Components
 
         private async Task<QuotationNewRequestDetails> GetQuotationRequestDetailsByExternalId(string externalId)
         {
-            //exception = string.Empty;
             try
             {
-                var result =// dbContext.Database.ra("GetQuotationRequestDetailsWithRelatedData", new { ExternalId = externalId }, commandType: CommandType.StoredProcedure);
-                    dbContext.Set<QuotationRequestInfoModel>()
-            .FromSqlInterpolated($"EXEC GetQuotationRequestDetailsByExternalId {externalId}")
-            .Include(q => q.AdditionalDrivers)
-            .Include(q => q.MainDriverViolation)
-            .Include(q => q.MainDriverLicenses)
-            .Select(d => new QuotationNewRequestDetails
-            {
-                AdditionalDrivers = d.AdditionalDrivers,
-                MainDriverViolation = d.MainDriverViolation,
-                MainDriverLicenses = d.MainDriverLicenses,
-            })
-            .FirstOrDefault();
-
-
-                return result;
+                var data = new QueryStoredProcedureWithMultipleResults(dbContext, externalId);
+                var json = JsonConvert.SerializeObject(data.quotationRequestInfoModel, Formatting.Indented);
+                QuotationNewRequestDetails quotationNewRequestDetails = JsonConvert.DeserializeObject<QuotationNewRequestDetails>(json);
+                return quotationNewRequestDetails;
             }
             catch (Exception exp)
             {
@@ -1334,70 +1327,24 @@ namespace Tameenk.Services.QuotationNew.Components
             return serviceRequestMessage;
         }
 
-        private QuotationServiceResponse RequestQuotationProducts(QuotationServiceRequest requestMessage, QuotationResponse quotationResponse, InsuranceCompany insuranceCompany, ServiceRequestLog predefinedLogInfo, bool automatedTest, out string errors)
+        private QuotationServiceResponse RequestQuotationProducts(QuotationServiceRequest requestMessage,
+            QuotationResponse quotationResponse,
+            InsuranceCompany insuranceCompany, ServiceRequestLog predefinedLogInfo, bool automatedTest, out string errors)
         {
             errors = string.Empty;
             try
             {
                 requestMessage.InsuranceCompanyCode = insuranceCompany.InsuranceCompanyID;
-                var providerFullTypeName = string.Empty;
-                providerFullTypeName = insuranceCompany.ClassTypeName + ", " + insuranceCompany.NamespaceTypeName;
-
                 QuotationServiceResponse results = null;
-                IInsuranceProvider provider = null;
-                object instance = Utilities.GetValueFromCache("instance_" + providerFullTypeName + quotationResponse.InsuranceTypeCode);
-                if (instance != null && insuranceCompany.Key != "Tawuniya")
-                {
-                    provider = instance as IInsuranceProvider;
-                }
-                if (instance == null)
-                {
-                    //var scope = EngineContext.Current.ContainerManager.Scope();
-                    var providerType = Type.GetType(providerFullTypeName);
+                // Resolve an instance of the interface using the service locator
+                IInsuranceProvider provider = _providersServiceLocator.GetProviderHttpService(requestMessage.InsuranceCompanyCode);
 
-                    if (providerType != null)
-                    {
-                        //if (!EngineContext.Current.ContainerManager.TryResolve(providerType, scope, out instance))
-                        //{
-                        //    //not resolved
-                        //    instance = EngineContext.Current.ContainerManager.ResolveUnregistered(providerType, scope);
-                        //}
-                        provider = instance as IInsuranceProvider;
-                    }
-                    if (provider == null)
-                    {
-                        throw new Exception("Unable to find provider.");
-                    }
-                    //if (insuranceCompany.Key != "Tawuniya")
-                    //    Utilities.AddValueToCache("instance_" + providerFullTypeName + quotationResponse.InsuranceTypeCode, instance, 1440);
-
-                    if (provider != null)
-                    {
-                        if (predefinedLogInfo.Channel.ToLower() == Channel.autoleasing.ToString().ToLower())
-                        {
-                            results = provider.GetQuotationAutoleasing(requestMessage, predefinedLogInfo);
-                        }
-                        else
-                        {
-                            results = provider.GetQuotation(requestMessage, predefinedLogInfo, automatedTest);
-                        }
-                    }
-                    //scope.Dispose();
-                }
-                else
+                if (provider == null)
                 {
-                    if (provider != null)
-                    {
-                        if (predefinedLogInfo.Channel.ToLower() == Channel.autoleasing.ToString().ToLower())
-                        {
-                            results = provider.GetQuotationAutoleasing(requestMessage, predefinedLogInfo);
-                        }
-                        else
-                        {
-                            results = provider.GetQuotation(requestMessage, predefinedLogInfo, automatedTest);
-                        }
-                    }
+
+                    throw new Exception("Unable to find provider.");
                 }
+                results = provider.GetQuotation(requestMessage, predefinedLogInfo, automatedTest);
                 // Remove products if price is zero
                 if (results != null && results.Products != null)
                 {
@@ -1433,183 +1380,394 @@ namespace Tameenk.Services.QuotationNew.Components
         }
 
         private void GetVehicleColor(out string vehicleColor, out long vehicleColorCode, string vehicleMajorColor, int companyId)
+{
+    vehicleColor = vehicleMajorColor; //default value
+    vehicleColorCode = 99;//default value
+    var secondMajorCollor = string.Empty;
+    if (vehicleMajorColor[0] == 'ا')
+        secondMajorCollor = 'أ' + vehicleMajorColor.Substring(1);
+    else if (vehicleMajorColor[0] == 'أ')
+        secondMajorCollor = 'ا' + vehicleMajorColor.Substring(1);
+    else
+        secondMajorCollor = vehicleMajorColor;
+    var vehiclesColors = GetVehicleColors();
+    var vColor = vehiclesColors.FirstOrDefault(color => color.ArabicDescription == vehicleMajorColor || color.ArabicDescription == secondMajorCollor);
+    if (vColor == null)
+    {
+        if (vehicleMajorColor.Contains(' '))
         {
-            vehicleColor = vehicleMajorColor; //default value
-            vehicleColorCode = 99;//default value
-            var secondMajorCollor = string.Empty;
-            if (vehicleMajorColor[0] == 'ا')
-                secondMajorCollor = 'أ' + vehicleMajorColor.Substring(1);
-            else if (vehicleMajorColor[0] == 'أ')
-                secondMajorCollor = 'ا' + vehicleMajorColor.Substring(1);
-            else
-                secondMajorCollor = vehicleMajorColor;
-            var vehiclesColors = GetVehicleColors();
-            var vColor = vehiclesColors.FirstOrDefault(color => color.ArabicDescription == vehicleMajorColor || color.ArabicDescription == secondMajorCollor);
-            if (vColor == null)
-            {
-                if (vehicleMajorColor.Contains(' '))
-                {
-                    vColor = vehiclesColors.FirstOrDefault(color => color.ArabicDescription == vehicleMajorColor.Split(' ')[0] || color.ArabicDescription == secondMajorCollor.Split(' ')[0]);
-                    if (vColor != null)
-                    {
-                        vehicleColor = vColor.YakeenColor;
-                        vehicleColorCode = (companyId == 12) ? vColor.TawuniyaCode.Value : (companyId == 14) ? vColor.WataniyaCode.Value : vColor.YakeenCode;
-                    }
-                }
-            }
-            else
+            vColor = vehiclesColors.FirstOrDefault(color => color.ArabicDescription == vehicleMajorColor.Split(' ')[0] || color.ArabicDescription == secondMajorCollor.Split(' ')[0]);
+            if (vColor != null)
             {
                 vehicleColor = vColor.YakeenColor;
                 vehicleColorCode = (companyId == 12) ? vColor.TawuniyaCode.Value : (companyId == 14) ? vColor.WataniyaCode.Value : vColor.YakeenCode;
             }
         }
+    }
+    else
+    {
+        vehicleColor = vColor.YakeenColor;
+        vehicleColorCode = (companyId == 12) ? vColor.TawuniyaCode.Value : (companyId == 14) ? vColor.WataniyaCode.Value : vColor.YakeenCode;
+    }
+}
 
-        private City GetCityByName(List<City> Citites, string Name)
+private City GetCityByName(List<City> Citites, string Name)
+{
+    if (!string.IsNullOrEmpty(Name))
+    {
+        City _city = Citites.FirstOrDefault(c => c.ArabicDescription == Utilities.RemoveWhiteSpaces(Name.Trim()));
+
+        if (_city == null)
+            _city = Citites.FirstOrDefault(c => c.EnglishDescription == Utilities.RemoveWhiteSpaces(Name.Trim()));
+
+        if (_city == null)
         {
-            if (!string.IsNullOrEmpty(Name))
-            {
-                City _city = Citites.FirstOrDefault(c => c.ArabicDescription == Utilities.RemoveWhiteSpaces(Name.Trim()));
-
-                if (_city == null)
-                    _city = Citites.FirstOrDefault(c => c.EnglishDescription == Utilities.RemoveWhiteSpaces(Name.Trim()));
-
-                if (_city == null)
-                {
-                    if (Name.Trim().Contains("ه"))
-                        _city = Citites.FirstOrDefault(c => c.ArabicDescription == Utilities.RemoveWhiteSpaces(Name.Trim().Replace("ه", "ة")));
-                    else if (_city == null && Name.Trim().Contains("ة"))
-                        _city = Citites.FirstOrDefault(c => c.EnglishDescription == Utilities.RemoveWhiteSpaces(Name.Trim().Replace("ة", "ه")));
-                }
-                if (_city != null)
-                    return _city;
-                else
-                    return null;
-            }
-            return null;
+            if (Name.Trim().Contains("ه"))
+                _city = Citites.FirstOrDefault(c => c.ArabicDescription == Utilities.RemoveWhiteSpaces(Name.Trim().Replace("ه", "ة")));
+            else if (_city == null && Name.Trim().Contains("ة"))
+                _city = Citites.FirstOrDefault(c => c.EnglishDescription == Utilities.RemoveWhiteSpaces(Name.Trim().Replace("ة", "ه")));
         }
+        if (_city != null)
+            return _city;
+        else
+            return null;
+    }
+    return null;
+}
 
-        private List<DriverDto> CreateDriversRequestMessage(QuotationNewRequestDetails quotationRequest, List<City> cities, int insuranceCompanyId, bool excludeDriversAbove18)
+private List<DriverDto> CreateDriversRequestMessage(QuotationNewRequestDetails quotationRequest, List<City> cities, int insuranceCompanyId, bool excludeDriversAbove18)
+{
+    List<DriverDto> drivers = new List<DriverDto>();
+    int additionalDrivingPercentage = 0;
+    var mainDriverDto = new DriverDto()
+    {
+        DriverTypeCode = 1,
+        DriverId = long.Parse(quotationRequest.NationalId),
+        DriverIdTypeCode = quotationRequest.CardIdTypeId,
+        DriverBirthDate = quotationRequest.InsuredBirthDateH,
+        DriverBirthDateG = quotationRequest.InsuredBirthDate,
+        DriverFirstNameAr = quotationRequest.InsuredFirstNameAr,
+        DriverFirstNameEn = (string.IsNullOrWhiteSpace(quotationRequest.InsuredFirstNameEn) ||
+        string.IsNullOrEmpty(quotationRequest.InsuredFirstNameEn)) ? "-" : quotationRequest.InsuredFirstNameEn,
+        DriverMiddleNameAr = quotationRequest.InsuredMiddleNameAr,
+        DriverMiddleNameEn = quotationRequest.InsuredMiddleNameEn,
+        DriverLastNameAr = quotationRequest.InsuredLastNameAr,
+        DriverLastNameEn = (string.IsNullOrWhiteSpace(quotationRequest.InsuredLastNameEn) ||
+        string.IsNullOrEmpty(quotationRequest.InsuredLastNameEn)) ? "-" : quotationRequest.InsuredLastNameEn,
+        DriverNOALast5Years = quotationRequest.NOALast5Years,
+        DriverNOCLast5Years = quotationRequest.NOCLast5Years,
+        DriverNCDFreeYears = quotationRequest.NajmNcdFreeYears,
+        DriverNCDReference = quotationRequest.NajmNcdRefrence
+    };
+
+    // this is with Alamia
+    if (insuranceCompanyId == 18)
+        mainDriverDto.DriverZipCode = quotationRequest.PostCode;
+
+    if (quotationRequest.InsuredGender == Gender.Male)
+        mainDriverDto.DriverGenderCode = "M";
+    else if (quotationRequest.InsuredGender == Gender.Female)
+        mainDriverDto.DriverGenderCode = "F";
+    else
+        mainDriverDto.DriverGenderCode = "M";
+
+    mainDriverDto.DriverNationalityCode = !string.IsNullOrEmpty(quotationRequest.NationalityCode) ? quotationRequest.NationalityCode : "113";
+    mainDriverDto.DriverSocialStatusCode = quotationRequest.MainDriverSocialStatusId?.ToString();
+    if (string.IsNullOrEmpty(quotationRequest.InsuredOccupationCode) && mainDriverDto.DriverIdTypeCode == 1)
+    {
+        mainDriverDto.DriverOccupationCode = "O";
+        mainDriverDto.DriverOccupation = "غير ذالك";
+    }
+    else if (string.IsNullOrEmpty(quotationRequest.InsuredOccupationCode) && mainDriverDto.DriverIdTypeCode == 2)
+    {
+        mainDriverDto.DriverOccupationCode = "31010";
+        mainDriverDto.DriverOccupation = "موظف اداري";
+    }
+    else
+    {
+        if ((string.IsNullOrEmpty(quotationRequest.InsuredOccupationCode) || quotationRequest.InsuredOccupationCode == "o") && mainDriverDto.DriverIdTypeCode == 1)
         {
-            List<DriverDto> drivers = new List<DriverDto>();
-            int additionalDrivingPercentage = 0;
-            var mainDriverDto = new DriverDto()
+            mainDriverDto.DriverOccupationCode = "O";
+            mainDriverDto.DriverOccupation = "غير ذالك";
+        }
+        else if ((string.IsNullOrEmpty(quotationRequest.InsuredOccupationCode) || quotationRequest.InsuredOccupationCode == "o") && mainDriverDto.DriverIdTypeCode == 2)
+        {
+            mainDriverDto.DriverOccupationCode = "31010";
+            mainDriverDto.DriverOccupation = "موظف اداري";
+        }
+        else
+        {
+            mainDriverDto.DriverOccupationCode = quotationRequest.InsuredOccupationCode;
+            mainDriverDto.DriverOccupation = quotationRequest.InsuredOccupationNameAr.Trim();
+        }
+    }
+    if ((!quotationRequest.DrivingPercentage.HasValue || quotationRequest.DrivingPercentage > 100 || quotationRequest.DrivingPercentage < 100) && quotationRequest.AdditionalDrivers.Count == 1)
+    {
+        mainDriverDto.DriverDrivingPercentage = 100;
+    }
+    else
+    {
+        mainDriverDto.DriverDrivingPercentage = quotationRequest.DrivingPercentage;
+    }
+    additionalDrivingPercentage = mainDriverDto.DriverDrivingPercentage.HasValue ? mainDriverDto.DriverDrivingPercentage.Value : 0; ;
+    mainDriverDto.DriverEducationCode = quotationRequest.EducationId;
+    if (!mainDriverDto.DriverEducationCode.HasValue || mainDriverDto.DriverEducationCode == 0)
+    {
+        mainDriverDto.DriverEducationCode = 1;
+    }
+    mainDriverDto.DriverMedicalConditionCode = quotationRequest.MedicalConditionId;
+    mainDriverDto.DriverChildrenBelow16Years = quotationRequest.ChildrenBelow16Years;
+    mainDriverDto.DriverHomeCityCode = !string.IsNullOrEmpty(quotationRequest.InsuredCityYakeenCode.ToString()) ? quotationRequest.InsuredCityYakeenCode.ToString() : "";
+    mainDriverDto.DriverHomeCity = !string.IsNullOrEmpty(quotationRequest.InsuredCityArabicDescription) ? quotationRequest.InsuredCityArabicDescription : "";
+    if (quotationRequest.WorkCityId.HasValue)
+    {
+        var city = cities.Where(c => c.Code == quotationRequest.WorkCityId.Value).FirstOrDefault();
+        if (city == null)
+        {
+            mainDriverDto.DriverWorkCity = mainDriverDto.DriverHomeCity;
+            mainDriverDto.DriverWorkCityCode = mainDriverDto.DriverHomeCityCode;
+        }
+        else
+        {
+            mainDriverDto.DriverWorkCity = city.ArabicDescription;
+            mainDriverDto.DriverWorkCityCode = city.YakeenCode.ToString();
+        }
+    }
+    else
+    {
+        mainDriverDto.DriverWorkCity = mainDriverDto.DriverHomeCity;
+        mainDriverDto.DriverWorkCityCode = mainDriverDto.DriverHomeCityCode;
+    }
+
+    //var DriverLicenses = _driverRepository.Table
+    //    .Include(x => x.DriverLicenses)
+    //    .FirstOrDefault(x => x.DriverId == quotationRequest.MainDriverId && x.IsDeleted == false)?
+    //    .DriverLicenses;
+
+    var LicenseDtos = new List<LicenseDto>();
+
+    if (quotationRequest.MainDriverLicenses != null && quotationRequest.MainDriverLicenses.Count() > 0)
+    {
+        int licenseNumberYears;
+        foreach (var item in quotationRequest.MainDriverLicenses)
+        {
+            int? _driverLicenseTypeCode = item.TypeDesc;
+            if (insuranceCompanyId == 14)
+                _driverLicenseTypeCode = GetWataniyaDriverLicenseType(item.TypeDesc.ToString())?.WataniyaCode.Value;
+
+            licenseNumberYears = (DateTime.Now.Year - DateExtension.ConvertHijriStringToDateTime(item.IssueDateH).Year);
+            LicenseDtos.Add(new LicenseDto()
             {
-                DriverTypeCode = 1,
-                DriverId = long.Parse(quotationRequest.NationalId),
-                DriverIdTypeCode = quotationRequest.CardIdTypeId,
-                DriverBirthDate = quotationRequest.InsuredBirthDateH,
-                DriverBirthDateG = quotationRequest.InsuredBirthDate,
-                DriverFirstNameAr = quotationRequest.InsuredFirstNameAr,
-                DriverFirstNameEn = (string.IsNullOrWhiteSpace(quotationRequest.InsuredFirstNameEn) ||
-                string.IsNullOrEmpty(quotationRequest.InsuredFirstNameEn)) ? "-" : quotationRequest.InsuredFirstNameEn,
-                DriverMiddleNameAr = quotationRequest.InsuredMiddleNameAr,
-                DriverMiddleNameEn = quotationRequest.InsuredMiddleNameEn,
-                DriverLastNameAr = quotationRequest.InsuredLastNameAr,
-                DriverLastNameEn = (string.IsNullOrWhiteSpace(quotationRequest.InsuredLastNameEn) ||
-                string.IsNullOrEmpty(quotationRequest.InsuredLastNameEn)) ? "-" : quotationRequest.InsuredLastNameEn,
-                DriverNOALast5Years = quotationRequest.NOALast5Years,
-                DriverNOCLast5Years = quotationRequest.NOCLast5Years,
-                DriverNCDFreeYears = quotationRequest.NajmNcdFreeYears,
-                DriverNCDReference = quotationRequest.NajmNcdRefrence
+                DriverLicenseExpiryDate = Utilities.HandleHijriDate(item.ExpiryDateH),
+                DriverLicenseTypeCode = _driverLicenseTypeCode.ToString(),
+                LicenseCountryCode = 113,
+                LicenseNumberYears = licenseNumberYears == 0 ? 1 : licenseNumberYears
+            });
+        }
+        mainDriverDto.DriverLicenses = LicenseDtos; //from tameenk
+    }
+    else
+    {
+        mainDriverDto.DriverLicenses = null; //from tameenk
+    }
+    // Get (Main & Additional Drivers Extra Licenses)
+    var driversExtraLicenses = _insuredExtraLicenses.TableNoTracking
+        .Where(d => d.InsuredId == quotationRequest.InsuredId);
+
+    // Main Driver Extra Licenses
+    if (driversExtraLicenses != null && driversExtraLicenses.Any())
+    {
+        var mainDriverExtraLicenses = driversExtraLicenses.Where(m => m.IsMainDriver == true);
+
+        if (mainDriverExtraLicenses != null && mainDriverExtraLicenses.Any())
+        {
+            LicenseDto licenseDto;
+            List<LicenseDto> license = new List<LicenseDto>();
+            foreach (var item in mainDriverExtraLicenses)
+            {
+                if (item.LicenseCountryCode < 1 || item.LicenseCountryCode == 113) //as jira 349
+                    continue;
+
+                licenseDto = new LicenseDto();
+                licenseDto.LicenseNumberYears = item.LicenseNumberYears;
+                licenseDto.LicenseCountryCode = item.LicenseCountryCode;
+                license.Add(licenseDto);
+
+            }
+            if (mainDriverDto.DriverLicenses != null)
+                mainDriverDto.DriverLicenses.AddRange(license);
+            else
+                mainDriverDto.DriverLicenses = license;
+        }
+    }
+    //var mainDriverViolations = driverViolationRepository.TableNoTracking
+    //                  .Where(x => x.InsuredId == quotationRequest.InsuredId && x.NIN == quotationRequest.MainDriverNin).ToList();
+
+    if (quotationRequest.MainDriverViolation != null && quotationRequest.MainDriverViolation.Count > 0)
+    {
+        mainDriverDto.DriverViolations = quotationRequest.MainDriverViolation.Select(e => new ViolationDto()
+        { ViolationCode = e.ViolationId }).ToList();
+
+    }
+    //Add main driver to drivers list
+    if (!quotationRequest.NationalId.StartsWith("7"))
+    {
+        if (insuranceCompanyId == 14)//Wataniya
+            HandleDriveAddressDetailsForWataniya(mainDriverDto);
+
+        if (excludeDriversAbove18 && (quotationRequest.AdditionalDrivers != null && quotationRequest.AdditionalDrivers.Count >= 1))
+            quotationRequest.AdditionalDrivers = HandleDriversAbove18Years(quotationRequest.AdditionalDrivers, mainDriverDto);
+
+        drivers.Add(mainDriverDto);
+    }
+    //check if there are additional drivers, if yes then add them to drivers list
+    if (quotationRequest.AdditionalDrivers != null && quotationRequest.AdditionalDrivers.Any())
+    {
+        var additionalDrivers = quotationRequest.AdditionalDrivers.Where(e => e.NIN != mainDriverDto.DriverId.ToString());
+        foreach (var additionalDriver in additionalDrivers)
+        {
+            var driverDto = new DriverDto()
+            {
+                DriverTypeCode = 2,
+                DriverId = long.Parse(additionalDriver.NIN),
+                DriverIdTypeCode = additionalDriver.IsCitizen ? 1 : 2,
+                DriverBirthDate = additionalDriver.DateOfBirthH,
+                DriverBirthDateG = additionalDriver.DateOfBirthG,
+                DriverFirstNameAr = additionalDriver.FirstName,
+                DriverFirstNameEn = (string.IsNullOrEmpty(additionalDriver.EnglishFirstName)
+                || string.IsNullOrWhiteSpace(additionalDriver.EnglishFirstName)) ? "-" : additionalDriver.EnglishFirstName,
+                DriverMiddleNameAr = additionalDriver.SecondName,
+                DriverMiddleNameEn = additionalDriver.EnglishSecondName,
+                DriverLastNameAr = additionalDriver.LastName,
+                DriverLastNameEn = (string.IsNullOrEmpty(additionalDriver.EnglishLastName)
+                || string.IsNullOrWhiteSpace(additionalDriver.EnglishLastName)) ? "-" : additionalDriver.EnglishLastName,
+                DriverOccupation = additionalDriver.ResidentOccupation,
+                DriverNOALast5Years = additionalDriver.NOALast5Years,
+                DriverNOCLast5Years = additionalDriver.NOCLast5Years,
+                DriverNCDFreeYears = 0,
+                DriverNCDReference = "0",
+                DriverRelationship = additionalDriver.RelationShipId ?? 0
             };
-
-            // this is with Alamia
-            if (insuranceCompanyId == 18)
-                mainDriverDto.DriverZipCode = quotationRequest.PostCode;
-
-            if (quotationRequest.InsuredGender == Gender.Male)
-                mainDriverDto.DriverGenderCode = "M";
-            else if (quotationRequest.InsuredGender == Gender.Female)
-                mainDriverDto.DriverGenderCode = "F";
-            else
-                mainDriverDto.DriverGenderCode = "M";
-
-            mainDriverDto.DriverNationalityCode = !string.IsNullOrEmpty(quotationRequest.NationalityCode) ? quotationRequest.NationalityCode : "113";
-            mainDriverDto.DriverSocialStatusCode = quotationRequest.MainDriverSocialStatusId?.ToString();
-            if (string.IsNullOrEmpty(quotationRequest.InsuredOccupationCode) && mainDriverDto.DriverIdTypeCode == 1)
+            if (insuranceCompanyId == 18) //Alamaya as per fayssal
             {
-                mainDriverDto.DriverOccupationCode = "O";
-                mainDriverDto.DriverOccupation = "غير ذالك";
+                driverDto.DriverRelationship = null;
             }
-            else if (string.IsNullOrEmpty(quotationRequest.InsuredOccupationCode) && mainDriverDto.DriverIdTypeCode == 2)
+            if (quotationRequest.NationalId.StartsWith("7") && additionalDriver.NIN == additionalDrivers.ToList().FirstOrDefault().NIN)
             {
-                mainDriverDto.DriverOccupationCode = "31010";
-                mainDriverDto.DriverOccupation = "موظف اداري";
+                driverDto.DriverTypeCode = 1;
+                driverDto.DriverNCDFreeYears = quotationRequest.NajmNcdFreeYears;
+                driverDto.DriverNCDReference = quotationRequest.NajmNcdRefrence;
             }
             else
             {
-                if ((string.IsNullOrEmpty(quotationRequest.InsuredOccupationCode) || quotationRequest.InsuredOccupationCode == "o") && mainDriverDto.DriverIdTypeCode == 1)
+                driverDto.DriverTypeCode = 2;
+            }
+            if (additionalDriver.Gender == Gender.Male)
+                driverDto.DriverGenderCode = "M";
+            else if (additionalDriver.Gender == Gender.Female)
+                driverDto.DriverGenderCode = "F";
+            else
+                driverDto.DriverGenderCode = "M";
+
+            driverDto.DriverSocialStatusCode = additionalDriver.SocialStatusId?.ToString();
+            driverDto.DriverNationalityCode = additionalDriver.NationalityCode.HasValue ?
+                    additionalDriver.NationalityCode.Value.ToString() : "113";
+            var additionalDriverOccupation = additionalDriver.Occupation;
+            if (additionalDriverOccupation == null && driverDto.DriverIdTypeCode == 1)
+            {
+                driverDto.DriverOccupationCode = "O";
+                driverDto.DriverOccupation = "غير ذالك";
+            }
+            else if (additionalDriverOccupation == null && driverDto.DriverIdTypeCode == 2)
+            {
+                driverDto.DriverOccupationCode = "31010";
+                driverDto.DriverOccupation = "موظف اداري";
+            }
+            else
+            {
+                if ((string.IsNullOrEmpty(additionalDriverOccupation.Code) || additionalDriverOccupation.Code == "o") && driverDto.DriverIdTypeCode == 1)
                 {
-                    mainDriverDto.DriverOccupationCode = "O";
-                    mainDriverDto.DriverOccupation = "غير ذالك";
+                    driverDto.DriverOccupationCode = "O";
+                    driverDto.DriverOccupation = "غير ذالك";
                 }
-                else if ((string.IsNullOrEmpty(quotationRequest.InsuredOccupationCode) || quotationRequest.InsuredOccupationCode == "o") && mainDriverDto.DriverIdTypeCode == 2)
+
+                else if ((string.IsNullOrEmpty(additionalDriverOccupation.Code) || additionalDriverOccupation.Code == "o") && driverDto.DriverIdTypeCode == 2)
                 {
-                    mainDriverDto.DriverOccupationCode = "31010";
-                    mainDriverDto.DriverOccupation = "موظف اداري";
+                    driverDto.DriverOccupationCode = "31010";
+                    driverDto.DriverOccupation = "موظف اداري";
                 }
                 else
                 {
-                    mainDriverDto.DriverOccupationCode = quotationRequest.InsuredOccupationCode;
-                    mainDriverDto.DriverOccupation = quotationRequest.InsuredOccupationNameAr.Trim();
+                    driverDto.DriverOccupationCode = additionalDriverOccupation.Code;
+                    driverDto.DriverOccupation = additionalDriverOccupation.NameAr.Trim();
                 }
             }
-            if ((!quotationRequest.DrivingPercentage.HasValue || quotationRequest.DrivingPercentage > 100 || quotationRequest.DrivingPercentage < 100) && quotationRequest.AdditionalDrivers.Count == 1)
+            driverDto.DriverDrivingPercentage = additionalDriver.DrivingPercentage; // from tameenk
+            additionalDrivingPercentage += additionalDriver.DrivingPercentage.HasValue ? additionalDriver.DrivingPercentage.Value : 0;
+            driverDto.DriverEducationCode = additionalDriver.EducationId;
+            if (!driverDto.DriverEducationCode.HasValue || driverDto.DriverEducationCode == 0)
             {
-                mainDriverDto.DriverDrivingPercentage = 100;
+                driverDto.DriverEducationCode = 1;
             }
-            else
+            driverDto.DriverMedicalConditionCode = additionalDriver.MedicalConditionId;
+            driverDto.DriverChildrenBelow16Years = additionalDriver.ChildrenBelow16Years;
+            if (additionalDriver.CityId.HasValue)
             {
-                mainDriverDto.DriverDrivingPercentage = quotationRequest.DrivingPercentage;
-            }
-            additionalDrivingPercentage = mainDriverDto.DriverDrivingPercentage.HasValue ? mainDriverDto.DriverDrivingPercentage.Value : 0; ;
-            mainDriverDto.DriverEducationCode = quotationRequest.EducationId;
-            if (!mainDriverDto.DriverEducationCode.HasValue || mainDriverDto.DriverEducationCode == 0)
-            {
-                mainDriverDto.DriverEducationCode = 1;
-            }
-            mainDriverDto.DriverMedicalConditionCode = quotationRequest.MedicalConditionId;
-            mainDriverDto.DriverChildrenBelow16Years = quotationRequest.ChildrenBelow16Years;
-            mainDriverDto.DriverHomeCityCode = !string.IsNullOrEmpty(quotationRequest.InsuredCityYakeenCode.ToString()) ? quotationRequest.InsuredCityYakeenCode.ToString() : "";
-            mainDriverDto.DriverHomeCity = !string.IsNullOrEmpty(quotationRequest.InsuredCityArabicDescription) ? quotationRequest.InsuredCityArabicDescription : "";
-            if (quotationRequest.WorkCityId.HasValue)
-            {
-                var city = cities.Where(c => c.Code == quotationRequest.WorkCityId.Value).FirstOrDefault();
+                var city = cities.Where(c => c.Code == additionalDriver.CityId.Value).FirstOrDefault();
                 if (city == null)
                 {
-                    mainDriverDto.DriverWorkCity = mainDriverDto.DriverHomeCity;
-                    mainDriverDto.DriverWorkCityCode = mainDriverDto.DriverHomeCityCode;
+                    driverDto.DriverHomeCity = mainDriverDto.DriverHomeCity;
+                    driverDto.DriverHomeCityCode = mainDriverDto.DriverHomeCityCode;
                 }
                 else
                 {
-                    mainDriverDto.DriverWorkCity = city.ArabicDescription;
-                    mainDriverDto.DriverWorkCityCode = city.YakeenCode.ToString();
+                    driverDto.DriverHomeCity = city.ArabicDescription;
+                    driverDto.DriverHomeCityCode = city.YakeenCode.ToString();
                 }
             }
             else
             {
-                mainDriverDto.DriverWorkCity = mainDriverDto.DriverHomeCity;
-                mainDriverDto.DriverWorkCityCode = mainDriverDto.DriverHomeCityCode;
+                driverDto.DriverHomeCity = mainDriverDto.DriverHomeCity;
+                driverDto.DriverHomeCityCode = mainDriverDto.DriverHomeCityCode;
+            }
+            if (additionalDriver.WorkCityId.HasValue)
+            {
+                var city = cities.Where(c => c.Code == additionalDriver.WorkCityId.Value).FirstOrDefault();
+                if (city == null)
+                {
+                    driverDto.DriverWorkCity = driverDto.DriverHomeCity;
+                    driverDto.DriverWorkCityCode = driverDto.DriverHomeCityCode;
+
+                }
+                else
+                {
+                    driverDto.DriverWorkCity = city.ArabicDescription;
+                    driverDto.DriverWorkCityCode = city.YakeenCode.ToString();
+                }
+            }
+            else
+            {
+                driverDto.DriverWorkCity = driverDto.DriverHomeCity;
+                driverDto.DriverWorkCityCode = driverDto.DriverHomeCityCode;
             }
 
-            //var DriverLicenses = _driverRepository.Table
-            //    .Include(x => x.DriverLicenses)
-            //    .FirstOrDefault(x => x.DriverId == quotationRequest.MainDriverId && x.IsDeleted == false)?
-            //    .DriverLicenses;
+            var additionalDriverLicenses = _driverRepository.Table
+                    .Include(x => x.DriverLicenses)
+                    .FirstOrDefault(x => x.DriverId == additionalDriver.DriverId && x.IsDeleted == false)?
+                    .DriverLicenses;
 
-            var LicenseDtos = new List<LicenseDto>();
-
-            if (quotationRequest.MainDriverLicenses != null && quotationRequest.MainDriverLicenses.Count() > 0)
+            var additionalDriverLicenseDtos = new List<LicenseDto>();
+            if (additionalDriverLicenses != null && additionalDriverLicenses.Count() > 0)
             {
                 int licenseNumberYears;
-                foreach (var item in quotationRequest.MainDriverLicenses)
+                foreach (var item in additionalDriverLicenses)
                 {
                     int? _driverLicenseTypeCode = item.TypeDesc;
                     if (insuranceCompanyId == 14)
                         _driverLicenseTypeCode = GetWataniyaDriverLicenseType(item.TypeDesc.ToString())?.WataniyaCode.Value;
 
                     licenseNumberYears = (DateTime.Now.Year - DateExtension.ConvertHijriStringToDateTime(item.IssueDateH).Year);
-                    LicenseDtos.Add(new LicenseDto()
+                    additionalDriverLicenseDtos.Add(new LicenseDto()
                     {
                         DriverLicenseExpiryDate = Utilities.HandleHijriDate(item.ExpiryDateH),
                         DriverLicenseTypeCode = _driverLicenseTypeCode.ToString(),
@@ -1617,546 +1775,335 @@ namespace Tameenk.Services.QuotationNew.Components
                         LicenseNumberYears = licenseNumberYears == 0 ? 1 : licenseNumberYears
                     });
                 }
-                mainDriverDto.DriverLicenses = LicenseDtos; //from tameenk
+                driverDto.DriverLicenses = additionalDriverLicenseDtos; //from tameenk
             }
             else
             {
-                mainDriverDto.DriverLicenses = null; //from tameenk
+                driverDto.DriverLicenses = null;
             }
-            // Get (Main & Additional Drivers Extra Licenses)
-            var driversExtraLicenses = _insuredExtraLicenses.TableNoTracking
-                .Where(d => d.InsuredId == quotationRequest.InsuredId);
-
-            // Main Driver Extra Licenses
+            // Aditional Driver Extra Licenses
             if (driversExtraLicenses != null && driversExtraLicenses.Any())
             {
-                var mainDriverExtraLicenses = driversExtraLicenses.Where(m => m.IsMainDriver == true);
+                var additionalDriversExtraLicenses = driversExtraLicenses.Where(m => m.IsMainDriver == false && m.DriverNin == additionalDriver.NIN);
 
-                if (mainDriverExtraLicenses != null && mainDriverExtraLicenses.Any())
+                if (additionalDriversExtraLicenses != null && additionalDriversExtraLicenses.Any())
                 {
                     LicenseDto licenseDto;
-                    List<LicenseDto> license = new List<LicenseDto>();
-                    foreach (var item in mainDriverExtraLicenses)
+                    List<LicenseDto> licenseAditional = new List<LicenseDto>();
+                    foreach (var item in additionalDriversExtraLicenses)
                     {
-                        if (item.LicenseCountryCode < 1 || item.LicenseCountryCode == 113) //as jira 349
+                        if (item.LicenseCountryCode < 1 || item.LicenseCountryCode == 113)  //as jira 349
                             continue;
 
                         licenseDto = new LicenseDto();
                         licenseDto.LicenseNumberYears = item.LicenseNumberYears;
                         licenseDto.LicenseCountryCode = item.LicenseCountryCode;
-                        license.Add(licenseDto);
+                        licenseAditional.Add(licenseDto);
 
                     }
-                    if (mainDriverDto.DriverLicenses != null)
-                        mainDriverDto.DriverLicenses.AddRange(license);
+                    if (driverDto.DriverLicenses != null)
+                        driverDto.DriverLicenses.AddRange(licenseAditional);
                     else
-                        mainDriverDto.DriverLicenses = license;
+                        driverDto.DriverLicenses = licenseAditional;
                 }
             }
-            //var mainDriverViolations = driverViolationRepository.TableNoTracking
-            //                  .Where(x => x.InsuredId == quotationRequest.InsuredId && x.NIN == quotationRequest.MainDriverNin).ToList();
-
-            if (quotationRequest.MainDriverViolation != null && quotationRequest.MainDriverViolation.Count > 0)
+            var driverViolations = driverViolationRepository.TableNoTracking
+                             .Where(x => x.InsuredId == quotationRequest.InsuredId && x.NIN == additionalDriver.NIN);
+            if (driverViolations != null && driverViolations.Count() > 0)
             {
-                mainDriverDto.DriverViolations = quotationRequest.MainDriverViolation.Select(e => new ViolationDto()
-                { ViolationCode = e.ViolationId }).ToList();
-
-            }
-            //Add main driver to drivers list
-            if (!quotationRequest.NationalId.StartsWith("7"))
-            {
-                if (insuranceCompanyId == 14)//Wataniya
-                    HandleDriveAddressDetailsForWataniya(mainDriverDto);
-
-                if (excludeDriversAbove18 && (quotationRequest.AdditionalDrivers != null && quotationRequest.AdditionalDrivers.Count >= 1))
-                    quotationRequest.AdditionalDrivers = HandleDriversAbove18Years(quotationRequest.AdditionalDrivers, mainDriverDto);
-
-                drivers.Add(mainDriverDto);
-            }
-            //check if there are additional drivers, if yes then add them to drivers list
-            if (quotationRequest.AdditionalDrivers != null && quotationRequest.AdditionalDrivers.Any())
-            {
-                var additionalDrivers = quotationRequest.AdditionalDrivers.Where(e => e.NIN != mainDriverDto.DriverId.ToString());
-                foreach (var additionalDriver in additionalDrivers)
-                {
-                    var driverDto = new DriverDto()
-                    {
-                        DriverTypeCode = 2,
-                        DriverId = long.Parse(additionalDriver.NIN),
-                        DriverIdTypeCode = additionalDriver.IsCitizen ? 1 : 2,
-                        DriverBirthDate = additionalDriver.DateOfBirthH,
-                        DriverBirthDateG = additionalDriver.DateOfBirthG,
-                        DriverFirstNameAr = additionalDriver.FirstName,
-                        DriverFirstNameEn = (string.IsNullOrEmpty(additionalDriver.EnglishFirstName)
-                        || string.IsNullOrWhiteSpace(additionalDriver.EnglishFirstName)) ? "-" : additionalDriver.EnglishFirstName,
-                        DriverMiddleNameAr = additionalDriver.SecondName,
-                        DriverMiddleNameEn = additionalDriver.EnglishSecondName,
-                        DriverLastNameAr = additionalDriver.LastName,
-                        DriverLastNameEn = (string.IsNullOrEmpty(additionalDriver.EnglishLastName)
-                        || string.IsNullOrWhiteSpace(additionalDriver.EnglishLastName)) ? "-" : additionalDriver.EnglishLastName,
-                        DriverOccupation = additionalDriver.ResidentOccupation,
-                        DriverNOALast5Years = additionalDriver.NOALast5Years,
-                        DriverNOCLast5Years = additionalDriver.NOCLast5Years,
-                        DriverNCDFreeYears = 0,
-                        DriverNCDReference = "0",
-                        DriverRelationship = additionalDriver.RelationShipId ?? 0
-                    };
-                    if (insuranceCompanyId == 18) //Alamaya as per fayssal
-                    {
-                        driverDto.DriverRelationship = null;
-                    }
-                    if (quotationRequest.NationalId.StartsWith("7") && additionalDriver.NIN == additionalDrivers.ToList().FirstOrDefault().NIN)
-                    {
-                        driverDto.DriverTypeCode = 1;
-                        driverDto.DriverNCDFreeYears = quotationRequest.NajmNcdFreeYears;
-                        driverDto.DriverNCDReference = quotationRequest.NajmNcdRefrence;
-                    }
-                    else
-                    {
-                        driverDto.DriverTypeCode = 2;
-                    }
-                    if (additionalDriver.Gender == Gender.Male)
-                        driverDto.DriverGenderCode = "M";
-                    else if (additionalDriver.Gender == Gender.Female)
-                        driverDto.DriverGenderCode = "F";
-                    else
-                        driverDto.DriverGenderCode = "M";
-
-                    driverDto.DriverSocialStatusCode = additionalDriver.SocialStatusId?.ToString();
-                    driverDto.DriverNationalityCode = additionalDriver.NationalityCode.HasValue ?
-                            additionalDriver.NationalityCode.Value.ToString() : "113";
-                    var additionalDriverOccupation = additionalDriver.Occupation;
-                    if (additionalDriverOccupation == null && driverDto.DriverIdTypeCode == 1)
-                    {
-                        driverDto.DriverOccupationCode = "O";
-                        driverDto.DriverOccupation = "غير ذالك";
-                    }
-                    else if (additionalDriverOccupation == null && driverDto.DriverIdTypeCode == 2)
-                    {
-                        driverDto.DriverOccupationCode = "31010";
-                        driverDto.DriverOccupation = "موظف اداري";
-                    }
-                    else
-                    {
-                        if ((string.IsNullOrEmpty(additionalDriverOccupation.Code) || additionalDriverOccupation.Code == "o") && driverDto.DriverIdTypeCode == 1)
-                        {
-                            driverDto.DriverOccupationCode = "O";
-                            driverDto.DriverOccupation = "غير ذالك";
-                        }
-
-                        else if ((string.IsNullOrEmpty(additionalDriverOccupation.Code) || additionalDriverOccupation.Code == "o") && driverDto.DriverIdTypeCode == 2)
-                        {
-                            driverDto.DriverOccupationCode = "31010";
-                            driverDto.DriverOccupation = "موظف اداري";
-                        }
-                        else
-                        {
-                            driverDto.DriverOccupationCode = additionalDriverOccupation.Code;
-                            driverDto.DriverOccupation = additionalDriverOccupation.NameAr.Trim();
-                        }
-                    }
-                    driverDto.DriverDrivingPercentage = additionalDriver.DrivingPercentage; // from tameenk
-                    additionalDrivingPercentage += additionalDriver.DrivingPercentage.HasValue ? additionalDriver.DrivingPercentage.Value : 0;
-                    driverDto.DriverEducationCode = additionalDriver.EducationId;
-                    if (!driverDto.DriverEducationCode.HasValue || driverDto.DriverEducationCode == 0)
-                    {
-                        driverDto.DriverEducationCode = 1;
-                    }
-                    driverDto.DriverMedicalConditionCode = additionalDriver.MedicalConditionId;
-                    driverDto.DriverChildrenBelow16Years = additionalDriver.ChildrenBelow16Years;
-                    if (additionalDriver.CityId.HasValue)
-                    {
-                        var city = cities.Where(c => c.Code == additionalDriver.CityId.Value).FirstOrDefault();
-                        if (city == null)
-                        {
-                            driverDto.DriverHomeCity = mainDriverDto.DriverHomeCity;
-                            driverDto.DriverHomeCityCode = mainDriverDto.DriverHomeCityCode;
-                        }
-                        else
-                        {
-                            driverDto.DriverHomeCity = city.ArabicDescription;
-                            driverDto.DriverHomeCityCode = city.YakeenCode.ToString();
-                        }
-                    }
-                    else
-                    {
-                        driverDto.DriverHomeCity = mainDriverDto.DriverHomeCity;
-                        driverDto.DriverHomeCityCode = mainDriverDto.DriverHomeCityCode;
-                    }
-                    if (additionalDriver.WorkCityId.HasValue)
-                    {
-                        var city = cities.Where(c => c.Code == additionalDriver.WorkCityId.Value).FirstOrDefault();
-                        if (city == null)
-                        {
-                            driverDto.DriverWorkCity = driverDto.DriverHomeCity;
-                            driverDto.DriverWorkCityCode = driverDto.DriverHomeCityCode;
-
-                        }
-                        else
-                        {
-                            driverDto.DriverWorkCity = city.ArabicDescription;
-                            driverDto.DriverWorkCityCode = city.YakeenCode.ToString();
-                        }
-                    }
-                    else
-                    {
-                        driverDto.DriverWorkCity = driverDto.DriverHomeCity;
-                        driverDto.DriverWorkCityCode = driverDto.DriverHomeCityCode;
-                    }
-
-                    var additionalDriverLicenses = _driverRepository.Table
-                            .Include(x => x.DriverLicenses)
-                            .FirstOrDefault(x => x.DriverId == additionalDriver.DriverId && x.IsDeleted == false)?
-                            .DriverLicenses;
-
-                    var additionalDriverLicenseDtos = new List<LicenseDto>();
-                    if (additionalDriverLicenses != null && additionalDriverLicenses.Count() > 0)
-                    {
-                        int licenseNumberYears;
-                        foreach (var item in additionalDriverLicenses)
-                        {
-                            int? _driverLicenseTypeCode = item.TypeDesc;
-                            if (insuranceCompanyId == 14)
-                                _driverLicenseTypeCode = GetWataniyaDriverLicenseType(item.TypeDesc.ToString())?.WataniyaCode.Value;
-
-                            licenseNumberYears = (DateTime.Now.Year - DateExtension.ConvertHijriStringToDateTime(item.IssueDateH).Year);
-                            additionalDriverLicenseDtos.Add(new LicenseDto()
-                            {
-                                DriverLicenseExpiryDate = Utilities.HandleHijriDate(item.ExpiryDateH),
-                                DriverLicenseTypeCode = _driverLicenseTypeCode.ToString(),
-                                LicenseCountryCode = 113,
-                                LicenseNumberYears = licenseNumberYears == 0 ? 1 : licenseNumberYears
-                            });
-                        }
-                        driverDto.DriverLicenses = additionalDriverLicenseDtos; //from tameenk
-                    }
-                    else
-                    {
-                        driverDto.DriverLicenses = null;
-                    }
-                    // Aditional Driver Extra Licenses
-                    if (driversExtraLicenses != null && driversExtraLicenses.Any())
-                    {
-                        var additionalDriversExtraLicenses = driversExtraLicenses.Where(m => m.IsMainDriver == false && m.DriverNin == additionalDriver.NIN);
-
-                        if (additionalDriversExtraLicenses != null && additionalDriversExtraLicenses.Any())
-                        {
-                            LicenseDto licenseDto;
-                            List<LicenseDto> licenseAditional = new List<LicenseDto>();
-                            foreach (var item in additionalDriversExtraLicenses)
-                            {
-                                if (item.LicenseCountryCode < 1 || item.LicenseCountryCode == 113)  //as jira 349
-                                    continue;
-
-                                licenseDto = new LicenseDto();
-                                licenseDto.LicenseNumberYears = item.LicenseNumberYears;
-                                licenseDto.LicenseCountryCode = item.LicenseCountryCode;
-                                licenseAditional.Add(licenseDto);
-
-                            }
-                            if (driverDto.DriverLicenses != null)
-                                driverDto.DriverLicenses.AddRange(licenseAditional);
-                            else
-                                driverDto.DriverLicenses = licenseAditional;
-                        }
-                    }
-                    var driverViolations = driverViolationRepository.TableNoTracking
-                                     .Where(x => x.InsuredId == quotationRequest.InsuredId && x.NIN == additionalDriver.NIN);
-                    if (driverViolations != null && driverViolations.Count() > 0)
-                    {
-                        driverDto.DriverViolations = driverViolations
-                            .Select(e => new ViolationDto() { ViolationCode = e.ViolationId }).ToList();
-                    }
-
-                    // this for additional drivers
-                    if (insuranceCompanyId == 14)//Wataniya
-                        HandleDriveAddressDetailsForWataniya(driverDto);
-
-                    drivers.Add(driverDto);
-                }
-            }
-            if (additionalDrivingPercentage != 100 && drivers.Count() > 1)
-            {
-                int numberOfDriver = drivers.Count();
-                if (drivers.Count() > 4)
-                    numberOfDriver = 4;
-                int percentage = 0;
-                int mainPercentage = 0;
-
-                if (numberOfDriver == 4)
-                {
-                    percentage = mainPercentage = 25;
-                }
-                else if (numberOfDriver == 3)
-                {
-                    percentage = 25;
-                    mainPercentage = 50;
-                }
-                else if (numberOfDriver == 2)
-                {
-                    percentage = mainPercentage = 50;
-                }
-                foreach (var d in drivers)
-                {
-                    if (d.DriverTypeCode == 1)
-                        d.DriverDrivingPercentage = mainPercentage;
-                    else
-                        d.DriverDrivingPercentage = percentage;
-                }
-            }
-            return drivers;
-        }
-
-        private LicenseType GetWataniyaDriverLicenseType(string licenseType)
-        {
-            LicenseType license = null;
-
-            short typeCode = 0;
-            short.TryParse(licenseType, out typeCode);
-            if (typeCode > 0)
-                license = GetAllLicenseType().Where(a => a.Code == typeCode).FirstOrDefault();
-
-            return license;
-        }
-
-        private void HandleDriveAddressDetailsForWataniya(DriverDto model)
-        {
-            if (model.DriverId > 0)
-            {
-                var address = GetAddressesByNin(model.DriverId.ToString());
-                if (address != null)
-                    model.DriverHomeAddress = address.BuildingNumber + " " + address.AdditionalNumber + " " + address.PostCode + " " + address.City;
-            }
-        }
-
-        private Address GetAddressesByNin(string driverNin)
-        {
-            Address address = null;
-            try
-            {
-                var addresses = dbContext.Set<Address>()
-                    .FromSqlRaw("EXEC GetAddress @driverNin", new SqlParameter("@driverNin", driverNin))
-                    .ToList();
-                address = addresses.FirstOrDefault();
-                return address;
-            }
-            catch (Exception ex)
-            {
-                dbContext.Database.GetDbConnection().Close();
-                return null;
-            }
-        }
-
-        private List<Driver> HandleDriversAbove18Years(List<Driver> drivers, DriverDto mainDriverDto)
-        {
-            var additionalDrivers = drivers.Where(a => a.NIN != mainDriverDto.DriverId.ToString()).ToList();
-            if (additionalDrivers == null || additionalDrivers.Count == 0)
-                return drivers;
-            if (additionalDrivers.Count > 1)
-                return drivers;
-
-            var currentYear = DateTime.Today.Year;
-            var additionalDriver = additionalDrivers.FirstOrDefault();
-            var driverAge = currentYear - additionalDriver.DateOfBirthG.Year;
-
-            if (driverAge < 18)
-                return drivers;
-
-            mainDriverDto.DriverDrivingPercentage += additionalDriver.DrivingPercentage;
-            drivers.Remove(additionalDriver);
-            return drivers;
-        }
-
-        //public PromotionProgramUserModel GetUserPromotionCodeInfo(string userId, string nationalId, int insuranceCompanyId, int insuranceTypeCode)
-        //{
-        //    //IDbContext dbContext = _serviceProvider.GetRequiredService<IDbContext>(); //EngineContext.Current.Resolve<IDbContext>();
-
-        //    try
-        //    {
-        //        if (insuranceCompanyId < 1)
-        //            throw new TameenkArgumentNullException(nameof(insuranceCompanyId), "Insurance company id can't be less than 1.");
-        //        PromotionProgramUserModel promotionProgramUserInfo = null;
-        //        var command = dbContext.Database.GetDbConnection().CreateCommand();
-        //        command.CommandText = "GetUserPromotionProgramInfo";
-        //        command.CommandType = CommandType.StoredProcedure;
-
-        //        if (!string.IsNullOrEmpty(userId) && userId != Guid.Empty.ToString())
-        //        {
-        //            SqlParameter userIdParam = new SqlParameter() { ParameterName = "userId", Value = userId };
-        //            command.Parameters.Add(userIdParam);
-        //        }
-        //        SqlParameter nationalIdParam = new SqlParameter() { ParameterName = "nationalId", Value = nationalId };
-        //        command.Parameters.Add(nationalIdParam);
-
-        //        SqlParameter insuranceCompanyIdParam = new SqlParameter() { ParameterName = "insuranceCompanyId", Value = insuranceCompanyId };
-        //        SqlParameter insuranceTypeCodeParam = new SqlParameter() { ParameterName = "insuranceTypeCode", Value = insuranceTypeCode };
-
-        //        command.Parameters.Add(insuranceCompanyIdParam);
-        //        command.Parameters.Add(insuranceTypeCodeParam);
-
-        //        dbContext.Database.GetDbConnection().Open();
-        //        var reader = command.ExecuteReader();
-        //        promotionProgramUserInfo = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<PromotionProgramUserModel>(reader).FirstOrDefault();
-        //        if (promotionProgramUserInfo == null)
-        //        {
-        //            reader.NextResult();
-        //            promotionProgramUserInfo = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<PromotionProgramUserModel>(reader).FirstOrDefault();
-
-        //        }
-
-        //        return promotionProgramUserInfo;
-        //    }
-        //    catch
-        //    {
-        //        return null;
-        //    }
-        //    finally
-        //    {
-        //        if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
-        //            dbContext.Database.GetDbConnection().Close();
-        //    }
-        //}
-
-        public PromotionProgramUserModel GetUserPromotionCodeInfo(string userId, string nationalId, int insuranceCompanyId, int insuranceTypeCode)
-        {
-            try
-            {
-                if (insuranceCompanyId < 1)
-                    throw new TameenkArgumentNullException(nameof(insuranceCompanyId), "Insurance company id can't be less than 1.");
-
-                PromotionProgramUserModel promotionProgramUserInfo = null;
-                dbContext.Database.SetCommandTimeout(60);
-
-                using var command = dbContext.Database.GetDbConnection().CreateCommand();
-                command.CommandText = "GetUserPromotionProgramInfo";
-                command.CommandType = CommandType.StoredProcedure;
-
-                if (!string.IsNullOrEmpty(userId) && userId != Guid.Empty.ToString())
-                {
-                    var userIdParam = new SqlParameter("@userId", userId);
-                    command.Parameters.Add(userIdParam);
-                }
-
-                var nationalIdParam = new SqlParameter("@nationalId", nationalId);
-                var insuranceCompanyIdParam = new SqlParameter("@insuranceCompanyId", insuranceCompanyId);
-                var insuranceTypeCodeParam = new SqlParameter("@insuranceTypeCode", insuranceTypeCode);
-
-                command.Parameters.Add(nationalIdParam);
-                command.Parameters.Add(insuranceCompanyIdParam);
-                command.Parameters.Add(insuranceTypeCodeParam);
-
-                dbContext.Database.OpenConnection();
-
-                using var reader = command.ExecuteReader();
-               // promotionProgramUserInfo = dbContext.Set<PromotionProgramUserModel>()
-               //     .FromSqlRaw("EXEC GetUserPromotionProgramInfo @userId, @nationalId, @insuranceCompanyId, @insuranceTypeCode",
-               //     new SqlParameter("@userId", userId),
-               //     new SqlParameter("@nationalId", nationalId),
-               //     new SqlParameter("@insuranceCompanyId", insuranceCompanyId),
-               //     new SqlParameter("@insuranceTypeCode", insuranceTypeCode))
-               //     .FirstOrDefault();
-                return promotionProgramUserInfo;
-            }
-            catch
-            {
-                return null;
-            }
-            finally
-            {
-                if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
-                    dbContext.Database.CloseConnection();
-            }
-        }
-
-
-
-
-        public VehicleInsurance.VehicleModel GetVehicleModelByMakerCodeAndModelCode(short vehicleMakerId, long vehicleModelId)
-        {
-            var vehicleModel = _vehicleModelRepository.TableNoTracking.Where(a => a.VehicleMakerCode == vehicleMakerId && a.Code == vehicleModelId).FirstOrDefault();
-            return vehicleModel;
-        }
-
-        public int GetWataiyaPlateLetterId(string letter)
-        {
-            int letterId = 0;
-            var letterData = _vehiclePlateTextRepository.TableNoTracking.Where(a => a.ArabicDescription == letter).FirstOrDefault();
-            if (letterData != null && letterData.WataniyaCode.HasValue)
-                letterId = letterData.WataniyaCode.Value;
-
-            return letterId;
-        }
-
-        private IEnumerable<Product> ExcludeProductOrBenefitWithZeroPrice(IEnumerable<Product> products)
-        {
-            foreach (var product in products)
-            {
-                var productBenefits = new List<Product_Benefit>();
-                productBenefits.AddRange(product.Product_Benefits.Where(x => x.BenefitPrice > 0 || (x.IsReadOnly && x.IsSelected.HasValue && x.IsSelected == true)));
-                product.Product_Benefits = productBenefits;
+                driverDto.DriverViolations = driverViolations
+                    .Select(e => new ViolationDto() { ViolationCode = e.ViolationId }).ToList();
             }
 
-            return products.Where(x => x.ProductPrice > 0);
+            // this for additional drivers
+            if (insuranceCompanyId == 14)//Wataniya
+                HandleDriveAddressDetailsForWataniya(driverDto);
+
+            drivers.Add(driverDto);
         }
+    }
+    if (additionalDrivingPercentage != 100 && drivers.Count() > 1)
+    {
+        int numberOfDriver = drivers.Count();
+        if (drivers.Count() > 4)
+            numberOfDriver = 4;
+        int percentage = 0;
+        int mainPercentage = 0;
 
-        #endregion
-
-
-        #region Get From Caching
-
-        private InsuranceCompany GetById(int insuranceCompanyId)
+        if (numberOfDriver == 4)
         {
-            return GetAllinsuranceCompany().FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);
+            percentage = mainPercentage = 25;
+        }
+        else if (numberOfDriver == 3)
+        {
+            percentage = 25;
+            mainPercentage = 50;
+        }
+        else if (numberOfDriver == 2)
+        {
+            percentage = mainPercentage = 50;
+        }
+        foreach (var d in drivers)
+        {
+            if (d.DriverTypeCode == 1)
+                d.DriverDrivingPercentage = mainPercentage;
+            else
+                d.DriverDrivingPercentage = percentage;
+        }
+    }
+    return drivers;
+}
+
+private LicenseType GetWataniyaDriverLicenseType(string licenseType)
+{
+    LicenseType license = null;
+
+    short typeCode = 0;
+    short.TryParse(licenseType, out typeCode);
+    if (typeCode > 0)
+        license = GetAllLicenseType().Where(a => a.Code == typeCode).FirstOrDefault();
+
+    return license;
+}
+
+private void HandleDriveAddressDetailsForWataniya(DriverDto model)
+{
+    if (model.DriverId > 0)
+    {
+        var address = GetAddressesByNin(model.DriverId.ToString());
+        if (address != null)
+            model.DriverHomeAddress = address.BuildingNumber + " " + address.AdditionalNumber + " " + address.PostCode + " " + address.City;
+    }
+}
+
+private Address GetAddressesByNin(string driverNin)
+{
+    Address address = null;
+    try
+    {
+        var addresses = dbContext.Set<Address>()
+            .FromSqlRaw("EXEC GetAddress @driverNin", new SqlParameter("@driverNin", driverNin))
+            .ToList();
+        address = addresses.FirstOrDefault();
+        return address;
+    }
+    catch (Exception ex)
+    {
+        dbContext.Database.GetDbConnection().Close();
+        return null;
+    }
+}
+
+private List<Driver> HandleDriversAbove18Years(List<Driver> drivers, DriverDto mainDriverDto)
+{
+    var additionalDrivers = drivers.Where(a => a.NIN != mainDriverDto.DriverId.ToString()).ToList();
+    if (additionalDrivers == null || additionalDrivers.Count == 0)
+        return drivers;
+    if (additionalDrivers.Count > 1)
+        return drivers;
+
+    var currentYear = DateTime.Today.Year;
+    var additionalDriver = additionalDrivers.FirstOrDefault();
+    var driverAge = currentYear - additionalDriver.DateOfBirthG.Year;
+
+    if (driverAge < 18)
+        return drivers;
+
+    mainDriverDto.DriverDrivingPercentage += additionalDriver.DrivingPercentage;
+    drivers.Remove(additionalDriver);
+    return drivers;
+}
+
+//public PromotionProgramUserModel GetUserPromotionCodeInfo(string userId, string nationalId, int insuranceCompanyId, int insuranceTypeCode)
+//{
+//    //IDbContext dbContext = _serviceProvider.GetRequiredService<IDbContext>(); //EngineContext.Current.Resolve<IDbContext>();
+
+//    try
+//    {
+//        if (insuranceCompanyId < 1)
+//            throw new TameenkArgumentNullException(nameof(insuranceCompanyId), "Insurance company id can't be less than 1.");
+//        PromotionProgramUserModel promotionProgramUserInfo = null;
+//        var command = dbContext.Database.GetDbConnection().CreateCommand();
+//        command.CommandText = "GetUserPromotionProgramInfo";
+//        command.CommandType = CommandType.StoredProcedure;
+
+//        if (!string.IsNullOrEmpty(userId) && userId != Guid.Empty.ToString())
+//        {
+//            SqlParameter userIdParam = new SqlParameter() { ParameterName = "userId", Value = userId };
+//            command.Parameters.Add(userIdParam);
+//        }
+//        SqlParameter nationalIdParam = new SqlParameter() { ParameterName = "nationalId", Value = nationalId };
+//        command.Parameters.Add(nationalIdParam);
+
+//        SqlParameter insuranceCompanyIdParam = new SqlParameter() { ParameterName = "insuranceCompanyId", Value = insuranceCompanyId };
+//        SqlParameter insuranceTypeCodeParam = new SqlParameter() { ParameterName = "insuranceTypeCode", Value = insuranceTypeCode };
+
+//        command.Parameters.Add(insuranceCompanyIdParam);
+//        command.Parameters.Add(insuranceTypeCodeParam);
+
+//        dbContext.Database.GetDbConnection().Open();
+//        var reader = command.ExecuteReader();
+//        promotionProgramUserInfo = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<PromotionProgramUserModel>(reader).FirstOrDefault();
+//        if (promotionProgramUserInfo == null)
+//        {
+//            reader.NextResult();
+//            promotionProgramUserInfo = ((IObjectContextAdapter)dbContext).ObjectContext.Translate<PromotionProgramUserModel>(reader).FirstOrDefault();
+
+//        }
+
+//        return promotionProgramUserInfo;
+//    }
+//    catch
+//    {
+//        return null;
+//    }
+//    finally
+//    {
+//        if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
+//            dbContext.Database.GetDbConnection().Close();
+//    }
+//}
+
+public PromotionProgramUserModel GetUserPromotionCodeInfo(string userId, string nationalId, int insuranceCompanyId, int insuranceTypeCode)
+{
+    try
+    {
+        if (insuranceCompanyId < 1)
+            throw new TameenkArgumentNullException(nameof(insuranceCompanyId), "Insurance company id can't be less than 1.");
+
+        PromotionProgramUserModel promotionProgramUserInfo = null;
+        dbContext.Database.SetCommandTimeout(60);
+
+        using var command = dbContext.Database.GetDbConnection().CreateCommand();
+        command.CommandText = "GetUserPromotionProgramInfo";
+        command.CommandType = CommandType.StoredProcedure;
+
+        if (!string.IsNullOrEmpty(userId) && userId != Guid.Empty.ToString())
+        {
+            var userIdParam = new SqlParameter("@userId", userId);
+            command.Parameters.Add(userIdParam);
         }
 
-        private IEnumerable<InsuranceCompany> GetAllinsuranceCompany()
-        {
-            return _cacheManager.Get("tameenk.insurance.companies.all", 20, () =>
-            {
-                return _insuranceCompanyRepository.TableNoTracking.Include(c => c.Contact).ToList();
-            });
-        }
+        var nationalIdParam = new SqlParameter("@nationalId", nationalId);
+        var insuranceCompanyIdParam = new SqlParameter("@insuranceCompanyId", insuranceCompanyId);
+        var insuranceTypeCodeParam = new SqlParameter("@insuranceTypeCode", insuranceTypeCode);
 
-        private List<City> GetAllCities(int pageIndx = 0, int pageSize = int.MaxValue)
-        {
-            return _cacheManager.Get(string.Format("_CITY__aLl_CACHE_Key_", pageIndx, pageSize, 1440), () =>
-            {
-                return _cityRepository.TableNoTracking.ToList();
-            });
-        }
+        command.Parameters.Add(nationalIdParam);
+        command.Parameters.Add(insuranceCompanyIdParam);
+        command.Parameters.Add(insuranceTypeCodeParam);
 
-        private IList<VehicleColor> GetVehicleColors()
-        {
-            return _cacheManager.Get("tameenk.vehiclColor.all", () =>
-            {
-                return _vehicleColorRepository.Table.ToList();
-            });
-        }
+        dbContext.Database.OpenConnection();
 
-        private IPagedList<VehicleInsurance.VehicleMaker> VehicleMakers(int pageIndex = 0, int pageSize = int.MaxValue)
-        {
-            return _cacheManager.Get(string.Format("tameenk.vehiclMaker.all.{0}.{1}", pageIndex, pageSize), () =>
-            {
-                return new PagedList<VehicleInsurance.VehicleMaker>(_vehicleMakerRepository.Table.OrderBy(e => e.Code), pageIndex, pageSize);
-            });
-        }
+        using var reader = command.ExecuteReader();
+        // promotionProgramUserInfo = dbContext.Set<PromotionProgramUserModel>()
+        //     .FromSqlRaw("EXEC GetUserPromotionProgramInfo @userId, @nationalId, @insuranceCompanyId, @insuranceTypeCode",
+        //     new SqlParameter("@userId", userId),
+        //     new SqlParameter("@nationalId", nationalId),
+        //     new SqlParameter("@insuranceCompanyId", insuranceCompanyId),
+        //     new SqlParameter("@insuranceTypeCode", insuranceTypeCode))
+        //     .FirstOrDefault();
+        return promotionProgramUserInfo;
+    }
+    catch
+    {
+        return null;
+    }
+    finally
+    {
+        if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
+            dbContext.Database.CloseConnection();
+    }
+}
 
-        private IPagedList<VehicleInsurance.VehicleModel> VehicleModels(int vehicleMakerId, int pageIndex = 0, int pageSize = int.MaxValue)
-        {
-            string vehicleMakerCode = vehicleMakerId.ToString();
-            return _cacheManager.Get(string.Format("tameenk.vehiclMaker.all.{0}.{1}.{2}", vehicleMakerId, pageIndex, pageSize), () =>
-            {
-                return new PagedList<VehicleInsurance.VehicleModel>(_vehicleModelRepository.Table.Where(e => e.VehicleMakerCode == vehicleMakerId).OrderBy(e => e.Code), pageIndex, pageSize);
-            });
-        }
 
-        private List<LicenseType> GetAllLicenseType(int pageIndx = 0, int pageSize = int.MaxValue)
-        {
-            return _cacheManager.Get(string.Format("_License___typE_CACHE_Key_", pageIndx, pageSize, 1440), () =>
-            {
-                return _licenseTypeRepository.TableNoTracking.ToList();
-            });
-        }
+
+
+public VehicleInsurance.VehicleModel GetVehicleModelByMakerCodeAndModelCode(short vehicleMakerId, long vehicleModelId)
+{
+    var vehicleModel = _vehicleModelRepository.TableNoTracking.Where(a => a.VehicleMakerCode == vehicleMakerId && a.Code == vehicleModelId).FirstOrDefault();
+    return vehicleModel;
+}
+
+public int GetWataiyaPlateLetterId(string letter)
+{
+    int letterId = 0;
+    var letterData = _vehiclePlateTextRepository.TableNoTracking.Where(a => a.ArabicDescription == letter).FirstOrDefault();
+    if (letterData != null && letterData.WataniyaCode.HasValue)
+        letterId = letterData.WataniyaCode.Value;
+
+    return letterId;
+}
+
+private IEnumerable<Product> ExcludeProductOrBenefitWithZeroPrice(IEnumerable<Product> products)
+{
+    foreach (var product in products)
+    {
+        var productBenefits = new List<Product_Benefit>();
+        productBenefits.AddRange(product.Product_Benefits.Where(x => x.BenefitPrice > 0 || (x.IsReadOnly && x.IsSelected.HasValue && x.IsSelected == true)));
+        product.Product_Benefits = productBenefits;
+    }
+
+    return products.Where(x => x.ProductPrice > 0);
+}
+
+#endregion
+
+
+#region Get From Caching
+
+private InsuranceCompany GetById(int insuranceCompanyId)
+{
+    return GetAllinsuranceCompany().FirstOrDefault(ic => ic.InsuranceCompanyID == insuranceCompanyId);
+}
+
+private IEnumerable<InsuranceCompany> GetAllinsuranceCompany()
+{
+    return _cacheManager.Get("tameenk.insurance.companies.all", 20, () =>
+    {
+        return _insuranceCompanyRepository.TableNoTracking.Include(c => c.Contact).ToList();
+    });
+}
+
+private List<City> GetAllCities(int pageIndx = 0, int pageSize = int.MaxValue)
+{
+    return _cacheManager.Get(string.Format("_CITY__aLl_CACHE_Key_", pageIndx, pageSize, 1440), () =>
+    {
+        return _cityRepository.TableNoTracking.ToList();
+    });
+}
+
+private IList<VehicleColor> GetVehicleColors()
+{
+    return _cacheManager.Get("tameenk.vehiclColor.all", () =>
+    {
+        return _vehicleColorRepository.Table.ToList();
+    });
+}
+
+private IPagedList<VehicleInsurance.VehicleMaker> VehicleMakers(int pageIndex = 0, int pageSize = int.MaxValue)
+{
+    return _cacheManager.Get(string.Format("tameenk.vehiclMaker.all.{0}.{1}", pageIndex, pageSize), () =>
+    {
+        return new PagedList<VehicleInsurance.VehicleMaker>(_vehicleMakerRepository.Table.OrderBy(e => e.Code), pageIndex, pageSize);
+    });
+}
+
+private IPagedList<VehicleInsurance.VehicleModel> VehicleModels(int vehicleMakerId, int pageIndex = 0, int pageSize = int.MaxValue)
+{
+    string vehicleMakerCode = vehicleMakerId.ToString();
+    return _cacheManager.Get(string.Format("tameenk.vehiclMaker.all.{0}.{1}.{2}", vehicleMakerId, pageIndex, pageSize), () =>
+    {
+        return new PagedList<VehicleInsurance.VehicleModel>(_vehicleModelRepository.Table.Where(e => e.VehicleMakerCode == vehicleMakerId).OrderBy(e => e.Code), pageIndex, pageSize);
+    });
+}
+
+private List<LicenseType> GetAllLicenseType(int pageIndx = 0, int pageSize = int.MaxValue)
+{
+    return _cacheManager.Get(string.Format("_License___typE_CACHE_Key_", pageIndx, pageSize, 1440), () =>
+    {
+        return _licenseTypeRepository.TableNoTracking.ToList();
+    });
+}
 
         #endregion
     }

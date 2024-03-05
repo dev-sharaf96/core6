@@ -11,6 +11,7 @@ using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
 using Tameenk.Loggin.DAL;
+using Tameenk.Services;
 using Tameenk.Services.Logging;
 
 namespace Tameenk.Integration.Providers.BCARE
@@ -21,20 +22,19 @@ namespace Tameenk.Integration.Providers.BCARE
     public class BCAREInsuranceProvider : RestfulInsuranceProvider
     {
         #region Fields
-        private readonly ILogger _logger;
-        private readonly TameenkConfig _tameenkConfig;
+        private readonly IBcareInsuranceCompanyConfig _CompanyConfig;
+        private readonly IQuotationConfig _quotationConfig;
 
         #endregion
 
         #region Ctor
-        public BCAREInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-     : base(tameenkConfig, new RestfulConfiguration
+        public BCAREInsuranceProvider(IQuotationConfig quotationConfig,IBcareInsuranceCompanyConfig companyConfig,IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+     : base(quotationConfig,new RestfulConfiguration
      {
         ProviderName = "BCARE"
-     }, logger, policyProcessingQueueRepository)
+     },policyProcessingQueueRepository)
         {
-            _logger = logger;
-            _tameenkConfig = tameenkConfig;
+            _CompanyConfig = companyConfig;
         }
 
         #endregion
@@ -43,7 +43,7 @@ namespace Tameenk.Integration.Providers.BCARE
 
 
 
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace Tameenk.Integration.Providers.BCARE
                 message.StatusCode = System.Net.HttpStatusCode.OK;
                 string responseData = string.Empty;
                 //Only return a response if the user NIN : 1000353498 Seq: 529607110
-                if ((quotation.InsuredId == _tameenkConfig.BcareInsuranceCompanyConfig.NIN 
+                if ((quotation.InsuredId == _CompanyConfig.NIN 
                     && quotation.VehicleChassisNumber == "SALGA2EF7GA271462"
                     ) ||(quotation.InsuredId== 1072118639 && quotation.VehicleChassisNumber== "JTEBU11F88K048251"))
                 {
@@ -63,7 +63,7 @@ namespace Tameenk.Integration.Providers.BCARE
             }
             catch (Exception ex)
             {
-                _logger.Log($"BCAREInsuranceProvider -> ExecuteQuotationRequest - (Provider name: {Configuration.ProviderName})", ex);
+                //_logger.Log($"BCAREInsuranceProvider -> ExecuteQuotationRequest - (Provider name: {Configuration.ProviderName})", ex);
             }
 
             return null;
@@ -82,7 +82,7 @@ namespace Tameenk.Integration.Providers.BCARE
             }
             catch (Exception ex)
             {
-                _logger.Log($"BCAREInsuranceProvider -> ExecutePolicyRequest - {Configuration.ProviderName}", ex);
+                //_logger.Log($"BCAREInsuranceProvider -> ExecutePolicyRequest - {Configuration.ProviderName}", ex);
             }
 
             return null;

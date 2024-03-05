@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ using Tameenk.Core.Domain.Enums.Vehicles;
 
 namespace Tameenk.Core.Domain
 {
+    [Keyless]
     public class QuotationRequestInfoModel
     {
         [JsonProperty("id")]
@@ -157,7 +159,7 @@ namespace Tameenk.Core.Domain
         public List<DriverLicense> MainDriverLicenses { get; set; }
 
         [JsonProperty("additionalDrivers")]
-        public List<Driver> AdditionalDrivers { get; set; }
+        public List<Driver> AdditionalDrivers { get; set; }///
 
         [JsonProperty("majorColor")]
         public string MajorColor { get; set; }

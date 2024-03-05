@@ -24,6 +24,7 @@ using Tameenk.Services.Core.Addresses;
 using Tameenk.Loggin.DAL;
 using Tameenk.Services.Logging;
 using System.Net.Http.Headers;
+using Tameenk.Services;
 
 namespace Tameenk.Integration.Providers.ArabianShield
 {
@@ -31,17 +32,15 @@ namespace Tameenk.Integration.Providers.ArabianShield
     {
 
         #region fields
-
-        private readonly ILogger _logger;
-        private readonly TameenkConfig _tameenkConfig;
+        private readonly IQuotationConfig _quotationConfig;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly string _accessTokenBase64;
         #endregion
 
         #region ctor
-        public ArabianShieldInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-             : base(tameenkConfig, new RestfulConfiguration
+        public ArabianShieldInsuranceProvider(IQuotationConfig quotationConfig,IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+             : base(quotationConfig, new RestfulConfiguration
              {
                  GenerateQuotationUrl = "https://aggregatorprd.der3.com/BcareWebApi/Tameenk/api/Quotation",
                  GeneratePolicyUrl = "https://aggregatorprd.der3.com/BcareWebApi/Tameenk/api/Policy",
@@ -52,11 +51,10 @@ namespace Tameenk.Integration.Providers.ArabianShield
                  GenerateVehicleClaimNotificationUrl = "https://aggregatorprd.der3.com/BcareWebApi/Tameenk/api/ClaimsNotificationservice",
                  AccessToken = "BCARE:Bcare@123",
                  ProviderName = "ArabianShield"
-             }, logger, policyProcessingQueueRepository)
+             },policyProcessingQueueRepository)
         {
-            _logger = logger;
-            _restfulConfiguration = Configuration as RestfulConfiguration;
-            _tameenkConfig = tameenkConfig ?? throw new TameenkArgumentNullException(nameof(TameenkConfig));
+            _quotationConfig = quotationConfig;
+            _restfulConfiguration = Configuration as RestfulConfiguration; 
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _accessTokenBase64 = _restfulConfiguration.AccessToken;
 
@@ -67,16 +65,16 @@ namespace Tameenk.Integration.Providers.ArabianShield
         #region Quotation Methods
 
 
-        protected override object ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
+        protected override async Task< object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
-            ServiceOutput output = SubmitQuotationRequest(quotation, predefinedLogInfo);
+            ServiceOutput output = await SubmitQuotationRequest(quotation, predefinedLogInfo);
             if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
             {
                 return null;
             }
             return output.Output;
         }
-        protected override ServiceOutput SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        protected override async Task< ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
         {
             ServiceOutput output = new ServiceOutput();
             log.ReferenceId = quotation.ReferenceId;
@@ -97,7 +95,7 @@ namespace Tameenk.Integration.Providers.ArabianShield
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Quotatoin.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.quotationTestData.json";
@@ -241,7 +239,7 @@ namespace Tameenk.Integration.Providers.ArabianShield
         protected override QuotationServiceResponse GetQuotationResponseObject(object response, QuotationServiceRequest request)
         {
 
-            if (!_tameenkConfig.Quotatoin.TestMode)
+            if (!_quotationConfig.TestMode)
             {
                 if (string.IsNullOrEmpty(request.VehicleRegExpiryDate))
                     request.VehicleRegExpiryDate = "21-05-1442";
@@ -284,7 +282,7 @@ namespace Tameenk.Integration.Providers.ArabianShield
             }
             catch (Exception ex)
             {
-                _logger.Log("ArabianShieldInsuranceProvider -> GetQuotationResponseObject", ex, LogLevel.Error);
+               // _logger.Log("ArabianShieldInsuranceProvider -> GetQuotationResponseObject", ex, LogLevel.Error);
                 responseValue.StatusCode = 2;
                 if (responseValue.Errors == null)
                     responseValue.Errors = new List<Error>();
@@ -481,7 +479,7 @@ namespace Tameenk.Integration.Providers.ArabianShield
         //                if (request != null)
         //                {
         //                    request.ErrorDescription = output.ErrorDescription;
-        //                    _policyProcessingQueueRepository.Update(request);
+        //                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //                }
         //                return output;
         //            }
@@ -510,7 +508,7 @@ namespace Tameenk.Integration.Providers.ArabianShield
         //                if (request != null)
         //                {
         //                    request.ErrorDescription = output.ErrorDescription;
-        //                    _policyProcessingQueueRepository.Update(request);
+        //                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //                }
         //                return output;
         //            }
@@ -526,7 +524,7 @@ namespace Tameenk.Integration.Providers.ArabianShield
         //                if (request != null)
         //                {
         //                    request.ErrorDescription = output.ErrorDescription;
-        //                    _policyProcessingQueueRepository.Update(request);
+        //                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //                }
         //                return output;
         //            }
@@ -545,7 +543,7 @@ namespace Tameenk.Integration.Providers.ArabianShield
         //            if (request != null)
         //            {
         //                request.ErrorDescription = output.ErrorDescription;
-        //                _policyProcessingQueueRepository.Update(request);
+        //                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //            }
         //            return output;
         //        }
@@ -560,7 +558,7 @@ namespace Tameenk.Integration.Providers.ArabianShield
         //        if (request != null)
         //        {
         //            request.ErrorDescription = output.ErrorDescription;
-        //            _policyProcessingQueueRepository.Update(request);
+        //            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //        }
         //        return output;
         //    }

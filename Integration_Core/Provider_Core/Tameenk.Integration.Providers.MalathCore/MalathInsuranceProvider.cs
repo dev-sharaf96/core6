@@ -17,6 +17,7 @@ using Tameenk.Core.Infrastructure;
 using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
+using Tameenk.Services;
 using Tameenk.Services.Core.Addresses;
 using Tameenk.Services.Logging;
 
@@ -25,10 +26,10 @@ namespace Tameenk.Integration.Providers.Malath
 {
     public class MalathInsuranceProvider : RestfulInsuranceProvider
     {
-   
+        private readonly IQuotationConfig _quotationConfig;
 
-        public MalathInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-           : base(tameenkConfig, new RestfulConfiguration
+        public MalathInsuranceProvider(IQuotationConfig quotationConfig,IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+           : base(quotationConfig,new RestfulConfiguration
            {
                GenerateQuotationUrl = "https://mig.malath.com.sa/BCareMotorService/Api/Quotation",
                GeneratePolicyUrl = "https://mig.malath.com.sa/BCareMotorService/Api/Policy",
@@ -40,7 +41,7 @@ namespace Tameenk.Integration.Providers.Malath
                GenerateAutoleasingQuotationUrl = "https://mig.malath.com.sa/BCareMotorService/api/Quotation",
                GenerateAutoleasingPolicyUrl = "https://mig.malath.com.sa/BCareMotorService/api/Policy",
                AutoleasingAccessToken = "TAMEENKUSER:ffjdkslKd@$k"
-           }, logger, policyProcessingQueueRepository)
+           }, policyProcessingQueueRepository)
         {
         }
 

@@ -15,6 +15,7 @@ using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.Dto.Providers;
 using Tameenk.Loggin.DAL;
 using Tameenk.Resources.Quotations;
+using Tameenk.Services;
 using Tameenk.Services.Core.Addresses;
 using Tameenk.Services.Core.Http;
 using Tameenk.Services.Logging;
@@ -33,6 +34,7 @@ namespace Tameenk.Integration.Providers.AlRajhi
         private readonly string _accessTokenBase64;
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IQuotationConfig _quotationConfig;
         #region ctor
         //public AlRajhiInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
         //     : base(new ProviderConfiguration() { ProviderName = "AlRajhi" }, logger)
@@ -42,8 +44,8 @@ namespace Tameenk.Integration.Providers.AlRajhi
         //    _policyProcessingQueueRepository = policyProcessingQueueRepository;
         //}
 
-        public AlRajhiInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-           : base(tameenkConfig, new RestfulConfiguration
+        public AlRajhiInsuranceProvider(IQuotationConfig quotationConfig, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+           : base(quotationConfig,new RestfulConfiguration
            {
                GenerateQuotationUrl = "https://dspeai.alrajhitakaful.com/ART.NCIS.TameenK/TameenK.svc/Quotation",
                GeneratePolicyUrl = "https://dspeai.alrajhitakaful.com/ART.NCIS.TameenK/TameenK.svc/Policy",
@@ -53,7 +55,7 @@ namespace Tameenk.Integration.Providers.AlRajhi
                GenerateAutoleasingPolicyUrl= "https://dspeai.alrajhitakaful.com/ART.NCIS.BcareLeasing/TameenK.svc/Quotation",
                AutoleasingAccessToken= "BcareLeaseUsr:kfTds!45754"
 
-           }, logger, policyProcessingQueueRepository)
+           },policyProcessingQueueRepository)
         {
             _serviceProvider = serviceProvider;
             _restfulConfiguration = Configuration as RestfulConfiguration;
@@ -564,7 +566,7 @@ namespace Tameenk.Integration.Providers.AlRajhi
         //                if (request != null)
         //                {
         //                    request.ErrorDescription = output.ErrorDescription;
-        //                    _policyProcessingQueueRepository.Update(request);
+        //                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //                }
 
         //                return output;
@@ -596,7 +598,7 @@ namespace Tameenk.Integration.Providers.AlRajhi
         //                if (request != null)
         //                {
         //                    request.ErrorDescription = output.ErrorDescription;
-        //                    _policyProcessingQueueRepository.Update(request);
+        //                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //                }
         //                return output;
         //            }
@@ -612,7 +614,7 @@ namespace Tameenk.Integration.Providers.AlRajhi
         //                if (request != null)
         //                {
         //                    request.ErrorDescription = output.ErrorDescription;
-        //                    _policyProcessingQueueRepository.Update(request);
+        //                    _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //                }
         //                return output;
         //            }
@@ -633,7 +635,7 @@ namespace Tameenk.Integration.Providers.AlRajhi
         //            if (request != null)
         //            {
         //                request.ErrorDescription = output.ErrorDescription;
-        //                _policyProcessingQueueRepository.Update(request);
+        //                _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //            }
         //            return output;
         //        }
@@ -648,7 +650,7 @@ namespace Tameenk.Integration.Providers.AlRajhi
         //        if (request != null)
         //        {
         //            request.ErrorDescription = output.ErrorDescription;
-        //            _policyProcessingQueueRepository.Update(request);
+        //            _policyProcessingQueueRepository.UpdateAsync(request).Wait();
         //        }
         //        return output;
         //    }
