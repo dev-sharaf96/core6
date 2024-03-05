@@ -578,7 +578,7 @@ namespace Tameenk.Integration.Core.Providers
 
                 dtBeforeCalling = DateTime.Now;
                
-                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation)/*, Encoding.UTF8, "application/json"*/);
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "BCareMotor:A!CC&BC@re");
 
                 var response = await _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);

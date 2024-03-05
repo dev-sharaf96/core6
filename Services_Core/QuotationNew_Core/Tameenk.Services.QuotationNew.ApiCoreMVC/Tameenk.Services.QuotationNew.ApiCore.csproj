@@ -15,19 +15,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.27" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.27">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.CoreServices" Version="1.3.0" />
     <PackageReference Include="WebApiThrottle" Version="1.5.4" />
-    <PackageReference Include="log4net" Version="2.0.15" />
-    <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.4" />
-    <PackageReference Include="NLog" Version="5.2.8" />
-    <PackageReference Include="Owin" Version="1.0.0" />
-    <PackageReference Include="AutoMapper" Version="7.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\..\New\core6\Libraries_Core\Tameenk.ResourcesCore_New\Tameenk.ResourcesCore.csproj" />
     <ProjectReference Include="..\..\..\Integration\Providers\Tameenk.Integration.Providers.ACIGCore\Tameenk.Integration.Providers.ACIG.csproj" />
     <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.AICC.Core\Tameenk.Integration.Providers.AICC.csproj" />
     <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.AlalamiyaCore\Tameenk.Integration.Providers.AlalamiyaCore.csproj" />
@@ -55,7 +52,6 @@
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.DataCore_New\Tameenk.DataCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.Loggin.DALCore_New\Tameenk.Loggin.DALCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.RedisCore_New\Tameenk.RedisCore_New.csproj" />
-    <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.ResourcesCore_New\Tameenk.ResourcesCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.ServicesCore_New\Tameenk.ServicesCore.csproj" />
     <ProjectReference Include="..\Tameenk.Services.QuotationNew.ComponentsCore\Tameenk.Services.QuotationNew.ComponentsCore.csproj" />
   </ItemGroup>

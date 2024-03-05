@@ -40,7 +40,6 @@
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.DataCore_New\Tameenk.DataCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.Loggin.DALCore_New\Tameenk.Loggin.DALCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.RedisCore_New\Tameenk.RedisCore_New.csproj" />
-    <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.ResourcesCore_New\Tameenk.ResourcesCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.ServicesCore_New\Tameenk.ServicesCore.csproj" />
   </ItemGroup>
 

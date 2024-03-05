@@ -15,7 +15,6 @@
     <ProjectReference Include="..\..\..\Integration_Core\Tameenk.Integration.DtoCore\Tameenk.Integration.DtoCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.Core.Domain\Tameenk.Core.Domain.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.Core\Tameenk.Core.csproj" />
-    <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.ResourcesCore_New\Tameenk.ResourcesCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.ServicesCore_New\Tameenk.ServicesCore.csproj" />
   </ItemGroup>
 
