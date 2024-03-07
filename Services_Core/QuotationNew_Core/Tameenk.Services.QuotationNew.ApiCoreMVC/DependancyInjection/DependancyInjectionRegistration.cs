@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System.Net.Http;
 using Tameenk.Core.Caching;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Data;
+using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.DtoCore.ServiceLocator;
 using Tameenk.Integration.Providers.AICC;
@@ -46,22 +48,26 @@ namespace Tameenk.Services.QuotationNew.ApiCore.DependancyInjection
             #region Services Injection
 
             #region Singleton
+            services.AddScoped<HttpClient>();
             #endregion
 
             #region Scope
-            services.AddScoped<RestfulConfiguration>();
+            
+
             services.AddScoped<ICacheManager, MemoryCacheManager>();
             services.AddScoped<IQuotationService, QuotationService>();
             services.AddScoped<IAsyncQuotationContext, AsyncQuotationContext>();
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<IVehicleService, VehicleService>();
             services.AddScoped<IProvidersServiceLocator, ProvidersServiceLocator>();
+            services.AddScoped<RestfulInsuranceProvider>();
             services.AddScoped<AICCInsuranceProvider, AICCInsuranceProvider>();
             //services.AddScoped<DbContext, YourDbContext>();
             //services.AddScoped<YourDbContext>();
             //services.AddScoped<TameenkLog>();
             // services.AddScoped(typeof(IAsyncQuotationContext<>), typeof(AsyncQuotationContext<>));
             //services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+            services.AddSingleton<RestfulConfiguration>();
 
 
 

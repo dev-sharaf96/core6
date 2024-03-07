@@ -33,8 +33,8 @@ namespace Tameenk.Integration.Providers.AICC
         private const string POLICY_COMPREHENSIVE_URL = "https://bcare-comp.aicc.com.sa:4433/api/PurchaseNotifications";
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
         public AICCInsuranceProvider(IQuotationConfig quotationConfig, RestfulConfiguration restfulConfiguration,
-            IRepository<PolicyProcessingQueue> policyProcessingQueueRepository ,IRepository<CheckoutDetail> checkoutDetail)
-            : base(quotationConfig ,new RestfulConfiguration
+            IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
+            : base(quotationConfig, new RestfulConfiguration
             {
                 GenerateQuotationUrl = "https://localhost:7267/AICC/Quotes",//"https://bcare-motor.aicc.com.sa:9443/api/Quotes",
                 GeneratePolicyUrl = "https://ebranch.aicc.com.sa/quoteapp/api/Tameenk/Policy",
@@ -120,8 +120,12 @@ namespace Tameenk.Integration.Providers.AICC
 
             try
             {
-                result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
-                responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
+                var task = response as Task<object>;
+                var httpResponseMessage = task.Result;
+                //responseValue = httpResponseMessage as QuotationServiceResponse;
+                //result = httpResponseMessage.Content.ReadAsStringAsync().Result;
+                var json = httpResponseMessage.ToString(); 
+                responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(json);
                 if (responseValue != null && responseValue.Products != null)
                 {
                     foreach (var product in responseValue.Products)
@@ -142,6 +146,7 @@ namespace Tameenk.Integration.Providers.AICC
 
                 HandleFinalProductPrice(responseValue);
             }
+
             catch (Exception ex)
             {
                 responseValue.StatusCode = 2;
@@ -156,6 +161,7 @@ namespace Tameenk.Integration.Providers.AICC
             }
 
             return responseValue;
+
         }
 
         //#region Autoleasing

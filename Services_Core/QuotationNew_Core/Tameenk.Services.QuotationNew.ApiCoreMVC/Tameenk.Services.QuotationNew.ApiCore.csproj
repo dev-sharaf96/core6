@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\..\New\core6\Libraries_Core\Tameenk.ResourcesCore_New\Tameenk.ResourcesCore.csproj" />
     <ProjectReference Include="..\..\..\Integration\Providers\Tameenk.Integration.Providers.ACIGCore\Tameenk.Integration.Providers.ACIG.csproj" />
     <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.AICC.Core\Tameenk.Integration.Providers.AICC.csproj" />
     <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.AlalamiyaCore\Tameenk.Integration.Providers.AlalamiyaCore.csproj" />

@@ -879,7 +879,7 @@ namespace Tameenk.Services.QuotationNew.ApiCore.Controllers
                 }
 
                 //_asyncQuotationContext.InsertQuotationResponseIntoInmemoryCache(insuranceCompanyId, insuranceTypeCode, qtRqstExtrnlId, vehicleAgencyRepair, deductibleValue, selectedUserId, JsonConvert.SerializeObject(responseModel));
-                _asyncQuotationContext.InsertQuotationResponseIntoInmemoryCache(insuranceCompanyId, insuranceTypeCode, qtRqstExtrnlId, vehicleAgencyRepair, deductibleValue, selectedUserId, responseModel);
+              //  _asyncQuotationContext.InsertQuotationResponseIntoInmemoryCache(insuranceCompanyId, insuranceTypeCode, qtRqstExtrnlId, vehicleAgencyRepair, deductibleValue, selectedUserId, responseModel);
                 return Ok(responseModel);
             }
             catch (Exception ex)

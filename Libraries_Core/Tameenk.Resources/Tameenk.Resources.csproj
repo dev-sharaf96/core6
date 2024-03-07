@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2CFF55DC-EDD1-41C7-92F6-04C650429A9D}</ProjectGuid>
+    <ProjectGuid>{162BA533-62E6-44CE-99BC-B514BB9FF86B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tameenk.Resources</RootNamespace>

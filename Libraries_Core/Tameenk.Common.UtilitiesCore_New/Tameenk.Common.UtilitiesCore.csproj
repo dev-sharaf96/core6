@@ -14,6 +14,6 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\New\core6\Libraries_Core\Tameenk.ResourcesCore_New\Tameenk.ResourcesCore.csproj" />
+    <ProjectReference Include="..\Tameenk.Resources\Tameenk.Resources.csproj" />
   </ItemGroup>
 </Project>

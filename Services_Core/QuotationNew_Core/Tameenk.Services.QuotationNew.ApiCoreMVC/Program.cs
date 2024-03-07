@@ -11,6 +11,7 @@ using NLog;
 using System;
 using Tameenk.Loggin.DAL;
 using Tameenk.Services.QuotationNew.ApiCore.DependancyInjection;
+using Tameenk.Services.QuotationNew.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,6 +72,6 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
-
+AutoMapperConfiguration.Init();
 
 app.Run();

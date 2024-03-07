@@ -58,7 +58,7 @@ namespace Tameenk.Services.QuotationNew.Components
         private readonly IRepository<PriceType> _priceTypeRepository;
         private readonly IRepository<QuotationResponseCache> _quotationResponseCache;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IQuotationService _quotationService;
+        private readonly IQuotationService         _quotationService;
         private readonly IProvidersServiceLocator _providersServiceLocator;
 
         //private readonly TameenkLog dbContext;
@@ -385,7 +385,7 @@ namespace Tameenk.Services.QuotationNew.Components
                     }
                 }
 
-                output = GetQuotationResponseDetails(requestDetails, insuranceCompany, qtRqstExtrnlId, predefinedLogInfo, log, insuranceTypeCode, vehicleAgencyRepair, deductibleValue, policyNo: policyNo, policyExpiryDate: policyExpiryDate, OdQuotation: OdQuotation);
+                output = await GetQuotationResponseDetails(requestDetails, insuranceCompany, qtRqstExtrnlId, predefinedLogInfo, log, insuranceTypeCode, vehicleAgencyRepair, deductibleValue, policyNo: policyNo, policyExpiryDate: policyExpiryDate, OdQuotation: OdQuotation);
                 //log.RefrenceId = output.QuotationResponse.ReferenceId;
                 if (output == null)
                     return null;
@@ -502,7 +502,7 @@ namespace Tameenk.Services.QuotationNew.Components
             }
         }
 
-        private QuotationNewOutput GetQuotationResponseDetails(QuotationNewRequestDetails quoteRequest, InsuranceCompany insuranceCompany, string qtRqstExtrnlId, ServiceRequestLog predefinedLogInfo, QuotationRequestLog log, int insuranceTypeCode = 1, bool vehicleAgencyRepair = false, int? deductibleValue = null, bool automatedTest = false, string policyNo = null, string policyExpiryDate = null, bool OdQuotation = false)
+        private async Task<QuotationNewOutput> GetQuotationResponseDetails(QuotationNewRequestDetails quoteRequest, InsuranceCompany insuranceCompany, string qtRqstExtrnlId, ServiceRequestLog predefinedLogInfo, QuotationRequestLog log, int insuranceTypeCode = 1, bool vehicleAgencyRepair = false, int? deductibleValue = null, bool automatedTest = false, string policyNo = null, string policyExpiryDate = null, bool OdQuotation = false)
         {
             string userId = predefinedLogInfo?.UserID?.ToString();
 
@@ -658,7 +658,7 @@ namespace Tameenk.Services.QuotationNew.Components
             predefinedLogInfo.VehicleAgencyRepair = requestMessage.VehicleAgencyRepair;
             predefinedLogInfo.City = requestMessage.InsuredCity;
             predefinedLogInfo.ChassisNumber = requestMessage.VehicleChassisNumber;
-            var response = RequestQuotationProducts(requestMessage, output.QuotationResponse, insuranceCompany, predefinedLogInfo, automatedTest, out errors);
+            var response = await RequestQuotationProducts(requestMessage, output.QuotationResponse, insuranceCompany, predefinedLogInfo, automatedTest);
             log.ServiceResponseTimeInSeconds = DateTime.Now.Subtract(beforeCallingQuoteService).TotalSeconds;
             if (response == null)
             {
@@ -1327,11 +1327,11 @@ namespace Tameenk.Services.QuotationNew.Components
             return serviceRequestMessage;
         }
 
-        private QuotationServiceResponse RequestQuotationProducts(QuotationServiceRequest requestMessage,
+        private async Task<QuotationServiceResponse> RequestQuotationProducts(QuotationServiceRequest requestMessage,
             QuotationResponse quotationResponse,
-            InsuranceCompany insuranceCompany, ServiceRequestLog predefinedLogInfo, bool automatedTest, out string errors)
+            InsuranceCompany insuranceCompany, ServiceRequestLog predefinedLogInfo, bool automatedTest)
         {
-            errors = string.Empty;
+            //errors = string.Empty;
             try
             {
                 requestMessage.InsuranceCompanyCode = insuranceCompany.InsuranceCompanyID;
@@ -1344,7 +1344,7 @@ namespace Tameenk.Services.QuotationNew.Components
 
                     throw new Exception("Unable to find provider.");
                 }
-                results = provider.GetQuotation(requestMessage, predefinedLogInfo, automatedTest);
+                results =  provider.GetQuotation(requestMessage, predefinedLogInfo, automatedTest);
                 // Remove products if price is zero
                 if (results != null && results.Products != null)
                 {
@@ -1373,7 +1373,7 @@ namespace Tameenk.Services.QuotationNew.Components
             }
             catch (Exception exp)
             {
-                errors = exp.ToString();
+                //errors = exp.ToString();
                 return null;
             }
 

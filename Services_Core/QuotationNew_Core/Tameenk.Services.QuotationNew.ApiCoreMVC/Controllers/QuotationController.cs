@@ -9,7 +9,6 @@ using Tameenk.Common.Utilities;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Integration.Dto.Quotation;
 using Tameenk.Loggin.DAL;
-using Tameenk.Resources.WebResources;
 //using Tameenk.Security.Services;
 using Tameenk.Services.QuotationNew.Components;
 using System.Threading;
@@ -914,7 +913,7 @@ namespace Tameenk.Services.QuotationNew.Api.Controllers
             {
                 QuotationNewOutput output = new QuotationNewOutput();
                 output.ErrorCode = QuotationNewOutput.ErrorCodes.ServiceException;
-                output.ErrorDescription = WebResources.ResourceManager.GetString("ErrorGeneric", CultureInfo.GetCultureInfo("ar"));
+               // output.ErrorDescription = ResourceManager.GetString("ErrorGeneric", CultureInfo.GetCultureInfo("ar"));
 
                 log.ServerIP = Utilities.GetInternalServerIP();
                 //log.Headers["User-Agent"].ToString() = Utilities.GetUserAgent();

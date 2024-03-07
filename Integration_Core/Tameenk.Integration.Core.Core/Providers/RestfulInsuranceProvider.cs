@@ -21,6 +21,7 @@ using Tameenk.Services;
 using System.Threading.Tasks;
 using Tameenk.Core.Configuration;
 using Tameenk.Services.Core.Http;
+using System.Net;
 
 namespace Tameenk.Integration.Core.Providers
 {
@@ -29,8 +30,6 @@ namespace Tameenk.Integration.Core.Providers
 
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly string _accessTokenBase64;
-        //private readonly ILogger _logger;
-        //private readonly TameenkConfig _tameenkConfig;
         private readonly HttpClient _httpClient;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly string _autoleasingAccessTokenBase64;
@@ -564,71 +563,245 @@ namespace Tameenk.Integration.Core.Providers
         }
 
 
+        //private void LogError(string errorMessage)
+        //{
+        //    // Implement your logging mechanism here, e.g., use a logging framework or write to console
+        //    Console.WriteLine($"Error: {errorMessage}");
+        //}
 
+        //protected override async Task<ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        //{
+        //    ServiceOutput output = new ServiceOutput();
+        //    DateTime dtBeforeCalling = DateTime.Now;
+        //    try
+        //    {
+        //        if (quotation.ProductTypeCode != 2)
+        //            quotation.DeductibleValue = null;
+        //        dtBeforeCalling = DateTime.Now;
+        //        var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+        //        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "BCareMotor:A!CC&BC@re");
 
-        protected override async Task<ServiceOutput>  SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        //        //var response = await _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);
+        //        var task = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);
+        //        task.Wait();
+
+        //        var response = task.Result;
+
+        //        DateTime dtAfterCalling = DateTime.Now;
+
+        //        if (response == null || response.Content == null || string.IsNullOrEmpty(await response.Content.ReadAsStringAsync()))
+        //        {
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+        //            output.ErrorDescription = "Service returned null or empty response.";
+        //            return output;
+        //        }
+
+        //        var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(await response.Content.ReadAsStringAsync());
+
+        //        if (quotationServiceResponse != null && quotationServiceResponse.Products == null && quotationServiceResponse.Errors != null)
+        //        {
+        //            var serviceErrors = new StringBuilder();
+        //            var serviceErrorCodes = new StringBuilder();
+
+        //            foreach (var error in quotationServiceResponse.Errors)
+        //            {
+        //                serviceErrors.AppendLine($"Error Code: {error.Code} and the error message: {error.Message}");
+        //                serviceErrorCodes.AppendLine(error.Code);
+        //            }
+
+        //            output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
+        //            output.ErrorDescription = $"Quotation Service response error is: {serviceErrors}";
+        //            return output;
+        //        }
+
+        //        output.Output = response;
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.Success;
+        //        output.ErrorDescription = "Success";
+        //        return output;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
+        //        LogError(output.ErrorDescription); // Log the exception details
+        //        output.ErrorDescription = ex.ToString();
+        //        return output;
+        //    }
+        //}
+
+        protected override async Task<ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
         {
             ServiceOutput output = new ServiceOutput();
-            DateTime dtBeforeCalling = DateTime.Now;
+            log.ReferenceId = quotation.ReferenceId;
+            if (string.IsNullOrEmpty(log.Channel))
+                log.Channel = "Portal";
+            //log.UserName = "";
+            log.ServiceURL = _restfulConfiguration.GenerateQuotationUrl;
+            log.ServerIP = ServicesUtilities.GetServerIP();
+            log.Method = "Quotation";
+            //log.CompanyID = insur;
+            log.CompanyName = _restfulConfiguration.ProviderName;
 
+            log.VehicleMaker = quotation?.VehicleMaker;
+            log.VehicleMakerCode = quotation?.VehicleMakerCode;
+            log.VehicleModel = quotation?.VehicleModel;
+            log.VehicleModelCode = quotation?.VehicleModelCode;
+            log.VehicleModelYear = quotation?.VehicleModelYear;
+            DateTime dtBeforeCalling = DateTime.Now;
+            var stringPayload = string.Empty;
+            //Task<HttpResponseMessage> response =new HttpResponseMessage();
             try
             {
+                var testMode =_quotationConfig.TestMode;
+                if (testMode)
+                {
+                    const string nameOfFile = ".TestData.quotationTestData.json";
+                    string responseData = ReadResource(GetType().Namespace, nameOfFile);
+                    HttpResponseMessage message = new HttpResponseMessage();
+                    message.Content = new StringContent(responseData);
+                    message.StatusCode = System.Net.HttpStatusCode.OK;
+
+                    output.Output = message;
+                    output.ErrorCode = ServiceOutput.ErrorCodes.Success;
+                    output.ErrorDescription = "Success";
+
+                    return output;
+                }
+
                 if (quotation.ProductTypeCode != 2)
                     quotation.DeductibleValue = null;
 
+                log.ServiceRequest = JsonConvert.SerializeObject(quotation);
                 dtBeforeCalling = DateTime.Now;
-               
-                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation)/*, Encoding.UTF8, "application/json"*/);
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "BCareMotor:A!CC&BC@re");
 
-                var response = await _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);
+                var AddtionalTimeOut = (_restfulConfiguration.ProviderName == "Malath" || quotation.InsuranceCompanyCode == 22) ? 5 : 0;
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = (senderX, certificate, chain, sslPolicyErrors) => { return true; };
+                 var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");///////Atheer 
+                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "BCareMotor:A!CC&BC@re");///////Atheer 
+                                                                                                                                   ///////Atheer 
+                 //var response = await _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);         ///////Atheer 
+                 var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);                     ///////Atheer 
 
+                // var postTask = await _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, quotation, _accessTokenBase64, authorizationMethod: "Basic", timeout: AddtionalTimeOut);
+                Task<HttpResponseMessage> response = postTask;
                 DateTime dtAfterCalling = DateTime.Now;
-
-                if (response == null || response.Content == null || string.IsNullOrEmpty(await response.Content.ReadAsStringAsync()))
+                log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
+                if (response == null)
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service returned null or empty response.";
+                    output.ErrorDescription = "Service return null";
+                    log.ErrorCode = (int)output.ErrorCode;
+                    log.ErrorDescription = output.ErrorDescription;
+                    log.ServiceErrorCode = log.ErrorCode.ToString();
+                    log.ServiceErrorDescription = log.ServiceErrorDescription;
+                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
+                if (response.Result.StatusCode == HttpStatusCode.GatewayTimeout)
+                {
+                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+                    output.ErrorDescription = "Gateway Time-out";
+                    log.ErrorCode = (int)output.ErrorCode;
+                    log.ErrorDescription = output.ErrorDescription;
+                    log.ServiceErrorCode = log.ErrorCode.ToString();
+                    log.ServiceErrorDescription = log.ServiceErrorDescription;
+                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    return output;
+                }
+                //if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                //{
+                //    output.ErrorCode = ServiceOutput.ErrorCodes.HttpStatusCodeNotOk;
+                //    output.ErrorDescription = "Http Status Code is Not Ok";
+                //    log.ErrorCode = (int)output.ErrorCode;
+                //    log.ErrorDescription = output.ErrorDescription;
+                //    log.ServiceErrorCode = log.ErrorCode.ToString();
+                //    log.ServiceErrorDescription = log.ServiceErrorDescription;
+                //    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                //    return output;
+                //}
+                if (response.Result.Content == null)
+                {
+                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+                    output.ErrorDescription = "Service response content return null";
+                    log.ErrorCode = (int)output.ErrorCode;
+                    log.ErrorDescription = output.ErrorDescription;
+                    log.ServiceErrorCode = log.ErrorCode.ToString();
+                    log.ServiceErrorDescription = log.ServiceErrorDescription;
+                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    return output;
+                }
+                if (string.IsNullOrEmpty(response.Result.Content.ReadAsStringAsync().Result))
+                {
+                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+                    output.ErrorDescription = "Service response content result return null";
+                    log.ErrorCode = (int)output.ErrorCode;
+                    log.ErrorDescription = output.ErrorDescription;
+                    log.ServiceErrorCode = log.ErrorCode.ToString();
+                    log.ServiceErrorDescription = log.ServiceErrorDescription;
+                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    return output;
+                }
+                log.ServiceResponse = response.Result.Content.ReadAsStringAsync().Result;
 
-                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(await response.Content.ReadAsStringAsync());
+                //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
 
+                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Result.Content.ReadAsStringAsync().Result);
                 if (quotationServiceResponse != null && quotationServiceResponse.Products == null && quotationServiceResponse.Errors != null)
                 {
-                    var serviceErrors = new StringBuilder();
-                    var serviceErrorCodes = new StringBuilder();
+                    StringBuilder servcieErrors = new StringBuilder();
+                    StringBuilder servcieErrorsCodes = new StringBuilder();
 
                     foreach (var error in quotationServiceResponse.Errors)
                     {
-                        serviceErrors.AppendLine($"Error Code: {error.Code} and the error message: {error.Message}");
-                        serviceErrorCodes.AppendLine(error.Code);
+                        servcieErrors.AppendLine("Error Code: " + error.Code + " and the error message : " + error.Message);
+                        servcieErrorsCodes.AppendLine(error.Code);
+
                     }
 
                     output.ErrorCode = ServiceOutput.ErrorCodes.ServiceError;
-                    output.ErrorDescription = $"Quotation Service response error is: {serviceErrors}";
+                    output.ErrorDescription = "Quotation Service response error is : " + servcieErrors.ToString();
+                    log.ErrorCode = (int)output.ErrorCode;
+                    log.ErrorDescription = output.ErrorDescription;
+                    log.ServiceErrorCode = servcieErrorsCodes.ToString();
+                    log.ServiceErrorDescription = servcieErrors.ToString();
+                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
 
-                output.Output = response;
+                output.Output = response.Result.Content.ReadAsStringAsync().Result;///response;// quotationServiceResponse;// 
+                Console.WriteLine(response.Result.Content.ReadAsStringAsync().Result);                              
                 output.ErrorCode = ServiceOutput.ErrorCodes.Success;
                 output.ErrorDescription = "Success";
+                log.ErrorCode = (int)output.ErrorCode;
+                log.ErrorDescription = output.ErrorDescription;
+                log.ServiceErrorCode = log.ErrorCode.ToString();
+                log.ServiceErrorDescription = log.ServiceErrorDescription;
+                //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
+
+                //return response;
             }
             catch (Exception ex)
             {
+                // _logger.Log($"RestfulInsuranceProvider -> ExecuteQuotationRequest - (Provider name: {Configuration.ProviderName})", ex, LogLevel.Error);
                 output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
                 output.ErrorDescription = ex.ToString();
+                log.ErrorCode = (int)output.ErrorCode;
+                log.ErrorDescription = output.ErrorDescription;
+                log.ServiceResponseTimeInSeconds = DateTime.Now.Subtract(dtBeforeCalling).TotalSeconds;
+                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
+
+
             }
+
+            //  return null;
         }
 
 
+        #endregion
 
-
-    #endregion
-
-    protected override ProviderInfoDto GetProviderInfo()
+        protected override ProviderInfoDto GetProviderInfo()
         {
             var providerInfo = new ProviderInfoDto
             {
@@ -667,9 +840,15 @@ namespace Tameenk.Integration.Core.Providers
             return base.ValidateQuotationBeforeCheckout(quotationRequest, out errors);
         }
 
-        public override ServiceOutput GetTawuniyaQuotation(QuotationServiceRequest quotationServiceRequest, Product product, string proposalNumber, ServiceRequestLog log, List<string> selectedBenefits)        {            return base.GetTawuniyaQuotation(quotationServiceRequest, product, proposalNumber, log, selectedBenefits);        }
+        public override ServiceOutput GetTawuniyaQuotation(QuotationServiceRequest quotationServiceRequest, Product product, string proposalNumber, ServiceRequestLog log, List<string> selectedBenefits)
+        {
+            return base.GetTawuniyaQuotation(quotationServiceRequest, product, proposalNumber, log, selectedBenefits);
+        }
 
-        public override ServiceOutput GetTawuniyaAutoleasingQuotation(QuotationServiceRequest quotationServiceRequest, ServiceRequestLog log)        {            return base.GetTawuniyaAutoleasingQuotation(quotationServiceRequest, log);        }
+        public override ServiceOutput GetTawuniyaAutoleasingQuotation(QuotationServiceRequest quotationServiceRequest, ServiceRequestLog log)
+        {
+            return base.GetTawuniyaAutoleasingQuotation(quotationServiceRequest, log);
+        }
         #endregion
 
         #region Claims (Registration / Notification)
@@ -1529,9 +1708,15 @@ namespace Tameenk.Integration.Core.Providers
         //}
         //#endregion
 
-        public override ServiceOutput GetWataniyaAutoleasingDraftpolicy(QuotationServiceRequest quotationServiceRequest, Product selectedProduct, ServiceRequestLog log)        {            return base.GetWataniyaAutoleasingDraftpolicy(quotationServiceRequest, selectedProduct, log);        }
+        public override ServiceOutput GetWataniyaAutoleasingDraftpolicy(QuotationServiceRequest quotationServiceRequest, Product selectedProduct, ServiceRequestLog log)
+        {
+            return base.GetWataniyaAutoleasingDraftpolicy(quotationServiceRequest, selectedProduct, log);
+        }
 
-        public override ServiceOutput GetWataniyaMotorDraftpolicy(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)        {            return base.GetWataniyaMotorDraftpolicy(policy, predefinedLogInfo);        }
+        public override ServiceOutput GetWataniyaMotorDraftpolicy(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
+        {
+            return base.GetWataniyaMotorDraftpolicy(policy, predefinedLogInfo);
+        }
         #region Update Custom Card
         protected override CustomCardServiceOutput ExecuteUpdateCustomCard(UpdateCustomCardRequest reqtest, ServiceRequestLog predefinedLogInfo)
         {

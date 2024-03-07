@@ -115,7 +115,7 @@ namespace Tameenk.Integration.Core.Providers
         public virtual QuotationServiceResponse GetQuotation(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo, bool automatedTest)
         {
             var modifiedQuotation = HandleQuotationRequestObjectMapping(quotation);
-            var response = ExecuteQuotationRequest(modifiedQuotation, predefinedLogInfo);
+            var response = ExecuteQuotationRequest(modifiedQuotation, predefinedLogInfo).Result;
             // get provider info
             QuotationServiceResponse result = GetQuotationResponseObject(response, modifiedQuotation);
             var providerInfo = GetProviderInfo();
@@ -216,7 +216,7 @@ namespace Tameenk.Integration.Core.Providers
 
         protected abstract ProviderInfoDto GetProviderInfo();
 
-        protected abstract Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo);
+        protected abstract Task<object>ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo);
 
         protected virtual async Task<ServiceOutput>  SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
