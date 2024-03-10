@@ -712,8 +712,8 @@ namespace Tameenk.Services.QuotationNew.Components
                         }
                         else
                         {
-                            pb.BenefitNameAr = pb.Benefit.ArabicDescription;
-                            pb.BenefitNameEn = pb.Benefit.EnglishDescription;
+                            pb.BenefitNameAr = pb.Benefit?.ArabicDescription;
+                            pb.BenefitNameEn = pb.Benefit?.EnglishDescription;
                         }
                         if (pb.BenefitId == 7 && vehicleAgencyRepair == true && insuranceTypeCode != 9)
                         {
