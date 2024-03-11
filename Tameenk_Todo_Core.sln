@@ -304,6 +304,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.ResourcesCore", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tameenk.Resources", "Libraries_Core\Tameenk.Resources\Tameenk.Resources.csproj", "{162BA533-62E6-44CE-99BC-B514BB9FF86B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tameenk.CircuitBreakerOld", "Libraries_Core\Tameenk.CircuitBreaker\Tameenk.CircuitBreakerOld.csproj", "{33D52918-71C5-47C0-96DE-252072F98450}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tameenk.CircuitBreakerCore", "Libraries_Core\Tameenk.CircuitBreakerCore\Tameenk.CircuitBreakerCore.csproj", "{CC15F74C-1B02-4C34-91BA-159CD4EC1CD3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -778,6 +782,14 @@ Global
 		{162BA533-62E6-44CE-99BC-B514BB9FF86B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{162BA533-62E6-44CE-99BC-B514BB9FF86B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{162BA533-62E6-44CE-99BC-B514BB9FF86B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33D52918-71C5-47C0-96DE-252072F98450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33D52918-71C5-47C0-96DE-252072F98450}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33D52918-71C5-47C0-96DE-252072F98450}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33D52918-71C5-47C0-96DE-252072F98450}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC15F74C-1B02-4C34-91BA-159CD4EC1CD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC15F74C-1B02-4C34-91BA-159CD4EC1CD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC15F74C-1B02-4C34-91BA-159CD4EC1CD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC15F74C-1B02-4C34-91BA-159CD4EC1CD3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -911,6 +923,8 @@ Global
 		{1F8D598A-5CF5-403F-B330-01BDD2F081FA} = {B362C48E-7DF1-4BB4-BFD1-15A42F534384}
 		{7AC24060-1E79-4382-AFF5-1CDEFD3F8E8C} = {446E192C-6BDC-4647-903B-33F4EAFBB8AF}
 		{162BA533-62E6-44CE-99BC-B514BB9FF86B} = {446E192C-6BDC-4647-903B-33F4EAFBB8AF}
+		{33D52918-71C5-47C0-96DE-252072F98450} = {446E192C-6BDC-4647-903B-33F4EAFBB8AF}
+		{CC15F74C-1B02-4C34-91BA-159CD4EC1CD3} = {446E192C-6BDC-4647-903B-33F4EAFBB8AF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {81FBB495-09CE-4F05-9BB3-A9A4220F359B}

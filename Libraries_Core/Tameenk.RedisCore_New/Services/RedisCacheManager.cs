@@ -72,6 +72,26 @@ namespace Tameenk.Redis
             }
         }
 
+        public T Get<T>(string key) where T : new()
+        {
+            try
+            {
+                if (_database == null)
+                    return new T();
+
+                var result = _database.StringGet(key);
+                if (string.IsNullOrEmpty(result))
+                    return new T();
+
+                return JsonConvert.DeserializeObject<T>(result);
+            }
+            catch (Exception ex)
+            {
+                Log("GetAsync", ex);
+                return new T();
+            }
+        }
+
         public async Task SetAsync<T>(string key, T value, int duration = int.MaxValue)
         {
             try
@@ -104,6 +124,28 @@ namespace Tameenk.Redis
             {
                 Log("TrySetAsync", ex);
                 return false;
+            }
+        }
+
+        public T Set<T>(string key, T value, TimeSpan fromDuration) where T : new()
+        {
+            try
+            {
+
+                if (_database == null)
+                    return new T();
+
+
+                string storeValue = JsonConvert.SerializeObject(value);
+                _database.StringSet(key, storeValue, fromDuration, When.Always);
+                return (T)value;
+            }
+            catch (Exception ex)
+            {
+                Log("SetAsync", ex);
+                return new T();
+
+
             }
         }
 

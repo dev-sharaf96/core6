@@ -244,7 +244,6 @@ namespace Tameenk.Services.QuotationNew.Components
         //            dbContext.DatabaseInstance.Connection.Close();
         //    }
         //}
-
         private async Task<QuotationNewOutput> GetQuote(int insuranceCompanyId, string qtRqstExtrnlId, string channel, Guid userId, string userName, QuotationRequestLog log, DateTime excutionStartDate, Guid? parentRequestId = null, int insuranceTypeCode = 1, bool vehicleAgencyRepair = false, int? deductibleValue = null, string policyNo = null, string policyExpiryDate = null, string hashed = null, bool OdQuotation = false)
         {
             QuotationNewOutput output = new QuotationNewOutput();
@@ -384,7 +383,6 @@ namespace Tameenk.Services.QuotationNew.Components
                         return output;
                     }
                 }
-
                 output = await GetQuotationResponseDetails(requestDetails, insuranceCompany, qtRqstExtrnlId, predefinedLogInfo, log, insuranceTypeCode, vehicleAgencyRepair, deductibleValue, policyNo: policyNo, policyExpiryDate: policyExpiryDate, OdQuotation: OdQuotation);
                 //log.RefrenceId = output.QuotationResponse.ReferenceId;
                 if (output == null)
@@ -459,15 +457,15 @@ namespace Tameenk.Services.QuotationNew.Components
                 //if (insuranceCompanyId == 5 && insuranceTypeCode == 2 && log.UserId != "1b4cdb65-9804-4ab4-86a8-af62bf7812d7" && log.UserId != "ebf4df2c-c9bb-4d7d-91fe-4b9208c1631a") // As per Fayssal @ 22-03-2023 2:45 PM
                 //    output.QuotationResponse.Products = null;
 
-                if (insuranceCompanyId == 21 && log.UserId != "1b4cdb65-9804-4ab4-86a8-af62bf7812d7" && log.UserId != "ebf4df2c-c9bb-4d7d-91fe-4b9208c1631a") // As per Mubarak @ 18-01-2024 12:23 PM
-                    output.QuotationResponse.Products = null;
+                //if (insuranceCompanyId == 21 && log.UserId != "1b4cdb65-9804-4ab4-86a8-af62bf7812d7" && log.UserId != "ebf4df2c-c9bb-4d7d-91fe-4b9208c1631a") // As per Mubarak @ 18-01-2024 12:23 PM
+                //    output.QuotationResponse.Products = null;
 
                 ////
                 /// First time (5000) --> As per Fayssal @ 06-03-2023 3:45 PM
                 /// Second time (8000) --> As per Moneera @ 28-03-2023 3:45 PM (email Hide Quotations)
                 /// Second time (20.000) --> As per Moneera @ 29-03-2023 2:57 PM (email Hide Quotations)
                 /// Second time (5000) --> As per Moneera @ 30-03-2023 1:51 PM (Hide Quotations VW-769)
-                if (insuranceTypeCode == 1 && output.QuotationResponse.Products != null && output.QuotationResponse.Products.Any(a => a.ProductPrice >= 5000))
+                if (insuranceCompany.InsuranceCompanyID != 15 && insuranceTypeCode == 1 && output.QuotationResponse.Products != null && output.QuotationResponse.Products.Any(a => a.ProductPrice >= 5000))
                 {
                     var productsLessThan5000 = output.QuotationResponse.Products.Where(a => a.ProductPrice <= 4999).ToList();
                     output.QuotationResponse.Products = productsLessThan5000;
@@ -501,6 +499,7 @@ namespace Tameenk.Services.QuotationNew.Components
                 return output;
             }
         }
+
 
         private async Task<QuotationNewOutput> GetQuotationResponseDetails(QuotationNewRequestDetails quoteRequest, InsuranceCompany insuranceCompany, string qtRqstExtrnlId, ServiceRequestLog predefinedLogInfo, QuotationRequestLog log, int insuranceTypeCode = 1, bool vehicleAgencyRepair = false, int? deductibleValue = null, bool automatedTest = false, string policyNo = null, string policyExpiryDate = null, bool OdQuotation = false)
         {
@@ -557,7 +556,8 @@ namespace Tameenk.Services.QuotationNew.Components
                 return output;
             }
             if (insuranceCompany.InsuranceCompanyID == 8 && quoteRequest.VehicleIdType == VehicleIdType.CustomCard
-                && (quoteRequest.VehicleBodyCode == 1 || quoteRequest.VehicleBodyCode == 2 || quoteRequest.VehicleBodyCode == 3 || quoteRequest.VehicleBodyCode == 19 || quoteRequest.VehicleBodyCode == 20))
+                && (quoteRequest.VehicleBodyCode == 1 || quoteRequest.VehicleBodyCode == 2 || quoteRequest.VehicleBodyCode == 3 
+                || quoteRequest.VehicleBodyCode == 19 || quoteRequest.VehicleBodyCode == 20))
             {
                 output.ErrorCode = QuotationNewOutput.ErrorCodes.NoReturnedQuotation;
                 output.ErrorDescription = "No supported product with medgulf with such information";
@@ -591,20 +591,18 @@ namespace Tameenk.Services.QuotationNew.Components
                 output.LogDescription = "Success as no Quote for 700 for AXA";
                 return output;
             }
-            //if (quoteRequest.RequestPolicyEffectiveDate.HasValue && quoteRequest.RequestPolicyEffectiveDate.Value <= DateTime.Now.Date)
-            //{
-            //    DateTime effectiveDate = DateTime.Now.AddDays(1);
-            //    quoteRequest.RequestPolicyEffectiveDate = new DateTime(effectiveDate.Year, effectiveDate.Month, effectiveDate.Day, effectiveDate.Hour, effectiveDate.Minute, effectiveDate.Second);
-            //    var quoteRequestInfo = _quotationRequestRepository.Table.Where(a => a.ExternalId == qtRqstExtrnlId).FirstOrDefault();
-            //    if (quoteRequestInfo != null)
-            //    {
-            //        quoteRequestInfo.RequestPolicyEffectiveDate = quoteRequest.RequestPolicyEffectiveDate;
-            //        _quotationRequestRepository.UpdateAsync(quoteRequestInfo);
-            //    }
-            //}
-            ////By Atheer
-            ///
-
+            if (quoteRequest.RequestPolicyEffectiveDate.HasValue && quoteRequest.RequestPolicyEffectiveDate.Value <= DateTime.Now.Date)
+            {
+                DateTime effectiveDate = DateTime.Now.AddDays(1);
+                quoteRequest.RequestPolicyEffectiveDate = new DateTime(effectiveDate.Year, effectiveDate.Month, effectiveDate.Day, effectiveDate.Hour, effectiveDate.Minute, effectiveDate.Second);
+                var quoteRequestInfo = _quotationRequestRepository.Table.Where(a => a.ExternalId == qtRqstExtrnlId).FirstOrDefault();
+                if (quoteRequestInfo != null)
+                {
+                    quoteRequestInfo.RequestPolicyEffectiveDate = quoteRequest.RequestPolicyEffectiveDate;
+                    _quotationRequestRepository.UpdateAsync(quoteRequestInfo);
+                }
+            }
+            
             output.QuotationResponse = new QuotationResponse()
             {
                 ReferenceId = referenceId,
@@ -808,9 +806,8 @@ namespace Tameenk.Services.QuotationNew.Components
                 QuotationNewRequestDetails quotationNewRequestDetails = JsonConvert.DeserializeObject<QuotationNewRequestDetails>(json);
                 return quotationNewRequestDetails;
             }
-            catch (Exception exp)
+            catch (Exception)
             {
-                //exception = exp.ToString();
                 return null;
             }
         }

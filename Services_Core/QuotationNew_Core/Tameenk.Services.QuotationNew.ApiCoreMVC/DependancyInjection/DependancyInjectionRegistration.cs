@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
+using Tameenk.CircuitBreaker;
+using Tameenk.CircuitBreaker.Services;
 using Tameenk.Core.Caching;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
@@ -20,6 +22,7 @@ using Tameenk.Services.Implementation.Addresses;
 using Tameenk.Services.Implementation.Quotations;
 using Tameenk.Services.Implementation.Vehicles;
 using Tameenk.Services.QuotationNew.Components;
+using Tameenk.ServicesCore;
 using TameenkDAL;
 
 namespace Tameenk.Services.QuotationNew.ApiCore.DependancyInjection
@@ -32,6 +35,7 @@ namespace Tameenk.Services.QuotationNew.ApiCore.DependancyInjection
 
             services.Configure<QuotatoinConfig>(configuration.GetSection("Quotation"));
             services.Configure<BcareInsuranceCompanyConfig>(configuration.GetSection("BcareInsuranceCompany"));
+            services.Configure<CircuitBreakerMangerConfig>(configuration.GetSection("CircuitBreakerManger"));
 
             //services.Configure<ConnectionString>(configuration.GetSection("ConnectionStrings"));
             var BD_ConnactionSetting = services.Configure<ConnectionString>(configuration.GetSection("ConnectionStrings"));
@@ -42,6 +46,7 @@ namespace Tameenk.Services.QuotationNew.ApiCore.DependancyInjection
             services.AddSingleton<IBcareInsuranceCompanyConfig>(provider => provider.GetRequiredService<IOptions<BcareInsuranceCompanyConfig>>().Value);
             services.AddSingleton<IQuotationConfig>(provider => provider.GetRequiredService<IOptions<QuotatoinConfig>>().Value);
             services.AddSingleton<IConnectionString>(provider => provider.GetRequiredService<IOptions<ConnectionString>>().Value);
+            services.AddSingleton<ICircuitBreakerMangerConfig>(provider => provider.GetRequiredService<IOptions<CircuitBreakerMangerConfig>>().Value);
 
             #endregion
 
@@ -55,12 +60,16 @@ namespace Tameenk.Services.QuotationNew.ApiCore.DependancyInjection
             
 
             services.AddScoped<ICacheManager, MemoryCacheManager>();
+            //services.AddTransient<ICircuitBreakerManger, CircuitBreakerManger>();
             services.AddScoped<IQuotationService, QuotationService>();
             services.AddScoped<IAsyncQuotationContext, AsyncQuotationContext>();
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<IVehicleService, VehicleService>();
             services.AddScoped<IProvidersServiceLocator, ProvidersServiceLocator>();
             services.AddScoped<RestfulInsuranceProvider>();
+            //services.AddScoped<CircuitBreakerManger>();
+            //services.AddScoped<ServiceProviderCircuitBreakerManger>();
+
             services.AddScoped<AICCInsuranceProvider, AICCInsuranceProvider>();
             //services.AddScoped<DbContext, YourDbContext>();
             //services.AddScoped<YourDbContext>();

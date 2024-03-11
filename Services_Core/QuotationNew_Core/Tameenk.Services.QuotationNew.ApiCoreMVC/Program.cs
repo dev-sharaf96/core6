@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NLog;
+using Prometheus;
 using System;
 using Tameenk.Loggin.DAL;
 using Tameenk.Services.QuotationNew.ApiCore.DependancyInjection;
@@ -52,6 +53,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 app.UseRouting();
 app.UseHttpsRedirection();
 
@@ -72,6 +74,13 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
+// Prometheus Metrics Monitoring
+app.UseMetricServer();
+app.UseHttpMetrics();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapMetrics();
+});
 AutoMapperConfiguration.Init();
 
 app.Run();

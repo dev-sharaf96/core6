@@ -18,6 +18,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.27">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
+    <PackageReference Include="prometheus-net" Version="8.2.1" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
+    <PackageReference Include="prometheus-net.AspNetCore.HealthChecks" Version="8.2.1" />
+    <PackageReference Include="prometheus-net.SystemMetrics" Version="3.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.CoreServices" Version="1.3.0" />
     <PackageReference Include="WebApiThrottle" Version="1.5.4" />
@@ -47,6 +51,7 @@
     <ProjectReference Include="..\..\..\Integration_Core\Provider_Core\Tameenk.Integration.Providers.WataniyaCore\Tameenk.Integration.Providers.WataniyaCore.csproj" />
     <ProjectReference Include="..\..\..\Integration_Core\Tameenk.Integration.Core.Core\Tameenk.Integration.Core.Core.csproj" />
     <ProjectReference Include="..\..\..\Integration_Core\Tameenk.Integration.DtoCore\Tameenk.Integration.DtoCore.csproj" />
+    <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.CircuitBreakerCore\Tameenk.CircuitBreakerCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.Common.UtilitiesCore_New\Tameenk.Common.UtilitiesCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.DataCore_New\Tameenk.DataCore.csproj" />
     <ProjectReference Include="..\..\..\Libraries_Core\Tameenk.Loggin.DALCore_New\Tameenk.Loggin.DALCore.csproj" />
