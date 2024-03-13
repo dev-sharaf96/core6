@@ -675,11 +675,11 @@ namespace Tameenk.Integration.Core.Providers
 
                 var AddtionalTimeOut = (_restfulConfiguration.ProviderName == "Malath" || quotation.InsuranceCompanyCode == 22) ? 5 : 0;
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = (senderX, certificate, chain, sslPolicyErrors) => { return true; };
-                 var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");///////Atheer 
-                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "BCareMotor:A!CC&BC@re");///////Atheer 
-                                                                                                                                   ///////Atheer 
-                 //var response = await _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);         ///////Atheer 
-                 var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);                     ///////Atheer 
+                 var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "BCareMotor:A!CC&BC@re");
+                                                                                                                                   
+                 //var response = await _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);         
+                 var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);                  
 
                 // var postTask = await _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, quotation, _accessTokenBase64, authorizationMethod: "Basic", timeout: AddtionalTimeOut);
                 Task<HttpResponseMessage> response = postTask;
@@ -767,8 +767,7 @@ namespace Tameenk.Integration.Core.Providers
                     return output;
                 }
 
-                output.Output = response.Result.Content.ReadAsStringAsync().Result;///response;// quotationServiceResponse;// 
-                Console.WriteLine(response.Result.Content.ReadAsStringAsync().Result);                              
+                output.Output = response.Result.Content.ReadAsStringAsync().Result;                             
                 output.ErrorCode = ServiceOutput.ErrorCodes.Success;
                 output.ErrorDescription = "Success";
                 log.ErrorCode = (int)output.ErrorCode;
@@ -783,7 +782,6 @@ namespace Tameenk.Integration.Core.Providers
             }
             catch (Exception ex)
             {
-                // _logger.Log($"RestfulInsuranceProvider -> ExecuteQuotationRequest - (Provider name: {Configuration.ProviderName})", ex, LogLevel.Error);
                 output.ErrorCode = ServiceOutput.ErrorCodes.ServiceException;
                 output.ErrorDescription = ex.ToString();
                 log.ErrorCode = (int)output.ErrorCode;

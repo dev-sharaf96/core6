@@ -116,14 +116,10 @@ namespace Tameenk.Integration.Providers.AICC
             QuotationServiceResponse responseValue = new QuotationServiceResponse();
             string result = string.Empty;
             var stringPayload = result;
-            var res = string.Empty;
-
-            try
+          try
             {
                 var task = response as Task<object>;
                 var httpResponseMessage = task.Result;
-                //responseValue = httpResponseMessage as QuotationServiceResponse;
-                //result = httpResponseMessage.Content.ReadAsStringAsync().Result;
                 var json = httpResponseMessage.ToString(); 
                 responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(json);
                 if (responseValue != null && responseValue.Products != null)

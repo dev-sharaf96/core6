@@ -19,6 +19,7 @@ using Tameenk.Services.Core.Http;
 using Tameenk.Services;
 using DocumentFormat.OpenXml.Office2021.DocumentTasks;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace Tameenk.Integration.Providers.Allianz
 {
@@ -28,12 +29,12 @@ namespace Tameenk.Integration.Providers.Allianz
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly RestfulConfiguration _restfulConfiguration;
         private string _accessTokenBase64;
-        private const string QUOTATION_COMPREHENSIVE_URL = "https://asfwsex.allianzsf.com.sa/ApiGateway/Comprehensive/Quotation";
-        private const string QUOTATION_TPL_URL = "https://asfwsex.allianzsf.com.sa/ImsApi/bcare/api/Quotation";
+        private const string QUOTATION_COMPREHENSIVE_URL = "https://localhost:7267/ApiGateway/Comprehensive/Quotation ";//"https://asfwsex.allianzsf.com.sa/ApiGateway/Comprehensive/Quotation";
+        private const string QUOTATION_TPL_URL = "https://localhost:7267/ImsApi/bcare/api/Quotation"; //"sfwsex.allianzsf.com.sa/ImsApi/bcare/api/Quotation";
         private const string POLICY_TPL_URL = "https://asfwsex.allianzsf.com.sa/ImsApi/bcare/api/Policy";
         private const string POLICY_COMPREHENSIVE_URL = "https://asfwsex.allianzsf.com.sa/ApiGateway/Comprehensive/Policy";
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
-        private readonly IHttpClient _httpClient;
+        private readonly HttpClient _httpClient;
         private readonly IQuotationConfig _quotationConfig;
 
         #endregion 
@@ -42,7 +43,7 @@ namespace Tameenk.Integration.Providers.Allianz
             , IRepository<CheckoutDetail> checkoutDetail)
              : base(quotationConfig,new RestfulConfiguration
              {
-                 GenerateQuotationUrl = "https://asfwsex.allianzsf.com.sa/ImsApi/bcare/api/Quotation",
+                 GenerateQuotationUrl = "https://localhost:7267/ImsApi/bcare/api/Quotation",//"https://asfwsex.allianzsf.com.sa/ImsApi/bcare/api/Quotation",
                  GeneratePolicyUrl = "https://asfwsex.allianzsf.com.sa/ImsApi/bcare/api/Policy",
                  //SchedulePolicyUrl = "https://213.210.239.105/ImsApi/bcare/api/PolicySchedule",
                  GenerateAutoleasingQuotationUrl = "https://asfwsex.allianzsf.com.sa/ApiGateway/AutoLease/Quotation",
@@ -56,6 +57,7 @@ namespace Tameenk.Integration.Providers.Allianz
             _accessTokenBase64 = _restfulConfiguration.AccessToken;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _checkoutDetail = checkoutDetail;
+            _httpClient = new HttpClient();
             _quotationConfig = quotationConfig;
         }
         protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
@@ -101,7 +103,6 @@ namespace Tameenk.Integration.Providers.Allianz
             log.VehicleModelYear = quotation?.VehicleModelYear;
             DateTime dtBeforeCalling = DateTime.Now;
             var stringPayload = string.Empty;
-            HttpResponseMessage response = new HttpResponseMessage();
             try
             {
                 var testMode = _quotationConfig.TestMode;
@@ -124,11 +125,14 @@ namespace Tameenk.Integration.Providers.Allianz
                     quotation.DeductibleValue = null;
 
                 log.ServiceRequest = JsonConvert.SerializeObject(quotation);
+
                 dtBeforeCalling = DateTime.Now;
-                var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, quotation, _accessTokenBase64, authorizationMethod: "Basic");
-                postTask.Wait();
-                response = postTask.Result;
+                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
+                var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);                    
+                Task<HttpResponseMessage> response = postTask;
                 DateTime dtAfterCalling = DateTime.Now;
+
                 log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
                 if (response == null)
                 {
@@ -141,7 +145,18 @@ namespace Tameenk.Integration.Providers.Allianz
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (response.Content == null)
+                if (response.Result.StatusCode == HttpStatusCode.GatewayTimeout)
+                {
+                    output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
+                    output.ErrorDescription = "Gateway Time-out";
+                    log.ErrorCode = (int)output.ErrorCode;
+                    log.ErrorDescription = output.ErrorDescription;
+                    log.ServiceErrorCode = log.ErrorCode.ToString();
+                    log.ServiceErrorDescription = log.ServiceErrorDescription;
+                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    return output;
+                }
+                if (response.Result.Content == null)
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -152,7 +167,7 @@ namespace Tameenk.Integration.Providers.Allianz
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                if (string.IsNullOrEmpty(response.Result.Content.ReadAsStringAsync().Result))
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -163,8 +178,8 @@ namespace Tameenk.Integration.Providers.Allianz
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Content.ReadAsStringAsync().Result);
+                log.ServiceResponse = response.Result.Content.ReadAsStringAsync().Result;
+                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Result.Content.ReadAsStringAsync().Result);
                 if (quotationServiceResponse != null && quotationServiceResponse.Products == null && quotationServiceResponse.Errors != null)
                 {
                     StringBuilder servcieErrors = new StringBuilder();
@@ -187,7 +202,7 @@ namespace Tameenk.Integration.Providers.Allianz
                     return output;
                 }
 
-                output.Output = response;
+                output.Output = response.Result.Content.ReadAsStringAsync().Result;
                 output.ErrorCode = ServiceOutput.ErrorCodes.Success;
                 output.ErrorDescription = "Success";
                 log.ErrorCode = (int)output.ErrorCode;
@@ -195,7 +210,7 @@ namespace Tameenk.Integration.Providers.Allianz
                 log.ServiceErrorCode = log.ErrorCode.ToString();
                 log.ServiceErrorDescription = log.ServiceErrorDescription;
                 //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
             }
             catch (Exception ex)

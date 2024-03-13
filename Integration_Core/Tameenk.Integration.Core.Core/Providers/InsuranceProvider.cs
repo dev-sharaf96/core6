@@ -116,7 +116,7 @@ namespace Tameenk.Integration.Core.Providers
         {
             var modifiedQuotation = HandleQuotationRequestObjectMapping(quotation);
             var response = ExecuteQuotationRequest(modifiedQuotation, predefinedLogInfo).Result;
-            // get provider info
+
             QuotationServiceResponse result = GetQuotationResponseObject(response, modifiedQuotation);
             var providerInfo = GetProviderInfo();
             if (!automatedTest)
@@ -136,32 +136,33 @@ namespace Tameenk.Integration.Core.Providers
         /// <returns></returns>
         protected virtual QuotationServiceResponse GetQuotationResponseObject(object response, QuotationServiceRequest request)
         {
-
-            var result = string.Empty;
-            if (response is HttpResponseMessage)
-                result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
-            else
-                result = JsonConvert.SerializeObject(response);// new JavaScriptSerializer().Serialize(response);
-
-            // Log the integration with insurance provider.
-            var stringPayload = JsonConvert.SerializeObject(request);
-
-            var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
-            if (quotationServiceResponse != null && quotationServiceResponse.Products == null && quotationServiceResponse.Errors == null)
+            QuotationServiceResponse responseValue = new QuotationServiceResponse();
+            string result = string.Empty;
+            var stringPayload = result;
+            try
             {
-                quotationServiceResponse.Errors = new List<Error>
+                var json = response.ToString();
+                responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(json);
+                if (responseValue != null && responseValue.Products == null && responseValue.Errors == null)
                 {
-                    new Error { Message = result }
-                };
+                    responseValue.Errors = new List<Error>
+                   {
+                       new Error { Message = result }
+                   };
+                }
+
+                LogIntegrationTransaction($"{Configuration.ProviderName} insurance provider get quote with reference id : ${request.ReferenceId}",
+                    stringPayload,
+                    result,
+                    responseValue == null ? 2 : responseValue.StatusCode);
+                return responseValue;
+
+            } 
+            catch (Exception ex)
+            {
+                return null;
             }
-
-            LogIntegrationTransaction($"{Configuration.ProviderName} insurance provider get quote with reference id : ${request.ReferenceId}",
-                stringPayload,
-                result,
-                quotationServiceResponse == null ? 2 : quotationServiceResponse.StatusCode);
-            return quotationServiceResponse;
         }
-
 
         /// <summary>
         /// Log integration transaction.

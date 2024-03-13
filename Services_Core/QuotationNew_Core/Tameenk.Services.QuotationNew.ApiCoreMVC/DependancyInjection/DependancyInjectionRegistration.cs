@@ -13,7 +13,23 @@ using Tameenk.Data;
 using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
 using Tameenk.Integration.DtoCore.ServiceLocator;
+using Tameenk.Integration.Providers.ACIG;
 using Tameenk.Integration.Providers.AICC;
+using Tameenk.Integration.Providers.Alalamiya;
+using Tameenk.Integration.Providers.Allianz;
+using Tameenk.Integration.Providers.Amana;
+using Tameenk.Integration.Providers.ArabianShield;
+using Tameenk.Integration.Providers.AXA;
+using Tameenk.Integration.Providers.BCARE;
+using Tameenk.Integration.Providers.GGI;
+using Tameenk.Integration.Providers.MedGulf;
+using Tameenk.Integration.Providers.Salama;
+using Tameenk.Integration.Providers.Solidarity;
+using Tameenk.Integration.Providers.Tawuniya;
+using Tameenk.Integration.Providers.TUIC;
+using Tameenk.Integration.Providers.UCA;
+using Tameenk.Integration.Providers.Wala;
+using Tameenk.Integration.Providers.Wataniya;
 using Tameenk.Loggin.DAL;
 using Tameenk.Services.Core.Addresses;
 using Tameenk.Services.Core.Quotations;
@@ -52,7 +68,8 @@ namespace Tameenk.Services.QuotationNew.ApiCore.DependancyInjection
 
             #region Services Injection
 
-            #region Singleton
+            #region Singleton    
+            services.AddSingleton<RestfulConfiguration>();
             services.AddScoped<HttpClient>();
             #endregion
 
@@ -60,23 +77,33 @@ namespace Tameenk.Services.QuotationNew.ApiCore.DependancyInjection
             
 
             services.AddScoped<ICacheManager, MemoryCacheManager>();
-            //services.AddTransient<ICircuitBreakerManger, CircuitBreakerManger>();
             services.AddScoped<IQuotationService, QuotationService>();
             services.AddScoped<IAsyncQuotationContext, AsyncQuotationContext>();
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<IVehicleService, VehicleService>();
             services.AddScoped<IProvidersServiceLocator, ProvidersServiceLocator>();
             services.AddScoped<RestfulInsuranceProvider>();
-            //services.AddScoped<CircuitBreakerManger>();
-            //services.AddScoped<ServiceProviderCircuitBreakerManger>();
 
+            services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             services.AddScoped<AICCInsuranceProvider, AICCInsuranceProvider>();
-            //services.AddScoped<DbContext, YourDbContext>();
-            //services.AddScoped<YourDbContext>();
-            //services.AddScoped<TameenkLog>();
-            // services.AddScoped(typeof(IAsyncQuotationContext<>), typeof(AsyncQuotationContext<>));
-            //services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-            services.AddSingleton<RestfulConfiguration>();
+            services.AddScoped<AllianzInsuranceProvider, AllianzInsuranceProvider>();
+            services.AddScoped<ACIGInsuranceProvider, ACIGInsuranceProvider>();
+            services.AddScoped<SolidarityInsuranceProvider, SolidarityInsuranceProvider>();
+            services.AddScoped<TUICInsuranceProvider, TUICInsuranceProvider>();
+            services.AddScoped<WalaInsuranceProvider, WalaInsuranceProvider>();
+            services.AddScoped<MedGulfInsuranceProvider, MedGulfInsuranceProvider>();
+            services.AddScoped<ArabianShieldInsuranceProvider, ArabianShieldInsuranceProvider>();
+            services.AddScoped<GGIInsuranceProvider, GGIInsuranceProvider>();
+            services.AddScoped<TawuniyaInsuranceProvider, TawuniyaInsuranceProvider>();
+            //services.AddScoped<SalamaInsuranceProvider, SalamaInsuranceProvider>();
+            //services.AddScoped<WataniyaInsuranceProvider, WataniyaInsuranceProvider>();
+            services.AddScoped<BCAREInsuranceProvider, BCAREInsuranceProvider>();
+            services.AddScoped<UCAInsuranceProvider, UCAInsuranceProvider>();
+            services.AddScoped<AlalamiyaInsuranceProvider, AlalamiyaInsuranceProvider>();
+            services.AddScoped<AXAInsuranceProvider, AXAInsuranceProvider>();
+            services.AddScoped<AmanaInsuranceProvider, AmanaInsuranceProvider>();
+              
+
 
 
 
@@ -97,7 +124,7 @@ namespace Tameenk.Services.QuotationNew.ApiCore.DependancyInjection
            //.AddEntityFrameworkStores<TameenkObjectContext>()
            //.AddDefaultTokenProviders();
 
-            services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+           
 
             #endregion
 

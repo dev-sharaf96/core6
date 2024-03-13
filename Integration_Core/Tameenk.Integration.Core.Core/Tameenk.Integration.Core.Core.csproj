@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries_Core\Tameenk.CircuitBreakerCore\Tameenk.CircuitBreakerCore.csproj" />
     <ProjectReference Include="..\..\Libraries_Core\Tameenk.Core.Domain\Tameenk.Core.Domain.csproj" />
     <ProjectReference Include="..\..\Libraries_Core\Tameenk.Core\Tameenk.Core.csproj" />
     <ProjectReference Include="..\..\Libraries_Core\Tameenk.Loggin.DALCore_New\Tameenk.Loggin.DALCore.csproj" />
