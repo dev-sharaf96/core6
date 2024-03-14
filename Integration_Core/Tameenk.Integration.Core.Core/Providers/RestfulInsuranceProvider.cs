@@ -40,9 +40,7 @@ namespace Tameenk.Integration.Core.Providers
             : base(restfulConfiguration)
         {
             _restfulConfiguration = restfulConfiguration;
-            _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
-                null :
-                Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));
+            _accessTokenBase64 = _restfulConfiguration.AccessToken;
             //_logger = logger ?? throw new TameenkArgumentNullException(nameof(logger));
             //_tameenkConfig = tameenkConfig ?? throw new TameenkArgumentNullException(nameof(tameenkConfig));
             //_httpClient = EngineContext.Current.Resolve<IHttpClient>();
@@ -676,7 +674,7 @@ namespace Tameenk.Integration.Core.Providers
                 var AddtionalTimeOut = (_restfulConfiguration.ProviderName == "Malath" || quotation.InsuranceCompanyCode == 22) ? 5 : 0;
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = (senderX, certificate, chain, sslPolicyErrors) => { return true; };
                  var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
-                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "BCareMotor:A!CC&BC@re");
+                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
                                                                                                                                    
                  //var response = await _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);         
                  var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);                  
@@ -693,7 +691,7 @@ namespace Tameenk.Integration.Core.Providers
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
                 if (response.Result.StatusCode == HttpStatusCode.GatewayTimeout)
@@ -704,7 +702,7 @@ namespace Tameenk.Integration.Core.Providers
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
                 //if (response.StatusCode != System.Net.HttpStatusCode.OK)
@@ -726,7 +724,7 @@ namespace Tameenk.Integration.Core.Providers
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
                 if (string.IsNullOrEmpty(response.Result.Content.ReadAsStringAsync().Result))
@@ -737,7 +735,7 @@ namespace Tameenk.Integration.Core.Providers
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
                 log.ServiceResponse = response.Result.Content.ReadAsStringAsync().Result;
@@ -763,7 +761,7 @@ namespace Tameenk.Integration.Core.Providers
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = servcieErrorsCodes.ToString();
                     log.ServiceErrorDescription = servcieErrors.ToString();
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
 
@@ -787,7 +785,7 @@ namespace Tameenk.Integration.Core.Providers
                 log.ErrorCode = (int)output.ErrorCode;
                 log.ErrorDescription = output.ErrorDescription;
                 log.ServiceResponseTimeInSeconds = DateTime.Now.Subtract(dtBeforeCalling).TotalSeconds;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
 
 
