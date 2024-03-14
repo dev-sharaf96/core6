@@ -25,7 +25,7 @@ namespace Tameenk.Integration.Providers.TUIC
     public class TUICInsuranceProvider : RestfulInsuranceProvider
     {
         private readonly RestfulConfiguration _restfulConfiguration;
-        private readonly IHttpClient _httpClient;
+        private readonly HttpClient _httpClient;
         private readonly string _accessTokenBase64;
         private readonly IQuotationConfig _quotationConfig;
 
@@ -33,9 +33,9 @@ namespace Tameenk.Integration.Providers.TUIC
 
         public TUICInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
             : base(quotationConfig, new RestfulConfiguration()
-        {
-            ProviderName = "TUIC",
-            GenerateQuotationUrl = "https://asasagg.aletihad.sa/LimraBcareLive/API/MotorService/Quote",
+            {
+                ProviderName = "TUIC",
+                GenerateQuotationUrl = "https://localhost:7267/LimraBcareLive/API/MotorService/Quote",// "https://asasagg.aletihad.sa/LimraBcareLive/API/MotorService/Quote",
             AccessToken = "ETIHAD_BCARE:Pa$$w0rdbcareLive@2023",
             GeneratePolicyUrl = "https://asasagg.aletihad.sa/LimraBcareLive/API/MotorService/TPLPolicy",
             GenerateClaimRegistrationUrl = "",
@@ -46,6 +46,7 @@ namespace Tameenk.Integration.Providers.TUIC
             _accessTokenBase64 = _restfulConfiguration.AccessToken;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _quotationConfig = quotationConfig;
+            _httpClient = new HttpClient(); 
         }
 
         protected override async Task< object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
@@ -75,7 +76,6 @@ namespace Tameenk.Integration.Providers.TUIC
             log.VehicleModelYear = quotation?.VehicleModelYear;
 
             var stringPayload = string.Empty;
-            HttpResponseMessage response = new HttpResponseMessage();
             try
             {
                 var testMode = _quotationConfig.TestMode;
@@ -96,12 +96,16 @@ namespace Tameenk.Integration.Providers.TUIC
                     quotation.DeductibleValue = null;
 
                 log.ServiceRequest = JsonConvert.SerializeObject(quotation);
-                stringPayload = JsonConvert.SerializeObject(quotation);
-                var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+                //stringPayload = JsonConvert.SerializeObject(quotation);
+                //var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
                 DateTime dtBeforeCalling = DateTime.Now;
-                var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, httpContent, Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken)), authorizationMethod: "Basic");
-                postTask.Wait();
-                response = postTask.Result;
+                //var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, httpContent, Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken)), authorizationMethod: "Basic");
+                //postTask.Wait();
+
+                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
+                var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);
+                Task<HttpResponseMessage> response = postTask;
                 DateTime dtAfterCalling = DateTime.Now;
                 log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
                 if (response == null)
@@ -112,7 +116,7 @@ namespace Tameenk.Integration.Providers.TUIC
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
                 //if (response.StatusCode != System.Net.HttpStatusCode.OK)
@@ -126,7 +130,7 @@ namespace Tameenk.Integration.Providers.TUIC
                 //    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 //    return output;
                 //}
-                if (response.Content == null)
+                if (response.Result.Content == null)
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -134,10 +138,10 @@ namespace Tameenk.Integration.Providers.TUIC
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                if (string.IsNullOrEmpty(response.Result.Content.ReadAsStringAsync().Result))
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -145,12 +149,12 @@ namespace Tameenk.Integration.Providers.TUIC
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+                log.ServiceResponse = response.Result.Content.ReadAsStringAsync().Result;
 
-                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Content.ReadAsStringAsync().Result);
+                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Result.Content.ReadAsStringAsync().Result);
                 if (quotationServiceResponse != null && quotationServiceResponse.Products == null && quotationServiceResponse.Errors != null)
                 {
                     StringBuilder servcieErrors = new StringBuilder();
@@ -167,11 +171,11 @@ namespace Tameenk.Integration.Providers.TUIC
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = servcieErrorsCodes.ToString();
                     log.ServiceErrorDescription = servcieErrors.ToString();
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
 
-                output.Output = response;
+                output.Output = response.Result.Content.ReadAsStringAsync().Result;
                 output.ErrorCode = ServiceOutput.ErrorCodes.Success;
                 output.ErrorDescription = "Success";
                 log.ErrorCode = (int)output.ErrorCode;
@@ -179,7 +183,7 @@ namespace Tameenk.Integration.Providers.TUIC
                 log.ServiceErrorCode = log.ErrorCode.ToString();
                 log.ServiceErrorDescription = log.ServiceErrorDescription;
                 //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
                 //return response;
             }
@@ -189,7 +193,7 @@ namespace Tameenk.Integration.Providers.TUIC
                 output.ErrorDescription = ex.ToString();
                 log.ErrorCode = (int)output.ErrorCode;
                 log.ErrorDescription = output.ErrorDescription;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
             }
         }
