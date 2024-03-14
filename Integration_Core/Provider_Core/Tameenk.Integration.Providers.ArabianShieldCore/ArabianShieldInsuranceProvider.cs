@@ -25,6 +25,7 @@ using Tameenk.Loggin.DAL;
 using Tameenk.Services.Logging;
 using System.Net.Http.Headers;
 using Tameenk.Services;
+using Tameenk.Services.Core.Http;
 
 namespace Tameenk.Integration.Providers.ArabianShield
 {
@@ -36,13 +37,14 @@ namespace Tameenk.Integration.Providers.ArabianShield
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly string _accessTokenBase64;
+        private readonly HttpClient _httpClient;
         #endregion
 
         #region ctor
-        public ArabianShieldInsuranceProvider(IQuotationConfig quotationConfig,IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+        public ArabianShieldInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
              : base(quotationConfig, new RestfulConfiguration
              {
-                 GenerateQuotationUrl = "https://aggregatorprd.der3.com/BcareWebApi/Tameenk/api/Quotation",
+                 GenerateQuotationUrl = "https://localhost:7267/BcareWebApi/Tameenk/api/Quotation",//"https://aggregatorprd.der3.com/BcareWebApi/Tameenk/api/Quotation",
                  GeneratePolicyUrl = "https://aggregatorprd.der3.com/BcareWebApi/Tameenk/api/Policy",
                  //SchedulePolicyUrl = "https://aggregatorprd.der3.com/BcareWebApi/Tameenk/api/PolicySchedule",
                  UpdateCustomCardUrl = "https://aggregatorprd.der3.com/BcareWebApi/Tameenk/api/UpdateCustomCard",
@@ -57,7 +59,7 @@ namespace Tameenk.Integration.Providers.ArabianShield
             _restfulConfiguration = Configuration as RestfulConfiguration; 
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _accessTokenBase64 = _restfulConfiguration.AccessToken;
-
+            _httpClient = new HttpClient();
 
         }
         #endregion
@@ -92,7 +94,6 @@ namespace Tameenk.Integration.Providers.ArabianShield
             log.VehicleModelYear = quotation?.VehicleModelYear;
             DateTime dtBeforeCalling = DateTime.Now;
             var stringPayload = string.Empty;
-            HttpResponseMessage response = new HttpResponseMessage();
             try
             {
                 var testMode = _quotationConfig.TestMode;
@@ -119,12 +120,17 @@ namespace Tameenk.Integration.Providers.ArabianShield
                 stringPayload = JsonConvert.SerializeObject(quotation);
                 var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
                 dtBeforeCalling = DateTime.Now;
-                var client = new HttpClient();
-                client.Timeout = TimeSpan.FromMinutes(4);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_accessTokenBase64)));
-                var postTask = client.PostAsync(_restfulConfiguration.GenerateQuotationUrl, httpContent);
-                postTask.Wait();
-                response = postTask.Result;
+                //var client = new HttpClient();
+                //client.Timeout = TimeSpan.FromMinutes(4);
+                //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_accessTokenBase64)));
+                //var postTask = client.PostAsync(_restfulConfiguration.GenerateQuotationUrl, httpContent);
+                //postTask.Wait();
+                //response = postTask.Result;
+
+                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
+                var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);
+                Task<HttpResponseMessage> response = postTask;
                 DateTime dtAfterCalling = DateTime.Now;
                 log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
                 if (response == null)
@@ -135,10 +141,10 @@ namespace Tameenk.Integration.Providers.ArabianShield
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (response.Content == null)
+                if (response.Result.Content == null)
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -146,10 +152,10 @@ namespace Tameenk.Integration.Providers.ArabianShield
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                   //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                if (string.IsNullOrEmpty(response.Result.Content.ReadAsStringAsync().Result))
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -157,11 +163,11 @@ namespace Tameenk.Integration.Providers.ArabianShield
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Content.ReadAsStringAsync().Result);
+                log.ServiceResponse = response.Result.Content.ReadAsStringAsync().Result;
+                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Result.Content.ReadAsStringAsync().Result);
                 if (quotationServiceResponse != null && quotationServiceResponse.Products == null && quotationServiceResponse.Errors != null)
                 {
                     StringBuilder servcieErrors = new StringBuilder();
@@ -180,11 +186,11 @@ namespace Tameenk.Integration.Providers.ArabianShield
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = servcieErrorsCodes.ToString();
                     log.ServiceErrorDescription = servcieErrors.ToString();
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
 
-                output.Output = response;
+                output.Output = response.Result.Content.ReadAsStringAsync().Result;
                 output.ErrorCode = ServiceOutput.ErrorCodes.Success;
                 output.ErrorDescription = "Success";
                 log.ErrorCode = (int)output.ErrorCode;
@@ -192,7 +198,7 @@ namespace Tameenk.Integration.Providers.ArabianShield
                 log.ServiceErrorCode = log.ErrorCode.ToString();
                 log.ServiceErrorDescription = log.ServiceErrorDescription;
                 log.ServiceResponseTimeInSeconds = DateTime.Now.Subtract(dtBeforeCalling).TotalSeconds;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
 
             }
@@ -247,12 +253,11 @@ namespace Tameenk.Integration.Providers.ArabianShield
 
             QuotationServiceResponse responseValue = new QuotationServiceResponse();
             var stringPayload = JsonConvert.SerializeObject(request);
-            string quoteResponse = string.Empty;
 
             try
             {
                 string result = string.Empty;
-                result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
+                result =response.ToString();
                 responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
                 if (responseValue != null && responseValue.Products == null && (responseValue.Errors != null && responseValue.Errors.Count > 0))
                 {
