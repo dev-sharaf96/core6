@@ -72,50 +72,6 @@ namespace Tameenk.Integration.Providers.ACIG
         }
         protected override QuotationServiceResponse GetQuotationResponseObject(object response, QuotationServiceRequest request)
         {
-            //    QuotationServiceResponse responseValue = new QuotationServiceResponse();
-            //    string result = string.Empty;
-            //    var stringPayload = result;
-            //    var res = string.Empty;
-
-            //    try
-            //    {
-            //        result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
-            //        responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
-            //        if (responseValue != null && responseValue.Products != null)
-            //        {
-            //            foreach (var product in responseValue.Products)
-            //            {
-            //                if (product != null && product.Benefits != null)
-            //                {
-            //                    foreach (var benefit in product.Benefits)
-            //                    {
-            //                        if (benefit.BenefitPrice == 0)
-            //                        {
-            //                            benefit.IsReadOnly = true;
-            //                            benefit.IsSelected = true;
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //        }
-
-            //        HandleFinalProductPrice(responseValue);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        responseValue.StatusCode = 2;
-            //        if (responseValue.Errors == null)
-            //            responseValue.Errors = new List<Error>();
-
-            //        responseValue.Errors.Add(new Error { Message = ex.GetBaseException().Message });
-            //    }
-            //    finally
-            //    {
-            //        LogIntegrationTransaction($"Test Get Quotation with reference id: {request.ReferenceId} for company: GGI Comprehensive", stringPayload, responseValue, responseValue?.StatusCode);
-            //    }
-
-            //    return responseValue;
-            //}
             QuotationServiceResponse responseValue = new QuotationServiceResponse();
             string result = string.Empty;
             var stringPayload = result;

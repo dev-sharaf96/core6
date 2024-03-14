@@ -51,7 +51,7 @@ namespace Tameenk.Services.QuotationNew.ApiCore.Controllers
             string policyExpiryDate = null, string hashed = null, string channel = "Portal", 
             bool OdQuotation = false*/)
         {
-            int    insuranceCompanyId = 18;
+            int    insuranceCompanyId = 3;
             string qtRqstExtrnlId = "165a361ee51548f";
             Guid   parentRequestId = new Guid("2c176652-6792-4434-956c-94b933ed40e8");
             int    insuranceTypeCode = 1;
