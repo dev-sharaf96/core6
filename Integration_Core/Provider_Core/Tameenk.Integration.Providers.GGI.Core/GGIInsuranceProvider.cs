@@ -34,7 +34,7 @@ namespace Tameenk.Integration.Providers.GGI
 
         #region Fields
         //private readonly TameenkConfig _tameenkConfig;
-        private readonly IHttpClient _httpClient;
+        private readonly HttpClient _httpClient;
         private readonly string _accessTokenBase64;
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
@@ -43,8 +43,8 @@ namespace Tameenk.Integration.Providers.GGI
         private readonly int[] Weights = new int[5] { 21, 22, 23, 24, 25 };
         private readonly IQuotationConfig _quotationConfig;
 
-        private const string QUOTATION_TPL_URL = "https://bcarel.ggi-sa.com/GGIBcareLive/API/MotorService/Quote";
-        private const string QUOTATION_COMPREHENSIVE_URL = "https://bcarel.ggi-sa.com/GGIBcareLive/API/MotorService/Quote";
+        private const string QUOTATION_TPL_URL = "https://localhost:7267/GGIBcareLive/API/MotorService/Quote";// "https://bcarel.ggi-sa.com/GGIBcareLive/API/MotorService/Quote";
+        private const string QUOTATION_COMPREHENSIVE_URL = "https://localhost:7267/GGIBcareLive/API/MotorService/Quote";// "https://bcarel.ggi-sa.com/GGIBcareLive/API/MotorService/Quote";
         private const string POLICY_TPL_URL = "https://bcarel.ggi-sa.com/GGIBcareLive/Api/MotorService/TPLPolicy";
         private const string POLICY_COMPREHENSIVE_URL = "https://bcarel.ggi-sa.com/GGIBcareLive/Api/MotorService/TPLPolicy";
 
@@ -71,6 +71,7 @@ namespace Tameenk.Integration.Providers.GGI
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _addressService = addressService ?? throw new TameenkArgumentNullException(nameof(IAddressService));
             _checkoutDetail = checkoutDetail;
+            _httpClient = new HttpClient(); 
 
         }
 
@@ -147,10 +148,13 @@ namespace Tameenk.Integration.Providers.GGI
 
             try
             {
-
-                result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
-
-                responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
+                var task = response as Task<object>;
+                var httpResponseMessage = task.Result;
+                var json = httpResponseMessage.ToString();
+                responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(json);
+                //result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
+                //
+                //responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
 
 
                 if (responseValue != null && responseValue.Products != null)
