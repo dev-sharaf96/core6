@@ -37,7 +37,7 @@ namespace Tameenk.Integration.DtoCore.ServiceLocator
         {
             switch (insuarceCompanyId)
             {
-               // case 1: return _serviceProvider.GetService<wafa>();
+                //case 1: return _serviceProvider.GetService<wafa>(); //Not used 
                 case 2: 
                     return _serviceProvider.GetService<ACIGInsuranceProvider>();
                 case 3:
@@ -46,7 +46,7 @@ namespace Tameenk.Integration.DtoCore.ServiceLocator
                     return _serviceProvider.GetService<AICCInsuranceProvider>();
                 case 5:
                     return _serviceProvider.GetService<TUICInsuranceProvider>();
-                //case 6: return _serviceProvider.GetService<Sagr>();
+                //case 6: return _serviceProvider.GetService<Sagr>(); //link with Co. not correct
                 case 7:
                     return _serviceProvider.GetService<WalaInsuranceProvider>();
                 case 8: 

@@ -35,7 +35,7 @@ namespace Tameenk.Integration.Providers.Wala
         private readonly IServiceProvider _serviceProvider;
         //private const string QUOTATION_TPL_URL = "https://online.walaa.com/bcaremotor/Walaa/TPL/QuotationRequest";
         //private const string POLICY_TPL_URL = "https://online.walaa.com/bcaremotor/Walaa/TPL/PolicyRequest";
-        private const string QUOTATION_TPL_URL = "https://bcaresvc01.walaa.com:8083/Walaa/TPL/QuotationRequest";
+        private const string QUOTATION_TPL_URL = "https://localhost:7267/Walaa/TPL/QuotationRequest";//"https://bcaresvc01.walaa.com:8083/Walaa/TPL/QuotationRequest";
         private const string POLICY_TPL_URL = "https://bcaresvc01.walaa.com:8083/Walaa/TPL/PolicyRequest";
         private readonly IQuotationConfig _quotationConfig;
         //private const string QUOTATION_COMPREHENSIVE_URL = "https://online.walaa.com/BCareMotor/Walaa/CMP/QuotationRequest";
@@ -174,6 +174,37 @@ namespace Tameenk.Integration.Providers.Wala
             }
             return base.ExecutePolicyRequest(request, predefinedLogInfo);
         }
+        protected override QuotationServiceResponse GetQuotationResponseObject(object response, QuotationServiceRequest request)
+        {
+            QuotationServiceResponse responseValue = new QuotationServiceResponse();
+            string result = string.Empty;
+            var stringPayload = result;
+            try
+            {
 
+                var task = response as Task<object>;
+                var httpResponseMessage = task.Result;
+                var json = httpResponseMessage.ToString();
+                responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(json);
+                if (responseValue != null && responseValue.Products == null && responseValue.Errors == null)
+                {
+                    responseValue.Errors = new List<Error>
+                   {
+                       new Error { Message = result }
+                   };
+                }
+
+                LogIntegrationTransaction($"{Configuration.ProviderName} insurance provider get quote with reference id : ${request.ReferenceId}",
+                    stringPayload,
+                    result,
+                    responseValue == null ? 2 : responseValue.StatusCode);
+                return responseValue;
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }
