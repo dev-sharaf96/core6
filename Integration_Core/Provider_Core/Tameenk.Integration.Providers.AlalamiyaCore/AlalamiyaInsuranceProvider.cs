@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Tameenk.Common.Utilities;
@@ -27,26 +28,25 @@ namespace Tameenk.Integration.Providers.Alalamiya
     public class AlalamiyaInsuranceProvider : RestfulInsuranceProvider
     {
         #region Fields
-        private readonly TameenkConfig _tameenkConfig;
         private readonly IHttpClient _httpClient;
-        private readonly ILogger _logger;
+        private readonly HttpClient httpClient;
         private string _accessTokenBase64;
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
-        private readonly IAddressService _addressService;
-        #endregion
-        private const string QUOTATION_COMPREHENSIVE_URL = "https://tameenkcomp.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorQuote.do";
+        private readonly IAddressService _addressService;     
+        private const string QUOTATION_COMPREHENSIVE_URL = "https://localhost:7267/RSABPMWeb/rsaservices/CreateMotorQuote.do";//"https://tameenkcomp.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorQuote.do";
         private const string POLICY_COMPREHENSIVE_URL = "https://tameenkcomp.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorPolicy.do";
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
-        private readonly IQuotationConfig _quotationConfig;
+        private readonly IQuotationConfig _quotationConfig; 
+        #endregion
         #region Ctor
         public AlalamiyaInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
             , IAddressService addressService, IRepository<CheckoutDetail> checkoutDetail)
-             : base(quotationConfig,new RestfulConfiguration
+             : base(quotationConfig, new RestfulConfiguration
              {
-                 GenerateQuotationUrl = "https://tameenk.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorQuote.do",
+                 GenerateQuotationUrl = "https://localhost:7267/RSABPMWeb/rsaservices/CreateMotorQuote.do",//"https://tameenk.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorQuote.do",
                  GeneratePolicyUrl = "https://tameenk.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorPolicy.do",
-                 UpdateCustomCardUrl= "https://tameenk.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorNilEndtPolicy.do",
+                 UpdateCustomCardUrl = "https://tameenk.alalamiya.sa/RSABPMWeb/rsaservices/CreateMotorNilEndtPolicy.do",
                  AccessToken = "VEFNRUVOS19VU0VSOlczQHIzYjM1dCE=",
                  ProviderName = "Alalamiya"
              }, policyProcessingQueueRepository)
@@ -57,6 +57,8 @@ namespace Tameenk.Integration.Providers.Alalamiya
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
             _addressService = addressService ?? throw new TameenkArgumentNullException(nameof(IAddressService));
             _checkoutDetail = checkoutDetail;
+            _quotationConfig = quotationConfig;
+            httpClient = new HttpClient();
         }
 
         #endregion
@@ -128,7 +130,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
         protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
             //in case test mode execute the code from the base.
-            if (_tameenkConfig.Quotatoin.TestMode)
+            if (_quotationConfig.TestMode)
                 return base.ExecuteQuotationRequest(quotation, predefinedLogInfo);
             if (quotation.ProductTypeCode == 2)
             { 
@@ -171,7 +173,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
             HttpResponseMessage response = new HttpResponseMessage();
             try
             {
-                var testMode = _tameenkConfig.Policy.TestMode;
+                var testMode = _quotationConfig.TestMode;
                 if (testMode)
                 {
                     const string nameOfFile = ".TestData.policyTestData.json";
@@ -441,7 +443,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
             }
             catch (Exception ex)
             {
-                _logger.Log($"AlalamiyaInsuranceProvider -> GetPolicyResponseObject", ex, LogLevel.Error);
+                //_logger.Log($"AlalamiyaInsuranceProvider -> GetPolicyResponseObject", ex, LogLevel.Error);
             }
             finally
             {
@@ -455,7 +457,7 @@ namespace Tameenk.Integration.Providers.Alalamiya
         protected override object ExecutePolicyRequest(PolicyRequest policy, ServiceRequestLog predefinedLogInfo)
         {
             //in case test mode execute the code from the base.
-            if (_tameenkConfig.Quotatoin.TestMode)
+            if (_quotationConfig.TestMode)
                 return base.ExecutePolicyRequest(policy, predefinedLogInfo);
 
             short productTypeCode = 1;
@@ -494,7 +496,6 @@ namespace Tameenk.Integration.Providers.Alalamiya
             log.VehicleModelYear = quotation?.VehicleModelYear;
             var stringPayload = string.Empty;
             DateTime dtBeforeCalling = DateTime.Now;
-            HttpResponseMessage response = new HttpResponseMessage();
             try
             {
                 quotation.PolicyEffectiveDate = DateTime.ParseExact(quotation.PolicyEffectiveDate.ToString("yyyy-MM-ddTHH:mm:sszzz", new CultureInfo("en-US")), "yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
@@ -519,10 +520,16 @@ namespace Tameenk.Integration.Providers.Alalamiya
                     { "Content-Type", "application/json" }*/
                 };
                 dtBeforeCalling = DateTime.Now;
-                var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, quotation, "VEFNRUVOS19VU0VSOlczQHIzYjM1dCE=", authorizationMethod: "Basic", headers: headers);
+                //var postTask = httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, quotation, "VEFNRUVOS19VU0VSOlczQHIzYjM1dCE=", authorizationMethod: "Basic", headers: headers);
                 //var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, quotation, _accessTokenBase64, authorizationMethod: "Basic", headers: headers);
-                postTask.Wait();
-                response = postTask.Result;
+                //postTask.Wait();
+                //response = postTask.Result;
+
+                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
+                var postTask = httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);
+                Task<HttpResponseMessage> response = postTask;
+
                 DateTime dtAfterCalling = DateTime.Now;
                 log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
                 if (response == null)
@@ -533,10 +540,10 @@ namespace Tameenk.Integration.Providers.Alalamiya
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (response.Content == null)
+                if (response.Result.Content == null)
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -544,10 +551,10 @@ namespace Tameenk.Integration.Providers.Alalamiya
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                if (string.IsNullOrEmpty(response.Result.Content.ReadAsStringAsync().Result))
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -555,19 +562,19 @@ namespace Tameenk.Integration.Providers.Alalamiya
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
 
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+                log.ServiceResponse = response.Result.Content.ReadAsStringAsync().Result;
                 AlamiaQuotationServiceResponse quotationServiceResponse;
 
                 if (quotation.ProductTypeCode == 1)
                 {
                     quotationServiceResponse = new AlamiaQuotationServiceResponse();
-                    var deserialised = AlamiaDeserializeJsonWithErrorObject(response.Content.ReadAsStringAsync().Result, quotationServiceResponse, out bool isDeserialised);
+                    var deserialised = AlamiaDeserializeJsonWithErrorObject(response.Result.Content.ReadAsStringAsync().Result, quotationServiceResponse, out bool isDeserialised);
                     if (!isDeserialised)
-                        quotationServiceResponse = JsonConvert.DeserializeObject<AlamiaQuotationServiceResponse>(response.Content.ReadAsStringAsync().Result);
+                        quotationServiceResponse = JsonConvert.DeserializeObject<AlamiaQuotationServiceResponse>(response.Result.Content.ReadAsStringAsync().Result);
                     else
                         quotationServiceResponse = deserialised;
 
@@ -588,16 +595,16 @@ namespace Tameenk.Integration.Providers.Alalamiya
                         log.ErrorDescription = output.ErrorDescription;
                         log.ServiceErrorCode = servcieErrorsCodes.ToString();
                         log.ServiceErrorDescription = servcieErrors.ToString();
-                        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                        //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                         return output;
                     }
                 }
                 if (quotation.ProductTypeCode == 2)
                 {
                     var quotationServiceResponsecom = new AlamiaQuotationServiceResponseComp();
-                    var deserialised = AlamiaDeserializeJsonWithErrorObjectComp(response.Content.ReadAsStringAsync().Result, quotationServiceResponsecom, out bool isDeserialised);
+                    var deserialised = AlamiaDeserializeJsonWithErrorObjectComp(response.Result.Content.ReadAsStringAsync().Result, quotationServiceResponsecom, out bool isDeserialised);
                     if (!isDeserialised)
-                        quotationServiceResponsecom = JsonConvert.DeserializeObject<AlamiaQuotationServiceResponseComp>(response.Content.ReadAsStringAsync().Result);
+                        quotationServiceResponsecom = JsonConvert.DeserializeObject<AlamiaQuotationServiceResponseComp>(response.Result.Content.ReadAsStringAsync().Result);
                     else
                         quotationServiceResponsecom = deserialised;
                     if (quotationServiceResponsecom != null && quotationServiceResponsecom.Products == null && quotationServiceResponsecom.errors != null)
@@ -617,19 +624,19 @@ namespace Tameenk.Integration.Providers.Alalamiya
                         log.ErrorDescription = output.ErrorDescription;
                         log.ServiceErrorCode = servcieErrorsCodes.ToString();
                         log.ServiceErrorDescription = servcieErrors.ToString();
-                        ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                        //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                         return output;
                     }
                 }
-                output.Output = response;
+                output.Output = response.Result.Content.ReadAsStringAsync().Result;// response;
                 output.ErrorCode = ServiceOutput.ErrorCodes.Success;
                 output.ErrorDescription = "Success";
                 log.ErrorCode = (int)output.ErrorCode;
                 log.ErrorDescription = output.ErrorDescription;
                 log.ServiceErrorCode = log.ErrorCode.ToString();
                 log.ServiceErrorDescription = log.ServiceErrorDescription;
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                log.ServiceResponse = response.Result.Content.ReadAsStringAsync().Result;
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
             }
             catch (Exception ex)
@@ -649,8 +656,8 @@ namespace Tameenk.Integration.Providers.Alalamiya
         protected override QuotationServiceResponse GetQuotationResponseObject(object response, QuotationServiceRequest request)
         {
             var quotationServiceResponse = new QuotationServiceResponse();
-            string result = string.Empty;
-            result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
+            string result = response.ToString();
+            // result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
 
             if (request.ProductTypeCode == 1)
             {
