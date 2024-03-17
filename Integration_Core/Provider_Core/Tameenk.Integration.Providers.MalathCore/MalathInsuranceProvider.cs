@@ -28,10 +28,10 @@ namespace Tameenk.Integration.Providers.Malath
     {
         private readonly IQuotationConfig _quotationConfig;
 
-        public MalathInsuranceProvider(IQuotationConfig quotationConfig,IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-           : base(quotationConfig,new RestfulConfiguration
+        public MalathInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
+           : base(quotationConfig, new RestfulConfiguration
            {
-               GenerateQuotationUrl = "https://mig.malath.com.sa/BCareMotorService/Api/Quotation",
+               GenerateQuotationUrl = "https://localhost:7267/BCareMotorService/Api/Quotation",// "https://mig.malath.com.sa/BCareMotorService/Api/Quotation",
                GeneratePolicyUrl = "https://mig.malath.com.sa/BCareMotorService/Api/Policy",
                SchedulePolicyUrl = "https://mig.malath.com.sa/BCareMotorService/Api/PolicySchedule",
                AccessToken = "tameenkuser:ffjdkslKd@$k",
@@ -68,7 +68,7 @@ namespace Tameenk.Integration.Providers.Malath
 
             try
             {
-                result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
+                result =response.ToString();
                 responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
                 if (responseValue != null && responseValue.Products != null)
                 {
