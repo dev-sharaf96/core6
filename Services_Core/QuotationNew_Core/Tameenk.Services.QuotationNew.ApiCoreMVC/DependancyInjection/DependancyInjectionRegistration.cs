@@ -21,6 +21,7 @@ using Tameenk.Integration.Providers.Amana;
 using Tameenk.Integration.Providers.ArabianShield;
 using Tameenk.Integration.Providers.AXA;
 using Tameenk.Integration.Providers.BCARE;
+using Tameenk.Integration.Providers.Buruj;
 using Tameenk.Integration.Providers.GGI;
 using Tameenk.Integration.Providers.MedGulf;
 using Tameenk.Integration.Providers.Salama;
@@ -102,7 +103,8 @@ namespace Tameenk.Services.QuotationNew.ApiCore.DependancyInjection
             services.AddScoped<AlalamiyaInsuranceProvider, AlalamiyaInsuranceProvider>();
             services.AddScoped<AXAInsuranceProvider, AXAInsuranceProvider>();
             services.AddScoped<AmanaInsuranceProvider, AmanaInsuranceProvider>();
-              
+            services.AddScoped<BurujInsuranceProvider, BurujInsuranceProvider>();
+
 
 
 

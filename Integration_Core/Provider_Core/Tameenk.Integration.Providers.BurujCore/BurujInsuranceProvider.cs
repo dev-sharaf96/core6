@@ -22,24 +22,24 @@ using Tameenk.Services.Logging;
 
 namespace Tameenk.Integration.Providers.Buruj
 {
-    class BurujInsuranceProvider : RestfulInsuranceProvider
+    public class BurujInsuranceProvider : RestfulInsuranceProvider
     {
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private string _accessTokenBase64;
-        private readonly IHttpClient _httpClient;
+        private readonly HttpClient _httpClient;
         //private const string QUOTATION_TPL_URL = "https://portal.burujinsurance.com:1442/api/Quotation";
-        private const string QUOTATION_TPL_URL = "https://88.85.240.35:4450/api/Quotes";
+        private const string QUOTATION_TPL_URL = "https://localhost:7267/Buruj/Quotes";// "https://88.85.240.35:4450/api/Quotes";
         //private const string POLICY_TPL_URL = "https://portal.burujinsurance.com:1442/api/Policy";
         private const string POLICY_TPL_URL = "https://88.85.240.35:4450/api/PurchaseNotifications";
-        private const string QUOTATION_COMPREHENSIVE_URL = "https://88.85.240.35:9991/api/Quotes";
+        private const string QUOTATION_COMPREHENSIVE_URL = "https://localhost:7267/Buruj/Quotes";// "https://88.85.240.35:9991/api/Quotes";
         private const string POLICY_COMPREHENSIVE_URL = "https://88.85.240.35:9991/api/PurchaseNotifications";
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
         private readonly IQuotationConfig _quotationConfig;
         public BurujInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
              : base(quotationConfig, new RestfulConfiguration
              {
-                 GenerateQuotationUrl = "https://portal.burujinsurance.com:1442/api/Quotation",
+                 GenerateQuotationUrl = "https://localhost:7267/Buruj/Quotes",//  "https://portal.burujinsurance.com:1442/api/Quotation",
                  GeneratePolicyUrl = "https://portal.burujinsurance.com:1442/api/Policy",
                  AccessToken = "bc@Re@U$Er:B(@rE@p@s$WrD",
                  ProviderName = "Buruj",
@@ -54,6 +54,7 @@ namespace Tameenk.Integration.Providers.Buruj
                 Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));
             _checkoutDetail = checkoutDetail;
             _quotationConfig = quotationConfig;
+            _httpClient = new HttpClient(); 
 
         }
 
@@ -99,7 +100,6 @@ namespace Tameenk.Integration.Providers.Buruj
             log.VehicleModelYear = quotation?.VehicleModelYear;
             DateTime dtBeforeCalling = DateTime.Now;
             var stringPayload = string.Empty;
-            HttpResponseMessage response = new HttpResponseMessage();
             try
             {
                 var testMode = _quotationConfig.TestMode;
@@ -122,9 +122,10 @@ namespace Tameenk.Integration.Providers.Buruj
                 log.ServiceRequest = JsonConvert.SerializeObject(quotation);
                 dtBeforeCalling = DateTime.Now;
                 Utilities.InitiateSSLTrust();
-                var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, quotation, _accessTokenBase64, authorizationMethod: "Basic");
-                postTask.Wait();
-                response = postTask.Result;
+                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
+                var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);
+                Task<HttpResponseMessage> response = postTask;
                 DateTime dtAfterCalling = DateTime.Now;
                 log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
                 if (response == null)
@@ -138,7 +139,7 @@ namespace Tameenk.Integration.Providers.Buruj
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (response.Content == null)
+                if (response.Result.Content == null)
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -149,7 +150,7 @@ namespace Tameenk.Integration.Providers.Buruj
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                if (string.IsNullOrEmpty(response.Result.Content.ReadAsStringAsync().Result))
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -160,8 +161,8 @@ namespace Tameenk.Integration.Providers.Buruj
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Content.ReadAsStringAsync().Result);
+                log.ServiceResponse = response.Result.Content.ReadAsStringAsync().Result;
+                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Result.Content.ReadAsStringAsync().Result);
                 if (quotationServiceResponse != null && quotationServiceResponse.Products == null && quotationServiceResponse.Errors != null)
                 {
                     StringBuilder servcieErrors = new StringBuilder();
@@ -184,7 +185,7 @@ namespace Tameenk.Integration.Providers.Buruj
                     return output;
                 }
 
-                output.Output = response;
+                output.Output = response.Result.Content.ReadAsStringAsync().Result;
                 output.ErrorCode = ServiceOutput.ErrorCodes.Success;
                 output.ErrorDescription = "Success";
                 log.ErrorCode = (int)output.ErrorCode;
@@ -192,7 +193,7 @@ namespace Tameenk.Integration.Providers.Buruj
                 log.ServiceErrorCode = log.ErrorCode.ToString();
                 log.ServiceErrorDescription = log.ServiceErrorDescription;
                 //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
             }
             catch (Exception ex)
@@ -212,7 +213,7 @@ namespace Tameenk.Integration.Providers.Buruj
             QuotationServiceResponse responseValue = new QuotationServiceResponse();
             string result = string.Empty;
 
-            result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
+            result = response.ToString();
             responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
             if (responseValue != null && responseValue.Products != null)
             {

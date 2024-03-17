@@ -69,7 +69,7 @@ namespace Tameenk.Integration.DtoCore.ServiceLocator
                 case 24 : return _serviceProvider.GetService<AllianzInsuranceProvider>();
                 case 25 : return _serviceProvider.GetService<AXAInsuranceProvider>();
                 case 26 : return _serviceProvider.GetService<AmanaInsuranceProvider>();
-                //case 27: return _serviceProvider.GetService<BurujInsuranceProvider>();
+                case 27: return _serviceProvider.GetService<BurujInsuranceProvider>();
                 default: return null;
             }
         }
