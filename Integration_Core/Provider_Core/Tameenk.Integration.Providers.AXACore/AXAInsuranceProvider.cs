@@ -21,7 +21,7 @@ namespace Tameenk.Integration.Providers.AXA
              {
                  //GenerateQuotationUrl = "https://axa-leasing-uat.axa-cic.com/gateway/axaAggregators/1.0/tameenkservice/api/Tameenk/Quotation",
                  //GeneratePolicyUrl = "https://axa-leasing-uat.axa-cic.com/gateway/axaAggregators/1.0/tameenkservice/api/Tameenk/Policy",
-                 GenerateQuotationUrl = "https://integration.gig.sa/gateway/motorAggregator/2.0/tameenkservice/api/Tameenk/Quotation",
+                 GenerateQuotationUrl = "https://localhost:7267/gateway/motorAggregator/2.0/tameenkservice/api/Tameenk/Quotation",// "https://integration.gig.sa/gateway/motorAggregator/2.0/tameenkservice/api/Tameenk/Quotation",
                  GeneratePolicyUrl = "https://integration.gig.sa/gateway/motorAggregator/2.0/tameenkservice/api/Tameenk/Policy",
                  AccessToken = "gig_agg_tam:ueix6m1l22bn_",
                  ProviderName = "AXA"
@@ -42,7 +42,7 @@ namespace Tameenk.Integration.Providers.AXA
             QuotationServiceResponse responseValue = new QuotationServiceResponse();
             string result = string.Empty;
 
-            result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
+            result = response.ToString();
             responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
             if (responseValue != null && responseValue.Products != null)
             {
