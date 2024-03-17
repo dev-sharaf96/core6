@@ -36,18 +36,10 @@ namespace Tameenk.Integration.Providers.AlRajhi
         private readonly IServiceProvider _serviceProvider;
         private readonly IQuotationConfig _quotationConfig;
         #region ctor
-        //public AlRajhiInsuranceProvider(TameenkConfig tameenkConfig, ILogger logger, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
-        //     : base(new ProviderConfiguration() { ProviderName = "AlRajhi" }, logger)
-        //{
-        //    _logger = logger;
-        //    _tameenkConfig = tameenkConfig;
-        //    _policyProcessingQueueRepository = policyProcessingQueueRepository;
-        //}
-
         public AlRajhiInsuranceProvider(IQuotationConfig quotationConfig, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
            : base(quotationConfig,new RestfulConfiguration
            {
-               GenerateQuotationUrl = "https://dspeai.alrajhitakaful.com/ART.NCIS.TameenK/TameenK.svc/Quotation",
+               GenerateQuotationUrl = "https://localhost:7267/ART.NCIS.TameenK/TameenK.svc/Quotation",//"https://dspeai.alrajhitakaful.com/ART.NCIS.TameenK/TameenK.svc/Quotation",
                GeneratePolicyUrl = "https://dspeai.alrajhitakaful.com/ART.NCIS.TameenK/TameenK.svc/Policy",
                AccessToken = "BcareProd:aRt!968",
                ProviderName = "AlRajhi",
@@ -90,7 +82,7 @@ namespace Tameenk.Integration.Providers.AlRajhi
             QuotationServiceResponse responseValue = new QuotationServiceResponse();
             string result = string.Empty;
 
-            result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
+            result = response.ToString();
             responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
             if(request.ProductTypeCode == 2)
             {
