@@ -58,29 +58,42 @@ namespace Tameenk.Integration.Providers.Amana
         {
             QuotationServiceResponse responseValue = new QuotationServiceResponse();
             string result = string.Empty;
-            result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
-            responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
-            if (responseValue != null && responseValue.Products != null)
-            {
-                foreach (var product in responseValue.Products)
+            try {
+                if (response == null)
+                    return null;
+
+
+                var task = response as Task<object>;
+                var httpResponseMessage = task.Result;
+                var json = httpResponseMessage.ToString();
+                responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(json);
+
+                if (responseValue != null && responseValue.Products != null)
                 {
-                    if (product != null)
+                    foreach (var product in responseValue.Products)
                     {
-                        if (product.Benefits != null)
+                        if (product != null)
                         {
-                            foreach (var benefit in product.Benefits)
+                            if (product.Benefits != null)
                             {
-                                if (benefit.BenefitPrice == 0)// added as per waleed 
+                                foreach (var benefit in product.Benefits)
                                 {
-                                    benefit.IsReadOnly = true;
-                                    benefit.IsSelected = true;
+                                    if (benefit.BenefitPrice == 0)// added as per waleed 
+                                    {
+                                        benefit.IsReadOnly = true;
+                                        benefit.IsSelected = true;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
             return responseValue;
+                }
+                catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
