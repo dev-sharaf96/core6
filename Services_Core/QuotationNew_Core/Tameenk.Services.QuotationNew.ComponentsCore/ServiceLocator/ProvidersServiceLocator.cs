@@ -57,8 +57,8 @@ namespace Tameenk.Integration.DtoCore.ServiceLocator
                 case 11: return _serviceProvider.GetService<GGIInsuranceProvider>();
                 case 12: return _serviceProvider.GetService<TawuniyaInsuranceProvider>();
                 case 13 : return _serviceProvider.GetService<SalamaInsuranceProvider>();
-                case  14: return _serviceProvider.GetService<WataniyaInsuranceProvider>();
-                case  15: return _serviceProvider.GetService<BCAREInsuranceProvider>();
+                case 14: return _serviceProvider.GetService<WataniyaInsuranceProvider>();
+                case 15: return _serviceProvider.GetService<BCAREInsuranceProvider>();
                 case 17 : return _serviceProvider.GetService<UCAInsuranceProvider>();
                 case 18 : return _serviceProvider.GetService<AlalamiyaInsuranceProvider>();
          ////// case  19: return _serviceProvider.GetService<GulfUnion>(); //Project Not here   

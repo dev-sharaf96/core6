@@ -27,10 +27,11 @@ namespace Tameenk.Integration.Providers.UCA
         #region Fields
         private readonly IQuotationConfig _quotationConfig;
         private readonly IHttpClient _httpClient;
+        private readonly HttpClient httpClient;
         private readonly string _accessTokenBase64;
         private readonly RestfulConfiguration _restfulConfiguration;
-        private const string QUOTATION_TPL_URL = "http://5.149.133.237:8081/tameenk/v1/api/Quotation";
-        private const string QUOTATION_COMPREHENSIVE_URL = "http://5.149.133.237:8081/tameenk/v1/api/Quotation";
+        private const string QUOTATION_TPL_URL = "https://localhost:7267/tameenk/v1/api/Quotation";// "http://5.149.133.237:8081/tameenk/v1/api/Quotation";
+        private const string QUOTATION_COMPREHENSIVE_URL = "https://localhost:7267/tameenk/v1/api/Quotation";// "http://5.149.133.237:8081/tameenk/v1/api/Quotation";
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private string _accessTokenForQuotePolicy = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(@"M2MTameenkAppian:TY8xuA_\{((3H(bv~8%/?,Ad"));
         #endregion
@@ -52,6 +53,7 @@ namespace Tameenk.Integration.Providers.UCA
                   null : _restfulConfiguration.AccessToken;
             _quotationConfig = quotationConfig;
             _policyProcessingQueueRepository = policyProcessingQueueRepository;
+            httpClient =new HttpClient();
 
         }
         protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
@@ -77,7 +79,7 @@ namespace Tameenk.Integration.Providers.UCA
 
             return quotation;
         }
-        protected override async Task< ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
+        protected override async Task<ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog log)
         {
             ServiceOutput output = new ServiceOutput();
             log.ReferenceId = quotation.ReferenceId;
@@ -95,7 +97,6 @@ namespace Tameenk.Integration.Providers.UCA
             log.VehicleModelYear = quotation?.VehicleModelYear;
             DateTime dtBeforeCalling = DateTime.Now;
             var stringPayload = string.Empty;
-            HttpResponseMessage response = new HttpResponseMessage();
             try
             {
                 var testMode = _quotationConfig.TestMode;
@@ -106,11 +107,9 @@ namespace Tameenk.Integration.Providers.UCA
                     HttpResponseMessage message = new HttpResponseMessage();
                     message.Content = new StringContent(responseData);
                     message.StatusCode = System.Net.HttpStatusCode.OK;
-
                     output.Output = message;
                     output.ErrorCode = ServiceOutput.ErrorCodes.Success;
                     output.ErrorDescription = "Success";
-
                     return output;
                 }
 
@@ -119,9 +118,13 @@ namespace Tameenk.Integration.Providers.UCA
 
                 log.ServiceRequest = JsonConvert.SerializeObject(quotation);
                 dtBeforeCalling = DateTime.Now;
-                var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, quotation, _accessTokenForQuotePolicy, authorizationMethod: "Basic");
-                postTask.Wait();
-                response = postTask.Result;
+                //var postTask = httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, quotation, _accessTokenForQuotePolicy, authorizationMethod: "Basic");
+                //postTask.Wait();
+                //response = postTask.Result;
+                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
+                var postTask = httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);
+                Task<HttpResponseMessage> response = postTask;
                 DateTime dtAfterCalling = DateTime.Now;
                 log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
                 if (response == null)
@@ -135,7 +138,7 @@ namespace Tameenk.Integration.Providers.UCA
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (response.Content == null)
+                if (response.Result.Content == null)
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -146,7 +149,7 @@ namespace Tameenk.Integration.Providers.UCA
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                if (string.IsNullOrEmpty(response.Result.Content.ReadAsStringAsync().Result))
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -157,8 +160,8 @@ namespace Tameenk.Integration.Providers.UCA
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Content.ReadAsStringAsync().Result);
+                log.ServiceResponse = response.Result.Content.ReadAsStringAsync().Result;
+                var quotationServiceResponse = JsonConvert.DeserializeObject<QuotationServiceResponse>(response.Result.Content.ReadAsStringAsync().Result);
                 if (quotationServiceResponse != null && quotationServiceResponse.Products == null && quotationServiceResponse.Errors != null)
                 {
                     StringBuilder servcieErrors = new StringBuilder();
@@ -181,7 +184,7 @@ namespace Tameenk.Integration.Providers.UCA
                     return output;
                 }
 
-                output.Output = response;
+                output.Output = response.Result.Content.ReadAsStringAsync().Result;
                 output.ErrorCode = ServiceOutput.ErrorCodes.Success;
                 output.ErrorDescription = "Success";
                 log.ErrorCode = (int)output.ErrorCode;
@@ -189,7 +192,7 @@ namespace Tameenk.Integration.Providers.UCA
                 log.ServiceErrorCode = log.ErrorCode.ToString();
                 log.ServiceErrorDescription = log.ServiceErrorDescription;
                 //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
             }
             catch (Exception ex)
@@ -419,28 +422,39 @@ namespace Tameenk.Integration.Providers.UCA
         protected override QuotationServiceResponse GetQuotationResponseObject(object response, QuotationServiceRequest request)
         {
             QuotationServiceResponse responseValue = new QuotationServiceResponse();
-            string result = string.Empty;
-
-            result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
-            responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
-            if (responseValue != null && responseValue.Products != null)
+            try
             {
-                foreach (var product in responseValue.Products)
+                if (response == null)
+                    return null;
+
+
+                var task = response as Task<object>;
+                var httpResponseMessage = task.Result;
+                var json = httpResponseMessage.ToString();
+                responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(json);
+                if (responseValue != null && responseValue.Products != null)
                 {
-                    if (product != null && product.Benefits != null)
+                    foreach (var product in responseValue.Products)
                     {
-                        foreach (var benefit in product.Benefits)
+                        if (product != null && product.Benefits != null)
                         {
-                            if (benefit.BenefitPrice == 0)// added as per waleed 
+                            foreach (var benefit in product.Benefits)
                             {
-                                benefit.IsReadOnly = true;
-                                benefit.IsSelected = true;
+                                if (benefit.BenefitPrice == 0)// added as per waleed 
+                                {
+                                    benefit.IsReadOnly = true;
+                                    benefit.IsSelected = true;
+                                }
                             }
                         }
                     }
                 }
+                return responseValue;
             }
-            return responseValue;
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }
