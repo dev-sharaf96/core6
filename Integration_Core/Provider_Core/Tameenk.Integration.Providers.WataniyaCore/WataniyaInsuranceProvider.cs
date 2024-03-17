@@ -100,10 +100,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         private const string CERTIFCATE_PASSWORD = "rZ7dzXq60L3lf3E";
         private readonly IServiceProvider _serviceProvider;
 
-        public WataniyaInsuranceProvider(IQuotationConfig quotationConfig,IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository,
-            IRepository<QuotationResponse> quotationResponseRepository, IRepository<WataniyaDraftPolicy> wataniyaDraftPolicyRepository,
-            IQuotationService quotationService, IRepository<WataniyaMotorPolicyInfo> wataniyaMotorPolicyInfoRepository
-            , IRepository<BankNins> bankNinsRepository, IWataniyaNajmQueueService wataniyaNajmQueueService)
+        public WataniyaInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
              : base(quotationConfig, new RestfulConfiguration
              {
                  //GenerateQuotationUrl = "https://ncd.wataniya.com.sa:2021/api/Quotation/RequestQuotation",
@@ -122,17 +119,9 @@ namespace Tameenk.Integration.Providers.Wataniya
              }, policyProcessingQueueRepository)
         {
             _restfulConfiguration = Configuration as RestfulConfiguration;
-            _serviceProvider = serviceProvider;
             _accessTokenBase64 = string.IsNullOrWhiteSpace(_restfulConfiguration.AccessToken) ?
                 null :
                 Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));
-            _quotationResponseRepository = quotationResponseRepository;
-            _policyProcessingQueueRepository = policyProcessingQueueRepository;
-            _wataniyaDraftPolicyRepository = wataniyaDraftPolicyRepository;
-            _quotationService = quotationService;
-            _wataniyaMotorPolicyInfoRepository = wataniyaMotorPolicyInfoRepository;
-            _bankNinsRepository = bankNinsRepository;
-            _wataniyaNajmQueueService = wataniyaNajmQueueService;
             _quotationConfig = quotationConfig;
 
         }

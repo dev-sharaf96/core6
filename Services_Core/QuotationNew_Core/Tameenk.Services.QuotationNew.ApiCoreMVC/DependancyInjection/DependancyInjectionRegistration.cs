@@ -95,8 +95,8 @@ namespace Tameenk.Services.QuotationNew.ApiCore.DependancyInjection
             services.AddScoped<ArabianShieldInsuranceProvider, ArabianShieldInsuranceProvider>();
             services.AddScoped<GGIInsuranceProvider, GGIInsuranceProvider>();
             services.AddScoped<TawuniyaInsuranceProvider, TawuniyaInsuranceProvider>();
-            //services.AddScoped<SalamaInsuranceProvider, SalamaInsuranceProvider>();
-            //services.AddScoped<WataniyaInsuranceProvider, WataniyaInsuranceProvider>();
+            services.AddScoped<SalamaInsuranceProvider, SalamaInsuranceProvider>();
+            services.AddScoped<WataniyaInsuranceProvider, WataniyaInsuranceProvider>();
             services.AddScoped<BCAREInsuranceProvider, BCAREInsuranceProvider>();
             services.AddScoped<UCAInsuranceProvider, UCAInsuranceProvider>();
             services.AddScoped<AlalamiyaInsuranceProvider, AlalamiyaInsuranceProvider>();

@@ -28,7 +28,7 @@ namespace Tameenk.Integration.Providers.Salama
         private const string POLICY_COMPREHENSIVE_URL = "http://37.99.174.44:6800/api/CompPolicy/RequestPolicy";
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
         private readonly ServiceProvider _serviceProvider;
-        public SalamaInsuranceProvider(IQuotationConfig quotationConfig, IServiceCollection serviceCollection, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
+        public SalamaInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
              : base(quotationConfig, new RestfulConfiguration
              {
                  GenerateQuotationUrl = "http://37.99.174.44:6800/api/Quotation/RequestQuotation",
@@ -37,8 +37,7 @@ namespace Tameenk.Integration.Providers.Salama
                  ProviderName = "Salama"
              }, policyProcessingQueueRepository)
         {
-            _checkoutDetail = checkoutDetail;
-            _serviceProvider = serviceCollection.BuildServiceProvider();
+
         }
 
         protected override QuotationServiceRequest HandleQuotationRequestObjectMapping(QuotationServiceRequest quotation)
