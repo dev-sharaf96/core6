@@ -27,8 +27,8 @@ namespace Tameenk.Integration.Providers.Amana
         private readonly IQuotationConfig _quotationConfig;
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
-        private const string QUOTATION_TPL_URL = "https://prodbcare.amana-coop.com.sa:443/api/Quotes";
-        private const string QUOTATION_COMPREHENSIVE_URL = "https://prodbcare.amana-coop.com.sa:444/api/Quotes";
+        private const string QUOTATION_TPL_URL = "https://localhost:7267/Amana/Quotes";//"https://prodbcare.amana-coop.com.sa:443/api/Quotes";
+        private const string QUOTATION_COMPREHENSIVE_URL = "https://localhost:7267/Amana/Quotes";// "https://prodbcare.amana-coop.com.sa:444/api/Quotes";
         private const string POLICY_TPL_URL = "https://prodbcare.amana-coop.com.sa:443/api/PurchaseNotifications";
         private const string POLICY_COMPREHENSIVE_URL = "https://prodbcare.amana-coop.com.sa:444/api/PurchaseNotifications";
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
@@ -36,7 +36,7 @@ namespace Tameenk.Integration.Providers.Amana
         public AmanaInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository, IRepository<CheckoutDetail> checkoutDetail)
           : base(quotationConfig, new RestfulConfiguration
           {
-              GenerateQuotationUrl = "https://prodbcare.amana-coop.com.sa/api/Quotes",
+              GenerateQuotationUrl = "https://localhost:7267/Amana/Quotes",// "https://prodbcare.amana-coop.com.sa/api/Quotes",
               GeneratePolicyUrl= "https://prodbcare.amana-coop.com.sa/api/PurchaseNotifications",
               GenerateAutoleasingQuotationUrl = "https://prodbcare.amana-coop.com.sa:446/api/Quotes",
               GenerateAutoleasingPolicyUrl = "https://prodbcare.amana-coop.com.sa:446/api/PurchaseNotifications",
