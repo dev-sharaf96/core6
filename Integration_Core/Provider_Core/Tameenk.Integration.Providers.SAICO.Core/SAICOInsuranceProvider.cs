@@ -34,7 +34,7 @@ namespace Tameenk.Integration.Providers.SAICO
         public SAICOInsuranceProvider(IQuotationConfig quotationConfig, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
           : base(quotationConfig, new RestfulConfiguration
           {
-              GenerateQuotationUrl = "https://tmk.saico.com.sa:8074/TameenK/quotes",
+              GenerateQuotationUrl = "https://localhost:7267/TameenK/quotes",// "https://tmk.saico.com.sa:8074/TameenK/quotes",
               GeneratePolicyUrl = "https://tmk.saico.com.sa:8074/TameenK/policy",
               UploadImageServiceUrl = "https://tmk.saico.com.sa:8074/TameenK/attachments",
               AccessToken = "TMK_WS_PROD:DOp*aPrUS@9o23",
@@ -88,7 +88,7 @@ namespace Tameenk.Integration.Providers.SAICO
             try
             {
 
-                result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
+                result = response.ToString();
 
                 responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
 
