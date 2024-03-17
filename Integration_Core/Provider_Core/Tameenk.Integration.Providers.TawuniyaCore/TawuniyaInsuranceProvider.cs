@@ -1,23 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Tameenk.Common.Utilities;
 using Tameenk.Core;
-using Tameenk.Core.Configuration;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using Tameenk.Core.Domain.Entities.Orders;
 using Tameenk.Core.Domain.Entities.Policies;
 using Tameenk.Core.Domain.Entities.Quotations;
 using Tameenk.Core.Domain.Entities.VehicleInsurance;
-using Tameenk.Core.Domain.Enums.Quotations;
 using Tameenk.Core.Exceptions;
 using Tameenk.Integration.Core.Providers;
 using Tameenk.Integration.Core.Providers.Configuration;
@@ -28,7 +26,6 @@ using Tameenk.Resources.Quotations;
 using Tameenk.Services;
 using Tameenk.Services.Core.Addresses;
 using Tameenk.Services.Core.Http;
-using Tameenk.Services.Logging;
 using QuotationEntity = Tameenk.Core.Domain.Entities.Quotations;
 
 namespace Tameenk.Integration.Providers.Tawuniya
@@ -38,6 +35,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
         #region Fields
        
         private readonly IHttpClient _httpClient;
+        private readonly HttpClient httpClient;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
         private readonly IRepository<QuotationEntity.TawuniyaProposal> _tawuniyaProposalRepository;
         private readonly IQuotationConfig _quotationConfig;
@@ -71,12 +69,12 @@ namespace Tameenk.Integration.Providers.Tawuniya
 
         #region Ctor
 
-        public TawuniyaInsuranceProvider(IQuotationConfig quotationConfig,  IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
+        public TawuniyaInsuranceProvider(IQuotationConfig quotationConfig, IServiceProvider serviceProvider, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository
             , IRepository<QuotationEntity.QuotationRequest> quotationRequestRepository
             , IRepository<QuotationEntity.TawuniyaProposal> tawuniyaProposalRepository
             , IRepository<QuotationEntity.QuotationResponse> quotationResponseRepository
             , IRepository<Product> productRepository
-             ,IRepository<Insured> _insuredRepo
+             , IRepository<Insured> _insuredRepo
             , IRepository<Address> _addressRepo
             , IRepository<Bank> _bankRepo
             , IRepository<BankInsuranceCompany> _insuranceBankRepo
@@ -88,12 +86,12 @@ namespace Tameenk.Integration.Providers.Tawuniya
             , IRepository<VehicleModel> vehicleModelRepository
             , IRepository<ShoppingCartItem> shoppingCartItemRepository
             , IRepository<Product_Benefit> productBenefitRepository)
-            
+
             : base(quotationConfig, new RestfulConfiguration()
             {
                 GenerateAutoleasingQuotationUrl = GET_QUOTATION_AutoLease_URL,
                 GenerateAutoleasingPolicyUrl = GET_POLICY_AutoLease_URL,
-                GenerateQuotationUrl = "https://webapis.tawuniya.com.sa:5556/rest/TawnMotorQuotation/v01/restful/createQuote",
+                GenerateQuotationUrl = "https://localhost:7267/rest/TawnMotorQuotation/v01/restful/createQuote",//"https://webapis.tawuniya.com.sa:5556/rest/TawnMotorQuotation/v01/restful/createQuote",
                 GeneratePolicyUrl = "https://webapis.tawuniya.com.sa:5556/rest/TawnMotorPolicy/v01/restful/createPolicy",
                 AccessToken = "bCaRe:BcArE",
                 ProviderName = "Tawuniya"
@@ -118,6 +116,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
             _vehicleModelRepository = vehicleModelRepository;
             _shoppingCartItemRepository = shoppingCartItemRepository;
             _productBenefitRepository = productBenefitRepository;
+            httpClient = new HttpClient();
         }
 
         #endregion
@@ -1609,13 +1608,17 @@ namespace Tameenk.Integration.Providers.Tawuniya
                 string stringPayload = JsonConvert.SerializeObject(request);
                 log.ServiceRequest = stringPayload;
                 output.ServiceRequest = stringPayload;
-                var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-                string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(configuration.AccessToken));
+                //var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+                //string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(configuration.AccessToken));
                 DateTime dtBeforeCalling = DateTime.Now;
                 Utilities.InitiateSSLTrust();
-                var response = _httpClient.Post(configuration.GenerateQuotationUrl, httpContent, authToken, null, "Basic");
+                //var response = _httpClient.Post(configuration.GenerateQuotationUrl, httpContent, authToken, null, "Basic");
                 //postTask.Wait();
                 //response = postTask.Content?.ReadAsStringAsync().Result;
+                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", configuration.AccessToken);
+                var postTask = httpClient.PostAsync(configuration.GenerateQuotationUrl, requestContent);
+                Task<HttpResponseMessage> response = postTask;
                 DateTime dtAfterCalling = DateTime.Now;
                 log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
                 if (response == null)
@@ -1626,10 +1629,10 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = output.ErrorCode.ToString();
                     log.ServiceErrorDescription = output.ErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (response.Content == null)
+                if (response.Result.Content == null)
                 {
                     output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -1637,10 +1640,10 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                if (string.IsNullOrEmpty(response.Result.Content.ReadAsStringAsync().Result))
                 {
                     output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -1648,15 +1651,15 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                var value = response.Content.ReadAsStringAsync().Result;
+                var value = response.Result.Content.ReadAsStringAsync().Result;
                 log.ServiceResponse = value;
                 output.ServiceResponse = value;
                 var tawuniyaModifiedResponse = HandleTawuniyaQuotationResponse(value);
                 var tawuniyaJson = JsonConvert.SerializeObject(tawuniyaModifiedResponse);
-                message.Content = new StringContent(tawuniyaJson);
+                response.Result.Content = new StringContent(tawuniyaJson);
 
                 //if (tawuniyaModifiedResponse.StatusCode == 1)
                 //{
@@ -1679,10 +1682,10 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = servcieErrorsCodes.ToString();
                     log.ServiceErrorDescription = servcieErrors.ToString();
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                output.Output = message;
+                output.Output = response.Result.Content.ReadAsStringAsync().Result;
                 output.ErrorCode = QuotationOutput.ErrorCodes.Success;
                 output.ErrorDescription = "Success";
                 log.ErrorCode = (int)output.ErrorCode;
@@ -1690,7 +1693,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                 log.ServiceErrorCode = log.ErrorCode.ToString();
                 log.ServiceErrorDescription = log.ServiceErrorDescription;
                 //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
             }
             catch (Exception ex)
@@ -1699,7 +1702,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                 output.ErrorDescription = ex.ToString();
                 log.ErrorCode = (int)output.ErrorCode;
                 log.ErrorDescription = output.ErrorDescription;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
             }
         }
@@ -1707,8 +1710,6 @@ namespace Tameenk.Integration.Providers.Tawuniya
         private QuotationOutput GetTawuniyaProposal(QuotationServiceRequest quotation, ServiceRequestLog log)
         {
             var configuration = Configuration as RestfulConfiguration;
-            HttpResponseMessage message = new HttpResponseMessage();
-            message.StatusCode = System.Net.HttpStatusCode.OK;
             QuotationOutput output = new QuotationOutput();
             log.ReferenceId = quotation.ReferenceId;
             log.ServiceURL = GET_PROPOSAL_URL;
@@ -1729,6 +1730,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     string nameOfFileJson = ".TestData.quotationTestData.json";
                     string tawuniyaResponse = ReadResource(GetType().Namespace, nameOfFileJson);
                     var handledResponse = JsonConvert.SerializeObject(HandleProposalResponse(tawuniyaResponse, quotation));
+                    HttpResponseMessage message = new HttpResponseMessage();
                     message.Content = new StringContent(handledResponse);
                     output.ErrorCode = QuotationOutput.ErrorCodes.Success;
                     output.ErrorDescription = "Success";
@@ -1738,11 +1740,15 @@ namespace Tameenk.Integration.Providers.Tawuniya
                 var request = CreateProposalRequest(quotation);
                 string stringPayload = JsonConvert.SerializeObject(request);
                 log.ServiceRequest = stringPayload;
-                var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-                string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(configuration.AccessToken));
+                //var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+                //string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(configuration.AccessToken));
                 DateTime dtBeforeCalling = DateTime.Now;
                 Utilities.InitiateSSLTrust();
-                var response = _httpClient.PostAsync(GET_PROPOSAL_URL, httpContent, authToken, null, "Basic").Result;
+                // var response = _httpClient.PostAsync(GET_PROPOSAL_URL, httpContent, authToken, null, "Basic").Result;
+                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", configuration.AccessToken);
+                var postTask = httpClient.PostAsync(configuration.GenerateQuotationUrl, requestContent);
+                Task<HttpResponseMessage> response = postTask;
                 DateTime dtAfterCalling = DateTime.Now;
                 log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
                 if (response == null)
@@ -1753,11 +1759,11 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     log.ErrorDescription = output.ErrorDescription;
                     log.ServiceErrorCode = log.ErrorCode.ToString();
                     log.ServiceErrorDescription = log.ServiceErrorDescription;
-                    ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                    //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
 
-                if (response.Content == null)
+                if (response.Result.Content == null)
                 {
                     output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -1768,10 +1774,10 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                if (string.IsNullOrEmpty(response.Result.Content.ReadAsStringAsync().Result))
                 {
                     output.ErrorCode = QuotationOutput.ErrorCodes.NullResponse;
-                    output.ErrorDescription = "Service response content result return null and response.StatusCode is "+ response.StatusCode + " response.Content.ReadAsStringAsync() "+ response.Content.ReadAsStringAsync().Status.ToString()+ " response.Content.ReadAsStringAsync().Result " + response.Content.ReadAsStringAsync().Result;
+                    output.ErrorDescription = "Service response content result return null and response.StatusCode is "+ response.Result.StatusCode + " response.Content.ReadAsStringAsync() "+ response.Result.Content.ReadAsStringAsync().Status.ToString()+ " response.Content.ReadAsStringAsync().Result " + response.Result.Content.ReadAsStringAsync().Result;
                     log.ServiceResponse = response.ToString();
                     log.ErrorCode = (int)output.ErrorCode;
                     log.ErrorDescription = output.ErrorDescription;
@@ -1781,11 +1787,11 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     return output;
                 }
                
-                var value = response.Content.ReadAsStringAsync().Result;
+                var value = response.Result.Content.ReadAsStringAsync().Result;
                 log.ServiceResponse = value;
                 var tawuniyaModifiedResponse = HandleProposalResponse(value, quotation);
                 var tawuniyaJson = JsonConvert.SerializeObject(tawuniyaModifiedResponse);
-                message.Content = new StringContent(tawuniyaJson);
+                response.Result.Content = new StringContent(tawuniyaJson);
              
 
                 if (tawuniyaModifiedResponse.StatusCode != 1)
@@ -1807,7 +1813,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                output.Output = message;
+                output.Output = response.Result.Content.ReadAsStringAsync().Result;
                 output.ErrorCode = QuotationOutput.ErrorCodes.Success;
                 output.ErrorDescription = "Success";
                 log.ErrorCode = (int)output.ErrorCode;
@@ -1815,7 +1821,7 @@ namespace Tameenk.Integration.Providers.Tawuniya
                 log.ServiceErrorCode = log.ErrorCode.ToString();
                 log.ServiceErrorDescription = log.ServiceErrorDescription;
                 //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
             }
             catch (Exception ex)
