@@ -133,9 +133,17 @@ namespace Tameenk.Integration.Providers.Wataniya
 
         protected override async Task<object> ExecuteQuotationRequest(QuotationServiceRequest quotation, ServiceRequestLog predefinedLogInfo)
         {
+            var configuration = Configuration as RestfulConfiguration;
             //in case test mode execute the code from the base.
             if (_quotationConfig.TestMode)
                 return await base.ExecuteQuotationRequest(quotation, predefinedLogInfo);
+
+            if (quotation.ProductTypeCode == 1)
+            {
+                configuration.GenerateQuotationUrl = GET_TPL_QUOTATION_URL;
+            }
+            else
+                configuration.GenerateQuotationUrl = GET_COMP_QUOTATION_URL;
 
             ServiceOutput output = await SubmitQuotationRequest(quotation, predefinedLogInfo);
             if (output.ErrorCode != ServiceOutput.ErrorCodes.Success)
@@ -159,7 +167,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         //    return output.Output;
         //}
 
-        protected override async Task< ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quoteModel, ServiceRequestLog log)
+        protected override async Task<ServiceOutput> SubmitQuotationRequest(QuotationServiceRequest quoteModel, ServiceRequestLog log)
         {
             ServiceOutput output = new ServiceOutput();
             if (string.IsNullOrEmpty(log.Channel))
@@ -175,7 +183,7 @@ namespace Tameenk.Integration.Providers.Wataniya
             log.ReferenceId = quoteModel.ReferenceId;
             var stringPayload = string.Empty;
             DateTime dtBeforeCalling = DateTime.Now;
-            HttpResponseMessage response = new HttpResponseMessage();
+            //HttpResponseMessage response = new HttpResponseMessage();
             try
             {
                 var testMode = _quotationConfig.TestMode;
@@ -193,35 +201,29 @@ namespace Tameenk.Integration.Providers.Wataniya
 
                     return output;
                 }
-                dtBeforeCalling = DateTime.Now;
+                object quotation = string.Empty;
                 if (quoteModel.ProductTypeCode == 1)
                 {
                     log.ServiceURL = GET_TPL_QUOTATION_URL;
                     log.ServiceRequest = JsonConvert.SerializeObject(quoteModel);
-                    var quotation = MappingWataniyaTplQuotationRequest(quoteModel);
-                    log.ServiceRequest = JsonConvert.SerializeObject(quotation);
-                    //var postTask = httpClient.PostAsyncWithCertificate(GET_TPL_QUOTATION_URL, quotation,CERTIFCATE_BATH,CERTIFCATE_PASSWORD, _accessTokenBase64, authorizationMethod: "Basic");
-                    //postTask.Wait();
-                    //response = postTask.Result;
-                    var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
-                    var postTask =await httpClient.PostAsync(GET_TPL_QUOTATION_URL, requestContent);
-                    response = postTask;
+                    var resulit = MappingWataniyaTplQuotationRequest(quoteModel);
+                    quotation = resulit.Details;
+
                 }
                 else
                 {
                     log.ServiceURL = GET_COMP_QUOTATION_URL;
                     log.ServiceRequest = JsonConvert.SerializeObject(quoteModel);
-                    var quotation = MappingWataniyaCompQuotationRequest(quoteModel);
-                    log.ServiceRequest = JsonConvert.SerializeObject(quotation);
-                    //var postTask = _httpClient.PostAsyncWithCertificate(GET_COMP_QUOTATION_URL, quotation, CERTIFCATE_BATH, CERTIFCATE_PASSWORD, _accessTokenBase64, authorizationMethod: "Basic");
-                    //postTask.Wait();
-                    //response = postTask.Result;
-                    var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
-                    var postTask = await httpClient.PostAsync(GET_COMP_QUOTATION_URL, requestContent);
-                    response = postTask;
+
+                    var resulit = MappingWataniyaCompQuotationRequest(quoteModel);
+                    quotation = resulit.Details;
                 }
+                log.ServiceRequest = JsonConvert.SerializeObject(quotation);
+                dtBeforeCalling = DateTime.Now;
+                var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
+                var postTask = httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);
+                Task<HttpResponseMessage> response = postTask;
                 DateTime dtAfterCalling = DateTime.Now;
                 log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
                 if (response == null)
@@ -235,7 +237,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (response.Content == null)
+                if (response.Result.Content == null)
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content return null";
@@ -246,7 +248,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                if (string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
+                if (string.IsNullOrEmpty(response.Result.Content.ReadAsStringAsync().Result))
                 {
                     output.ErrorCode = ServiceOutput.ErrorCodes.NullResponse;
                     output.ErrorDescription = "Service response content result return null";
@@ -257,11 +259,11 @@ namespace Tameenk.Integration.Providers.Wataniya
                     ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                     return output;
                 }
-                log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
+                log.ServiceResponse = response.Result.Content.ReadAsStringAsync().Result;
 
                 if (quoteModel.ProductTypeCode == 1)
                 {
-                    var desrialisedObj = JsonConvert.DeserializeObject<WataniyaTplQuotationResponseDto>(response.Content.ReadAsStringAsync().Result);
+                    var desrialisedObj = JsonConvert.DeserializeObject<WataniyaTplQuotationResponseDto>(response.Result.Content.ReadAsStringAsync().Result);
                     if (desrialisedObj != null && desrialisedObj.errors != null)
                     {
                         StringBuilder servcieErrors = new StringBuilder();
@@ -311,7 +313,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                 }
                 else
                 {
-                    var desrialisedObj = JsonConvert.DeserializeObject<WataniyaCompQuotationResponseDto>(response.Content.ReadAsStringAsync().Result);
+                    var desrialisedObj = JsonConvert.DeserializeObject<WataniyaCompQuotationResponseDto>(response.Result.Content.ReadAsStringAsync().Result);
                     if (desrialisedObj != null && desrialisedObj.errors != null)
                     {
                         StringBuilder servcieErrors = new StringBuilder();
@@ -360,7 +362,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                     }
                 }
 
-                output.Output = response;
+                output.Output = response.Result.Content.ReadAsStringAsync().Result;
                 output.ErrorCode = ServiceOutput.ErrorCodes.Success;
                 output.ErrorDescription = "Success";
                 log.ErrorCode = (int)output.ErrorCode;
@@ -576,199 +578,198 @@ namespace Tameenk.Integration.Providers.Wataniya
         protected WataniyaTplQuotationRequesDetailstDto HandleTplRequestDetails(QuotationServiceRequest quotation)
         {
             var details = new WataniyaTplQuotationRequesDetailstDto();
+                details.PolicyholderIdentityTypeCode = quotation.InsuredIdTypeCode;
+                details.PolicyHolderID = quotation.InsuredId;
+                if (!string.IsNullOrEmpty(quotation.IdExpiryDate))
+                {
+                    var IdExpirySplits = quotation.IdExpiryDate.Split('-');
+                    details.PolicyholderIDExpiry = IdExpirySplits[1] + "-" + IdExpirySplits[2];
+                }
+                else
+                {
+                    UmAlQuraCalendar hijri = new UmAlQuraCalendar();
+                    var nextYear = hijri.GetYear(DateTime.Today) + 1;
+                    details.PolicyholderIDExpiry = "01-" + nextYear;
+                }
 
-            details.PolicyholderIdentityTypeCode = quotation.InsuredIdTypeCode;
-            details.PolicyHolderID = quotation.InsuredId;
-            if (!string.IsNullOrEmpty(quotation.IdExpiryDate))
-            {
-                var IdExpirySplits = quotation.IdExpiryDate.Split('-');
-                details.PolicyholderIDExpiry = IdExpirySplits[1] + "-" + IdExpirySplits[2];
-            }
-            else
-            {
-                UmAlQuraCalendar hijri = new UmAlQuraCalendar();
-                var nextYear = hijri.GetYear(DateTime.Today) + 1;
-                details.PolicyholderIDExpiry = "01-" + nextYear;
-            }
-
-            details.PurposeofVehicleUseID = quotation.VehicleUseCode;
-            details.QuoteRequestSourceID = 1; //1 refer to (Aggregator)
-            details.FullName = $"{quotation.InsuredFirstNameEn} {quotation.InsuredMiddleNameEn} {quotation.InsuredLastNameEn}";
-            details.ArabicFirstName = quotation.InsuredFirstNameAr;
-            details.ArabicMiddleName = quotation.InsuredMiddleNameAr;
-            details.ArabicLastName = quotation.InsuredLastNameAr;
-            details.EnglishFirstName = quotation.InsuredFirstNameEn;
-            details.EnglishMiddleName = quotation.InsuredMiddleNameEn;
-            details.EnglishLastName = quotation.InsuredLastNameEn;
-            //if (quotation.InsuredIdTypeCode == 2)
-            //    details.DateOfBirthG = quotation.InsuredBirthDateG;
-            //if (quotation.InsuredIdTypeCode == 1)
-            //    details.DateOfBirthH = quotation.InsuredBirthDateH;
-            details.DateOfBirthG = quotation.InsuredBirthDateG;
-            details.DateOfBirthH = quotation.InsuredBirthDateH;
-            details.Occupation = quotation.InsuredOccupation;
-            details.Cylinders = quotation.VehicleCylinders;
-            details.VehicleCapacity = quotation.VehicleCapacity;
+                details.PurposeofVehicleUseID = quotation.VehicleUseCode;
+                details.QuoteRequestSourceID = 1; //1 refer to (Aggregator)
+                details.FullName = $"{quotation.InsuredFirstNameEn} {quotation.InsuredMiddleNameEn} {quotation.InsuredLastNameEn}";
+                details.ArabicFirstName = quotation.InsuredFirstNameAr;
+                details.ArabicMiddleName = quotation.InsuredMiddleNameAr;
+                details.ArabicLastName = quotation.InsuredLastNameAr;
+                details.EnglishFirstName = quotation.InsuredFirstNameEn;
+                details.EnglishMiddleName = quotation.InsuredMiddleNameEn;
+                details.EnglishLastName = quotation.InsuredLastNameEn;
+                //if (quotation.InsuredIdTypeCode == 2)
+                //    details.DateOfBirthG = quotation.InsuredBirthDateG;
+                //if (quotation.InsuredIdTypeCode == 1)
+                //    details.DateOfBirthH = quotation.InsuredBirthDateH;
+                details.DateOfBirthG = quotation.InsuredBirthDateG;
+                details.DateOfBirthH = quotation.InsuredBirthDateH;
+                details.Occupation = quotation.InsuredOccupation;
+                details.Cylinders = quotation.VehicleCylinders;
+                details.VehicleCapacity = quotation.VehicleCapacity;
             if (quotation.InsuredIdTypeCode == 1 || quotation.InsuredIdTypeCode == 2)
                 details.PolicyholderNationalityID = Int16.Parse(quotation.InsuredNationalityCode == "113" ? Nationality.ResourceManager.GetString("Saudi") : quotation.InsuredNationalityCode);
-            details.VehicleUniqueTypeID = quotation.VehicleIdTypeCode;
-            if (quotation.VehicleIdTypeCode == 1)
-                details.VehicleSequenceNumber = quotation.VehicleId;
-            else if (quotation.VehicleIdTypeCode == 2)
-                details.VehicleCustomID = quotation.VehicleId;
-            //details.IsDriverDisabled = quotation.DriverDisabled;
-            details.PolicyholderGender = (quotation.InsuredGenderCode == "F") ? 2 : 1;
-            if (quotation.InsuredAddressRegionID.HasValue)
-                details.VehicleDriveRegionID = (short)quotation.InsuredAddressRegionID;
-            short vehicleDriveCityID = 0;
-            short.TryParse(quotation.InsuredCityCode, out vehicleDriveCityID);
-            details.VehicleDriveCityID = vehicleDriveCityID;
-            if (quotation.VehicleIdTypeCode == 1 && !string.IsNullOrEmpty(quotation.VehiclePlateTypeCode))
-                details.VehiclePlateTypeID = Int32.Parse(quotation.VehiclePlateTypeCode);
-            else
-                details.VehiclePlateTypeID = 3;
+                details.VehicleUniqueTypeID = quotation.VehicleIdTypeCode;
+                if (quotation.VehicleIdTypeCode == 1)
+                    details.VehicleSequenceNumber = quotation.VehicleId;
+                else if (quotation.VehicleIdTypeCode == 2)
+                    details.VehicleCustomID = quotation.VehicleId;
+                //details.IsDriverDisabled = quotation.DriverDisabled;
+                details.PolicyholderGender = (quotation.InsuredGenderCode == "F") ? 2 : 1;
+                if (quotation.InsuredAddressRegionID.HasValue)
+                    details.VehicleDriveRegionID = (short)quotation.InsuredAddressRegionID;
+                short vehicleDriveCityID = 0;
+                short.TryParse(quotation.InsuredCityCode, out vehicleDriveCityID);
+                details.VehicleDriveCityID = vehicleDriveCityID;
+                if (quotation.VehicleIdTypeCode == 1 && !string.IsNullOrEmpty(quotation.VehiclePlateTypeCode))
+                    details.VehiclePlateTypeID = Int32.Parse(quotation.VehiclePlateTypeCode);
+                else
+                    details.VehiclePlateTypeID = 3;
 
-            if (quotation.VehiclePlateNumber.HasValue)
-                details.VehiclePlateNumber = quotation.VehiclePlateNumber.Value;
+                if (quotation.VehiclePlateNumber.HasValue)
+                    details.VehiclePlateNumber = quotation.VehiclePlateNumber.Value;
 
-            //if (!string.IsNullOrEmpty(quotation.VehiclePlateText1))
-            //    details.FirstPlateLetterID = Int16.Parse(VehiclePlateLetter.ResourceManager.GetString(quotation.VehiclePlateText1));
-            //if (!string.IsNullOrEmpty(quotation.VehiclePlateText2))
-            //    details.SecondPlateLetterID = Int16.Parse((VehiclePlateLetter.ResourceManager.GetString(quotation.VehiclePlateText2)));//4; // Int32.Parse(quotation.VehiclePlateText2);
-            //if (!string.IsNullOrEmpty(quotation.VehiclePlateText3))
-            //    details.ThirdPlateLetterID = Int16.Parse((VehiclePlateLetter.ResourceManager.GetString(quotation.VehiclePlateText3)));//2; // Int32.Parse(quotation.VehiclePlateText3);
-            details.FirstPlateLetterID = quotation.WataniyaFirstPlateLetterID;
-            details.SecondPlateLetterID = quotation.WataniyaSecondPlateLetterID;
-            details.ThirdPlateLetterID = quotation.WataniyaThirdPlateLetterID;
+                //if (!string.IsNullOrEmpty(quotation.VehiclePlateText1))
+                //    details.FirstPlateLetterID = Int16.Parse(VehiclePlateLetter.ResourceManager.GetString(quotation.VehiclePlateText1));
+                //if (!string.IsNullOrEmpty(quotation.VehiclePlateText2))
+                //    details.SecondPlateLetterID = Int16.Parse((VehiclePlateLetter.ResourceManager.GetString(quotation.VehiclePlateText2)));//4; // Int32.Parse(quotation.VehiclePlateText2);
+                //if (!string.IsNullOrEmpty(quotation.VehiclePlateText3))
+                //    details.ThirdPlateLetterID = Int16.Parse((VehiclePlateLetter.ResourceManager.GetString(quotation.VehiclePlateText3)));//2; // Int32.Parse(quotation.VehiclePlateText3);
+                details.FirstPlateLetterID = quotation.WataniyaFirstPlateLetterID;
+                details.SecondPlateLetterID = quotation.WataniyaSecondPlateLetterID;
+                details.ThirdPlateLetterID = quotation.WataniyaThirdPlateLetterID;
 
-            details.ChildrenBelow16 = quotation.InsuredChildrenBelow16Years;
-            if (quotation.InsuredEducationCode.HasValue)
-            {
-                var educationEnumString = Enum.GetName(typeof(EducationAr), quotation.InsuredEducationCode);
+                details.ChildrenBelow16 = quotation.InsuredChildrenBelow16Years;
+                if (quotation.InsuredEducationCode.HasValue)
+                {
+                    var educationEnumString = Enum.GetName(typeof(EducationAr), quotation.InsuredEducationCode);
                 if (!string.IsNullOrEmpty(educationEnumString))
                     details.Education = WataniyaEducation.ResourceManager.GetString(educationEnumString);
-            }
-            int maritalStatus = 0;
-            int.TryParse(quotation.InsuredSocialStatusCode, out maritalStatus);
-            details.MaritalStatus = maritalStatus;
-            details.PolicyholderNCDCode = quotation.NCDFreeYears;
-            details.PolicyholderNCDReference = quotation.NCDReference;
-            details.Vehicle360Camera = (quotation.CameraTypeId == null) ? 3 : ((quotation.CameraTypeId == 4) ? 1 : 2);
-            details.VehicleABS = (quotation.BrakeSystemId == null) ? 3 : ((quotation.BrakeSystemId == 2) ? 1 : 2);
-            details.VehicleAdaptiveCruiseControl = (quotation.BrakeSystemId == null) ? 3 : ((quotation.BrakeSystemId == 3) ? 1 : 2);
-            details.VehicleAntitheftAlarm = (quotation.HasAntiTheftAlarm == null) ? 3 : ((quotation.HasAntiTheftAlarm == true) ? 1 : 2);
-            details.VehicleAutoBraking = (quotation.BrakeSystemId == null) ? 3 : ((quotation.BrakeSystemId == 3) ? 1 : 2);
-            details.VehicleCruiseControl = (quotation.BrakeSystemId == null) ? 3 : ((quotation.BrakeSystemId == 2) ? 1 : 2);
-            details.VehicleExpectedMileageYear = (quotation.VehicleMileageExpectedAnnualCode == 1)
-                ? 20000 : ((quotation.VehicleMileageExpectedAnnualCode == 2) ? 40000 : 60000);
-            details.VehicleFrontCamera = (quotation.CameraTypeId == null) ? 3 : ((quotation.CameraTypeId == 3) ? 1 : 2);
-            details.VehicleFrontSensors = (quotation.ParkingSensorId == null) ? 3 : ((quotation.ParkingSensorId == 3) ? 1 : 2);
-            details.VehicleNightParking = quotation.VehicleOvernightParkingLocationCode;
-            details.VehicleRearCamera = (quotation.CameraTypeId == null) ? 3 : ((quotation.CameraTypeId == 2) ? 1 : 2);
-            details.VehicleRearSensors = (quotation.ParkingSensorId == null) ? 3 : ((quotation.ParkingSensorId == 2) ? 1 : 2);
-            if (quotation.VehicleTransmissionTypeCode.HasValue)
-            {
+                }
+                int maritalStatus = 0;
+                int.TryParse(quotation.InsuredSocialStatusCode, out maritalStatus);
+                details.MaritalStatus = maritalStatus;
+                details.PolicyholderNCDCode = quotation.NCDFreeYears;
+                details.PolicyholderNCDReference = quotation.NCDReference;
+                details.Vehicle360Camera = (quotation.CameraTypeId == null) ? 3 : ((quotation.CameraTypeId == 4) ? 1 : 2);
+                details.VehicleABS = (quotation.BrakeSystemId == null) ? 3 : ((quotation.BrakeSystemId == 2) ? 1 : 2);
+                details.VehicleAdaptiveCruiseControl = (quotation.BrakeSystemId == null) ? 3 : ((quotation.BrakeSystemId == 3) ? 1 : 2);
+                details.VehicleAntitheftAlarm = (quotation.HasAntiTheftAlarm == null) ? 3 : ((quotation.HasAntiTheftAlarm == true) ? 1 : 2);
+                details.VehicleAutoBraking = (quotation.BrakeSystemId == null) ? 3 : ((quotation.BrakeSystemId == 3) ? 1 : 2);
+                details.VehicleCruiseControl = (quotation.BrakeSystemId == null) ? 3 : ((quotation.BrakeSystemId == 2) ? 1 : 2);
+                details.VehicleExpectedMileageYear = (quotation.VehicleMileageExpectedAnnualCode == 1)
+                    ? 20000 : ((quotation.VehicleMileageExpectedAnnualCode == 2) ? 40000 : 60000);
+                details.VehicleFrontCamera = (quotation.CameraTypeId == null) ? 3 : ((quotation.CameraTypeId == 3) ? 1 : 2);
+                details.VehicleFrontSensors = (quotation.ParkingSensorId == null) ? 3 : ((quotation.ParkingSensorId == 3) ? 1 : 2);
+                details.VehicleNightParking = quotation.VehicleOvernightParkingLocationCode;
+                details.VehicleRearCamera = (quotation.CameraTypeId == null) ? 3 : ((quotation.CameraTypeId == 2) ? 1 : 2);
+                details.VehicleRearSensors = (quotation.ParkingSensorId == null) ? 3 : ((quotation.ParkingSensorId == 2) ? 1 : 2);
+                if (quotation.VehicleTransmissionTypeCode.HasValue)
+                {
                 if(quotation.VehicleTransmissionTypeCode==1)
-                    details.VehicleTransmission = 2;
+                        details.VehicleTransmission = 2;
                 if(quotation.VehicleTransmissionTypeCode==2)
-                    details.VehicleTransmission = 1;
-            }
-            int WorkCityID = 0;
-            int.TryParse(quotation.InsuredWorkCityCode, out WorkCityID);
-            details.WorkCityID = WorkCityID;
-            details.VehicleEngineSizeCC = quotation.VehicleEngineSizeCode;
-            short vehicleMakerCode = 0;
-            short.TryParse(quotation.VehicleMakerCode, out vehicleMakerCode);
-            details.VehicleMakeCodeNIC = vehicleMakerCode;
+                        details.VehicleTransmission = 1;
+                }
+                int WorkCityID = 0;
+                int.TryParse(quotation.InsuredWorkCityCode, out WorkCityID);
+                details.WorkCityID = WorkCityID;
+                details.VehicleEngineSizeCC = quotation.VehicleEngineSizeCode;
+                short vehicleMakerCode = 0;
+                short.TryParse(quotation.VehicleMakerCode, out vehicleMakerCode);
+                details.VehicleMakeCodeNIC = vehicleMakerCode;
 
-            short wataniyaVehicleMakerCode = 0;
-            short.TryParse(quotation.WataniyaVehicleMakerCode, out wataniyaVehicleMakerCode);
-            details.VehicleMakeCode = wataniyaVehicleMakerCode;
+                short wataniyaVehicleMakerCode = 0;
+                short.TryParse(quotation.WataniyaVehicleMakerCode, out wataniyaVehicleMakerCode);
+                details.VehicleMakeCode = wataniyaVehicleMakerCode;
 
-            details.VehicleMakeTextNIC = quotation.VehicleMaker;
-            short VehicleModelCode = 0;
-            short.TryParse(quotation.VehicleModelCode, out VehicleModelCode);
-            details.VehicleModelCodeNIC = VehicleModelCode;
+                details.VehicleMakeTextNIC = quotation.VehicleMaker;
+                short VehicleModelCode = 0;
+                short.TryParse(quotation.VehicleModelCode, out VehicleModelCode);
+                details.VehicleModelCodeNIC = VehicleModelCode;
 
-            short wataniyaVehicleModelCode = 0;
-            short.TryParse(quotation.WataniyaVehicleModelCode, out wataniyaVehicleModelCode);
-            details.VehicleModelCode = wataniyaVehicleModelCode;
+                short wataniyaVehicleModelCode = 0;
+                short.TryParse(quotation.WataniyaVehicleModelCode, out wataniyaVehicleModelCode);
+                details.VehicleModelCode = wataniyaVehicleModelCode;
 
-            details.VehicleModelTextNIC = quotation.VehicleModel;
-            //////HandleTPLMakerAndModel(details, quotation);
-            details.ManufactureYear = quotation.VehicleModelYear;
-            //details.VehicleColorCode = HandleVehicleColorId(quotation.VehicleMajorColor);//    Int16.Parse(quotation.VehicleMajorColorCode);
-            if (!string.IsNullOrEmpty(quotation.VehicleMajorColorCode))
-                details.VehicleColorCode = short.Parse(quotation.VehicleMajorColorCode);
-            else
-                details.VehicleColorCode = 99;
+                details.VehicleModelTextNIC = quotation.VehicleModel;
+                //////HandleTPLMakerAndModel(details, quotation);
+                details.ManufactureYear = quotation.VehicleModelYear;
+                //details.VehicleColorCode = HandleVehicleColorId(quotation.VehicleMajorColor);//    Int16.Parse(quotation.VehicleMajorColorCode);
+                if (!string.IsNullOrEmpty(quotation.VehicleMajorColorCode))
+                    details.VehicleColorCode = short.Parse(quotation.VehicleMajorColorCode);
+                else
+                    details.VehicleColorCode = 99;
 
-            short vehicleRegPlaceCode = 0;
-            short.TryParse(quotation.VehicleRegPlaceCode, out vehicleRegPlaceCode);
-            details.VehicleRegistrationCityCode = vehicleRegPlaceCode;
+                short vehicleRegPlaceCode = 0;
+                short.TryParse(quotation.VehicleRegPlaceCode, out vehicleRegPlaceCode);
+                details.VehicleRegistrationCityCode = vehicleRegPlaceCode;
 
-            details.VehicleVIN = quotation.VehicleChassisNumber;
-            details.VehicleRegistrationExpiryDate = quotation.VehicleRegExpiryDate;
-            var milliSeconds = quotation.PolicyEffectiveDate.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
-            details.PolicyEffectiveDate = "/Date(" + milliSeconds.ToString().Substring(0, 13) + ")/";
-            details.BuildingNumber = quotation.BuildingNumber;
-            details.Street = quotation.Street;
-            details.District = quotation.District;
-            details.City = quotation.City;
-            details.ZipCode = quotation.ZipCode;
-            details.AdditionalNumber = quotation.AdditionalNumber;
-            //////HandleTPLQuotationAddressFields(details);
-            details.VehicleWeight = quotation.VehicleWeight;
-            short vehicleBodyCode = 0;
-            Int16.TryParse(quotation.VehicleBodyTypeCode, out vehicleBodyCode);
-            details.VehicleBodyCode = vehicleBodyCode;
-            if (quotation.InsuredId.ToString().StartsWith("7"))
-            {
-                var mainDriver = quotation.Drivers.Where(a => a.DriverTypeCode == 1).FirstOrDefault();
-                if (mainDriver != null)
+                details.VehicleVIN = quotation.VehicleChassisNumber;
+                details.VehicleRegistrationExpiryDate = quotation.VehicleRegExpiryDate;
+                var milliSeconds = quotation.PolicyEffectiveDate.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+                details.PolicyEffectiveDate = "/Date(" + milliSeconds.ToString().Substring(0, 13) + ")/";
+                details.BuildingNumber = quotation.BuildingNumber;
+                details.Street = quotation.Street;
+                details.District = quotation.District;
+                details.City = quotation.City;
+                details.ZipCode = quotation.ZipCode;
+                details.AdditionalNumber = quotation.AdditionalNumber;
+                //////HandleTPLQuotationAddressFields(details);
+                details.VehicleWeight = quotation.VehicleWeight;
+                short vehicleBodyCode = 0;
+                Int16.TryParse(quotation.VehicleBodyTypeCode, out vehicleBodyCode);
+                details.VehicleBodyCode = vehicleBodyCode;
+                if (quotation.InsuredId.ToString().StartsWith("7"))
+                {
+                    var mainDriver = quotation.Drivers.Where(a => a.DriverTypeCode == 1).FirstOrDefault();
+                    if (mainDriver != null)
+                    {
+                        if (quotation.InsuredIdTypeCode == 1)
+                            details.CoverAgeLimitID = HandleQuotationCoverAgeLimitID(DateTime.ParseExact(mainDriver.DriverBirthDate, "dd-MM-yyyy", new CultureInfo("en-US")));
+                        else
+                            details.CoverAgeLimitID = HandleQuotationCoverAgeLimitID(DateTime.ParseExact(HandleDriverBirthDateG(mainDriver.DriverBirthDateG), "dd-MM-yyyy", new CultureInfo("en-US")));
+                    }
+                }
+                else
                 {
                     if (quotation.InsuredIdTypeCode == 1)
-                        details.CoverAgeLimitID = HandleQuotationCoverAgeLimitID(DateTime.ParseExact(mainDriver.DriverBirthDate, "dd-MM-yyyy", new CultureInfo("en-US")));
+                        details.CoverAgeLimitID = HandleQuotationCoverAgeLimitID(DateTime.ParseExact(quotation.InsuredBirthDateH, "dd-MM-yyyy", new CultureInfo("en-US")));
                     else
-                        details.CoverAgeLimitID = HandleQuotationCoverAgeLimitID(DateTime.ParseExact(HandleDriverBirthDateG(mainDriver.DriverBirthDateG), "dd-MM-yyyy", new CultureInfo("en-US")));
+                        details.CoverAgeLimitID = HandleQuotationCoverAgeLimitID(DateTime.ParseExact(quotation.InsuredBirthDateG, "dd-MM-yyyy", new CultureInfo("en-US")));
                 }
-            }
-            else
-            {
-                if (quotation.InsuredIdTypeCode == 1)
-                    details.CoverAgeLimitID = HandleQuotationCoverAgeLimitID(DateTime.ParseExact(quotation.InsuredBirthDateH, "dd-MM-yyyy", new CultureInfo("en-US")));
+                //if (details.CoverAgeLimitID >= 6)
+                details.DriverDetails = GetDrivers(quotation);
+                if (quotation.IsRenewal.HasValue)
+                    details.IsRenewal = quotation.IsRenewal.Value;
                 else
-                    details.CoverAgeLimitID = HandleQuotationCoverAgeLimitID(DateTime.ParseExact(quotation.InsuredBirthDateG, "dd-MM-yyyy", new CultureInfo("en-US")));
+                    details.IsRenewal = false;
+
+                // new properties maapping
+                details.VehicleAxleWeight = quotation.VehicleAxleWeight;
+                details.VehicleFireExtinguisher = (quotation.HasFireExtinguisher.HasValue && quotation.HasFireExtinguisher.Value) ? 1 : 2;
+                details.VehicleMileage = quotation.VehicleMileage;
+                details.VehicleModifications = quotation.VehicleModificationDetails;
+
+                if (!string.IsNullOrEmpty(quotation.MobileNo))
+                    details.MobileNo = quotation.MobileNo;
+                else
+                    details.MobileNo = "";
+
+                details.VehicleMakeCodeNajm = 0;
+                details.VehicleModelCodeNajm = 0;
+                details.WorkCompanyName = "";
+                //details.IsPrimaryDriver = (quotation.Drivers.Count > 0) ? false : true;
+                //details.IsScheme = 
+                //details.SchemeDetails = 
+
+                HandleTPLQuotationCustomizedParameter(quotation, details);
+
+                return details;
             }
-            //if (details.CoverAgeLimitID >= 6)
-            details.DriverDetails = GetDrivers(quotation);
-            if (quotation.IsRenewal.HasValue)
-                details.IsRenewal = quotation.IsRenewal.Value;
-            else
-                details.IsRenewal = false;
-
-            // new properties maapping
-            details.VehicleAxleWeight = quotation.VehicleAxleWeight;
-            details.VehicleFireExtinguisher = (quotation.HasFireExtinguisher.HasValue && quotation.HasFireExtinguisher.Value) ? 1 : 2;
-            details.VehicleMileage = quotation.VehicleMileage;
-            details.VehicleModifications = quotation.VehicleModificationDetails;
-
-            if (!string.IsNullOrEmpty(quotation.MobileNo))
-                details.MobileNo = quotation.MobileNo;
-            else
-                details.MobileNo = "";
-
-            details.VehicleMakeCodeNajm = 0;
-            details.VehicleModelCodeNajm = 0;
-            details.WorkCompanyName = "";
-            //details.IsPrimaryDriver = (quotation.Drivers.Count > 0) ? false : true;
-            //details.IsScheme = 
-            //details.SchemeDetails = 
-
-            HandleTPLQuotationCustomizedParameter(quotation, details);
-
-            return details;
-        }
 
         private QuotationServiceResponse QuotationResponseObjMappingTpl(WataniyaTplQuotationResponseDto quotationServiceResponse, int deductibleValue)
         {
@@ -1539,7 +1540,7 @@ namespace Tameenk.Integration.Providers.Wataniya
         {
             var quotationServiceResponse = new QuotationServiceResponse();
             string result = string.Empty;
-            result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
+            result = response.ToString();
 
             if (request.ProductTypeCode == 1)
             {

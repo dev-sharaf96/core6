@@ -674,12 +674,8 @@ namespace Tameenk.Integration.Core.Providers
                 var AddtionalTimeOut = (_restfulConfiguration.ProviderName == "Malath" || quotation.InsuranceCompanyCode == 22) ? 5 : 0;
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = (senderX, certificate, chain, sslPolicyErrors) => { return true; };
                  var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
-                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
-                                                                                                                                   
-                 //var response = await _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);         
+                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);       
                  var postTask = _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, requestContent);                  
-
-                // var postTask = await _httpClient.PostAsync(_restfulConfiguration.GenerateQuotationUrl, quotation, _accessTokenBase64, authorizationMethod: "Basic", timeout: AddtionalTimeOut);
                 Task<HttpResponseMessage> response = postTask;
                 DateTime dtAfterCalling = DateTime.Now;
                 log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
