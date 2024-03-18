@@ -24,14 +24,14 @@ namespace Tameenk.Integration.Providers.Salama
 {
     public class SalamaInsuranceProvider : RestfulInsuranceProvider
     {
-        private const string QUOTATION_COMPREHENSIVE_URL = "http://37.99.174.44:6800/api/CompQuotation/RequestQuotation";
+        private const string QUOTATION_COMPREHENSIVE_URL = "https://localhost:7267/CompQuotation/RequestQuotation";//"http://37.99.174.44:6800/api/CompQuotation/RequestQuotation";
         private const string POLICY_COMPREHENSIVE_URL = "http://37.99.174.44:6800/api/CompPolicy/RequestPolicy";
         private readonly IRepository<CheckoutDetail> _checkoutDetail;
         private readonly ServiceProvider _serviceProvider;
         public SalamaInsuranceProvider(IQuotationConfig quotationConfig, IRepository<PolicyProcessingQueue> policyProcessingQueueRepository)
              : base(quotationConfig, new RestfulConfiguration
              {
-                 GenerateQuotationUrl = "http://37.99.174.44:6800/api/Quotation/RequestQuotation",
+                 GenerateQuotationUrl = "https://localhost:7267/CompQuotation/RequestQuotation",//"http://37.99.174.44:6800/api/Quotation/RequestQuotation",
                  GeneratePolicyUrl = "http://37.99.174.44:6800/api/Policy/RequestPolicy",
                  AccessToken = "",
                  ProviderName = "Salama"
@@ -113,9 +113,12 @@ namespace Tameenk.Integration.Providers.Salama
         protected override QuotationServiceResponse GetQuotationResponseObject(object response, QuotationServiceRequest request)
         {
             QuotationServiceResponse responseValue = new QuotationServiceResponse();
-            string result = string.Empty;
-            result = ((HttpResponseMessage)response).Content.ReadAsStringAsync().Result;
-            responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(result);
+            string result = string.Empty; 
+            
+            var task = response as Task<object>;
+            var httpResponseMessage = task.Result;
+            var json = httpResponseMessage.ToString();
+            responseValue = JsonConvert.DeserializeObject<QuotationServiceResponse>(json);
             if (responseValue != null && responseValue.Products != null)
             {
                 foreach (var product in responseValue.Products)
