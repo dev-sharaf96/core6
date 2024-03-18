@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Tameenk.Core;
@@ -38,6 +39,7 @@ namespace Tameenk.Integration.Providers.Wataniya
     {
         private readonly RestfulConfiguration _restfulConfiguration;
         private readonly IHttpClient _httpClient;
+        private readonly HttpClient httpClient;
         private readonly string _accessTokenBase64;
         private readonly IRepository<QuotationResponse> _quotationResponseRepository;
         private readonly IRepository<PolicyProcessingQueue> _policyProcessingQueueRepository;
@@ -73,8 +75,8 @@ namespace Tameenk.Integration.Providers.Wataniya
             new WataniyaBenefitMmodel(){ BenefitId = 490, BenefitCode = "489", BenefitDescEn = "Unnamed Driver ", BenefitDescAr = " سائق غير مسمى" }
         };
 
-        private const string GET_COMP_QUOTATION_URL = "https://aggregator.wataniya.com.sa/Aggregator/rest/Aggregator/CompareQuotesRMCOM";
-        private const string GET_TPL_QUOTATION_URL = "https://aggregator.wataniya.com.sa/Aggregator/rest/Aggregator/CompareQuotesRMTPL";
+        private const string GET_COMP_QUOTATION_URL = "https://localhost:7267/Aggregator/rest/Aggregator/CompareQuotesRMCOM";//"https://aggregator.wataniya.com.sa/Aggregator/rest/Aggregator/CompareQuotesRMCOM";
+        private const string GET_TPL_QUOTATION_URL = "https://localhost:7267/Aggregator/rest/Aggregator/CompareQuotesRMTPL";//"https://aggregator.wataniya.com.sa/Aggregator/rest/Aggregator/CompareQuotesRMTPL";
         // draft policy
         private const string GET_DRAFT_POLICY_URL = "https://aggregator.wataniya.com.sa/Aggregator/rest/Aggregator/DraftRMCOM";
         // issue policy
@@ -123,6 +125,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                 null :
                 Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_restfulConfiguration.AccessToken));
             _quotationConfig = quotationConfig;
+            httpClient = new HttpClient();
 
         }
 
@@ -197,9 +200,13 @@ namespace Tameenk.Integration.Providers.Wataniya
                     log.ServiceRequest = JsonConvert.SerializeObject(quoteModel);
                     var quotation = MappingWataniyaTplQuotationRequest(quoteModel);
                     log.ServiceRequest = JsonConvert.SerializeObject(quotation);
-                    var postTask = _httpClient.PostAsyncWithCertificate(GET_TPL_QUOTATION_URL, quotation,CERTIFCATE_BATH,CERTIFCATE_PASSWORD, _accessTokenBase64, authorizationMethod: "Basic");
-                    postTask.Wait();
-                    response = postTask.Result;
+                    //var postTask = httpClient.PostAsyncWithCertificate(GET_TPL_QUOTATION_URL, quotation,CERTIFCATE_BATH,CERTIFCATE_PASSWORD, _accessTokenBase64, authorizationMethod: "Basic");
+                    //postTask.Wait();
+                    //response = postTask.Result;
+                    var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
+                    var postTask =await httpClient.PostAsync(GET_TPL_QUOTATION_URL, requestContent);
+                    response = postTask;
                 }
                 else
                 {
@@ -207,9 +214,13 @@ namespace Tameenk.Integration.Providers.Wataniya
                     log.ServiceRequest = JsonConvert.SerializeObject(quoteModel);
                     var quotation = MappingWataniyaCompQuotationRequest(quoteModel);
                     log.ServiceRequest = JsonConvert.SerializeObject(quotation);
-                    var postTask = _httpClient.PostAsyncWithCertificate(GET_COMP_QUOTATION_URL, quotation, CERTIFCATE_BATH, CERTIFCATE_PASSWORD, _accessTokenBase64, authorizationMethod: "Basic");
-                    postTask.Wait();
-                    response = postTask.Result;
+                    //var postTask = _httpClient.PostAsyncWithCertificate(GET_COMP_QUOTATION_URL, quotation, CERTIFCATE_BATH, CERTIFCATE_PASSWORD, _accessTokenBase64, authorizationMethod: "Basic");
+                    //postTask.Wait();
+                    //response = postTask.Result;
+                    var requestContent = new StringContent(JsonConvert.SerializeObject(quotation), Encoding.UTF8, "application/json");
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _accessTokenBase64);
+                    var postTask = await httpClient.PostAsync(GET_COMP_QUOTATION_URL, requestContent);
+                    response = postTask;
                 }
                 DateTime dtAfterCalling = DateTime.Now;
                 log.ServiceResponseTimeInSeconds = dtAfterCalling.Subtract(dtBeforeCalling).TotalSeconds;
@@ -357,7 +368,7 @@ namespace Tameenk.Integration.Providers.Wataniya
                 log.ServiceErrorCode = log.ErrorCode.ToString();
                 log.ServiceErrorDescription = log.ServiceErrorDescription;
                 //log.ServiceResponse = response.Content.ReadAsStringAsync().Result;
-                ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
+                //ServiceRequestLogDataAccess.AddtoServiceRequestLogs(log);
                 return output;
             }
             catch (Exception ex)
