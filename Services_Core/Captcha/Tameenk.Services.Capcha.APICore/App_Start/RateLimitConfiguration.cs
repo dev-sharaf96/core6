@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using System.Web.Http;
+using Tameenk.Services.QuotationNew.Api;
 using WebApiThrottle;
 
 namespace Tameenk.Services.Capcha.API

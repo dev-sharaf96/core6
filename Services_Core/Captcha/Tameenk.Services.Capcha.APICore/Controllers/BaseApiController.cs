@@ -1,15 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Security.Claims;
-using Tameenk.Api.Core.ActionResults;
-using Tameenk.Api.Core.Attributes;
+﻿using Tameenk.Api.Core.ActionResults;
 using Tameenk.Api.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 

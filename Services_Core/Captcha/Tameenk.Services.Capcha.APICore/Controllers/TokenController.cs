@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Tameenk.Redis;
 using Tameenk.Services.Capcha.API;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+
 namespace Tameenk.Services.CaptchaApi.Controllers
 {
     [ApiController]
@@ -49,7 +51,7 @@ namespace Tameenk.Services.CaptchaApi.Controllers
             if (Result == null || Result.ErrorCode != Output<AccessTokenResult>.ErrorCodes.Success)
                 return BadRequest(Result.ErrorMsg);
 
-            return Json(Result);
+            return Ok(Result);
         }
 
         #endregion

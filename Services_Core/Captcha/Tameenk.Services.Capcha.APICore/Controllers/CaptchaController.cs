@@ -10,18 +10,19 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tameenk.Services.Capcha.API
 {
     [ApiController]
-    [Route("[controller]")]
-    public class CapchaController : BaseApiController
+    [Route("api/[controller]")]
+    public class CapchaController : ControllerBase
     {
         private const string SHARED_SECRET = "xYD_3h95?D&*&rTL";
         private static byte[] _salt = Encoding.UTF8.GetBytes("tameenk-sec-key-pass-word#$&");
 
         [HttpGet]
-        [Route("~/api/GetCaptcha")]
+        [Route("GetCaptcha")]
         [AllowAnonymous]
         public IActionResult GetCapcha()
         {
@@ -36,8 +37,9 @@ namespace Tameenk.Services.Capcha.API
             };
             string token = EncryptString(JsonConvert.SerializeObject(captchaToken), SHARED_SECRET);
 
-            return Json(new Tokenresponse { Data = new CaptchaModel { Image = img, Token = token, ExpiredInSeconds = 600 }, Errors = null, TotalCount = 0 });
+             return Ok(new Tokenresponse { Data = new CaptchaModel { Image = img, Token = token, ExpiredInSeconds = 600 }, Errors = null, TotalCount = 0 });
         }
+    
 
         [HttpPost]
         [Route("~/api/ValidateCaptcha")]
@@ -60,7 +62,7 @@ namespace Tameenk.Services.Capcha.API
                 if (!isValid)
                     return BadRequest("Invalid Captcha");
 
-                return Json(new ValidateCaptchaResponse { Data = true, Errors = null, TotalCount = 0 });
+                return Ok(new ValidateCaptchaResponse { Data = true, Errors = null, TotalCount = 0 });
             }
             catch (Exception ex)
             {
