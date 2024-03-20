@@ -8,7 +8,7 @@ namespace Tameenk.Core.Domain.Entities.Quotations
     {
         public QuotationRequest()
         {
-            QuotationResponses = new HashSet<QuotationResponse>();
+            QuotationResponse = new HashSet<QuotationResponse>();
            Drivers = new HashSet<Driver>();
         }
 
@@ -71,7 +71,7 @@ namespace Tameenk.Core.Domain.Entities.Quotations
         /// </summary>
         public Insured Insured { get; set; }
 
-        public ICollection<QuotationResponse> QuotationResponses { get; set; }
+        public ICollection<QuotationResponse> QuotationResponse { get; set; }
 
         public ICollection<Driver> Drivers { get; set; }
     }

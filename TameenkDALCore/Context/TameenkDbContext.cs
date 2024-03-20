@@ -66,7 +66,7 @@ namespace TameenkDAL
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Product_Benefit> Product_Benefit { get; set; }
         public virtual DbSet<ProductType> ProductTypes { get; set; }
-        public virtual DbSet<QuotationRequest> QuotationRequests { get; set; }
+        public virtual DbSet<QuotationRequest> QuotationRequest { get; set; }
         public virtual DbSet<QuotationResponse> QuotationResponses { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<RoleType> RoleTypes { get; set; }

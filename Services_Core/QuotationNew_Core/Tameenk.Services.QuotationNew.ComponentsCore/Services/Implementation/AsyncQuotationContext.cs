@@ -30,6 +30,7 @@ using Address = Tameenk.Core.Domain.Entities.Address;
 using TameenkDAL;
 using Tameenk.Integration.DtoCore.ServiceLocator;
 using Tameenk.Core.Configuration;
+using System.Data.Common;
 
 namespace Tameenk.Services.QuotationNew.Components
 {
@@ -742,7 +743,8 @@ namespace Tameenk.Services.QuotationNew.Components
                 if (!string.IsNullOrEmpty(quoteRequest.InsuredCityYakeenCode.ToString()))
                     output.QuotationResponse.CityId = quoteRequest.InsuredCityYakeenCode;
                 output.QuotationResponse.ICQuoteReferenceNo = response.QuotationNo;
-                _quotationResponseRepository.Insert(output.QuotationResponse);
+                 _quotationResponseRepository.Insert(output.QuotationResponse);
+                //await _quotationResponseRepository.Insert(output.QuotationResponse);
                 log.ProductResponseTimeInSeconds = DateTime.Now.Subtract(beforeHandlingProducts).TotalSeconds;
                 output.QuotationResponse.Products = ExcludeProductOrBenefitWithZeroPrice(output.QuotationResponse.Products).ToList();
                 if (insuranceTypeCode == 1 && insuranceCompany.InsuranceCompanyID != 14 && insuranceCompany.InsuranceCompanyID != 17 && insuranceCompany.InsuranceCompanyID != 9)
@@ -1968,53 +1970,52 @@ private List<Driver> HandleDriversAbove18Years(List<Driver> drivers, DriverDto m
 
 public PromotionProgramUserModel GetUserPromotionCodeInfo(string userId, string nationalId, int insuranceCompanyId, int insuranceTypeCode)
 {
-    try
-    {
-        if (insuranceCompanyId < 1)
-            throw new TameenkArgumentNullException(nameof(insuranceCompanyId), "Insurance company id can't be less than 1.");
+            PromotionProgramUserModel promotionProgramUserInfo = null;
+            //dbContext.Database.SetCommandTimeout(60);
 
-        PromotionProgramUserModel promotionProgramUserInfo = null;
-        dbContext.Database.SetCommandTimeout(60);
+            DbDataReader reader = null;
+            DbCommand command = dbContext.Database.GetDbConnection().CreateCommand();
 
-        using var command = dbContext.Database.GetDbConnection().CreateCommand();
-        command.CommandText = "GetUserPromotionProgramInfo";
-        command.CommandType = CommandType.StoredProcedure;
+            try
+            {
+                if (insuranceCompanyId < 1)
+                    throw new TameenkArgumentNullException(nameof(insuranceCompanyId), "Insurance company id can't be less than 1.");
+                
+                if (command.Connection == null)
+                    dbContext.Database.OpenConnection();
+                else if (command.Connection.State != System.Data.ConnectionState.Open)
+                    command.Connection.Open();
 
-        if (!string.IsNullOrEmpty(userId) && userId != Guid.Empty.ToString())
-        {
-            var userIdParam = new SqlParameter("@userId", userId);
-            command.Parameters.Add(userIdParam);
-        }
+                command.CommandText = "GetUserPromotionProgramInfo";
+                command.CommandType = CommandType.StoredProcedure;
 
-        var nationalIdParam = new SqlParameter("@nationalId", nationalId);
-        var insuranceCompanyIdParam = new SqlParameter("@insuranceCompanyId", insuranceCompanyId);
-        var insuranceTypeCodeParam = new SqlParameter("@insuranceTypeCode", insuranceTypeCode);
+                if (!string.IsNullOrEmpty(userId) && userId != Guid.Empty.ToString())
+                    command.Parameters.Add(new SqlParameter("@userId", userId));
 
-        command.Parameters.Add(nationalIdParam);
-        command.Parameters.Add(insuranceCompanyIdParam);
-        command.Parameters.Add(insuranceTypeCodeParam);
+                command.Parameters.Add(new SqlParameter("@nationalId", nationalId));
+                command.Parameters.Add(new SqlParameter("@insuranceCompanyId", insuranceCompanyId));
+                command.Parameters.Add(new SqlParameter("@insuranceTypeCode", insuranceTypeCode));
 
-        dbContext.Database.OpenConnection();
+                reader = command.ExecuteReader();
+                return promotionProgramUserInfo;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            finally
+            {
+               
 
-        using var reader = command.ExecuteReader();
-        // promotionProgramUserInfo = dbContext.Set<PromotionProgramUserModel>()
-        //     .FromSqlRaw("EXEC GetUserPromotionProgramInfo @userId, @nationalId, @insuranceCompanyId, @insuranceTypeCode",
-        //     new SqlParameter("@userId", userId),
-        //     new SqlParameter("@nationalId", nationalId),
-        //     new SqlParameter("@insuranceCompanyId", insuranceCompanyId),
-        //     new SqlParameter("@insuranceTypeCode", insuranceTypeCode))
-        //     .FirstOrDefault();
-        return promotionProgramUserInfo;
-    }
-    catch
-    {
-        return null;
-    }
-    finally
-    {
-        if (dbContext.Database.GetDbConnection().State == ConnectionState.Open)
-            dbContext.Database.CloseConnection();
-    }
+                if (reader != null)
+                    reader.DisposeAsync();
+
+                if (command.Connection != null)
+                    command.Connection.Close();
+
+                command.DisposeAsync();
+
+            }
 }
 
 
