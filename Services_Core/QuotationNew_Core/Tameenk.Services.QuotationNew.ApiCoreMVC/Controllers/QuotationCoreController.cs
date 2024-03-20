@@ -51,7 +51,7 @@ namespace Tameenk.Services.QuotationNew.ApiCore.Controllers
             string policyExpiryDate = null, string hashed = null, string channel = "Portal", 
             bool OdQuotation = false*/)
         {
-            int    insuranceCompanyId = 14;
+            int    insuranceCompanyId = 4;
             string qtRqstExtrnlId = "165a361ee51548f";
             Guid   parentRequestId = new Guid("2c176652-6792-4434-956c-94b933ed40e8");
             int    insuranceTypeCode = 1;
@@ -391,8 +391,8 @@ namespace Tameenk.Services.QuotationNew.ApiCore.Controllers
                             var serviceBenfitInfo = serviceProduct.Benefits.Where(a => a.BenefitId == benfit.BenefitExternalId).FirstOrDefault();
                             if (serviceBenfitInfo == null)
                                 continue;
-                            //benfit.Benefit.ArabicDescription = serviceBenfitInfo.BenefitNameAr;
-                            //benfit.Benefit.EnglishDescription = serviceBenfitInfo.BenefitNameEn; //Tawuniya error
+                            benfit.Benefit.ArabicDescription = serviceBenfitInfo.BenefitNameAr;
+                            benfit.Benefit.EnglishDescription = serviceBenfitInfo.BenefitNameEn; //Tawuniya error
                         }
                         product.Product_Benefits = product.Product_Benefits.OrderByDescending(a => a.IsReadOnly).ToList();
                         int indexOfBenefit14 = product.Product_Benefits.ToList().FindIndex(a => a.BenefitId == 14);

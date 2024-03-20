@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Transactions;
 using Tameenk.Core.Data;
 using Tameenk.Core.Domain.Entities;
 using TameenkDAL;
@@ -51,15 +52,51 @@ namespace Tameenk.Data
         public async Task Insert(TEntity entity)
         {
             _dbSet.Add(entity);
+            //_context.Attach(entity);
+            //_context.Entry(entity).State = EntityState.Added;
             await _context.SaveChangesAsync();
         }
-        IQueryable<TEntity> Table { get; }
+       IQueryable<TEntity> Table { get; }
 
-        IQueryable<TEntity> TableNoTracking { get; }
+       IQueryable<TEntity> TableNoTracking { get; }
 
-        IQueryable<TEntity> IRepository<TEntity>.Table => _dbSet.AsNoTracking();
+       IQueryable<TEntity> IRepository<TEntity>.Table => _dbSet.AsNoTracking();
+       IQueryable<TEntity> IRepository<TEntity>.TableNoTracking => _dbSet.AsNoTracking();
 
-        IQueryable<TEntity> IRepository<TEntity>.TableNoTracking => _dbSet.AsNoTracking();
+        //public virtual IQueryable<TEntity> Table
+        //{
+        //    get
+        //    {
+        //        using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
+        //        {
+        //            IsolationLevel = IsolationLevel.ReadUncommitted
+        //        }))
+        //        {
+        //            var table = _context.Set<TEntity>().AsNoTracking();
+        //            scope.Complete();
+        //            return table;
+        //        }
+
+        //    }
+        //}
+
+        //public virtual IQueryable<TEntity> TableNoTracking
+        //{
+        //    get
+        //    {
+        //        using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
+        //        {
+        //            IsolationLevel = IsolationLevel.ReadUncommitted
+        //        }))
+        //        {
+        //            var table = _context.Set<TEntity>().AsNoTracking();
+        //            scope.Complete();
+        //            return table;
+        //        }
+
+        //    }
+        //}
+
         public async Task InsertAsync(IEnumerable<TEntity> entity)
         {
             _dbSet.AddRange(entity);
@@ -73,6 +110,7 @@ namespace Tameenk.Data
         }
         public async Task UpdateAsync(IEnumerable<TEntity> entity)
         {
+            //_context.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
