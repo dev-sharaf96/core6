@@ -8,16 +8,17 @@ using Tameenk.Redis;
 using Tameenk.Services.Capcha.API;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using static System.Net.WebRequestMethods;
 
 namespace Tameenk.Services.CaptchaApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TokenController : ControllerBase
     {
         //private readonly IRedisCacheManager _redisCacheManager;
 
-        private const string _Url = "http://localhost:3000/token"; // local idenetity to not calling (https://bcare.com.sa/IdentityApi) to enhance performance
+        private const string _Url ="http://localhost:3000/token"; // local idenetity to not calling (https://bcare.com.sa/IdentityApi) to enhance performance
         private const string _ClientId = "684C02DE-C782-4C7A-9999-70E687D73CD6";
         private const string _ClientSecret = "8776677C-CBC9-4CB9-8AD8-A135D49B1C54-8564116E-BE41-4409-B46D-5B35C74F94B9-0FB081CC-2927-4A7C-A9B7-0CF76571107F";
 
@@ -32,7 +33,7 @@ namespace Tameenk.Services.CaptchaApi.Controllers
         #region API
 
         [HttpPost]
-        [Route("~/api/GetAccessToken")]
+        [Route("GetAccessToken")]
         [AllowAnonymous]
         public async Task<IActionResult> GetToken([FromBody] UserData model)
         {
@@ -44,7 +45,7 @@ namespace Tameenk.Services.CaptchaApi.Controllers
             var Result = await GetAccessToken(model);
             if (Result == null)
             {
-                System.IO.File.WriteAllText(@"C:\inetpub\WataniyaLog\GetAccessToken_exception_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss_mms") + ".txt", " Exception is:" + Result.ErrorMsg);
+                //System.IO.File.WriteAllText(@"C:\inetpub\WataniyaLog\GetAccessToken_exception_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss_mms") + ".txt", " Exception is:" + Result.ErrorMsg);
                 return BadRequest("Error happend while processing your request");
             }
 
