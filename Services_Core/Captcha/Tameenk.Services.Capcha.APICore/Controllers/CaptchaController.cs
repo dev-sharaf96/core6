@@ -24,7 +24,7 @@ namespace Tameenk.Services.Capcha.API
         [HttpGet]
         [Route("GetCaptcha")]
         [AllowAnonymous]
-        public IActionResult GetCapcha()
+        public IActionResult GetCaptcha()
         {
             int num = new Random().Next(1000, 9999);
             string str = GenerateBase64Captcha(num.ToString());
@@ -42,7 +42,7 @@ namespace Tameenk.Services.Capcha.API
     
 
         [HttpPost]
-        [Route("~/api/ValidateCaptcha")]
+        [Route("ValidateCaptcha")]
         [AllowAnonymous]
         public IActionResult ValidateCaptcha([FromBody] ValidateCaptchaModel model)
         {

@@ -45,25 +45,12 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseSystemWebAdapters();
 
-app.MapControllers();
-//////////app.MapForwarder("/{**catch-all}", app.Configuration["ProxyTo"]).Add(static builder => ((RouteEndpointBuilder)builder).Order = int.MaxValue);
-//app.UseEndpoints(endpoints =>
-//{
-//    //endpoints.MapControllerRoute(
-//    //  name: "Capcha",
-//    //  pattern: "api/Capcha",
-//    //  defaults: new { controller = "Capcha", action = "GetCapcha" });
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute("Default", "{controller=Home}/{action=Index}/{id?}");
 
-//    endpoints.MapControllerRoute("Default", "{controller=Home}/{action=Index}/{id?}");
-
-//    endpoints.MapControllers();
-//});
+    endpoints.MapControllers();
+});
 
 
 app.Run();
-
-//services.AddControllersWithViews(options =>
-//{
-//    // Register global filter for handling errors
-//    options.Filters.Add(new Microsoft.AspNetCore.Mvc.Filters.HandleErrorAttribute());
-//});
